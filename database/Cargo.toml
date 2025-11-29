@@ -1,0 +1,7 @@
+[package]
+name = "bbtings_database"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bbtings_grpc_proto = { path = "../grpc_api/proto/rust"}
