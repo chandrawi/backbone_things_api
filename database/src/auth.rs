@@ -1,3 +1,5 @@
+pub(crate) mod _schema;
+
 use sqlx::Pool;
 use sqlx::postgres::{Postgres, PgPoolOptions};
 

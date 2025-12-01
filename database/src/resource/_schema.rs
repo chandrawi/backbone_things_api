@@ -1,0 +1,297 @@
+use sqlx::types::chrono::{DateTime, Utc};
+use uuid::Uuid;
+use crate::value::{DataType, DataValue};
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct ModelSchema {
+    pub id: Uuid,
+    pub category: String,
+    pub name: String,
+    pub description: String,
+    pub data_type: Vec<DataType>,
+    pub tags: Vec<TagSchema>,
+    pub configs: Vec<Vec<ModelConfigSchema>>
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct TagSchema {
+    pub model_id: Uuid,
+    pub tag: i16,
+    pub name: String,
+    pub members: Vec<i16>
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct ModelConfigSchema {
+    pub id: i32,
+    pub model_id: Uuid,
+    pub index: i16,
+    pub name: String,
+    pub value: DataValue,
+    pub category: String
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub(crate) struct ModelSchemaFlat {
+    pub id: Uuid,
+    pub category: String,
+    pub name: String,
+    pub description: String,
+    pub data_type: Vec<DataType>,
+    pub tags: Vec<TagSchema>,
+    pub configs: Vec<ModelConfigSchema>
+}
+
+impl From<ModelSchemaFlat> for ModelSchema {
+    fn from(value: ModelSchemaFlat) -> Self {
+        let number = value.data_type.len();
+        let mut config_schema_vec: Vec<Vec<ModelConfigSchema>> = (0..number).map(|_| Vec::new()).collect();
+        for config in value.configs {
+            let index = config.index as usize;
+            if index < number {
+                config_schema_vec[index].push(config);
+            }
+        }
+        Self {
+            id: value.id,
+            category: value.category,
+            name: value.name,
+            description: value.description,
+            data_type: value.data_type,
+            tags: value.tags,
+            configs: config_schema_vec
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct DeviceSchema {
+    pub id: Uuid,
+    pub gateway_id: Uuid,
+    pub serial_number: String,
+    pub name: String,
+    pub description: String,
+    pub type_: TypeSchema,
+    pub configs: Vec<DeviceConfigSchema>
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct GatewaySchema {
+    pub id: Uuid,
+    pub serial_number: String,
+    pub name: String,
+    pub description: String,
+    pub type_: TypeSchema,
+    pub configs: Vec<GatewayConfigSchema>
+}
+
+impl From<DeviceSchema> for GatewaySchema {
+    fn from(value: DeviceSchema) -> Self {
+        Self {
+            id: value.gateway_id,
+            serial_number: value.serial_number,
+            name: value.name,
+            description: value.description,
+            type_: value.type_,
+            configs: value.configs.into_iter().map(|el| el.into()).collect()
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct TypeSchema {
+    pub id: Uuid,
+    pub name: String,
+    pub description: String,
+    pub model_ids: Vec<Uuid>
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct DeviceConfigSchema {
+    pub id: i32,
+    pub device_id: Uuid,
+    pub name: String,
+    pub value: DataValue,
+    pub category: String
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct GatewayConfigSchema {
+    pub id: i32,
+    pub gateway_id: Uuid,
+    pub name: String,
+    pub value: DataValue,
+    pub category: String
+}
+
+impl From<DeviceConfigSchema> for GatewayConfigSchema {
+    fn from(value: DeviceConfigSchema) -> Self {
+        Self {
+            id: value.id,
+            gateway_id: value.device_id,
+            name: value.name,
+            value: value.value,
+            category: value.category
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub(crate) struct GroupSchema {
+    pub(crate) id: Uuid,
+    pub(crate) name: String,
+    pub(crate) category: String,
+    pub(crate) description: String,
+    pub(crate) members: Vec<Uuid>
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct GroupModelSchema {
+    pub id: Uuid,
+    pub name: String,
+    pub category: String,
+    pub description: String,
+    pub model_ids: Vec<Uuid>
+}
+
+impl From<GroupSchema> for GroupModelSchema {
+    fn from(value: GroupSchema) -> Self {
+        Self {
+            id: value.id,
+            name: value.name,
+            category: value.category,
+            description: value.description,
+            model_ids: value.members
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct GroupDeviceSchema {
+    pub id: Uuid,
+    pub name: String,
+    pub category: String,
+    pub description: String,
+    pub device_ids: Vec<Uuid>
+}
+
+impl From<GroupSchema> for GroupDeviceSchema {
+    fn from(value: GroupSchema) -> Self {
+        Self {
+            id: value.id,
+            name: value.name,
+            category: value.category,
+            description: value.description,
+            device_ids: value.members
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct GroupGatewaySchema {
+    pub id: Uuid,
+    pub name: String,
+    pub category: String,
+    pub description: String,
+    pub gateway_ids: Vec<Uuid>
+}
+
+impl From<GroupSchema> for GroupGatewaySchema {
+    fn from(value: GroupSchema) -> Self {
+        Self {
+            id: value.id,
+            name: value.name,
+            category: value.category,
+            description: value.description,
+            gateway_ids: value.members
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct SetSchema {
+    pub id: Uuid,
+    pub template_id: Uuid,
+    pub name: String,
+    pub description: String,
+    pub members: Vec<SetMember>
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct SetMember {
+    pub device_id: Uuid,
+    pub model_id: Uuid,
+    pub data_index: Vec<u8>
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct SetTemplateSchema {
+    pub id: Uuid,
+    pub name: String,
+    pub description: String,
+    pub members: Vec<SetTemplateMember>
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct SetTemplateMember {
+    pub type_id: Uuid,
+    pub model_id: Uuid,
+    pub data_index: Vec<u8>
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct DataSchema {
+    pub device_id: Uuid,
+    pub model_id: Uuid,
+    pub timestamp: DateTime<Utc>,
+    pub data: Vec<DataValue>,
+    pub tag: i16
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct DataSetSchema {
+    pub set_id: Uuid,
+    pub timestamp: DateTime<Utc>,
+    pub data: Vec<DataValue>,
+    pub tag: i16
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct BufferSchema {
+    pub id: i32,
+    pub device_id: Uuid,
+    pub model_id: Uuid,
+    pub timestamp: DateTime<Utc>,
+    pub data: Vec<DataValue>,
+    pub tag: i16
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct BufferSetSchema {
+    pub ids: Vec<i32>,
+    pub set_id: Uuid,
+    pub timestamp: DateTime<Utc>,
+    pub data: Vec<DataValue>,
+    pub tag: i16
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct SliceSchema {
+    pub id: i32,
+    pub device_id: Uuid,
+    pub model_id: Uuid,
+    pub timestamp_begin: DateTime<Utc>,
+    pub timestamp_end: DateTime<Utc>,
+    pub name: String,
+    pub description: String
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct SliceSetSchema {
+    pub id: i32,
+    pub set_id: Uuid,
+    pub timestamp_begin: DateTime<Utc>,
+    pub timestamp_end: DateTime<Utc>,
+    pub name: String,
+    pub description: String
+}

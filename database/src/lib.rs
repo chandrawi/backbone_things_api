@@ -5,4 +5,6 @@ pub(crate) mod value;
 
 pub use auth::Auth;
 pub use resource::Resource;
+pub use auth::_schema::*;
+pub use resource::_schema::*;
 pub use value::{DataType, DataValue, ArrayDataValue};
