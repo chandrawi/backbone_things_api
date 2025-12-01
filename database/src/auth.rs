@@ -1,4 +1,9 @@
 pub(crate) mod _schema;
+pub mod api;
+pub mod role;
+pub mod user;
+pub mod profile;
+pub mod token;
 
 use sqlx::Pool;
 use sqlx::postgres::{Postgres, PgPoolOptions};

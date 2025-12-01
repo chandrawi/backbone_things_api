@@ -1,4 +1,11 @@
 pub(crate) mod _schema;
+pub mod model;
+pub mod device;
+pub mod group;
+pub mod set;
+pub mod data;
+pub mod buffer;
+pub mod slice;
 
 use sqlx::Pool;
 use sqlx::postgres::{Postgres, PgPoolOptions};
