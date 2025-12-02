@@ -8,3 +8,4 @@ pub use resource::Resource;
 pub use auth::_schema::*;
 pub use resource::_schema::*;
 pub use value::{DataType, DataValue, ArrayDataValue};
+pub use common::tag;

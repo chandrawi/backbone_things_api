@@ -2,7 +2,7 @@ use sea_query::{Iden, PostgresQueryBuilder, Query, Expr, Order, Condition};
 use sea_query_binder::SqlxBinder;
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::{QuerySet, tag as Tag};
 use crate::value::{DataValue, ArrayDataValue};
 use crate::resource::model::Model;
 use crate::resource::set::SetMap;
@@ -175,7 +175,7 @@ pub fn insert_data(
 ) -> QuerySet
 {
     let bytes = ArrayDataValue::from_vec(data).to_bytes();
-    let tag = tag.unwrap_or(0);
+    let tag = tag.unwrap_or(Tag::DEFAULT);
     let stmt = Query::insert()
         .into_table(Data::Table)
         .columns([
@@ -210,8 +210,8 @@ pub fn insert_data_multiple(
     let numbers = vec![device_ids.len(), model_ids.len(), timestamps.len(), data.len()];
     let number = numbers.into_iter().min().unwrap_or(0);
     let tags: Vec<i16> = match tags {
-        Some(values) => (0..number).into_iter().map(|i| values.get(i).unwrap_or(&0).to_owned()).collect(),
-        None => (0..number).into_iter().map(|_| 0).collect()
+        Some(values) => (0..number).into_iter().map(|i| values.get(i).unwrap_or(&Tag::DEFAULT).to_owned()).collect(),
+        None => (0..number).into_iter().map(|_| Tag::DEFAULT).collect()
     };
 
     let mut stmt = Query::insert()
