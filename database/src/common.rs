@@ -29,14 +29,26 @@ impl QuerySet {
         Ok(id)
     }
 
+    pub(crate) async fn fetch_max_order(&self, pool: &Pool<Postgres>, default: i32) -> i32
+    {
+        sqlx::query_with(&self.query, self.values.clone())
+            .map(|row: PgRow| row.try_get(0))
+            .fetch_one(pool)
+            .await
+            .unwrap_or(Ok(default))
+            .unwrap_or(default)
+    }
+
 }
 
-pub(crate) fn hash_password(password: &str) -> Result<String, argon2::password_hash::Error>
+pub(crate) fn hash_password(password: &str) -> Result<String, Error>
 {
     let argon2 = Argon2::default();
     let salt = SaltString::generate(&mut thread_rng());
-    let password_hash = argon2.hash_password(password.as_bytes(), &salt)?;
-    Ok(password_hash.to_string())
+    match argon2.hash_password(password.as_bytes(), &salt) {
+        Ok(hash) => Ok(hash.to_string()),
+        Err(_) => Err(Error::InvalidArgument(String::from("The password failed to hash")))
+    }
 }
 
 pub fn generate_access_key() -> Vec<u8>

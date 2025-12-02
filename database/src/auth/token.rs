@@ -11,14 +11,22 @@ pub(crate) enum Token {
     UserId,
     RefreshToken,
     AuthToken,
-    Expire,
+    Created,
+    Expired,
     Ip
 }
 
 pub enum TokenSelector {
     Access(i32),
     Auth(String),
-    User(Uuid)
+    User(Uuid),
+    CreatedEarlier(DateTime<Utc>, Option<Uuid>),
+    CreatedLater(DateTime<Utc>, Option<Uuid>),
+    CreatedRange(DateTime<Utc>, DateTime<Utc>, Option<Uuid>),
+    ExpiredEarlier(DateTime<Utc>, Option<Uuid>),
+    ExpiredLater(DateTime<Utc>, Option<Uuid>),
+    ExpiredRange(DateTime<Utc>, DateTime<Utc>, Option<Uuid>),
+    Range(DateTime<Utc>, DateTime<Utc>, DateTime<Utc>, DateTime<Utc>, Option<Uuid>)
 }
 
 pub fn select_token(
@@ -31,12 +39,14 @@ pub fn select_token(
             Token::UserId,
             Token::RefreshToken,
             Token::AuthToken,
-            Token::Expire,
+            Token::Created,
+            Token::Expired,
             Token::Ip
         ])
         .from(Token::Table)
         .to_owned();
 
+    let mut user_id: Option<Uuid> = None;
     match selector {
         TokenSelector::Access(value) => {
             stmt = stmt.and_where(Expr::col(Token::AccessId).eq(value)).to_owned();
@@ -45,8 +55,43 @@ pub fn select_token(
             stmt = stmt.and_where(Expr::col(Token::AuthToken).eq(value)).to_owned();
         },
         TokenSelector::User(value) => {
-            stmt = stmt.and_where(Expr::col(Token::UserId).eq(value)).to_owned();
+            user_id = Some(value);
+        },
+        TokenSelector::CreatedEarlier(earlier, id) => {
+            stmt = stmt.and_where(Expr::col(Token::Created).lte(earlier)).to_owned();
+            user_id = id;
+        },
+        TokenSelector::CreatedLater(later, id) => {
+            stmt = stmt.and_where(Expr::col(Token::Created).gte(later)).to_owned();
+            user_id = id;
+        },
+        TokenSelector::CreatedRange(begin, end, id) => {
+            stmt = stmt.and_where(Expr::col(Token::Created).gte(begin)).and_where(Expr::col(Token::Created).lte(end)).to_owned();
+            user_id = id;
+        },
+        TokenSelector::ExpiredEarlier(earlier, id) => {
+            stmt = stmt.and_where(Expr::col(Token::Expired).lte(earlier)).to_owned();
+            user_id = id;
+        },
+        TokenSelector::ExpiredLater(later, id) => {
+            stmt = stmt.and_where(Expr::col(Token::Expired).gte(later)).to_owned();
+            user_id = id;
+        },
+        TokenSelector::ExpiredRange(begin, end, id) => {
+            stmt = stmt.and_where(Expr::col(Token::Expired).gte(begin)).and_where(Expr::col(Token::Expired).lte(end)).to_owned();
+            user_id = id;
+        },
+        TokenSelector::Range(b_cre, e_cre, b_exp, e_exp, id) => {
+            stmt = stmt
+                .and_where(Expr::col(Token::Created).gte(b_cre)).and_where(Expr::col(Token::Created).lte(e_cre))
+                .and_where(Expr::col(Token::Expired).gte(b_exp)).and_where(Expr::col(Token::Expired).lte(e_exp))
+                .to_owned();
+            user_id = id;
         }
+    }
+
+    if let Some(value) = user_id {
+        stmt = stmt.and_where(Expr::col(Token::UserId).eq(value)).to_owned();
     }
     let (query, values) = stmt
         .order_by(Token::AccessId, Order::Asc)
@@ -68,14 +113,14 @@ pub fn select_token_last_access_id(
 
 pub fn insert_token(
     user_id: Uuid, 
-    access_id: Vec<i32>,
-    refresh_token: Vec<&str>,
-    auth_token: Vec<&str>,
-    expire: DateTime<Utc>, 
+    access_ids: Vec<i32>,
+    refresh_tokens: Vec<&str>,
+    auth_tokens: Vec<&str>,
+    expired: DateTime<Utc>, 
     ip: &[u8]
 ) -> QuerySet
 {
-    let numbers = vec![access_id.len(), refresh_token.len(), auth_token.len()];
+    let numbers = vec![access_ids.len(), refresh_tokens.len(), auth_tokens.len()];
     let number = numbers.into_iter().min().unwrap_or(0);
 
     let mut stmt = Query::insert()
@@ -85,17 +130,17 @@ pub fn insert_token(
             Token::UserId,
             Token::RefreshToken,
             Token::AuthToken,
-            Token::Expire,
+            Token::Expired,
             Token::Ip
         ])
         .to_owned();
     for i in 0..number {
         stmt = stmt.values([
-            access_id[i].into(),
+            access_ids[i].into(),
             user_id.into(),
-            refresh_token[i].into(),
-            auth_token[i].into(),
-            expire.into(),
+            refresh_tokens[i].into(),
+            auth_tokens[i].into(),
+            expired.into(),
             ip.to_vec().into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
@@ -109,7 +154,7 @@ pub fn insert_token(
 pub fn update_token(
     selector: TokenSelector,
     refresh_token: Option<&str>,
-    expire: Option<DateTime<Utc>>, 
+    expired: Option<DateTime<Utc>>, 
     ip: Option<&[u8]>
 ) -> QuerySet
 {
@@ -120,8 +165,8 @@ pub fn update_token(
     if let Some(value) = refresh_token {
         stmt = stmt.value(Token::RefreshToken, value).to_owned();
     }
-    if let Some(value) = expire {
-        stmt = stmt.value(Token::Expire, value).to_owned();
+    if let Some(value) = expired {
+        stmt = stmt.value(Token::Expired, value).to_owned();
     }
     if let Some(value) = ip {
         stmt = stmt.value(Token::Ip, value).to_owned();
@@ -134,9 +179,7 @@ pub fn update_token(
         TokenSelector::Auth(value) => {
             stmt = stmt.and_where(Expr::col((Token::Table, Token::AuthToken)).eq(value)).to_owned();
         },
-        TokenSelector::User(value) => {
-            stmt = stmt.and_where(Expr::col((Token::Table, Token::UserId)).eq(value)).to_owned();
-        }
+        _ => {}
     }
     let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
@@ -159,7 +202,8 @@ pub fn delete_token(
         },
         TokenSelector::User(value) => {
             stmt = stmt.and_where(Expr::col((Token::Table, Token::UserId)).eq(value)).to_owned();
-        }
+        },
+        _ => {}
     }
     let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 

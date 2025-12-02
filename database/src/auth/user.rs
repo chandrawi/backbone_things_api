@@ -169,7 +169,7 @@ pub fn delete_user(
     QuerySet { query, values }
 }
 
-pub fn create_user_role(
+pub fn insert_user_role(
     id: Uuid,
     role_id: Uuid
 ) -> QuerySet
