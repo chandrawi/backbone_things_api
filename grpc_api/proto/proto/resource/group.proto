@@ -1,0 +1,141 @@
+syntax = "proto3";
+package group;
+
+service GroupService {
+    rpc ReadGroupModel(GroupId) returns (GroupModelReadResponse);
+
+    rpc ListGroupModelByIds(GroupIds) returns (GroupModelListResponse);
+
+    rpc ListGroupModelByName(GroupName) returns (GroupModelListResponse);
+
+    rpc ListGroupModelByCategory(GroupCategory) returns (GroupModelListResponse);
+
+    rpc ListGroupModelOption(GroupOption) returns (GroupModelListResponse);
+
+    rpc CreateGroupModel(GroupModelSchema) returns (GroupCreateResponse);
+
+    rpc UpdateGroupModel(GroupUpdate) returns (GroupChangeResponse);
+
+    rpc DeleteGroupModel(GroupId) returns (GroupChangeResponse);
+
+    rpc AddGroupModelMember(GroupModel) returns (GroupChangeResponse);
+
+    rpc RemoveGroupModelMember(GroupModel) returns (GroupChangeResponse);
+
+    rpc ReadGroupDevice(GroupId) returns (GroupDeviceReadResponse);
+
+    rpc ListGroupDeviceByIds(GroupIds) returns (GroupDeviceListResponse);
+
+    rpc ListGroupDeviceByName(GroupName) returns (GroupDeviceListResponse);
+
+    rpc ListGroupDeviceByCategory(GroupCategory) returns (GroupDeviceListResponse);
+
+    rpc ListGroupDeviceOption(GroupOption) returns (GroupDeviceListResponse);
+
+    rpc CreateGroupDevice(GroupDeviceSchema) returns (GroupCreateResponse);
+
+    rpc UpdateGroupDevice(GroupUpdate) returns (GroupChangeResponse);
+
+    rpc DeleteGroupDevice(GroupId) returns (GroupChangeResponse);
+
+    rpc AddGroupDeviceMember(GroupDevice) returns (GroupChangeResponse);
+
+    rpc RemoveGroupDeviceMember(GroupDevice) returns (GroupChangeResponse);
+
+    rpc ReadGroupGateway(GroupId) returns (GroupDeviceReadResponse);
+
+    rpc ListGroupGatewayByIds(GroupIds) returns (GroupDeviceListResponse);
+
+    rpc ListGroupGatewayByName(GroupName) returns (GroupDeviceListResponse);
+
+    rpc ListGroupGatewayByCategory(GroupCategory) returns (GroupDeviceListResponse);
+
+    rpc ListGroupGatewayOption(GroupOption) returns (GroupDeviceListResponse);
+
+    rpc CreateGroupGateway(GroupDeviceSchema) returns (GroupCreateResponse);
+
+    rpc UpdateGroupGateway(GroupUpdate) returns (GroupChangeResponse);
+
+    rpc DeleteGroupGateway(GroupId) returns (GroupChangeResponse);
+
+    rpc AddGroupGatewayMember(GroupDevice) returns (GroupChangeResponse);
+
+    rpc RemoveGroupGatewayMember(GroupDevice) returns (GroupChangeResponse);
+}
+
+message GroupModelSchema {
+    bytes id = 1;
+    string name = 2;
+    string category = 3;
+    string description = 4;
+    repeated bytes model_ids = 5;
+}
+
+message GroupDeviceSchema {
+    bytes id = 1;
+    string name = 2;
+    string category = 3;
+    string description = 4;
+    repeated bytes device_ids = 5;
+}
+
+message GroupId {
+    bytes id = 1;
+}
+
+message GroupIds {
+    repeated bytes ids = 1;
+}
+
+message GroupName {
+    string name = 1;
+}
+
+message GroupCategory {
+    string category = 1;
+}
+
+message GroupOption {
+    optional string name = 1;
+    optional string category = 2;
+}
+
+message GroupUpdate {
+    bytes id = 1;
+    optional string name = 2;
+    optional string category = 3;
+    optional string description = 4;
+}
+
+message GroupModel {
+    bytes id = 1;
+    bytes model_id = 2;
+}
+
+message GroupDevice {
+    bytes id = 1;
+    bytes device_id = 2;
+}
+
+message GroupModelReadResponse {
+    GroupModelSchema result = 1;
+}
+
+message GroupModelListResponse {
+    repeated GroupModelSchema results = 1;
+}
+
+message GroupDeviceReadResponse {
+    GroupDeviceSchema result = 1;
+}
+
+message GroupDeviceListResponse {
+    repeated GroupDeviceSchema results = 1;
+}
+
+message GroupCreateResponse {
+    bytes id = 1;
+}
+
+message GroupChangeResponse {
+}

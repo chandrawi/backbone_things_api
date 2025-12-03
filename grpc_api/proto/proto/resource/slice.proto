@@ -1,0 +1,179 @@
+syntax = "proto3";
+package slice;
+
+service SliceService {
+    rpc ReadSlice(SliceId) returns (SliceReadResponse);
+
+    rpc ListSliceByIds(SliceIds) returns (SliceListResponse);
+
+    rpc ListSliceByTime(SliceTime) returns (SliceListResponse);
+
+    rpc ListSliceByRange(SliceRange) returns (SliceListResponse);
+
+    rpc ListSliceByNameTime(SliceNameTime) returns (SliceListResponse);
+
+    rpc ListSliceByNameRange(SliceNameRange) returns (SliceListResponse);
+
+    rpc ListSliceOption(SliceOption) returns (SliceListResponse);
+
+    rpc ListSliceGroupByTime(SliceGroupTime) returns (SliceListResponse);
+
+    rpc ListSliceGroupByRange(SliceGroupRange) returns (SliceListResponse);
+
+    rpc ListSliceGroupOption(SliceGroupOption) returns (SliceListResponse);
+
+    rpc CreateSlice(SliceSchema) returns (SliceCreateResponse);
+
+    rpc UpdateSlice(SliceUpdate) returns (SliceChangeResponse);
+
+    rpc DeleteSlice(SliceId) returns (SliceChangeResponse);
+
+    rpc ReadSliceSet(SliceId) returns (SliceSetReadResponse);
+
+    rpc ListSliceSetByIds(SliceIds) returns (SliceSetListResponse);
+
+    rpc ListSliceSetByTime(SliceSetTime) returns (SliceSetListResponse);
+
+    rpc ListSliceSetByRange(SliceSetRange) returns (SliceSetListResponse);
+
+    rpc ListSliceSetByNameTime(SliceNameTime) returns (SliceSetListResponse);
+
+    rpc ListSliceSetByNameRange(SliceNameRange) returns (SliceSetListResponse);
+
+    rpc ListSliceSetOption(SliceSetOption) returns (SliceSetListResponse);
+
+    rpc CreateSliceSet(SliceSetSchema) returns (SliceCreateResponse);
+
+    rpc UpdateSliceSet(SliceUpdate) returns (SliceChangeResponse);
+
+    rpc DeleteSliceSet(SliceId) returns (SliceChangeResponse);
+}
+
+message SliceSchema {
+    int32 id = 1;
+    bytes device_id = 2;
+    bytes model_id = 3;
+    int64 timestamp_begin = 4;
+    int64 timestamp_end = 5;
+    string name = 6;
+    string description = 7;
+}
+
+message SliceId {
+    int32 id = 1;
+}
+
+message SliceIds {
+    repeated int32 ids = 1;
+}
+
+message SliceTime {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 timestamp = 3;
+}
+
+message SliceRange {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 begin = 3;
+    int64 end = 4;
+}
+
+message SliceNameTime {
+    string name = 1;
+    int64 timestamp = 2;
+}
+
+message SliceNameRange {
+    string name = 1;
+    int64 begin = 2;
+    int64 end = 3;
+}
+
+message SliceOption {
+    optional bytes device_id = 1;
+    optional bytes model_id = 2;
+    optional string name = 3;
+    optional int64 begin = 4;
+    optional int64 end = 5;
+}
+
+message SliceGroupTime {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    int64 timestamp = 3;
+}
+
+message SliceGroupRange {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    int64 begin = 3;
+    int64 end = 4;
+}
+
+message SliceGroupOption {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    optional string name = 3;
+    optional int64 begin = 4;
+    optional int64 end = 5;
+}
+
+message SliceUpdate {
+    int32 id = 1;
+    optional int64 timestamp_begin = 2;
+    optional int64 timestamp_end = 3;
+    optional string name = 4;
+    optional string description = 5;
+}
+
+message SliceSetSchema {
+    int32 id = 1;
+    bytes set_id = 2;
+    int64 timestamp_begin = 3;
+    int64 timestamp_end = 4;
+    string name = 5;
+    string description = 6;
+}
+
+message SliceSetTime {
+    bytes set_id = 1;
+    int64 timestamp = 2;
+}
+
+message SliceSetRange {
+    bytes set_id = 1;
+    int64 begin = 2;
+    int64 end = 3;
+}
+
+message SliceSetOption {
+    optional bytes set_id = 1;
+    optional string name = 2;
+    optional int64 begin = 3;
+    optional int64 end = 4;
+}
+
+message SliceReadResponse {
+    SliceSchema result = 1;
+}
+
+message SliceListResponse {
+    repeated SliceSchema results = 1;
+}
+
+message SliceCreateResponse {
+    int32 id = 1;
+}
+
+message SliceChangeResponse {
+}
+
+message SliceSetReadResponse {
+    SliceSetSchema result = 1;
+}
+
+message SliceSetListResponse {
+    repeated SliceSetSchema results = 1;
+}

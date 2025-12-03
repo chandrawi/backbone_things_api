@@ -1,0 +1,195 @@
+syntax = "proto3";
+package data;
+
+service DataService {
+    rpc ReadData(DataTime) returns (DataReadResponse);
+
+    rpc ListDataByTime(DataTime) returns (DataListResponse);
+
+    rpc ListDataByLatest(DataLatest) returns (DataListResponse);
+
+    rpc ListDataByRange(DataRange) returns (DataListResponse);
+
+    rpc ListDataByNumberBefore(DataNumber) returns (DataListResponse);
+
+    rpc ListDataByNumberAfter(DataNumber) returns (DataListResponse);
+
+    rpc ListDataGroupByTime(DataGroupTime) returns (DataListResponse);
+
+    rpc ListDataGroupByLatest(DataGroupLatest) returns (DataListResponse);
+
+    rpc ListDataGroupByRange(DataGroupRange) returns (DataListResponse);
+
+    rpc ListDataGroupByNumberBefore(DataGroupNumber) returns (DataListResponse);
+
+    rpc ListDataGroupByNumberAfter(DataGroupNumber) returns (DataListResponse);
+
+    rpc ReadDataSet(DataSetTime) returns (DataSetReadResponse);
+
+    rpc ListDataSetByTime(DataSetTime) returns (DataSetListResponse);
+
+    rpc ListDataSetByLatest(DataSetLatest) returns (DataSetListResponse);
+
+    rpc ListDataSetByRange(DataSetRange) returns (DataSetListResponse);
+
+    rpc CreateData(DataSchema) returns (DataChangeResponse);
+
+    rpc CreateDataMultiple(DataMultipleSchema) returns (DataChangeResponse);
+
+    rpc DeleteData(DataTime) returns (DataChangeResponse);
+
+    rpc ReadDataTimestamp(DataTime) returns (TimestampReadResponse);
+
+    rpc ListDataTimestampByLatest(DataLatest) returns (TimestampListResponse);
+
+    rpc ListDataTimestampByRange(DataRange) returns (TimestampListResponse);
+
+    rpc ReadDataGroupTimestamp(DataGroupTime) returns (TimestampReadResponse);
+
+    rpc ListDataGroupTimestampByLatest(DataGroupLatest) returns (TimestampListResponse);
+
+    rpc ListDataGroupTimestampByRange(DataGroupRange) returns (TimestampListResponse);
+
+    rpc CountData(DataTime) returns (DataCountResponse);
+
+    rpc CountDataByLatest(DataLatest) returns (DataCountResponse);
+
+    rpc CountDataByRange(DataRange) returns (DataCountResponse);
+
+    rpc CountDataGroup(DataGroupTime) returns (DataCountResponse);
+
+    rpc CountDataGroupByLatest(DataGroupLatest) returns (DataCountResponse);
+
+    rpc CountDataGroupByRange(DataGroupRange) returns (DataCountResponse);
+}
+
+message DataSchema {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 timestamp = 3;
+    bytes data_bytes = 4;
+    repeated uint32 data_type = 5;
+    int32 tag = 6;
+}
+
+message DataMultipleSchema {
+    repeated DataSchema schemas = 1;
+}
+
+message DataTime {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 timestamp = 3;
+    optional int32 tag = 4;
+}
+
+message DataLatest {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 latest = 3;
+    optional int32 tag = 4;
+}
+
+message DataRange {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 begin = 3;
+    int64 end = 4;
+    optional int32 tag = 5;
+}
+
+message DataNumber {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 timestamp = 3;
+    uint32 number = 4;
+    optional int32 tag = 5;
+}
+
+message DataSetSchema {
+    bytes set_id = 1;
+    int64 timestamp = 2;
+    bytes data_bytes = 3;
+    repeated uint32 data_type = 4;
+    int32 tag = 5;
+}
+
+message DataGroupTime {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    int64 timestamp = 3;
+    optional int32 tag = 4;
+}
+
+message DataGroupLatest {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    int64 latest = 3;
+    optional int32 tag = 4;
+}
+
+message DataGroupRange {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    int64 begin = 3;
+    int64 end = 4;
+    optional int32 tag = 5;
+}
+
+message DataGroupNumber {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    int64 timestamp = 3;
+    uint32 number = 4;
+    optional int32 tag = 5;
+}
+
+message DataSetTime {
+    bytes set_id = 1;
+    int64 timestamp = 2;
+    optional int32 tag = 3;
+}
+
+message DataSetLatest {
+    bytes set_id = 1;
+    int64 latest = 2;
+    optional int32 tag = 3;
+}
+
+message DataSetRange {
+    bytes set_id = 1;
+    int64 begin = 2;
+    int64 end = 3;
+    optional int32 tag = 4;
+}
+
+message DataReadResponse {
+    DataSchema result = 1;
+}
+
+message DataListResponse {
+    repeated DataSchema results = 1;
+}
+
+message DataSetReadResponse {
+    DataSetSchema result = 1;
+}
+
+message DataSetListResponse {
+    repeated DataSetSchema results = 1;
+}
+
+message DataChangeResponse {
+}
+
+message TimestampReadResponse {
+    int64 timestamp = 1;
+}
+
+message TimestampListResponse {
+    repeated int64 timestamps = 1;
+}
+
+message DataCountResponse {
+    uint32 count = 1;
+}

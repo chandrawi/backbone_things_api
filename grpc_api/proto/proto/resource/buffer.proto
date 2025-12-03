@@ -1,0 +1,299 @@
+syntax = "proto3";
+package buffer;
+
+service BufferService {
+    rpc ReadBuffer(BufferId) returns (BufferReadResponse);
+
+    rpc ReadBufferByTime(BufferTime) returns (BufferReadResponse);
+
+    rpc ListBufferByIds(BufferIds) returns (BufferListResponse);
+
+    rpc ListBufferByTime(BufferTime) returns (BufferListResponse);
+
+    rpc ListBufferByLatest(BufferLatest) returns (BufferListResponse);
+
+    rpc ListBufferByRange(BufferRange) returns (BufferListResponse);
+
+    rpc ListBufferByNumberBefore(BufferNumber) returns (BufferListResponse);
+
+    rpc ListBufferByNumberAfter(BufferNumber) returns (BufferListResponse);
+
+    rpc ReadBufferFirst(BufferSelector) returns (BufferReadResponse);
+
+    rpc ReadBufferLast(BufferSelector) returns (BufferReadResponse);
+
+    rpc ListBufferFirst(BuffersSelector) returns (BufferListResponse);
+
+    rpc ListBufferFirstOffset(BuffersSelector) returns (BufferListResponse);
+
+    rpc ListBufferLast(BuffersSelector) returns (BufferListResponse);
+
+    rpc ListBufferLastOffset(BuffersSelector) returns (BufferListResponse);
+
+    rpc ListBufferGroupByTime(BufferGroupTime) returns (BufferListResponse);
+
+    rpc ListBufferGroupByLatest(BufferGroupLatest) returns (BufferListResponse);
+
+    rpc ListBufferGroupByRange(BufferGroupRange) returns (BufferListResponse);
+
+    rpc ListBufferGroupByNumberBefore(BufferGroupNumber) returns (BufferListResponse);
+
+    rpc ListBufferGroupByNumberAfter(BufferGroupNumber) returns (BufferListResponse);
+
+    rpc ReadBufferGroupFirst(BufferGroupSelector) returns (BufferReadResponse);
+
+    rpc ReadBufferGroupLast(BufferGroupSelector) returns (BufferReadResponse);
+
+    rpc ListBufferGroupFirst(BuffersGroupSelector) returns (BufferListResponse);
+
+    rpc ListBufferGroupFirstOffset(BuffersGroupSelector) returns (BufferListResponse);
+
+    rpc ListBufferGroupLast(BuffersGroupSelector) returns (BufferListResponse);
+
+    rpc ListBufferGroupLastOffset(BuffersGroupSelector) returns (BufferListResponse);
+
+    rpc ReadBufferSet(BufferSetTime) returns (BufferSetReadResponse);
+
+    rpc ListBufferSetByTime(BufferSetTime) returns (BufferSetListResponse);
+
+    rpc ListBufferSetByLatest(BufferSetLatest) returns (BufferSetListResponse);
+
+    rpc ListBufferSetByRange(BufferSetRange) returns (BufferSetListResponse);
+
+    rpc CreateBuffer(BufferSchema) returns (BufferCreateResponse);
+
+    rpc CreateBufferMultiple(BufferMultipleSchema) returns (BufferCreateMultipleResponse);
+
+    rpc UpdateBuffer(BufferUpdate) returns (BufferChangeResponse);
+
+    rpc UpdateBufferByTime(BufferUpdateTime) returns (BufferChangeResponse);
+
+    rpc DeleteBuffer(BufferId) returns (BufferChangeResponse);
+
+    rpc DeleteBufferByTime(BufferTime) returns (BufferChangeResponse);
+
+    rpc ReadBufferTimestamp(BufferTime) returns (TimestampReadResponse);
+
+    rpc ListBufferTimestampByLatest(BufferLatest) returns (TimestampListResponse);
+
+    rpc ListBufferTimestampByRange(BufferRange) returns (TimestampListResponse);
+
+    rpc ListBufferTimestampFirst(BuffersSelector) returns (TimestampListResponse);
+
+    rpc ListBufferTimestampLast(BuffersSelector) returns (TimestampListResponse);
+
+    rpc ReadBufferGroupTimestamp(BufferGroupTime) returns (TimestampReadResponse);
+
+    rpc ListBufferGroupTimestampByLatest(BufferGroupLatest) returns (TimestampListResponse);
+
+    rpc ListBufferGroupTimestampByRange(BufferGroupRange) returns (TimestampListResponse);
+
+    rpc ListBufferGroupTimestampFirst(BuffersGroupSelector) returns (TimestampListResponse);
+
+    rpc ListBufferGroupTimestampLast(BuffersGroupSelector) returns (TimestampListResponse);
+
+    rpc CountBuffer(BufferTime) returns (BufferCountResponse);
+
+    rpc CountBufferByLatest(BufferLatest) returns (BufferCountResponse);
+
+    rpc CountBufferByRange(BufferRange) returns (BufferCountResponse);
+
+    rpc CountBufferGroup(BufferGroupTime) returns (BufferCountResponse);
+
+    rpc CountBufferGroupByLatest(BufferGroupLatest) returns (BufferCountResponse);
+
+    rpc CountBufferGroupByRange(BufferGroupRange) returns (BufferCountResponse);
+}
+
+message BufferSchema {
+    int32 id = 1;
+    bytes device_id = 2;
+    bytes model_id = 3;
+    int64 timestamp = 4;
+    bytes data_bytes = 5;
+    repeated uint32 data_type = 6;
+    int32 tag = 7;
+}
+
+message BufferMultipleSchema {
+    repeated BufferSchema schemas = 1;
+}
+
+message BufferId {
+    int32 id = 1;
+}
+
+message BufferIds {
+    repeated int32 ids = 1;
+}
+
+message BufferTime {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 timestamp = 3;
+    optional int32 tag = 4;
+}
+
+message BufferLatest {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 latest = 3;
+    optional int32 tag = 4;
+}
+
+message BufferRange {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 begin = 3;
+    int64 end = 4;
+    optional int32 tag = 5;
+}
+
+message BufferNumber {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 timestamp = 3;
+    uint32 number = 4;
+    optional int32 tag = 5;
+}
+
+message BufferSelector {
+    optional bytes device_id = 1;
+    optional bytes model_id = 2;
+    optional int32 tag = 3;
+}
+
+message BuffersSelector {
+    uint32 number = 1;
+    uint32 offset = 2;
+    optional bytes device_id = 3;
+    optional bytes model_id = 4;
+    optional int32 tag = 5;
+}
+
+message BufferSetSchema {
+    repeated int32 ids = 1;
+    bytes set_id = 2;
+    int64 timestamp = 3;
+    bytes data_bytes = 4;
+    repeated uint32 data_type = 5;
+    int32 tag = 6;
+}
+
+message BufferGroupTime {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    int64 timestamp = 3;
+    optional int32 tag = 4;
+}
+
+message BufferGroupLatest {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    int64 latest = 3;
+    optional int32 tag = 4;
+}
+
+message BufferGroupRange {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    int64 begin = 3;
+    int64 end = 4;
+    optional int32 tag = 5;
+}
+
+message BufferGroupNumber {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    int64 timestamp = 3;
+    uint32 number = 4;
+    optional int32 tag = 5;
+}
+
+message BufferGroupSelector {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    optional int32 tag = 3;
+}
+
+message BuffersGroupSelector {
+    uint32 number = 1;
+    uint32 offset = 2;
+    repeated bytes device_ids = 3;
+    repeated bytes model_ids = 4;
+    optional int32 tag = 5;
+}
+
+message BufferSetTime {
+    bytes set_id = 1;
+    int64 timestamp = 2;
+    optional int32 tag = 3;
+}
+
+message BufferSetLatest {
+    bytes set_id = 1;
+    int64 latest = 2;
+    optional int32 tag = 3;
+}
+
+message BufferSetRange {
+    bytes set_id = 1;
+    int64 begin = 2;
+    int64 end = 3;
+    optional int32 tag = 4;
+}
+
+message BufferUpdate {
+    int32 id = 1;
+    optional bytes data_bytes = 2;
+    repeated uint32 data_type = 3;
+    optional int32 tag = 4;
+}
+
+message BufferUpdateTime {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 timestamp = 3;
+    optional bytes data_bytes = 4;
+    repeated uint32 data_type = 5;
+    optional int32 tag = 6;
+}
+
+message BufferReadResponse {
+    BufferSchema result = 1;
+}
+
+message BufferListResponse {
+    repeated BufferSchema results = 1;
+}
+
+message BufferSetReadResponse {
+    BufferSetSchema result = 1;
+}
+
+message BufferSetListResponse {
+    repeated BufferSetSchema results = 1;
+}
+
+message BufferCreateResponse {
+    int32 id = 1;
+}
+
+message BufferCreateMultipleResponse {
+    repeated int32 ids = 1;
+}
+
+message BufferChangeResponse {
+}
+
+message TimestampReadResponse {
+    int64 timestamp = 1;
+}
+
+message TimestampListResponse {
+    repeated int64 timestamps = 1;
+}
+
+message BufferCountResponse {
+    uint32 count = 1;
+}

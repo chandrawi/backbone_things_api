@@ -1,0 +1,174 @@
+syntax = "proto3";
+package model;
+
+service ModelService {
+    rpc ReadModel(ModelId) returns (ModelReadResponse);
+
+    rpc ListModelByIds(ModelIds) returns (ModelListResponse);
+
+    rpc ListModelByType(TypeId) returns (ModelListResponse);
+
+    rpc ListModelByName(ModelName) returns (ModelListResponse);
+
+    rpc ListModelByCategory(ModelCategory) returns (ModelListResponse);
+
+    rpc ListModelOption(ModelOption) returns (ModelListResponse);
+
+    rpc CreateModel(ModelSchema) returns (ModelCreateResponse);
+
+    rpc UpdateModel(ModelUpdate) returns (ModelChangeResponse);
+
+    rpc DeleteModel(ModelId) returns (ModelChangeResponse);
+
+    rpc ReadModelConfig(ConfigId) returns (ConfigReadResponse);
+
+    rpc ListModelConfig(ModelId) returns (ConfigListResponse);
+
+    rpc CreateModelConfig(ConfigSchema) returns (ConfigCreateResponse);
+
+    rpc UpdateModelConfig(ConfigUpdate) returns (ConfigChangeResponse);
+
+    rpc DeleteModelConfig(ConfigId) returns (ConfigChangeResponse);
+
+    rpc ReadTag(TagId) returns (TagReadResponse);
+
+    rpc ListTagByModel(ModelId) returns (TagListResponse);
+
+    rpc CreateTag(TagSchema) returns (TagChangeResponse);
+
+    rpc UpdateTag(TagUpdate) returns (TagChangeResponse);
+
+    rpc DeleteTag(TagId) returns (TagChangeResponse);
+}
+
+message ModelSchema {
+    bytes id = 1;
+    string category = 2;
+    string name = 3;
+    string description = 4;
+    repeated uint32 data_type = 5;
+    repeated TagSchema tags = 6;
+    repeated ConfigSchemaVec configs = 7;
+}
+
+message ConfigSchemaVec {
+    repeated ConfigSchema configs = 1;
+}
+
+message ModelId {
+    bytes id = 1;
+}
+
+message ModelIds {
+    repeated bytes ids = 1;
+}
+
+message TypeId {
+    bytes id = 1;
+}
+
+message ModelName {
+    string name = 1;
+}
+
+message ModelCategory {
+    string category = 1;
+}
+
+message ModelOption {
+    optional bytes type_id = 1;
+    optional string name = 2;
+    optional string category = 3;
+}
+
+message ModelUpdate {
+    bytes id = 1;
+    optional string category = 2;
+    optional string name = 3;
+    optional string description = 4;
+    repeated uint32 data_type = 5;
+    bool data_type_flag = 6;
+}
+
+message ConfigSchema {
+    int32 id = 1;
+    bytes model_id = 2;
+    int32 index = 3;
+    string name = 4;
+    bytes config_bytes = 5;
+    uint32 config_type = 6;
+    string category = 7;
+}
+
+message ConfigId {
+    int32 id = 1;
+}
+
+message ConfigUpdate {
+    int32 id = 1;
+    optional string name = 2;
+    optional bytes config_bytes = 3;
+    optional uint32 config_type = 4;
+    optional string category = 5;
+}
+
+message TagSchema {
+    bytes model_id = 1;
+    int32 tag = 2;
+    string name = 3;
+    repeated int32 members = 4;
+}
+
+message TagId {
+    bytes model_id = 1;
+    int32 tag = 2;
+}
+
+message TagUpdate {
+    bytes model_id = 1;
+    int32 tag = 2;
+    optional string name = 3;
+    repeated int32 members = 4;
+    bool members_flag = 5;
+}
+
+message ModelReadResponse {
+    ModelSchema result = 1;
+}
+
+message ModelListResponse {
+    repeated ModelSchema results = 1;
+}
+
+message ModelCreateResponse {
+    bytes id = 1;
+}
+
+message ModelChangeResponse {
+}
+
+message ConfigReadResponse {
+    ConfigSchema result = 1;
+}
+
+message ConfigListResponse {
+    repeated ConfigSchema results = 1;
+}
+
+message ConfigCreateResponse {
+    int32 id = 1;
+}
+
+message ConfigChangeResponse {
+}
+
+message TagReadResponse {
+    TagSchema result = 1;
+}
+
+message TagListResponse {
+    repeated TagSchema results = 1;
+}
+
+message TagChangeResponse {
+}
