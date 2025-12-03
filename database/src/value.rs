@@ -1,5 +1,5 @@
-use DataValue::{I8, I16, I32, I64, I128, U8, U16, U32, U64, U128, F32, F64, Bool, Char};
 use DataType::{I8T, I16T, I32T, I64T, I128T, U8T, U16T, U32T, U64T, U128T, F32T, F64T, BoolT, CharT, StringT, BytesT};
+use DataValue::{I8, I16, I32, I64, I128, U8, U16, U32, U64, U128, F32, F64, Bool, Char};
 
 #[derive(Debug, Default, Clone, PartialEq)]
 pub enum DataType {
@@ -323,9 +323,9 @@ impl ArrayDataValue {
 }
 
 macro_rules! value_impl_from {
-    ($from:ty, $value:ty, $variant:path) => {
-        impl From<$from> for $value {
-            fn from(value: $from) -> Self {
+    ($source_type:ty, $target_enum:ty, $variant:path) => {
+        impl From<$source_type> for $target_enum {
+            fn from(value: $source_type) -> Self {
                 $variant(value.into())
             }
         }
@@ -349,13 +349,13 @@ value_impl_from!(char, DataValue, Char);
 value_impl_from!(String, DataValue, DataValue::String);
 value_impl_from!(Vec<u8>, DataValue, DataValue::Bytes);
 
-macro_rules! value_impl_try_into {
-    ($into:ty, $value:ty, $variant:path) => {
-        impl TryInto<$into> for $value {
+macro_rules! value_impl_try_from {
+    ($target_type:ty, $source_enum:ty, $variant:path) => {
+        impl TryFrom<$source_enum> for $target_type {
             type Error = String;
-            fn try_into(self) -> Result<$into, Self::Error> {
-                match self {
-                    $variant(value) => Ok(value as $into),
+            fn try_from(value: $source_enum) -> Result<Self, Self::Error> {
+                match value {
+                    $variant(inner_value) => Ok(inner_value as $target_type),
                     _ => Err(String::from("conversion error"))
                 }
             }
@@ -363,19 +363,19 @@ macro_rules! value_impl_try_into {
     };
 }
 
-value_impl_try_into!(i8, DataValue, I8);
-value_impl_try_into!(i16, DataValue, I16);
-value_impl_try_into!(i32, DataValue, I32);
-value_impl_try_into!(i64, DataValue, I64);
-value_impl_try_into!(i128, DataValue, I128);
-value_impl_try_into!(u8, DataValue, U8);
-value_impl_try_into!(u16, DataValue, U16);
-value_impl_try_into!(u32, DataValue, U32);
-value_impl_try_into!(u64, DataValue, U64);
-value_impl_try_into!(u128, DataValue, U128);
-value_impl_try_into!(f32, DataValue, F32);
-value_impl_try_into!(f64, DataValue, F64);
-value_impl_try_into!(bool, DataValue, Bool);
-value_impl_try_into!(char, DataValue, Char);
-value_impl_try_into!(String, DataValue, DataValue::String);
-value_impl_try_into!(Vec<u8>, DataValue, DataValue::Bytes);
+value_impl_try_from!(i8, DataValue, I8);
+value_impl_try_from!(i16, DataValue, I16);
+value_impl_try_from!(i32, DataValue, I32);
+value_impl_try_from!(i64, DataValue, I64);
+value_impl_try_from!(i128, DataValue, I128);
+value_impl_try_from!(u8, DataValue, U8);
+value_impl_try_from!(u16, DataValue, U16);
+value_impl_try_from!(u32, DataValue, U32);
+value_impl_try_from!(u64, DataValue, U64);
+value_impl_try_from!(u128, DataValue, U128);
+value_impl_try_from!(f32, DataValue, F32);
+value_impl_try_from!(f64, DataValue, F64);
+value_impl_try_from!(bool, DataValue, Bool);
+value_impl_try_from!(char, DataValue, Char);
+value_impl_try_from!(String, DataValue, DataValue::String);
+value_impl_try_from!(Vec<u8>, DataValue, DataValue::Bytes);
