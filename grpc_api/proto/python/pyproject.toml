@@ -1,0 +1,23 @@
+[build-system]
+requires = [
+    "setuptools>=61.0",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bbthings_grpc_proto"
+version = "0.1.0"
+authors = [
+  { name="Chandra Wijaya Sentosa", email="chandra.w.sentosa@gmail.com" },
+]
+description = "gRPC API definition for backbone things authorization and resource"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "grpcio",
+    "grpcio-tools"
+]
