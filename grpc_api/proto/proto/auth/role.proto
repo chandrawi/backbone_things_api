@@ -1,0 +1,96 @@
+syntax = "proto3";
+package role;
+
+service RoleService {
+    rpc ReadRole(RoleId) returns (RoleReadResponse);
+
+    rpc ReadRoleByName(RoleName) returns (RoleReadResponse);
+
+    rpc ListRoleByIds(RoleIds) returns (RoleListResponse);
+
+    rpc ListRoleByApi(ApiId) returns (RoleListResponse);
+
+    rpc ListRoleByUser(UserId) returns (RoleListResponse);
+
+    rpc ListRoleByName(RoleName) returns (RoleListResponse);
+
+    rpc ListRoleOption(RoleOption) returns (RoleListResponse);
+
+    rpc CreateRole(RoleSchema) returns (RoleCreateResponse);
+
+    rpc UpdateRole(RoleUpdate) returns (RoleChangeResponse);
+
+    rpc DeleteRole(RoleId) returns (RoleChangeResponse);
+
+    rpc AddRoleAccess(RoleAccess) returns (RoleChangeResponse);
+
+    rpc RemoveRoleAccess(RoleAccess) returns (RoleChangeResponse);
+}
+
+message RoleSchema {
+    bytes id = 1;
+    bytes api_id = 2;
+    string name = 3;
+    bool multi = 4;
+    bool ip_lock = 5;
+    int32 access_duration = 6;
+    int32 refresh_duration = 7;
+    bytes access_key = 8;
+    repeated bytes procedures = 9;
+}
+
+message RoleId {
+    bytes id = 1;
+}
+
+message RoleIds {
+    repeated bytes ids = 1;
+}
+
+message RoleName {
+    bytes api_id = 1;
+    string name = 2;
+}
+
+message ApiId {
+    bytes api_id = 1;
+}
+
+message UserId {
+    bytes user_id = 1;
+}
+
+message RoleOption {
+    optional bytes api_id = 1;
+    optional bytes user_id = 2;
+    optional string name = 3;
+}
+
+message RoleUpdate {
+    bytes id = 1;
+    optional string name = 2;
+    optional bool multi = 3;
+    optional bool ip_lock = 4;
+    optional int32 access_duration = 5;
+    optional int32 refresh_duration = 6;
+}
+
+message RoleAccess {
+    bytes id = 1;
+    bytes procedure_id = 2;
+}
+
+message RoleReadResponse {
+    RoleSchema result = 1;
+}
+
+message RoleListResponse {
+    repeated RoleSchema results = 1;
+}
+
+message RoleCreateResponse {
+    bytes id = 1;
+}
+
+message RoleChangeResponse {
+}

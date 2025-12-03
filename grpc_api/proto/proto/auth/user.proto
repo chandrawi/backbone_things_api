@@ -1,0 +1,101 @@
+syntax = "proto3";
+package user;
+
+service UserService {
+    rpc ReadUser(UserId) returns (UserReadResponse);
+
+    rpc ReadUserByName(UserName) returns (UserReadResponse);
+
+    rpc ListUserByIds(UserIds) returns (UserListResponse);
+
+    rpc ListUserByApi(ApiId) returns (UserListResponse);
+
+    rpc ListUserByRole(RoleId) returns (UserListResponse);
+
+    rpc ListUserByName(UserName) returns (UserListResponse);
+
+    rpc ListUserOption(UserOption) returns (UserListResponse);
+
+    rpc CreateUser(UserSchema) returns (UserCreateResponse);
+
+    rpc UpdateUser(UserUpdate) returns (UserChangeResponse);
+
+    rpc DeleteUser(UserId) returns (UserChangeResponse);
+
+    rpc AddUserRole(UserRole) returns (UserChangeResponse);
+
+    rpc RemoveUserRole(UserRole) returns (UserChangeResponse);
+}
+
+message UserRoleSchema {
+    bytes api_id = 1;
+    string role = 2;
+    bool multi = 3;
+    bool ip_lock = 4;
+    int32 access_duration = 5;
+    int32 refresh_duration = 6;
+    bytes access_key = 7;
+}
+
+message UserSchema {
+    bytes id = 1;
+    string name = 2;
+    string email = 3;
+    string phone = 4;
+    string password = 5;
+    repeated UserRoleSchema roles = 6;
+}
+
+message UserId {
+    bytes id = 1;
+}
+
+message UserIds {
+    repeated bytes ids = 1;
+}
+
+message UserName {
+    string name = 1;
+}
+
+message ApiId {
+    bytes id = 1;
+}
+
+message RoleId {
+    bytes id = 1;
+}
+
+message UserOption {
+    optional bytes api_id = 1;
+    optional bytes role_id = 2;
+    optional string name = 3;
+}
+
+message UserUpdate {
+    bytes id = 1;
+    optional string name = 2;
+    optional string email = 3;
+    optional string phone = 4;
+    optional string password = 5;
+}
+
+message UserRole {
+    bytes user_id = 1;
+    bytes role_id = 2;
+}
+
+message UserReadResponse {
+    UserSchema result = 1;
+}
+
+message UserListResponse {
+    repeated UserSchema results = 1;
+}
+
+message UserCreateResponse {
+    bytes id = 1;
+}
+
+message UserChangeResponse {
+}

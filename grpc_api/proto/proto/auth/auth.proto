@@ -1,0 +1,83 @@
+syntax = "proto3";
+package auth;
+
+service AuthService {
+    rpc ApiLoginKey(ApiKeyRequest) returns (ApiKeyResponse);
+
+    rpc ApiLogin(ApiLoginRequest) returns (ApiLoginResponse);
+
+    rpc UserLoginKey(UserKeyRequest) returns (UserKeyResponse);
+
+    rpc UserLogin(UserLoginRequest) returns (UserLoginResponse);
+
+    rpc UserRefresh(UserRefreshRequest) returns (UserRefreshResponse);
+
+    rpc UserLogout(UserLogoutRequest) returns (UserLogoutResponse);
+}
+
+message ApiKeyRequest {
+}
+
+message ApiKeyResponse {
+    bytes public_key = 1;
+}
+
+message ApiLoginRequest {
+    bytes api_id = 1;
+    bytes password = 2;
+    bytes public_key = 3;
+}
+
+message ProcedureMap {
+    string procedure = 1;
+    repeated string roles = 2;
+}
+
+message ApiLoginResponse {
+    bytes root_key = 1;
+    bytes access_key = 2;
+    repeated ProcedureMap access_procedures = 3;
+}
+
+message UserKeyRequest {
+}
+
+message UserKeyResponse {
+    bytes public_key = 1;
+}
+
+message UserLoginRequest {
+    string username = 1;
+    bytes password = 2;
+}
+
+message AccessTokenMap {
+    bytes api_id = 1;
+    string access_token = 2;
+    string refresh_token = 3;
+}
+
+message UserLoginResponse {
+    bytes user_id = 1;
+    string auth_token = 2;
+    repeated AccessTokenMap access_tokens = 3;
+}
+
+message UserRefreshRequest {
+    bytes api_id = 1;
+    string access_token = 2;
+    string refresh_token = 3;
+}
+
+message UserRefreshResponse {
+    string access_token = 1;
+    string refresh_token = 2;
+}
+
+message UserLogoutRequest {
+    bytes user_id = 1;
+    string auth_token = 2;
+}
+
+message UserLogoutResponse {
+}

@@ -1,0 +1,86 @@
+syntax = "proto3";
+package token;
+
+service TokenService {
+    rpc ReadAccessToken(AccessId) returns (TokenReadResponse);
+
+    rpc ListAuthToken(AuthToken) returns (TokenListResponse);
+
+    rpc ListTokenByUser(UserId) returns (TokenListResponse);
+
+    rpc CreateAccessToken(TokenSchema) returns (TokenCreateResponse);
+
+    rpc CreateAuthToken(AuthTokenCreate) returns (AuthTokenCreateResponse);
+
+    rpc UpdateAccessToken(TokenUpdate) returns (TokenUpdateResponse);
+
+    rpc UpdateAuthToken(TokenUpdate) returns (TokenUpdateResponse);
+
+    rpc DeleteAccessToken(AccessId) returns (TokenChangeResponse);
+
+    rpc DeleteAuthToken(AuthToken) returns (TokenChangeResponse);
+
+    rpc DeleteTokenByUser(UserId) returns (TokenChangeResponse);
+}
+
+message TokenSchema {
+    int32 access_id = 1;
+    bytes user_id = 2;
+    string refresh_token = 3;
+    string auth_token = 4;
+    int64 expire = 5;
+    bytes ip = 6;
+}
+
+message AuthToken {
+    string auth_token = 1;
+}
+
+message AccessId {
+    int32 access_id = 1;
+}
+
+message UserId {
+    bytes user_id = 1;
+}
+
+message AuthTokenCreate {
+    bytes user_id = 1;
+    int64 expire = 2;
+    bytes ip = 3;
+    uint32 number = 4;
+}
+
+message TokenUpdate {
+    optional int32 access_id = 1;
+    optional string refresh_token = 2;
+    optional string auth_token = 3;
+    optional int64 expire = 4;
+    optional bytes ip = 5;
+}
+
+message TokenReadResponse {
+    TokenSchema result = 1;
+}
+
+message TokenListResponse {
+    repeated TokenSchema results = 1;
+}
+
+message TokenCreateResponse {
+    int32 access_id = 1;
+    string refresh_token = 2;
+    string auth_token = 3;
+}
+
+message AuthTokenCreateResponse {
+    repeated TokenCreateResponse tokens = 1;
+}
+
+message TokenUpdateResponse {
+    string refresh_token = 1;
+    string auth_token = 2;
+}
+
+message TokenChangeResponse {
+}

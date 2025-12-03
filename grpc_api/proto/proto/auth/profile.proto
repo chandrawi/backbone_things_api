@@ -1,0 +1,99 @@
+syntax = "proto3";
+package profile;
+
+service ProfileService {
+    rpc ReadRoleProfile(ProfileId) returns (RoleProfileReadResponse);
+
+    rpc ListRoleProfile(RoleId) returns (RoleProfileListResponse);
+
+    rpc CreateRoleProfile(RoleProfileSchema) returns (ProfileCreateResponse);
+
+    rpc UpdateRoleProfile(RoleProfileUpdate) returns (ProfileChangeResponse);
+
+    rpc DeleteRoleProfile(ProfileId) returns (ProfileChangeResponse);
+
+    rpc ReadUserProfile(ProfileId) returns (UserProfileReadResponse);
+
+    rpc ListUserProfile(UserId) returns (UserProfileListResponse);
+
+    rpc CreateUserProfile(UserProfileSchema) returns (ProfileCreateResponse);
+
+    rpc UpdateUserProfile(UserProfileUpdate) returns (ProfileChangeResponse);
+
+    rpc DeleteUserProfile(ProfileId) returns (ProfileChangeResponse);
+
+    rpc SwapUserProfile(UserProfileSwap) returns (ProfileChangeResponse);
+}
+
+message RoleProfileSchema {
+    int32 id = 1;
+    bytes role_id = 2;
+    string name = 3;
+    uint32 value_type = 4;
+    uint32 mode = 5;
+}
+
+message UserProfileSchema {
+    int32 id = 1;
+    bytes user_id = 2;
+    string name = 3;
+    bytes value_bytes = 4;
+    uint32 value_type = 5;
+    uint32 order = 6;
+}
+
+message ProfileId {
+    int32 id = 1;
+}
+
+message RoleId {
+    bytes id = 1;
+}
+
+message UserId {
+    bytes id = 1;
+}
+
+message RoleProfileUpdate {
+    int32 id = 1;
+    optional string name = 2;
+    optional uint32 value_type = 3;
+    optional uint32 mode = 4;
+}
+
+message UserProfileUpdate {
+    int32 id = 1;
+    optional string name = 2;
+    optional bytes value_bytes = 3;
+    optional uint32 value_type = 4;
+}
+
+message UserProfileSwap {
+    bytes user_id = 1;
+    string name = 2;
+    uint32 order_1 = 3;
+    uint32 order_2 = 4;
+}
+
+message RoleProfileReadResponse {
+    RoleProfileSchema result = 1;
+}
+
+message RoleProfileListResponse {
+    repeated RoleProfileSchema results = 1;
+}
+
+message UserProfileReadResponse {
+    UserProfileSchema result = 1;
+}
+
+message UserProfileListResponse {
+    repeated UserProfileSchema results = 1;
+}
+
+message ProfileCreateResponse {
+    int32 id = 1;
+}
+
+message ProfileChangeResponse {
+}

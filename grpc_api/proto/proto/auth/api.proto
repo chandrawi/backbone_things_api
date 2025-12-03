@@ -1,0 +1,144 @@
+syntax = "proto3";
+package api;
+
+service ApiService {
+    rpc ReadApi(ApiId) returns (ApiReadResponse);
+
+    rpc ReadApiByName(ApiName) returns (ApiReadResponse);
+
+    rpc ListApiByIds(ApiIds) returns (ApiListResponse);
+
+    rpc ListApiByName(ApiName) returns (ApiListResponse);
+
+    rpc ListApiByCategory(ApiCategory) returns (ApiListResponse);
+
+    rpc ListApiOption(ApiOption) returns (ApiListResponse);
+
+    rpc CreateApi(ApiSchema) returns (ApiCreateResponse);
+
+    rpc UpdateApi(ApiUpdate) returns (ApiChangeResponse);
+
+    rpc DeleteApi(ApiId) returns (ApiChangeResponse);
+
+    rpc ReadProcedure(ProcedureId) returns (ProcedureReadResponse);
+
+    rpc ReadProcedureByName(ProcedureName) returns (ProcedureReadResponse);
+
+    rpc ListProcedureByIds(ProcedureIds) returns (ProcedureListResponse);
+
+    rpc ListProcedureByApi(ApiId) returns (ProcedureListResponse);
+
+    rpc ListProcedureByName(ProcedureName) returns (ProcedureListResponse);
+
+    rpc ListProcedureOption(ProcedureOption) returns (ProcedureListResponse);
+
+    rpc CreateProcedure(ProcedureSchema) returns (ProcedureCreateResponse);
+
+    rpc UpdateProcedure(ProcedureUpdate) returns (ProcedureChangeResponse);
+
+    rpc DeleteProcedure(ProcedureId) returns (ProcedureChangeResponse);
+}
+
+message ApiSchema {
+    bytes id = 1;
+    string name = 2;
+    string address = 3;
+    string category = 4;
+    string description = 5;
+    string password = 6;
+    bytes access_key = 7;
+    repeated ProcedureSchema procedures = 8;
+}
+
+message ApiId {
+    bytes id = 1;
+}
+
+message ApiIds {
+    repeated bytes ids = 1;
+}
+
+message ApiName {
+    string name = 1;
+}
+
+message ApiCategory {
+    string category = 1;
+}
+
+message ApiOption {
+    optional string name = 1;
+    optional string category = 2;
+}
+
+message ApiUpdate {
+    bytes id = 1;
+    optional string name = 2;
+    optional string address = 3;
+    optional string category = 4;
+    optional string description = 5;
+    optional string password = 6;
+    optional bytes access_key = 7;
+}
+
+message ProcedureSchema {
+    bytes id = 1;
+    bytes api_id = 2;
+    string name = 3;
+    string description = 4;
+    repeated string roles = 5;
+}
+
+message ProcedureId {
+    bytes id = 1;
+}
+
+message ProcedureIds {
+    repeated bytes ids = 1;
+}
+
+message ProcedureName {
+    bytes api_id = 1;
+    string name = 3;
+}
+
+message ProcedureOption {
+    optional bytes api_id = 1;
+    optional string name = 2;
+}
+
+message ProcedureUpdate {
+    bytes id = 1;
+    optional string name = 2;
+    optional string description = 3;
+}
+
+message ApiReadResponse {
+    ApiSchema result = 1;
+}
+
+message ApiListResponse {
+    repeated ApiSchema results = 1;
+}
+
+message ApiCreateResponse {
+    bytes id = 1;
+}
+
+message ApiChangeResponse {
+}
+
+message ProcedureReadResponse {
+    ProcedureSchema result = 1;
+}
+
+message ProcedureListResponse {
+    repeated ProcedureSchema results = 1;
+}
+
+message ProcedureCreateResponse {
+    bytes id = 1;
+}
+
+message ProcedureChangeResponse {
+}
