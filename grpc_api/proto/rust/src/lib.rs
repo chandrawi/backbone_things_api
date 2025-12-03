@@ -15,3 +15,4 @@ pub mod resource {
     pub mod buffer;
     pub mod slice;
 }
+pub mod descriptor;
