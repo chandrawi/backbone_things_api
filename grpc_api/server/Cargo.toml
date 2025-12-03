@@ -1,8 +1,8 @@
 [package]
-name = "bbtings_grpc_server"
+name = "bbthings_grpc_server"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bbtings_grpc_proto = { path = "../proto/rust"}
-bbtings_database = { path = "../../database"}
+bbthings_grpc_proto = { path = "../proto/rust"}
+bbthings_database = { path = "../../database"}

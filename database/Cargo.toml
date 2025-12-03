@@ -1,13 +1,16 @@
 [package]
-name = "bbtings_database"
+name = "bbthings_database"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bbtings_grpc_proto = { path = "../grpc_api/proto/rust"}
+bbthings_grpc_proto = { path = "../grpc_api/proto/rust"}
 sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "postgres", "migrate", "uuid"] }
 sea-query = { version = "0.32.7", features = ["with-uuid"] }
 sea-query-binder = { version = "0.7.0", features = ["sqlx-postgres", "with-chrono", "with-uuid"] }
 uuid = { version = "1.18.1", features = ["v4"] }
 rand = "0.8.5"
 argon2 = "0.5.3"
+
+[dev-dependencies]
+dotenvy = "0.15.7"

@@ -1,5 +1,5 @@
 [package]
-name = "bbtings_grpc_proto"
+name = "bbthings_grpc_proto"
 version = "0.1.0"
 edition = "2024"
 
