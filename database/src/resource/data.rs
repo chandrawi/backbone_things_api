@@ -1,8 +1,7 @@
-use sea_query::{Iden, PostgresQueryBuilder, Query, Expr, Order, Condition};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Iden, Query, Expr, Order, Condition};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
-use crate::common::{QuerySet, tag as Tag};
+use crate::common::{QueryStatement, tag as Tag};
 use crate::value::{DataValue, ArrayDataValue};
 use crate::resource::model::Model;
 use crate::resource::set::SetMap;
@@ -30,7 +29,7 @@ pub fn select_data(
     device_ids: &[Uuid],
     model_ids: &[Uuid],
     tags: Option<Vec<i16>>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -95,9 +94,8 @@ pub fn select_data(
     if let Some(tags) = tags {
         stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).is_in(tags)).to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_data_timestamp(
@@ -105,7 +103,7 @@ pub fn select_data_timestamp(
     device_ids: &[Uuid],
     model_ids: &[Uuid],
     tags: Option<Vec<i16>>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .column((Data::Table, Data::Timestamp))
@@ -147,23 +145,22 @@ pub fn select_data_timestamp(
     if let Some(tags) = tags {
         stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).is_in(tags)).to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_data_types(
     model_ids: &[Uuid]
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .column((Model::Table, Model::DataType))
         .from(Model::Table)
         .and_where(Expr::col((Model::Table, Model::ModelId)).is_in(model_ids.to_vec()))
         .order_by((Model::Table, Model::ModelId), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_data(
@@ -172,7 +169,7 @@ pub fn insert_data(
     timestamp: DateTime<Utc>,
     data: &[DataValue],
     tag: Option<i16>
-) -> QuerySet
+) -> QueryStatement
 {
     let bytes = ArrayDataValue::from_vec(data).to_bytes();
     let tag = tag.unwrap_or(Tag::DEFAULT);
@@ -194,9 +191,8 @@ pub fn insert_data(
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .to_owned();
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn insert_data_multiple(
@@ -205,7 +201,7 @@ pub fn insert_data_multiple(
     timestamps: &[DateTime<Utc>],
     data: &[&[DataValue]],
     tags: Option<&[i16]>
-) -> QuerySet
+) -> QueryStatement
 {
     let numbers = vec![device_ids.len(), model_ids.len(), timestamps.len(), data.len()];
     let number = numbers.into_iter().min().unwrap_or(0);
@@ -236,9 +232,8 @@ pub fn insert_data_multiple(
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn delete_data(
@@ -246,7 +241,7 @@ pub fn delete_data(
     model_id: Uuid,
     timestamp: DateTime<Utc>,
     tag: Option<i16>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::delete()
         .from_table(Data::Table)
@@ -257,16 +252,15 @@ pub fn delete_data(
     if let Some(t) = tag {
         stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).eq(t)).to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn select_data_set(
     selector: DataSelector,
     set_id: Uuid,
     tags: Option<Vec<i16>>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -317,12 +311,12 @@ pub fn select_data_set(
     if let Some(tags) = tags {
         stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).is_in(tags)).to_owned();
     }
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by((Data::Table, Data::Tag), Order::Asc)
         .order_by((SetMap::Table, SetMap::SetPosition), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn count_data(
@@ -330,7 +324,7 @@ pub fn count_data(
     device_ids: &[Uuid],
     model_ids: &[Uuid],
     tags: Option<Vec<i16>>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .expr(Expr::col((Data::Table, Data::Timestamp)).count())
@@ -366,7 +360,6 @@ pub fn count_data(
     if let Some(tags) = tags {
         stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).is_in(tags)).to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }

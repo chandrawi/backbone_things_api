@@ -1,7 +1,6 @@
-use sea_query::{Iden, PostgresQueryBuilder, Query, Expr, Order};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Iden, Query, Expr, Order};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::QueryStatement;
 use crate::auth::role::{Role, RoleAccess};
 
 #[derive(Iden)]
@@ -31,7 +30,7 @@ pub fn select_api(
     name_exact: Option<&str>,
     name_like: Option<&str>,
     category: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -86,12 +85,12 @@ pub fn select_api(
         }
     }
 
-    let (query, values) = stmt
+    stmt = stmt
         .order_by((Api::Table, Api::ApiId), Order::Asc)
         .order_by((ApiProcedure::Table, ApiProcedure::ProcedureId), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_api(
@@ -102,9 +101,9 @@ pub fn insert_api(
     description: &str,
     password_hash: &str,
     access_key: &[u8]
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(Api::Table)
         .columns([
             Api::ApiId,
@@ -125,9 +124,9 @@ pub fn insert_api(
             access_key.to_vec().into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_api(
@@ -138,7 +137,7 @@ pub fn update_api(
     description: Option<&str>,
     password_hash: Option<&str>,
     access_key: Option<&[u8]>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(Api::Table)
@@ -165,23 +164,23 @@ pub fn update_api(
             .to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(Api::ApiId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_api(
     id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(Api::Table)
         .and_where(Expr::col(Api::ApiId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn select_procedure(
@@ -190,7 +189,7 @@ pub fn select_procedure(
     api_id: Option<Uuid>,
     name_exact: Option<&str>,
     name_like: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -235,11 +234,11 @@ pub fn select_procedure(
         }
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by(ApiProcedure::ProcedureId, Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_procedure(
@@ -247,9 +246,9 @@ pub fn insert_procedure(
     api_id: Uuid,
     name: &str,
     description: &str
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(ApiProcedure::Table)
         .columns([
             ApiProcedure::ProcedureId,
@@ -264,16 +263,16 @@ pub fn insert_procedure(
             description.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_procedure(
     id: Uuid,
     name: Option<&str>,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(ApiProcedure::Table)
@@ -286,21 +285,21 @@ pub fn update_procedure(
         stmt = stmt.value(ApiProcedure::Description, value).to_owned()
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(ApiProcedure::ProcedureId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_procedure(
     id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(ApiProcedure::Table)
         .and_where(Expr::col(ApiProcedure::ProcedureId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }

@@ -15,7 +15,7 @@ use _schema::{
     RoleProfileSchema, UserProfileSchema, ProfileMode, TokenSchema
 };
 use token::TokenSelector;
-use super::common::{hash_password, generate_token_string};
+use super::common::{verify_hash_format, generate_token_string};
 
 #[derive(Debug, Clone)]
 pub struct Auth {
@@ -84,23 +84,22 @@ impl Auth {
         qs.fetch_api_schema(&self.pool).await
     }
 
-    pub async fn create_api(&self, id: Uuid, name: &str, address: &str, category: &str, description: &str, password: &str, access_key: &[u8])
+    pub async fn create_api(&self, id: Uuid, name: &str, address: &str, category: &str, description: &str, password_hash: &str, access_key: &[u8])
         -> Result<Uuid, Error>
     {
-        let password_hash = hash_password(password)?;
+        verify_hash_format(password_hash)?;
         let qs = api::insert_api(id, name, address, category, description, &password_hash, access_key);
         qs.execute(&self.pool).await?;
         Ok(id)
     }
 
-    pub async fn update_api(&self, id: Uuid, name: Option<&str>, address: Option<&str>, category: Option<&str>, description: Option<&str>, password: Option<&str>, access_key: Option<&[u8]>)
+    pub async fn update_api(&self, id: Uuid, name: Option<&str>, address: Option<&str>, category: Option<&str>, description: Option<&str>, password_hash: Option<&str>, access_key: Option<&[u8]>)
         -> Result<(), Error>
     {
-        let password_hash = match password {
-            Some(value) => Some(hash_password(value)?),
-            None => None
-        };
-        let qs = api::update_api(id, name, address, category, description, password_hash.as_deref(), access_key);
+        if let Some(hash) = password_hash {
+            verify_hash_format(hash)?;
+        }
+        let qs = api::update_api(id, name, address, category, description, password_hash, access_key);
         qs.execute(&self.pool).await
     }
 
@@ -346,23 +345,22 @@ impl Auth {
         qs.fetch_user_schema(&self.pool).await
     }
 
-    pub async fn create_user(&self, id: Uuid, name: &str, email: &str, phone: &str, password: &str)
+    pub async fn create_user(&self, id: Uuid, name: &str, email: &str, phone: &str, password_hash: &str)
         -> Result<Uuid, Error>
     {
-        let password_hash = hash_password(password)?;
+        verify_hash_format(password_hash)?;
         let qs = user::insert_user(id, name, email, phone, &password_hash);
         qs.execute(&self.pool).await?;
         Ok(id)
     }
 
-    pub async fn update_user(&self, id: Uuid, name: Option<&str>, email: Option<&str>, phone: Option<&str>, password: Option<&str>)
+    pub async fn update_user(&self, id: Uuid, name: Option<&str>, email: Option<&str>, phone: Option<&str>, password_hash: Option<&str>)
         -> Result<(), Error>
     {
-        let password_hash = match password {
-            Some(value) => Some(hash_password(value)?),
-            None => None
-        };
-        let qs = user::update_user(id, name, email, phone, password_hash.as_deref());
+        if let Some(hash) = password_hash {
+            verify_hash_format(hash)?;
+        }
+        let qs = user::update_user(id, name, email, phone, password_hash);
         qs.execute(&self.pool).await
     }
 

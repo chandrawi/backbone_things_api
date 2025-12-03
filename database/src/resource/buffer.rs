@@ -1,8 +1,7 @@
-use sea_query::{Condition, Expr, Func, Iden, Order, PostgresQueryBuilder, Query};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Iden, Query, Expr, Order, Condition, Func};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
-use crate::common::{QuerySet, tag as Tag};
+use crate::common::{QueryStatement, tag as Tag};
 use crate::value::{DataValue, ArrayDataValue};
 use crate::resource::model::Model;
 use crate::resource::set::SetMap;
@@ -35,7 +34,7 @@ pub fn select_buffer(
     device_ids: Option<&[Uuid]>,
     model_ids: Option<&[Uuid]>,
     tags: Option<Vec<i16>>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -127,9 +126,8 @@ pub fn select_buffer(
     if let Some(tags) = tags {
         stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).is_in(tags)).to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_buffer_timestamp(
@@ -137,7 +135,7 @@ pub fn select_buffer_timestamp(
     device_ids: Option<&[Uuid]>,
     model_ids: Option<&[Uuid]>,
     tags: Option<Vec<i16>>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .column((DataBuffer::Table, DataBuffer::Timestamp))
@@ -197,16 +195,15 @@ pub fn select_buffer_timestamp(
     if let Some(tags) = tags {
         stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).is_in(tags)).to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_buffer_types(
     buffer_id: i32
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .columns([
             (Model::Table, Model::DataType)
         ])
@@ -215,20 +212,20 @@ pub fn select_buffer_types(
             Expr::col((DataBuffer::Table, DataBuffer::ModelId))
             .equals((Model::Table, Model::ModelId)))
         .and_where(Expr::col((DataBuffer::Table, DataBuffer::Id)).eq(buffer_id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_buffer_last_id(
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .expr(Func::max(Expr::col(DataBuffer::Id)))
         .from(DataBuffer::Table)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_buffer(
@@ -237,11 +234,11 @@ pub fn insert_buffer(
     timestamp: DateTime<Utc>,
     data: &[DataValue],
     tag: Option<i16>
-) -> QuerySet
+) -> QueryStatement
 {
     let bytes = ArrayDataValue::from_vec(data).to_bytes();
     let tag = tag.unwrap_or(Tag::DEFAULT);
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(DataBuffer::Table)
         .columns([
             DataBuffer::DeviceId,
@@ -258,9 +255,9 @@ pub fn insert_buffer(
             bytes.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn insert_buffer_multiple(
@@ -269,7 +266,7 @@ pub fn insert_buffer_multiple(
     timestamps: &[DateTime<Utc>],
     data: &[&[DataValue]],
     tags: Option<&[i16]>
-) -> QuerySet
+) -> QueryStatement
 {
     let numbers = vec![device_ids.len(), model_ids.len(), timestamps.len(), data.len()];
     let number = numbers.into_iter().min().unwrap_or(0);
@@ -300,9 +297,8 @@ pub fn insert_buffer_multiple(
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_buffer(
@@ -312,7 +308,7 @@ pub fn update_buffer(
     timestamp: Option<DateTime<Utc>>,
     data: Option<&[DataValue]>,
     tag: Option<i16>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(DataBuffer::Table)
@@ -339,9 +335,8 @@ pub fn update_buffer(
         let bytes = ArrayDataValue::from_vec(value).to_bytes();
         stmt = stmt.value(DataBuffer::Data, bytes).to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_buffer(
@@ -350,7 +345,7 @@ pub fn delete_buffer(
     model_id: Option<Uuid>,
     timestamp: Option<DateTime<Utc>>,
     tag: Option<i16>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::delete()
         .from_table(DataBuffer::Table)
@@ -369,16 +364,16 @@ pub fn delete_buffer(
             stmt = stmt.and_where(Expr::col(DataBuffer::Tag).eq(tag)).to_owned();
         }
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
+    let stmt = stmt.to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn select_buffer_set(
     selector: BufferSelector,
     set_id: Uuid,
     tags: Option<Vec<i16>>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select().to_owned();
     stmt = stmt
@@ -430,12 +425,12 @@ pub fn select_buffer_set(
     if let Some(tags) = tags {
         stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).is_in(tags)).to_owned();
     }
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by((DataBuffer::Table, DataBuffer::Tag), Order::Asc)
         .order_by((SetMap::Table, SetMap::SetPosition), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn count_buffer(
@@ -443,7 +438,7 @@ pub fn count_buffer(
     device_ids: &[Uuid],
     model_ids: &[Uuid],
     tags: Option<Vec<i16>>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .expr(Expr::col((DataBuffer::Table, DataBuffer::Id)).count())
@@ -479,7 +474,6 @@ pub fn count_buffer(
     if let Some(tags) = tags {
         stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).is_in(tags)).to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }

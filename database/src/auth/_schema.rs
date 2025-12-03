@@ -2,7 +2,7 @@ use sqlx::{Pool, Row, Error};
 use sqlx::postgres::{Postgres, PgRow};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::QueryStatement;
 use crate::value::{DataType, DataValue};
 
 #[derive(Debug, Default, PartialEq, Clone)]
@@ -120,7 +120,7 @@ pub struct TokenSchema {
     pub ip: Vec<u8>
 }
 
-impl QuerySet {
+impl QueryStatement {
 
     pub(crate) async fn fetch_api_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<ApiSchema>, Error>
     {
@@ -129,7 +129,8 @@ impl QuerySet {
         let mut role_vec: Vec<String> = Vec::new();
         let mut api_schema_vec: Vec<ApiSchema> = Vec::new();
 
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 // get last api_schema in api_schema_vec or default
                 let mut api_schema = api_schema_vec.pop().unwrap_or_default();
@@ -188,7 +189,8 @@ impl QuerySet {
         let mut last_id: Option<Uuid> = None;
         let mut proc_schema_vec: Vec<ProcedureSchema> = Vec::new();
 
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 // get last proc_schema in proc_schema_vec or default
                 let mut proc_schema = proc_schema_vec.pop().unwrap_or_default();
@@ -225,7 +227,8 @@ impl QuerySet {
         let mut last_procedure: Option<Uuid> = None;
         let mut role_schema_vec: Vec<RoleSchema> = Vec::new();
 
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 // get last role_schema in role_schema_vec or default
                 let mut role_schema = role_schema_vec.pop().unwrap_or_default();
@@ -269,7 +272,8 @@ impl QuerySet {
         let mut last_id: Option<Uuid> = None;
         let mut user_schema_vec: Vec<UserSchema> = Vec::new();
     
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 // get last user_schema in user_schema_vec or default
                 let mut user_schema = user_schema_vec.pop().unwrap_or_default();
@@ -311,7 +315,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_role_profile_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<RoleProfileSchema>, Error>
     {
-        let rows = sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        let rows = sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 RoleProfileSchema {
                     id: row.get(0),
@@ -329,7 +334,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_user_profile_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<UserProfileSchema>, Error>
     {
-        let rows = sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        let rows = sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 let bytes = row.get(4);
                 let type_ = DataType::from(row.get::<i16,_>(5));
@@ -349,7 +355,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_token_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<TokenSchema>, Error>
     {
-        let row = sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        let row = sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 TokenSchema {
                     access_id: row.get(0),

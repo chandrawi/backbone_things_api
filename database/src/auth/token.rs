@@ -1,8 +1,7 @@
-use sea_query::{Iden, PostgresQueryBuilder, Query, Expr, Order, Func};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Iden, Query, Expr, Order, Func};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::QueryStatement;
 
 #[derive(Iden)]
 pub(crate) enum Token {
@@ -31,7 +30,7 @@ pub enum TokenSelector {
 
 pub fn select_token(
     selector: TokenSelector
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -93,22 +92,20 @@ pub fn select_token(
     if let Some(value) = user_id {
         stmt = stmt.and_where(Expr::col(Token::UserId).eq(value)).to_owned();
     }
-    let (query, values) = stmt
-        .order_by(Token::AccessId, Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+    let stmt = stmt.order_by(Token::AccessId, Order::Asc).to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_token_last_access_id(
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .expr(Func::max(Expr::col(Token::AccessId)))
         .from(Token::Table)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_token(
@@ -118,7 +115,7 @@ pub fn insert_token(
     auth_tokens: Vec<&str>,
     expired: DateTime<Utc>, 
     ip: &[u8]
-) -> QuerySet
+) -> QueryStatement
 {
     let numbers = vec![access_ids.len(), refresh_tokens.len(), auth_tokens.len()];
     let number = numbers.into_iter().min().unwrap_or(0);
@@ -146,9 +143,8 @@ pub fn insert_token(
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_token(
@@ -156,7 +152,7 @@ pub fn update_token(
     refresh_token: Option<&str>,
     expired: Option<DateTime<Utc>>, 
     ip: Option<&[u8]>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(Token::Table)
@@ -181,14 +177,13 @@ pub fn update_token(
         },
         _ => {}
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_token(
     selector: TokenSelector
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::delete()
         .from_table(Token::Table)
@@ -205,7 +200,6 @@ pub fn delete_token(
         },
         _ => {}
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }

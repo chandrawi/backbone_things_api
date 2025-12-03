@@ -1,7 +1,6 @@
-use sea_query::{Iden, PostgresQueryBuilder, Query, Expr, Order, Func};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Iden, Query, Expr, Order, Func};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::QueryStatement;
 use crate::value::DataValue;
 
 #[derive(Iden)]
@@ -54,7 +53,7 @@ pub fn select_device(
     gateway_id: Option<Uuid>,
     type_id: Option<Uuid>,
     name: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -121,14 +120,14 @@ pub fn select_device(
             Expr::col((Device::Table, Device::DeviceId)).equals((Device::Table, Device::GatewayId))
         ).to_owned()
     }
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by((Device::Table, Device::DeviceId), Order::Asc)
         .order_by((DeviceType::Table, DeviceType::TypeId), Order::Asc)
         .order_by((DeviceTypeModel::Table, DeviceTypeModel::ModelId), Order::Asc)
         .order_by((DeviceConfig::Table, DeviceConfig::Id), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_device(
@@ -138,9 +137,9 @@ pub fn insert_device(
     serial_number: &str,
     name: &str,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(Device::Table)
         .columns([
             Device::DeviceId,
@@ -159,9 +158,9 @@ pub fn insert_device(
             description.unwrap_or_default().into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_device(
@@ -172,7 +171,7 @@ pub fn update_device(
     serial_number: Option<&str>,
     name: Option<&str>,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(Device::Table)
@@ -198,17 +197,17 @@ pub fn update_device(
         stmt = stmt.and_where(Expr::col(Device::GatewayId).eq(id)).to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(Device::DeviceId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_device(
     kind: DeviceKind,
     id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::delete()
         .from_table(Device::Table)
@@ -218,16 +217,16 @@ pub fn delete_device(
     if let DeviceKind::Gateway = kind {
         stmt = stmt.and_where(Expr::col(Device::GatewayId).eq(id)).to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
+    let stmt = stmt.to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn select_device_config(
     kind: DeviceKind,
     id: Option<i32>,
     device_id: Option<Uuid>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -260,23 +259,23 @@ pub fn select_device_config(
             Expr::col((DeviceConfig::Table, DeviceConfig::DeviceId)).equals((Device::Table, Device::GatewayId))
         ).to_owned()
     }
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by((DeviceConfig::Table, DeviceConfig::DeviceId), Order::Asc)
         .order_by((DeviceConfig::Table, DeviceConfig::Id), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_device_config_last_id(
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .expr(Func::max(Expr::col(DeviceConfig::Id)))
         .from(DeviceConfig::Table)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_device_config(
@@ -284,11 +283,11 @@ pub fn insert_device_config(
     name: &str,
     value: DataValue,
     category: &str
-) -> QuerySet
+) -> QueryStatement
 {
     let config_value = value.to_bytes();
     let config_type = i16::from(value.get_type());
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(DeviceConfig::Table)
         .columns([
             DeviceConfig::DeviceId,
@@ -305,9 +304,9 @@ pub fn insert_device_config(
             category.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_device_config(
@@ -315,7 +314,7 @@ pub fn update_device_config(
     name: Option<&str>,
     value: Option<DataValue>,
     category: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(DeviceConfig::Table)
@@ -335,30 +334,30 @@ pub fn update_device_config(
         stmt = stmt.value(DeviceConfig::Category, value).to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(DeviceConfig::Id).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_device_config(
     id: i32
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(DeviceConfig::Table)
         .and_where(Expr::col(DeviceConfig::Id).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn select_device_type(
     id: Option<Uuid>,
     ids: Option<&[Uuid]>,
     name: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -389,21 +388,21 @@ pub fn select_device_type(
         }
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by((DeviceType::Table, DeviceType::TypeId), Order::Asc)
         .order_by((DeviceTypeModel::Table, DeviceTypeModel::ModelId), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_device_type(
     id: Uuid,
     name: &str,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(DeviceType::Table)
         .columns([
             DeviceType::TypeId,
@@ -416,16 +415,16 @@ pub fn insert_device_type(
             description.unwrap_or_default().into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_device_type(
     id: Uuid,
     name: Option<&str>,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(DeviceType::Table)
@@ -438,31 +437,31 @@ pub fn update_device_type(
         stmt = stmt.value(DeviceType::Description, value).to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(DeviceType::TypeId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_device_type(
     id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(DeviceType::Table)
         .and_where(Expr::col(DeviceType::TypeId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn insert_device_type_model(
     id: Uuid,
     model_id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(DeviceTypeModel::Table)
         .columns([
             DeviceTypeModel::TypeId,
@@ -473,21 +472,21 @@ pub fn insert_device_type_model(
             model_id.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn delete_device_type_model(
     id: Uuid,
     model_id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(DeviceTypeModel::Table)
         .and_where(Expr::col(DeviceTypeModel::TypeId).eq(id))
         .and_where(Expr::col(DeviceTypeModel::ModelId).eq(model_id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }

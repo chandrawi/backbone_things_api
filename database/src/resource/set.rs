@@ -1,7 +1,6 @@
-use sea_query::{Iden, PostgresQueryBuilder, Query, Expr, Order};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Iden, Query, Expr, Order};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::QueryStatement;
 
 #[derive(Iden)]
 pub(crate) enum Set {
@@ -46,7 +45,7 @@ pub fn select_set(
     ids: Option<&[Uuid]>,
     template_id: Option<Uuid>,
     name: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -83,12 +82,12 @@ pub fn select_set(
         }
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by((Set::Table, Set::SetId), Order::Asc)
         .order_by((SetMap::Table, SetMap::SetPosition), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_set(
@@ -96,9 +95,9 @@ pub fn insert_set(
     template_id: Uuid,
     name: &str,
     description: Option<&str>,
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(Set::Table)
         .columns([
             Set::SetId,
@@ -113,9 +112,9 @@ pub fn insert_set(
             description.unwrap_or_default().into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_set(
@@ -123,7 +122,7 @@ pub fn update_set(
     template_id: Option<Uuid>,
     name: Option<&str>,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(Set::Table)
@@ -139,30 +138,30 @@ pub fn update_set(
         stmt = stmt.value(Set::Description, value).to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(Set::SetId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_set(
     id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(Set::Table)
         .and_where(Expr::col(Set::SetId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn read_set_members(
     set_id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .columns([
             (SetMap::Table, SetMap::DeviceId),
             (SetMap::Table, SetMap::ModelId),
@@ -171,9 +170,9 @@ pub fn read_set_members(
         .from(SetMap::Table)
         .and_where(Expr::col(SetMap::SetId).eq(set_id))
         .order_by((SetMap::Table, SetMap::SetPosition), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn update_set_position_number(
@@ -182,7 +181,7 @@ pub fn update_set_position_number(
     model_id: Uuid,
     position: Option<i16>,
     number: Option<i16>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(SetMap::Table)
@@ -197,11 +196,11 @@ pub fn update_set_position_number(
     if let Some(num) = number {
         stmt = stmt.value(SetMap::SetNumber, num).to_owned();
     }
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(SetMap::SetId).eq(set_id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn insert_set_member(
@@ -211,9 +210,9 @@ pub fn insert_set_member(
     data_index: &[u8],
     position: i16,
     number: i16
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(SetMap::Table)
         .columns([
             SetMap::SetId,
@@ -232,32 +231,32 @@ pub fn insert_set_member(
             number.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn delete_set_member(
     id: Uuid,
     device_id: Uuid,
     model_id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(SetMap::Table)
         .and_where(Expr::col(SetMap::SetId).eq(id))
         .and_where(Expr::col(SetMap::DeviceId).eq(device_id))
         .and_where(Expr::col(SetMap::ModelId).eq(model_id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn select_set_template(
     id: Option<Uuid>,
     ids: Option<&[Uuid]>,
     name: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -290,21 +289,21 @@ pub fn select_set_template(
         }
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by((SetTemplate::Table, SetTemplate::TemplateId), Order::Asc)
         .order_by((SetTemplateMap::Table, SetTemplateMap::TemplateIndex), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_set_template(
     id: Uuid,
     name: &str,
     description: Option<&str>,
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(SetTemplate::Table)
         .columns([
             SetTemplate::TemplateId,
@@ -317,16 +316,16 @@ pub fn insert_set_template(
             description.unwrap_or_default().into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_set_template(
     id: Uuid,
     name: Option<&str>,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(SetTemplate::Table)
@@ -339,30 +338,30 @@ pub fn update_set_template(
         stmt = stmt.value(SetTemplate::Description, value).to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(SetTemplate::TemplateId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_set_template(
     id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(SetTemplate::Table)
         .and_where(Expr::col(SetTemplate::TemplateId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn read_set_template_members(
     template_id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .columns([
             (SetTemplateMap::Table, SetTemplateMap::TypeId),
             (SetTemplateMap::Table, SetTemplateMap::ModelId),
@@ -371,25 +370,25 @@ pub fn read_set_template_members(
         .from(SetTemplateMap::Table)
         .and_where(Expr::col(SetTemplateMap::TemplateId).eq(template_id))
         .order_by((SetTemplateMap::Table, SetTemplateMap::TemplateIndex), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn update_set_template_index(
     template_id: Uuid, 
     index: i16, 
     new_index: i16
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::update()
+    let stmt = Query::update()
         .table(SetTemplateMap::Table)
         .value(SetTemplateMap::TemplateIndex, new_index)
         .and_where(Expr::col(SetTemplateMap::TemplateId).eq(template_id))
         .and_where(Expr::col(SetTemplateMap::TemplateIndex).eq(index))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn insert_set_template_member(
@@ -398,9 +397,9 @@ pub fn insert_set_template_member(
     model_id: Uuid,
     data_index: &[u8],
     template_index: i16
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(SetTemplateMap::Table)
         .columns([
             SetTemplateMap::TemplateId,
@@ -417,21 +416,21 @@ pub fn insert_set_template_member(
             template_index.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn delete_set_template_member(
     id: Uuid,
     template_index: i16
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(SetTemplateMap::Table)
         .and_where(Expr::col(SetTemplateMap::TemplateId).eq(id))
         .and_where(Expr::col(SetTemplateMap::TemplateIndex).eq(template_index))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }

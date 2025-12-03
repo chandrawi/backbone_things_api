@@ -1,7 +1,6 @@
-use sea_query::{Iden, PostgresQueryBuilder, Query, Expr, Func};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Iden, Query, Expr, Func};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::QueryStatement;
 use crate::value::{DataType, DataValue};
 use crate::auth::_schema::ProfileMode;
 
@@ -29,7 +28,7 @@ pub(crate) enum ProfileUser {
 pub fn select_role_profile(
     id: Option<i32>,
     role_id: Option<Uuid>,
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -48,20 +47,19 @@ pub fn select_role_profile(
     else if let Some(role_id) = role_id {
         stmt = stmt.and_where(Expr::col((ProfileRole::Table, ProfileRole::RoleId)).eq(role_id)).to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_role_profile_last_id(
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .expr(Func::max(Expr::col(ProfileRole::Id)))
         .from(ProfileRole::Table)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_role_profile(
@@ -69,9 +67,9 @@ pub fn insert_role_profile(
     name: &str,
     value_type: DataType,
     mode: ProfileMode
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(ProfileRole::Table)
         .columns([
             ProfileRole::RoleId,
@@ -86,9 +84,9 @@ pub fn insert_role_profile(
             i16::from(mode).into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_role_profile(
@@ -96,7 +94,7 @@ pub fn update_role_profile(
     name: Option<&str>,
     value_type: Option<DataType>,
     mode: Option<ProfileMode>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(ProfileRole::Table)
@@ -114,29 +112,29 @@ pub fn update_role_profile(
         stmt = stmt.value(ProfileRole::Mode, mode).to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(ProfileRole::Id).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_role_profile(
     id: i32
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(ProfileRole::Table)
         .and_where(Expr::col(ProfileRole::Id).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn select_user_profile(
     id: Option<i32>,
     user_id: Option<Uuid>,
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -156,35 +154,34 @@ pub fn select_user_profile(
     else if let Some(user_id) = user_id {
         stmt = stmt.and_where(Expr::col((ProfileUser::Table, ProfileUser::UserId)).eq(user_id)).to_owned();
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_user_profile_max_order(
     user_id: Uuid,
     name: &str,
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .expr(Func::max(Expr::col(ProfileUser::Order)))
         .and_where(Expr::col(ProfileUser::UserId).eq(user_id))
         .and_where(Expr::col(ProfileUser::Name).eq(name))
         .from(ProfileUser::Table)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_user_profile_last_id(
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .expr(Func::max(Expr::col(ProfileUser::Id)))
         .from(ProfileUser::Table)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_user_profile(
@@ -192,11 +189,11 @@ pub fn insert_user_profile(
     name: &str,
     value: DataValue,
     order: i16
-) -> QuerySet
+) -> QueryStatement
 {
     let bytes = value.to_bytes();
     let type_ = i16::from(value.get_type());
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(ProfileUser::Table)
         .columns([
             ProfileUser::UserId,
@@ -213,16 +210,16 @@ pub fn insert_user_profile(
             type_.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_user_profile(
     id: i32,
     name: Option<&str>,
     value: Option<DataValue>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(ProfileUser::Table)
@@ -240,23 +237,23 @@ pub fn update_user_profile(
             .to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(ProfileUser::Id).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_user_profile(
     id: i32
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(ProfileUser::Table)
         .and_where(Expr::col(ProfileUser::Id).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn update_user_profile_order(
@@ -264,15 +261,15 @@ pub fn update_user_profile_order(
     name: &str,
     order: i16,
     order_new: i16
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::update()
+    let stmt = Query::update()
         .table(ProfileUser::Table)
         .value(ProfileUser::Order, order_new).to_owned()
         .and_where(Expr::col(ProfileUser::UserId).eq(user_id))
         .and_where(Expr::col(ProfileUser::Name).eq(name))
         .and_where(Expr::col(ProfileUser::Order).eq(order))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }

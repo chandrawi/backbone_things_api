@@ -1,7 +1,6 @@
-use sea_query::{Iden, PostgresQueryBuilder, Query, Expr, Order};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Iden, Query, Expr, Order};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::QueryStatement;
 use crate::auth::api::Api;
 use crate::auth::user::UserRole;
 
@@ -31,7 +30,7 @@ pub fn select_role(
     user_id: Option<Uuid>,
     name_exact: Option<&str>,
     name_like: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -89,12 +88,12 @@ pub fn select_role(
         }
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by((Role::Table, Role::RoleId), Order::Asc)
         .order_by((RoleAccess::Table, RoleAccess::ProcedureId), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_role(
@@ -105,9 +104,9 @@ pub fn insert_role(
     ip_lock: bool, 
     access_duration: i32,
     refresh_duration: i32,
-) -> QuerySet 
+) -> QueryStatement 
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(Role::Table)
         .columns([
             Role::RoleId,
@@ -128,9 +127,9 @@ pub fn insert_role(
             refresh_duration.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_role(
@@ -140,7 +139,7 @@ pub fn update_role(
     ip_lock: Option<bool>, 
     access_duration: Option<i32>,
     refresh_duration: Option<i32>
-) -> QuerySet 
+) -> QueryStatement 
 {
     let mut stmt = Query::update()
         .table(Role::Table)
@@ -162,31 +161,31 @@ pub fn update_role(
         stmt = stmt.value(Role::RefreshDuration, value).to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(Role::RoleId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_role(
     id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(Role::Table)
         .and_where(Expr::col(Role::RoleId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn insert_role_access(
     id: Uuid,
     procedure_id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(RoleAccess::Table)
         .columns([
             RoleAccess::RoleId,
@@ -197,21 +196,21 @@ pub fn insert_role_access(
             procedure_id.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn delete_role_access(
     id: Uuid,
     procedure_id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(RoleAccess::Table)
         .and_where(Expr::col(RoleAccess::RoleId).eq(id))
         .and_where(Expr::col(RoleAccess::ProcedureId).eq(procedure_id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }

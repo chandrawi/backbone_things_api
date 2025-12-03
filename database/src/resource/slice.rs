@@ -1,8 +1,7 @@
-use sea_query::{Iden, PostgresQueryBuilder, Query, Expr, Order, Func};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Iden, Query, Expr, Order, Func};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::QueryStatement;
 
 #[derive(Iden)]
 pub(crate) enum SliceData {
@@ -39,7 +38,7 @@ pub fn select_slice(
     device_ids: Option<&[Uuid]>,
     model_ids: Option<&[Uuid]>,
     name: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -100,21 +99,19 @@ pub fn select_slice(
         stmt = stmt.order_by(SliceData::Id, Order::Asc).to_owned();
     }
 
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
-
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_slice_last_id(
 
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .expr(Func::max(Expr::col(SliceData::Id)))
         .from(SliceData::Table)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_slice(
@@ -124,9 +121,9 @@ pub fn insert_slice(
     timestamp_end: DateTime<Utc>,
     name: &str,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(SliceData::Table)
         .columns([
             SliceData::DeviceId,
@@ -145,9 +142,9 @@ pub fn insert_slice(
             description.unwrap_or_default().into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_slice(
@@ -156,7 +153,7 @@ pub fn update_slice(
     timestamp_end: Option<DateTime<Utc>>,
     name: Option<&str>,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(SliceData::Table)
@@ -174,23 +171,23 @@ pub fn update_slice(
     if let Some(description) = description {
         stmt = stmt.value(SliceData::Description, description).to_owned();
     }
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(SliceData::Id).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_slice(
     id: i32
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(SliceData::Table)
         .and_where(Expr::col(SliceData::Id).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn select_slice_set(
@@ -198,7 +195,7 @@ pub fn select_slice_set(
     ids: Option<&[i32]>,
     set_id: Option<Uuid>,
     name: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -245,21 +242,19 @@ pub fn select_slice_set(
         stmt = stmt.order_by(SliceDataSet::Id, Order::Asc).to_owned();
     }
 
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
-
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_slice_set_last_id(
 
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .expr(Func::max(Expr::col(SliceDataSet::Id)))
         .from(SliceDataSet::Table)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_slice_set(
@@ -268,9 +263,9 @@ pub fn insert_slice_set(
     timestamp_end: DateTime<Utc>,
     name: &str,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(SliceDataSet::Table)
         .columns([
             SliceDataSet::SetId,
@@ -287,9 +282,9 @@ pub fn insert_slice_set(
             description.unwrap_or_default().into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_slice_set(
@@ -298,7 +293,7 @@ pub fn update_slice_set(
     timestamp_end: Option<DateTime<Utc>>,
     name: Option<&str>,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(SliceDataSet::Table)
@@ -316,21 +311,21 @@ pub fn update_slice_set(
     if let Some(description) = description {
         stmt = stmt.value(SliceDataSet::Description, description).to_owned();
     }
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(SliceDataSet::Id).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_slice_set(
     id: i32
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(SliceDataSet::Table)
         .and_where(Expr::col(SliceDataSet::Id).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }

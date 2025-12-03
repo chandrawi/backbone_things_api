@@ -2,7 +2,7 @@ use sqlx::{Pool, Row, Error};
 use sqlx::postgres::{Postgres, PgRow};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::QueryStatement;
 use crate::value::{DataType, DataValue, ArrayDataValue};
 
 #[derive(Debug, Default, PartialEq, Clone)]
@@ -299,7 +299,7 @@ pub struct SliceSetSchema {
     pub description: String
 }
 
-impl QuerySet {
+impl QueryStatement {
 
     pub(crate) async fn fetch_model_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<ModelSchema>, Error>
     {
@@ -307,7 +307,8 @@ impl QuerySet {
         let mut last_tag: Option<i16> = None;
         let mut model_schema_vec: Vec<ModelSchemaFlat> = Vec::new();
     
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 // get last model_schema in model_schema_vec or default
                 let mut model_schema = model_schema_vec.pop().unwrap_or_default();
@@ -367,7 +368,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_model_config_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<ModelConfigSchema>, Error>
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 let bytes = row.get(4);
                 let type_ = DataType::from(row.get::<i16,_>(5));
@@ -386,7 +388,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_tag_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<TagSchema>, Error>
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 let mut tags: Vec<i16> = vec![row.get(1)];
                 let bytes: Vec<u8> = row.get(3);
@@ -407,7 +410,8 @@ impl QuerySet {
     pub(crate) async fn fetch_tag_members(&self, pool: &Pool<Postgres>, tag: i16) -> Vec<i16>
     {
         let mut tags: Vec<i16> = vec![tag];
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 let bytes: Vec<u8> = row.get(0);
                 for chunk in bytes.chunks_exact(2) {
@@ -428,7 +432,8 @@ impl QuerySet {
         let mut last_model: Option<Uuid> = None;
         let mut device_schema_vec: Vec<DeviceSchema> = Vec::new();
     
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 // get last device_schema in device_schema_vec or default
                 let mut device_schema = device_schema_vec.pop().unwrap_or_default();
@@ -482,7 +487,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_device_config_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<DeviceConfigSchema>, Error>
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 let bytes = row.get(3);
                 let type_ = DataType::from(row.get::<i16,_>(4));
@@ -503,7 +509,8 @@ impl QuerySet {
         let mut last_id: Option<Uuid> = None;
         let mut type_schema_vec: Vec<TypeSchema> = Vec::new();
     
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 // get last type_schema in type_schema_vec or default
                 let mut type_schema = type_schema_vec.pop().unwrap_or_default();
@@ -539,7 +546,8 @@ impl QuerySet {
         let mut last_id: Option<Uuid> = None;
         let mut group_schema_vec: Vec<GroupSchema> = Vec::new();
 
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 // get last group_schema in group_schema_vec or default
                 let mut group_schema = group_schema_vec.pop().unwrap_or_default();
@@ -577,7 +585,8 @@ impl QuerySet {
         let mut last_id: Option<Uuid> = None;
         let mut set_schema_vec: Vec<SetSchema> = Vec::new();
     
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 // get last set_schema in set_schema_vec or default
                 let mut set_schema = set_schema_vec.pop().unwrap_or_default();
@@ -614,7 +623,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_set_members(&self, pool: &Pool<Postgres>) -> Result<Vec<SetMember>, Error>
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
         .map(|row: PgRow| {
             SetMember {
                 device_id: row.try_get(0).unwrap_or_default(),
@@ -631,7 +641,8 @@ impl QuerySet {
         let mut last_id: Option<Uuid> = None;
         let mut template_schema_vec: Vec<SetTemplateSchema> = Vec::new();
 
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 // get last template_schema in template_schema_vec or default
                 let mut template_schema = template_schema_vec.pop().unwrap_or_default();
@@ -667,7 +678,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_set_template_members(&self, pool: &Pool<Postgres>) -> Result<Vec<SetTemplateMember>, Error>
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
         .map(|row: PgRow| {
             SetTemplateMember {
                 type_id: row.try_get(0).unwrap_or_default(),
@@ -681,7 +693,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_data_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<DataSchema>, Error>
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 let bytes: Vec<u8> = row.get(4);
                 let types: Vec<DataType> = row.get::<Vec<u8>,_>(5).into_iter().map(|ty| ty.into()).collect();
@@ -699,7 +712,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_data_types(&self, pool: &Pool<Postgres>) -> Result<Vec<Vec<DataType>>, Error>
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 row.get::<Vec<u8>,_>(0).into_iter().map(|ty| ty.into()).collect()
             })
@@ -713,7 +727,8 @@ impl QuerySet {
         let mut last_timestamp: Option<DateTime<Utc>> = None;
         let mut last_tag: Option<i16> = None;
     
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 // construct a data_schema
                 let bytes: Vec<u8> = row.get(4);
@@ -763,7 +778,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_buffer_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<BufferSchema>, Error>
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
         .map(|row: PgRow| {
             let bytes: Vec<u8> = row.get(5);
             let types: Vec<DataType> = row.get::<Vec<u8>,_>(6).into_iter().map(|ty| ty.into()).collect();
@@ -782,7 +798,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_buffer_types(&self, pool: &Pool<Postgres>) -> Result<Vec<DataType>, Error>
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 row.get::<Vec<u8>,_>(0).into_iter().map(|ty| ty.into()).collect()
             })
@@ -796,7 +813,8 @@ impl QuerySet {
         let mut last_timestamp: Option<DateTime<Utc>> = None;
         let mut last_tag: Option<i16> = None;
     
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 // construct a buffer_schema
                 let bytes: Vec<u8> = row.get(5);
@@ -848,7 +866,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_slice_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<SliceSchema>, Error>
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 SliceSchema {
                     id: row.get(0),
@@ -866,7 +885,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_slice_set_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<SliceSetSchema>, Error>
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 SliceSetSchema {
                     id: row.get(0),

@@ -1,21 +1,43 @@
 use sqlx::{Pool, Row, Error};
 use sqlx::postgres::{Postgres, PgRow};
 use sqlx::types::chrono::{DateTime, Utc};
-use sea_query_binder::SqlxValues;
+use sea_query::{SelectStatement, InsertStatement, UpdateStatement, DeleteStatement, PostgresQueryBuilder};
+use sea_query_binder::{SqlxBinder, SqlxValues};
 use rand::{thread_rng, Rng};
-use argon2::{Argon2, PasswordHasher, password_hash::SaltString};
+use argon2::{Argon2, PasswordHasher, PasswordHash, password_hash::SaltString};
 
 #[derive(Debug, Clone)]
-pub struct QuerySet {
-    pub query: String,
-    pub values: SqlxValues
+pub enum QueryStatement {
+    Select(SelectStatement),
+    Insert(InsertStatement),
+    Update(UpdateStatement),
+    Delete(DeleteStatement)
 }
 
-impl QuerySet {
+impl QueryStatement {
+
+    pub fn build(&self) -> (String, SqlxValues) {
+        match self {
+            Self::Select(stmt) => stmt.build_sqlx(PostgresQueryBuilder),
+            Self::Insert(stmt) => stmt.build_sqlx(PostgresQueryBuilder),
+            Self::Update(stmt) => stmt.build_sqlx(PostgresQueryBuilder),
+            Self::Delete(stmt) => stmt.build_sqlx(PostgresQueryBuilder)
+        }
+    }
+
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Select(stmt) => stmt.to_string(PostgresQueryBuilder),
+            Self::Insert(stmt) => stmt.to_string(PostgresQueryBuilder),
+            Self::Update(stmt) => stmt.to_string(PostgresQueryBuilder),
+            Self::Delete(stmt) => stmt.to_string(PostgresQueryBuilder)
+        }
+    }
 
     pub(crate) async fn execute(&self, pool: &Pool<Postgres>) -> Result<(), Error>
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .execute(pool)
             .await?;
         Ok(())
@@ -23,7 +45,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_id(&self, pool: &Pool<Postgres>) -> Result<i32, Error>
     {
-        let id = sqlx::query(&self.query)
+        let (sql, _) = self.build();
+        let id = sqlx::query(&sql)
             .map(|row: PgRow| row.get(0))
             .fetch_one(pool)
             .await?;
@@ -32,7 +55,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_max_order(&self, pool: &Pool<Postgres>, default: i32) -> i32
     {
-        sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| row.try_get(0))
             .fetch_one(pool)
             .await
@@ -42,7 +66,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_count(&self, pool: &Pool<Postgres>) -> Result<usize, Error>
     {
-        let count: i64 = sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        let count: i64 = sqlx::query_with(&sql, arguments)
             .map(|row| {
                 row.get(0)
             })
@@ -53,7 +78,8 @@ impl QuerySet {
 
     pub(crate) async fn fetch_timestamp(&self, pool: &Pool<Postgres>) -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let mut rows = sqlx::query_with(&self.query, self.values.clone())
+        let (sql, arguments) = self.build();
+        let mut rows = sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| {
                 row.get(0)
             })
@@ -65,13 +91,19 @@ impl QuerySet {
 
 }
 
-pub(crate) fn hash_password(password: &str) -> Result<String, Error>
+pub fn hash_password(password: &str) -> Result<String, argon2::password_hash::Error>
 {
     let argon2 = Argon2::default();
     let salt = SaltString::generate(&mut thread_rng());
-    match argon2.hash_password(password.as_bytes(), &salt) {
-        Ok(hash) => Ok(hash.to_string()),
-        Err(_) => Err(Error::InvalidArgument(String::from("The password failed to hash")))
+    let password_hash = argon2.hash_password(password.as_bytes(), &salt)?;
+    Ok(password_hash.to_string())
+}
+
+pub(crate) fn verify_hash_format(password_hash: &str) -> Result<(), Error>
+{
+    match PasswordHash::new(password_hash) {
+        Ok(_) => Ok(()),
+        Err(_) => Err(Error::InvalidArgument(String::from("Invalid password hash format")))
     }
 }
 

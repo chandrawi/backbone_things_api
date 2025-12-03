@@ -1,7 +1,6 @@
-use sea_query::{Iden, PostgresQueryBuilder, Query, Expr, Order};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Iden, Query, Expr, Order};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::QueryStatement;
 use crate::auth::api::Api;
 use crate::auth::role::Role;
 
@@ -29,7 +28,7 @@ pub fn select_user(
     role_id: Option<Uuid>,
     name_exact: Option<&str>,
     name_like: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -87,12 +86,12 @@ pub fn select_user(
         }
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by((User::Table, User::UserId), Order::Asc)
         .order_by((UserRole::Table, UserRole::RoleId), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_user(
@@ -101,9 +100,9 @@ pub fn insert_user(
     email: &str,
     phone: &str,
     password_hash: &str
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(User::Table)
         .columns([
             User::UserId,
@@ -120,9 +119,9 @@ pub fn insert_user(
             phone.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_user(
@@ -131,7 +130,7 @@ pub fn update_user(
     email: Option<&str>,
     phone: Option<&str>,
     password_hash: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(User::Table)
@@ -150,31 +149,31 @@ pub fn update_user(
         stmt = stmt.value(User::Password, value).to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(User::UserId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_user(
     id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(User::Table)
         .and_where(Expr::col(User::UserId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn insert_user_role(
     id: Uuid,
     role_id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(UserRole::Table)
         .columns([
             UserRole::UserId,
@@ -185,21 +184,21 @@ pub fn insert_user_role(
             role_id.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn delete_user_role(
     id: Uuid,
     role_id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(UserRole::Table)
         .and_where(Expr::col(UserRole::UserId).eq(id))
         .and_where(Expr::col(UserRole::RoleId).eq(role_id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }

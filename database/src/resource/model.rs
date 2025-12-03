@@ -1,7 +1,6 @@
-use sea_query::{Iden, PostgresQueryBuilder, Query, Expr, Order, Func};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Iden, Query, Expr, Order, Func};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::QueryStatement;
 use crate::value::{DataType, DataValue};
 use crate::resource::device::DeviceTypeModel;
 use crate::resource::set::SetMap;
@@ -43,7 +42,7 @@ pub fn select_model(
     type_id: Option<Uuid>,
     name: Option<&str>,
     category: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -101,13 +100,13 @@ pub fn select_model(
         }
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by((Model::Table, Model::ModelId), Order::Asc)
         .order_by((ModelTag::Table, ModelTag::Tag), Order::Asc)
         .order_by((ModelConfig::Table, ModelConfig::Id), Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_model(
@@ -116,9 +115,9 @@ pub fn insert_model(
     category: &str,
     name: &str,
     description: Option<&str>,
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(Model::Table)
         .columns([
             Model::ModelId,
@@ -137,9 +136,9 @@ pub fn insert_model(
             }).collect::<Vec<u8>>().into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_model(
@@ -148,7 +147,7 @@ pub fn update_model(
     category: Option<&str>,
     name: Option<&str>,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(Model::Table)
@@ -169,29 +168,29 @@ pub fn update_model(
         }).collect::<Vec<u8>>()).to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(Model::ModelId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_model(
     id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(Model::Table)
         .and_where(Expr::col(Model::ModelId).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn select_model_config(
     id: Option<i32>,
     model_id: Option<Uuid>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -213,24 +212,24 @@ pub fn select_model_config(
         stmt = stmt.and_where(Expr::col(ModelConfig::ModelId).eq(model_id)).to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by(ModelConfig::ModelId, Order::Asc)
         .order_by(ModelConfig::Index, Order::Asc)
         .order_by(ModelConfig::Id, Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_model_config_last_id(
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .expr(Func::max(Expr::col(ModelConfig::Id)))
         .from(ModelConfig::Table)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_model_config(
@@ -239,11 +238,11 @@ pub fn insert_model_config(
     name: &str,
     value: DataValue,
     category: &str
-) -> QuerySet
+) -> QueryStatement
 {
     let config_value = value.to_bytes();
     let config_type = i16::from(value.get_type());
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(ModelConfig::Table)
         .columns([
             ModelConfig::ModelId,
@@ -262,9 +261,9 @@ pub fn insert_model_config(
             category.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_model_config(
@@ -272,7 +271,7 @@ pub fn update_model_config(
     name: Option<&str>,
     value: Option<DataValue>,
     category: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(ModelConfig::Table)
@@ -292,29 +291,29 @@ pub fn update_model_config(
         stmt = stmt.value(ModelConfig::Category, value).to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(ModelConfig::Id).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_model_config(
     id: i32
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(ModelConfig::Table)
         .and_where(Expr::col(ModelConfig::Id).eq(id))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn select_model_tag(
     model_id: Uuid,
     tag: Option<i16>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select()
         .columns([
@@ -330,34 +329,34 @@ pub fn select_model_tag(
     if let Some(t) = tag {
         stmt = stmt.and_where(Expr::col(ModelTag::Tag).eq(t)).to_owned();
     }
-    let (query, values) = stmt
+    let stmt = stmt
         .order_by(ModelTag::Tag, Order::Asc)
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_tag_members(
     model_ids: &[Uuid],
     tag: i16
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .column(ModelTag::Members)
         .from(ModelTag::Table)
         .and_where(Expr::col(ModelTag::ModelId).is_in(model_ids.to_vec()))
         .and_where(Expr::col(ModelTag::Tag).eq(tag))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn select_tag_members_set(
     set_id: Uuid,
     tag: i16
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::select()
+    let stmt = Query::select()
         .column(ModelTag::Members)
         .from(ModelTag::Table)
         .inner_join(SetMap::Table, 
@@ -365,9 +364,9 @@ pub fn select_tag_members_set(
             .equals((SetMap::Table, SetMap::ModelId)))
         .and_where(Expr::col(SetMap::SetId).eq(set_id))
         .and_where(Expr::col(ModelTag::Tag).eq(tag))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_model_tag(
@@ -375,13 +374,13 @@ pub fn insert_model_tag(
     tag: i16,
     name: &str,
     members: &[i16]
-) -> QuerySet
+) -> QueryStatement
 {
     let mut bytes: Vec<u8> = Vec::new();
     for member in members {
         bytes.append(member.to_be_bytes().to_vec().as_mut());
     }
-    let (query, values) = Query::insert()
+    let stmt = Query::insert()
         .into_table(ModelTag::Table)
         .columns([
             ModelTag::ModelId,
@@ -396,9 +395,9 @@ pub fn insert_model_tag(
             bytes.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_model_tag(
@@ -406,7 +405,7 @@ pub fn update_model_tag(
     tag: i16,
     name: Option<&str>,
     members: Option<&[i16]>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update()
         .table(ModelTag::Table)
@@ -423,24 +422,24 @@ pub fn update_model_tag(
         stmt = stmt.value(ModelTag::Members, bytes).to_owned();
     }
 
-    let (query, values) = stmt
+    let stmt = stmt
         .and_where(Expr::col(ModelTag::ModelId).eq(model_id))
         .and_where(Expr::col(ModelTag::Tag).eq(tag))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_model_tag(
     model_id: Uuid,
     tag: i16
-) -> QuerySet
+) -> QueryStatement
 {
-    let (query, values) = Query::delete()
+    let stmt = Query::delete()
         .from_table(ModelTag::Table)
         .and_where(Expr::col(ModelTag::ModelId).eq(model_id))
         .and_where(Expr::col(ModelTag::Tag).eq(tag))
-        .build_sqlx(PostgresQueryBuilder);
+        .to_owned();
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }

@@ -1,7 +1,6 @@
-use sea_query::{Iden, PostgresQueryBuilder, Query, Expr, Order};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Iden, Query, Expr, Order};
 use uuid::Uuid;
-use crate::common::QuerySet;
+use crate::common::QueryStatement;
 
 #[derive(Iden)]
 pub(crate) enum GroupModel {
@@ -49,7 +48,7 @@ pub fn select_group(
     ids: Option<&[Uuid]>,
     name: Option<&str>,
     category: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::select().to_owned();
     match &kind {
@@ -131,9 +130,8 @@ pub fn select_group(
                 .to_owned();
         }
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Select(stmt)
 }
 
 pub fn insert_group(
@@ -142,7 +140,7 @@ pub fn insert_group(
     name: &str,
     category: &str,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::insert().to_owned();
     match &kind {
@@ -185,9 +183,8 @@ pub fn insert_group(
                 .to_owned();
         }
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn update_group(
@@ -196,7 +193,7 @@ pub fn update_group(
     name: Option<&str>,
     category: Option<&str>,
     description: Option<&str>
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::update().to_owned();
     match &kind {
@@ -227,15 +224,14 @@ pub fn update_group(
             stmt = stmt.and_where(Expr::col(GroupDevice::GroupId).eq(id)).to_owned();
         }
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Update(stmt)
 }
 
 pub fn delete_group(
     kind: GroupKind,
     id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::delete().to_owned();
     match &kind {
@@ -252,16 +248,15 @@ pub fn delete_group(
                 .to_owned();
         }
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
 
 pub fn insert_group_map(
     kind: GroupKind,
     id: Uuid,
     member_id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::insert().to_owned();
     match &kind {
@@ -294,16 +289,15 @@ pub fn insert_group_map(
                 .to_owned();
         }
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Insert(stmt)
 }
 
 pub fn delete_group_map(
     kind: GroupKind,
     id: Uuid,
     member_id: Uuid
-) -> QuerySet
+) -> QueryStatement
 {
     let mut stmt = Query::delete().to_owned();
     match &kind {
@@ -322,7 +316,6 @@ pub fn delete_group_map(
                 .to_owned();
         }
     }
-    let (query, values) = stmt.build_sqlx(PostgresQueryBuilder);
 
-    QuerySet { query, values }
+    QueryStatement::Delete(stmt)
 }
