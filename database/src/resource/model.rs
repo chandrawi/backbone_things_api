@@ -1,7 +1,7 @@
 use sea_query::{Iden, Query, Expr, Order, Func};
 use uuid::Uuid;
-use crate::common::QueryStatement;
-use crate::value::{DataType, DataValue};
+use crate::common::query_statement::QueryStatement;
+use crate::common::type_value::{DataType, DataValue};
 use crate::resource::device::DeviceTypeModel;
 use crate::resource::set::SetMap;
 

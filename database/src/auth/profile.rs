@@ -1,7 +1,7 @@
 use sea_query::{Iden, Query, Expr, Func};
 use uuid::Uuid;
-use crate::common::QueryStatement;
-use crate::value::{DataType, DataValue};
+use crate::common::query_statement::QueryStatement;
+use crate::common::type_value::{DataType, DataValue};
 use crate::auth::_schema::ProfileMode;
 
 #[derive(Iden)]

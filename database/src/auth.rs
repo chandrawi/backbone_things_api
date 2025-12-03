@@ -9,13 +9,13 @@ use sqlx::{Pool, Error};
 use sqlx::postgres::{Postgres, PgPoolOptions};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
-use super::value::{DataType, DataValue};
+use crate::common::type_value::{DataType, DataValue};
+use crate::common::utility;
 use _schema::{
     ApiSchema, ProcedureSchema, RoleSchema, UserSchema, 
     RoleProfileSchema, UserProfileSchema, ProfileMode, TokenSchema
 };
 use token::TokenSelector;
-use super::common::{verify_hash_format, generate_token_string};
 
 #[derive(Debug, Clone)]
 pub struct Auth {
@@ -87,7 +87,7 @@ impl Auth {
     pub async fn create_api(&self, id: Uuid, name: &str, address: &str, category: &str, description: &str, password_hash: &str, access_key: &[u8])
         -> Result<Uuid, Error>
     {
-        verify_hash_format(password_hash)?;
+        utility::verify_hash_format(password_hash)?;
         let qs = api::insert_api(id, name, address, category, description, &password_hash, access_key);
         qs.execute(&self.pool).await?;
         Ok(id)
@@ -97,7 +97,7 @@ impl Auth {
         -> Result<(), Error>
     {
         if let Some(hash) = password_hash {
-            verify_hash_format(hash)?;
+            utility::verify_hash_format(hash)?;
         }
         let qs = api::update_api(id, name, address, category, description, password_hash, access_key);
         qs.execute(&self.pool).await
@@ -348,7 +348,7 @@ impl Auth {
     pub async fn create_user(&self, id: Uuid, name: &str, email: &str, phone: &str, password_hash: &str)
         -> Result<Uuid, Error>
     {
-        verify_hash_format(password_hash)?;
+        utility::verify_hash_format(password_hash)?;
         let qs = user::insert_user(id, name, email, phone, &password_hash);
         qs.execute(&self.pool).await?;
         Ok(id)
@@ -358,7 +358,7 @@ impl Auth {
         -> Result<(), Error>
     {
         if let Some(hash) = password_hash {
-            verify_hash_format(hash)?;
+            utility::verify_hash_format(hash)?;
         }
         let qs = user::update_user(id, name, email, phone, password_hash);
         qs.execute(&self.pool).await
@@ -510,7 +510,7 @@ impl Auth {
     {
         let qs = token::select_token_last_access_id();
         let access_id = qs.fetch_max_order(&self.pool, 0).await + 1;
-        let refresh_token = generate_token_string();
+        let refresh_token = utility::generate_token_string();
         let qs = token::insert_token(user_id, vec![access_id], vec![&refresh_token], vec![auth_token], expired, ip);
         qs.execute(&self.pool).await?;
         Ok((access_id, refresh_token, String::from(auth_token)))
@@ -522,8 +522,8 @@ impl Auth {
         let qs = token::select_token_last_access_id();
         let access_id = qs.fetch_max_order(&self.pool, 0).await + 1;
         let access_ids: Vec<i32> = (0..number).map(|i| access_id + i as i32).collect();
-        let refresh_tokens: Vec<String> = (0..number).map(|_| generate_token_string()).collect();
-        let auth_tokens: Vec<String> = (0..number).map(|_| generate_token_string()).collect();
+        let refresh_tokens: Vec<String> = (0..number).map(|_| utility::generate_token_string()).collect();
+        let auth_tokens: Vec<String> = (0..number).map(|_| utility::generate_token_string()).collect();
         let qs = token::insert_token(user_id, access_ids.clone(), refresh_tokens.iter().map(|rt| rt.as_str()).collect(), auth_tokens.iter().map(|rt| rt.as_str()).collect(), expired, ip);
         qs.execute(&self.pool).await?;
         Ok((0..number).map(|i| (access_ids[i], refresh_tokens[i].clone(), auth_tokens[i].clone())).collect())
@@ -532,7 +532,7 @@ impl Auth {
     pub async fn update_access_token(&self, access_id: i32, expired: Option<DateTime<Utc>>, ip: Option<&[u8]>)
         -> Result<String, Error>
     {
-        let refresh_token = generate_token_string();
+        let refresh_token = utility::generate_token_string();
         let qs = token::update_token(TokenSelector::Access(access_id), Some(&refresh_token), expired, ip);
         qs.execute(&self.pool).await?;
         Ok(refresh_token)
@@ -541,7 +541,7 @@ impl Auth {
     pub async fn update_auth_token(&self, auth_token: &str, expired: Option<DateTime<Utc>>, ip: Option<&[u8]>)
         -> Result<String, Error>
     {
-        let refresh_token = generate_token_string();
+        let refresh_token = utility::generate_token_string();
         let qs = token::update_token(TokenSelector::Auth(String::from(auth_token)), Some(&refresh_token), expired, ip);
         qs.execute(&self.pool).await?;
         Ok(refresh_token)

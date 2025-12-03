@@ -1,6 +1,6 @@
 use sea_query::{Iden, Query, Expr, Order};
 use uuid::Uuid;
-use crate::common::QueryStatement;
+use crate::common::query_statement::QueryStatement;
 
 #[derive(Iden)]
 pub(crate) enum GroupModel {

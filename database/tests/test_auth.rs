@@ -6,7 +6,7 @@ mod tests {
     use uuid::Uuid;
     use argon2::{Argon2, PasswordHash, PasswordVerifier};
     use bbthings_database::Auth;
-    use bbthings_database::common::generate_access_key;
+    use bbthings_database::common::utility;
     use bbthings_database::ProfileMode::*;
     use bbthings_database::{DataType::*, DataValue::*};
 
@@ -42,9 +42,10 @@ mod tests {
 
         // create new resource API
         let password_api = "Ap1_P4s5w0rd";
-        let access_key = generate_access_key();
-        let api_id1 = auth.create_api(Uuid::new_v4(), "Resource1", "localhost:9001", "RESOURCE", "", password_api, &access_key).await.unwrap();
-        let api_id2 = auth.create_api(Uuid::new_v4(), "Resource_2", "localhost:9002", "RESOURCE", "",  password_api, &access_key).await.unwrap();
+        let password_hash = utility::hash_password(password_api).unwrap();
+        let access_key = utility::generate_access_key();
+        let api_id1 = auth.create_api(Uuid::new_v4(), "Resource1", "localhost:9001", "RESOURCE", "", &password_hash, &access_key).await.unwrap();
+        let api_id2 = auth.create_api(Uuid::new_v4(), "Resource_2", "localhost:9002", "RESOURCE", "",  &password_hash, &access_key).await.unwrap();
 
         // create new procedure for newly created resource API
         let proc_id1 = auth.create_procedure(Uuid::new_v4(), api_id1, "ReadResourceData", "").await.unwrap();
@@ -102,7 +103,7 @@ mod tests {
         let api_name = "Resource_1";
         let proc_name = "ReadData";
         let role_name = "admin";
-        let access_key_new = generate_access_key();
+        let access_key_new = utility::generate_access_key();
         auth.update_api(api_id1, Some(api_name), None, None, Some("New resource api"), None, Some(&access_key_new)).await.unwrap();
         auth.update_procedure(proc_id1, Some(proc_name), Some("Read resource data")).await.unwrap();
         auth.update_role(role_id1, Some(role_name), None, Some(true), None, None).await.unwrap();
@@ -122,11 +123,13 @@ mod tests {
 
         // create new user and add associated roles
         let password_admin = "Adm1n_P4s5w0rd";
-        let password_user = "Us3r_P4s5w0rd";
-        let user_id1 = auth.create_user(Uuid::new_v4(), "administrator", "admin@mail.co", "+6281234567890", password_admin).await.unwrap();
+        let password_hash = utility::hash_password(password_admin).unwrap();
+        let user_id1 = auth.create_user(Uuid::new_v4(), "administrator", "admin@mail.co", "+6281234567890", &password_hash).await.unwrap();
         auth.add_user_role(user_id1, role_id1).await.unwrap();
         auth.add_user_role(user_id1, role_id3).await.unwrap();
-        let user_id2 = auth.create_user(Uuid::new_v4(), "username", "user@mail.co", "+6281234567890", password_user).await.unwrap();
+        let password_user = "Us3r_P4s5w0rd";
+        let password_hash = utility::hash_password(password_user).unwrap();
+        let user_id2 = auth.create_user(Uuid::new_v4(), "username", "user@mail.co", "+6281234567890", &password_hash).await.unwrap();
         auth.add_user_role(user_id2, role_id2).await.unwrap();
         auth.add_user_role(user_id2, role_id3).await.unwrap();
 
@@ -146,7 +149,8 @@ mod tests {
 
         // update user
         let password_new = "N3w_P4s5w0rd";
-        auth.update_user(user_id2, None, None, None, Some(password_new)).await.unwrap();
+        let password_hash = utility::hash_password(password_new).unwrap();
+        auth.update_user(user_id2, None, None, None, Some(&password_hash)).await.unwrap();
 
         // get updated user
         let user = auth.read_user_by_name("username").await.unwrap();

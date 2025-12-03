@@ -2,8 +2,8 @@ use sqlx::{Pool, Row, Error};
 use sqlx::postgres::{Postgres, PgRow};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
-use crate::common::QueryStatement;
-use crate::value::{DataType, DataValue};
+use crate::common::query_statement::QueryStatement;
+use crate::common::type_value::{DataType, DataValue};
 
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct ApiSchema {

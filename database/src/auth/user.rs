@@ -1,6 +1,6 @@
 use sea_query::{Iden, Query, Expr, Order};
 use uuid::Uuid;
-use crate::common::QueryStatement;
+use crate::common::query_statement::QueryStatement;
 use crate::auth::api::Api;
 use crate::auth::role::Role;
 

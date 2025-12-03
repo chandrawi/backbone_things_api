@@ -12,7 +12,7 @@ use sqlx::postgres::{Postgres, PgPoolOptions};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
 use std::slice::from_ref;
-use super::value::{DataType, DataValue, ArrayDataValue};
+use crate::common::type_value::{DataType, DataValue, ArrayDataValue};
 use _schema::{
     ModelSchema, ModelConfigSchema, TagSchema, 
     DeviceSchema, DeviceConfigSchema, GatewaySchema, GatewayConfigSchema, TypeSchema,

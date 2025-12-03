@@ -1,7 +1,7 @@
 use sea_query::{Iden, Query, Expr, Order, Func};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
-use crate::common::QueryStatement;
+use crate::common::query_statement::QueryStatement;
 
 #[derive(Iden)]
 pub(crate) enum Token {

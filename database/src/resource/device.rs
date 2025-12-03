@@ -1,7 +1,7 @@
 use sea_query::{Iden, Query, Expr, Order, Func};
 use uuid::Uuid;
-use crate::common::QueryStatement;
-use crate::value::DataValue;
+use crate::common::query_statement::QueryStatement;
+use crate::common::type_value::DataValue;
 
 #[derive(Iden)]
 pub(crate) enum Device {
