@@ -1,0 +1,27 @@
+{
+  "name": "bbthings_grpc_proto",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "dev": "rollup --config --watch",
+    "build": "rollup --config"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "google-protobuf": "^3.21.4",
+    "grpc-web": "^2.0.2"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "rollup": "^4.36.0",
+    "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.24"
+  }
+}
