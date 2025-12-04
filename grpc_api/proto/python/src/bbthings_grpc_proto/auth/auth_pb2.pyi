@@ -35,14 +35,12 @@ class ProcedureMap(_message.Message):
     def __init__(self, procedure: _Optional[str] = ..., roles: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class ApiLoginResponse(_message.Message):
-    __slots__ = ("root_key", "access_key", "access_procedures")
-    ROOT_KEY_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("access_key", "access_procedures")
     ACCESS_KEY_FIELD_NUMBER: _ClassVar[int]
     ACCESS_PROCEDURES_FIELD_NUMBER: _ClassVar[int]
-    root_key: bytes
     access_key: bytes
     access_procedures: _containers.RepeatedCompositeFieldContainer[ProcedureMap]
-    def __init__(self, root_key: _Optional[bytes] = ..., access_key: _Optional[bytes] = ..., access_procedures: _Optional[_Iterable[_Union[ProcedureMap, _Mapping]]] = ...) -> None: ...
+    def __init__(self, access_key: _Optional[bytes] = ..., access_procedures: _Optional[_Iterable[_Union[ProcedureMap, _Mapping]]] = ...) -> None: ...
 
 class UserKeyRequest(_message.Message):
     __slots__ = ()

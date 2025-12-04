@@ -4,6 +4,7 @@ pub mod auth {
     pub mod user;
     pub mod profile;
     pub mod token;
+    pub mod auth;
 }
 pub mod resource {
     pub mod model;

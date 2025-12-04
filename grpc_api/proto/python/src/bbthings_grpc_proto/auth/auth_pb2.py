@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0f\x61uth/auth.proto\x12\x04\x61uth\"\x0f\n\rApiKeyRequest\"$\n\x0e\x41piKeyResponse\x12\x12\n\npublic_key\x18\x01 \x01(\x0c\"G\n\x0f\x41piLoginRequest\x12\x0e\n\x06\x61pi_id\x18\x01 \x01(\x0c\x12\x10\n\x08password\x18\x02 \x01(\x0c\x12\x12\n\npublic_key\x18\x03 \x01(\x0c\"0\n\x0cProcedureMap\x12\x11\n\tprocedure\x18\x01 \x01(\t\x12\r\n\x05roles\x18\x02 \x03(\t\"g\n\x10\x41piLoginResponse\x12\x10\n\x08root_key\x18\x01 \x01(\x0c\x12\x12\n\naccess_key\x18\x02 \x01(\x0c\x12-\n\x11\x61\x63\x63\x65ss_procedures\x18\x03 \x03(\x0b\x32\x12.auth.ProcedureMap\"\x10\n\x0eUserKeyRequest\"%\n\x0fUserKeyResponse\x12\x12\n\npublic_key\x18\x01 \x01(\x0c\"6\n\x10UserLoginRequest\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\x0c\"M\n\x0e\x41\x63\x63\x65ssTokenMap\x12\x0e\n\x06\x61pi_id\x18\x01 \x01(\x0c\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x02 \x01(\t\x12\x15\n\rrefresh_token\x18\x03 \x01(\t\"e\n\x11UserLoginResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\x0c\x12\x12\n\nauth_token\x18\x02 \x01(\t\x12+\n\raccess_tokens\x18\x03 \x03(\x0b\x32\x14.auth.AccessTokenMap\"Q\n\x12UserRefreshRequest\x12\x0e\n\x06\x61pi_id\x18\x01 \x01(\x0c\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x02 \x01(\t\x12\x15\n\rrefresh_token\x18\x03 \x01(\t\"B\n\x13UserRefreshResponse\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\t\x12\x15\n\rrefresh_token\x18\x02 \x01(\t\"8\n\x11UserLogoutRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x0c\x12\x12\n\nauth_token\x18\x02 \x01(\t\"\x14\n\x12UserLogoutResponse2\x82\x03\n\x0b\x41uthService\x12\x38\n\x0b\x41piLoginKey\x12\x13.auth.ApiKeyRequest\x1a\x14.auth.ApiKeyResponse\x12\x39\n\x08\x41piLogin\x12\x15.auth.ApiLoginRequest\x1a\x16.auth.ApiLoginResponse\x12;\n\x0cUserLoginKey\x12\x14.auth.UserKeyRequest\x1a\x15.auth.UserKeyResponse\x12<\n\tUserLogin\x12\x16.auth.UserLoginRequest\x1a\x17.auth.UserLoginResponse\x12\x42\n\x0bUserRefresh\x12\x18.auth.UserRefreshRequest\x1a\x19.auth.UserRefreshResponse\x12?\n\nUserLogout\x12\x17.auth.UserLogoutRequest\x1a\x18.auth.UserLogoutResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0f\x61uth/auth.proto\x12\x04\x61uth\"\x0f\n\rApiKeyRequest\"$\n\x0e\x41piKeyResponse\x12\x12\n\npublic_key\x18\x01 \x01(\x0c\"G\n\x0f\x41piLoginRequest\x12\x0e\n\x06\x61pi_id\x18\x01 \x01(\x0c\x12\x10\n\x08password\x18\x02 \x01(\x0c\x12\x12\n\npublic_key\x18\x03 \x01(\x0c\"0\n\x0cProcedureMap\x12\x11\n\tprocedure\x18\x01 \x01(\t\x12\r\n\x05roles\x18\x02 \x03(\t\"U\n\x10\x41piLoginResponse\x12\x12\n\naccess_key\x18\x01 \x01(\x0c\x12-\n\x11\x61\x63\x63\x65ss_procedures\x18\x02 \x03(\x0b\x32\x12.auth.ProcedureMap\"\x10\n\x0eUserKeyRequest\"%\n\x0fUserKeyResponse\x12\x12\n\npublic_key\x18\x01 \x01(\x0c\"6\n\x10UserLoginRequest\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\x0c\"M\n\x0e\x41\x63\x63\x65ssTokenMap\x12\x0e\n\x06\x61pi_id\x18\x01 \x01(\x0c\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x02 \x01(\t\x12\x15\n\rrefresh_token\x18\x03 \x01(\t\"e\n\x11UserLoginResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\x0c\x12\x12\n\nauth_token\x18\x02 \x01(\t\x12+\n\raccess_tokens\x18\x03 \x03(\x0b\x32\x14.auth.AccessTokenMap\"Q\n\x12UserRefreshRequest\x12\x0e\n\x06\x61pi_id\x18\x01 \x01(\x0c\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x02 \x01(\t\x12\x15\n\rrefresh_token\x18\x03 \x01(\t\"B\n\x13UserRefreshResponse\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\t\x12\x15\n\rrefresh_token\x18\x02 \x01(\t\"8\n\x11UserLogoutRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x0c\x12\x12\n\nauth_token\x18\x02 \x01(\t\"\x14\n\x12UserLogoutResponse2\x82\x03\n\x0b\x41uthService\x12\x38\n\x0b\x41piLoginKey\x12\x13.auth.ApiKeyRequest\x1a\x14.auth.ApiKeyResponse\x12\x39\n\x08\x41piLogin\x12\x15.auth.ApiLoginRequest\x1a\x16.auth.ApiLoginResponse\x12;\n\x0cUserLoginKey\x12\x14.auth.UserKeyRequest\x1a\x15.auth.UserKeyResponse\x12<\n\tUserLogin\x12\x16.auth.UserLoginRequest\x1a\x17.auth.UserLoginResponse\x12\x42\n\x0bUserRefresh\x12\x18.auth.UserRefreshRequest\x1a\x19.auth.UserRefreshResponse\x12?\n\nUserLogout\x12\x17.auth.UserLogoutRequest\x1a\x18.auth.UserLogoutResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -40,25 +40,25 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_PROCEDUREMAP']._serialized_start=153
   _globals['_PROCEDUREMAP']._serialized_end=201
   _globals['_APILOGINRESPONSE']._serialized_start=203
-  _globals['_APILOGINRESPONSE']._serialized_end=306
-  _globals['_USERKEYREQUEST']._serialized_start=308
-  _globals['_USERKEYREQUEST']._serialized_end=324
-  _globals['_USERKEYRESPONSE']._serialized_start=326
-  _globals['_USERKEYRESPONSE']._serialized_end=363
-  _globals['_USERLOGINREQUEST']._serialized_start=365
-  _globals['_USERLOGINREQUEST']._serialized_end=419
-  _globals['_ACCESSTOKENMAP']._serialized_start=421
-  _globals['_ACCESSTOKENMAP']._serialized_end=498
-  _globals['_USERLOGINRESPONSE']._serialized_start=500
-  _globals['_USERLOGINRESPONSE']._serialized_end=601
-  _globals['_USERREFRESHREQUEST']._serialized_start=603
-  _globals['_USERREFRESHREQUEST']._serialized_end=684
-  _globals['_USERREFRESHRESPONSE']._serialized_start=686
-  _globals['_USERREFRESHRESPONSE']._serialized_end=752
-  _globals['_USERLOGOUTREQUEST']._serialized_start=754
-  _globals['_USERLOGOUTREQUEST']._serialized_end=810
-  _globals['_USERLOGOUTRESPONSE']._serialized_start=812
-  _globals['_USERLOGOUTRESPONSE']._serialized_end=832
-  _globals['_AUTHSERVICE']._serialized_start=835
-  _globals['_AUTHSERVICE']._serialized_end=1221
+  _globals['_APILOGINRESPONSE']._serialized_end=288
+  _globals['_USERKEYREQUEST']._serialized_start=290
+  _globals['_USERKEYREQUEST']._serialized_end=306
+  _globals['_USERKEYRESPONSE']._serialized_start=308
+  _globals['_USERKEYRESPONSE']._serialized_end=345
+  _globals['_USERLOGINREQUEST']._serialized_start=347
+  _globals['_USERLOGINREQUEST']._serialized_end=401
+  _globals['_ACCESSTOKENMAP']._serialized_start=403
+  _globals['_ACCESSTOKENMAP']._serialized_end=480
+  _globals['_USERLOGINRESPONSE']._serialized_start=482
+  _globals['_USERLOGINRESPONSE']._serialized_end=583
+  _globals['_USERREFRESHREQUEST']._serialized_start=585
+  _globals['_USERREFRESHREQUEST']._serialized_end=666
+  _globals['_USERREFRESHRESPONSE']._serialized_start=668
+  _globals['_USERREFRESHRESPONSE']._serialized_end=734
+  _globals['_USERLOGOUTREQUEST']._serialized_start=736
+  _globals['_USERLOGOUTREQUEST']._serialized_end=792
+  _globals['_USERLOGOUTRESPONSE']._serialized_start=794
+  _globals['_USERLOGOUTRESPONSE']._serialized_end=814
+  _globals['_AUTHSERVICE']._serialized_start=817
+  _globals['_AUTHSERVICE']._serialized_end=1203
 # @@protoc_insertion_point(module_scope)

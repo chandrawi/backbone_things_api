@@ -25,10 +25,8 @@ pub struct ProcedureMap {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ApiLoginResponse {
     #[prost(bytes = "vec", tag = "1")]
-    pub root_key: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "2")]
     pub access_key: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, repeated, tag = "3")]
+    #[prost(message, repeated, tag = "2")]
     pub access_procedures: ::prost::alloc::vec::Vec<ProcedureMap>,
 }
 #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]

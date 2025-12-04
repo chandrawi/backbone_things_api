@@ -1038,7 +1038,7 @@ proto.auth.ProcedureMap.prototype.clearRolesList = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.auth.ApiLoginResponse.repeatedFields_ = [3];
+proto.auth.ApiLoginResponse.repeatedFields_ = [2];
 
 
 
@@ -1071,7 +1071,6 @@ proto.auth.ApiLoginResponse.prototype.toObject = function(opt_includeInstance) {
  */
 proto.auth.ApiLoginResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-rootKey: msg.getRootKey_asB64(),
 accessKey: msg.getAccessKey_asB64(),
 accessProceduresList: jspb.Message.toObjectList(msg.getAccessProceduresList(),
     proto.auth.ProcedureMap.toObject, includeInstance)
@@ -1113,13 +1112,9 @@ proto.auth.ApiLoginResponse.deserializeBinaryFromReader = function(msg, reader) 
     switch (field) {
     case 1:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setRootKey(value);
-      break;
-    case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setAccessKey(value);
       break;
-    case 3:
+    case 2:
       var value = new proto.auth.ProcedureMap;
       reader.readMessage(value,proto.auth.ProcedureMap.deserializeBinaryFromReader);
       msg.addAccessProcedures(value);
@@ -1153,24 +1148,17 @@ proto.auth.ApiLoginResponse.prototype.serializeBinary = function() {
  */
 proto.auth.ApiLoginResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getRootKey_asU8();
+  f = message.getAccessKey_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       1,
       f
     );
   }
-  f = message.getAccessKey_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      2,
-      f
-    );
-  }
   f = message.getAccessProceduresList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      3,
+      2,
       f,
       proto.auth.ProcedureMap.serializeBinaryToWriter
     );
@@ -1179,58 +1167,16 @@ proto.auth.ApiLoginResponse.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * optional bytes root_key = 1;
+ * optional bytes access_key = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.auth.ApiLoginResponse.prototype.getRootKey = function() {
+proto.auth.ApiLoginResponse.prototype.getAccessKey = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes root_key = 1;
- * This is a type-conversion wrapper around `getRootKey()`
- * @return {string}
- */
-proto.auth.ApiLoginResponse.prototype.getRootKey_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getRootKey()));
-};
-
-
-/**
- * optional bytes root_key = 1;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getRootKey()`
- * @return {!Uint8Array}
- */
-proto.auth.ApiLoginResponse.prototype.getRootKey_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getRootKey()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.auth.ApiLoginResponse} returns this
- */
-proto.auth.ApiLoginResponse.prototype.setRootKey = function(value) {
-  return jspb.Message.setProto3BytesField(this, 1, value);
-};
-
-
-/**
- * optional bytes access_key = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.auth.ApiLoginResponse.prototype.getAccessKey = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * optional bytes access_key = 2;
+ * optional bytes access_key = 1;
  * This is a type-conversion wrapper around `getAccessKey()`
  * @return {string}
  */
@@ -1241,7 +1187,7 @@ proto.auth.ApiLoginResponse.prototype.getAccessKey_asB64 = function() {
 
 
 /**
- * optional bytes access_key = 2;
+ * optional bytes access_key = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAccessKey()`
@@ -1258,17 +1204,17 @@ proto.auth.ApiLoginResponse.prototype.getAccessKey_asU8 = function() {
  * @return {!proto.auth.ApiLoginResponse} returns this
  */
 proto.auth.ApiLoginResponse.prototype.setAccessKey = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * repeated ProcedureMap access_procedures = 3;
+ * repeated ProcedureMap access_procedures = 2;
  * @return {!Array<!proto.auth.ProcedureMap>}
  */
 proto.auth.ApiLoginResponse.prototype.getAccessProceduresList = function() {
   return /** @type{!Array<!proto.auth.ProcedureMap>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.auth.ProcedureMap, 3));
+    jspb.Message.getRepeatedWrapperField(this, proto.auth.ProcedureMap, 2));
 };
 
 
@@ -1277,7 +1223,7 @@ proto.auth.ApiLoginResponse.prototype.getAccessProceduresList = function() {
  * @return {!proto.auth.ApiLoginResponse} returns this
 */
 proto.auth.ApiLoginResponse.prototype.setAccessProceduresList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 3, value);
+  return jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
 
 
@@ -1287,7 +1233,7 @@ proto.auth.ApiLoginResponse.prototype.setAccessProceduresList = function(value) 
  * @return {!proto.auth.ProcedureMap}
  */
 proto.auth.ApiLoginResponse.prototype.addAccessProcedures = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.auth.ProcedureMap, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.auth.ProcedureMap, opt_index);
 };
 
 
