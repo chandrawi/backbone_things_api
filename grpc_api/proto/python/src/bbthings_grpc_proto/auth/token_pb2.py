@@ -24,37 +24,43 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10\x61uth/token.proto\x12\x05token\"x\n\x0bTokenSchema\x12\x11\n\taccess_id\x18\x01 \x01(\x05\x12\x0f\n\x07user_id\x18\x02 \x01(\x0c\x12\x15\n\rrefresh_token\x18\x03 \x01(\t\x12\x12\n\nauth_token\x18\x04 \x01(\t\x12\x0e\n\x06\x65xpire\x18\x05 \x01(\x03\x12\n\n\x02ip\x18\x06 \x01(\x0c\"\x1f\n\tAuthToken\x12\x12\n\nauth_token\x18\x01 \x01(\t\"\x1d\n\x08\x41\x63\x63\x65ssId\x12\x11\n\taccess_id\x18\x01 \x01(\x05\"\x19\n\x06UserId\x12\x0f\n\x07user_id\x18\x01 \x01(\x0c\"N\n\x0f\x41uthTokenCreate\x12\x0f\n\x07user_id\x18\x01 \x01(\x0c\x12\x0e\n\x06\x65xpire\x18\x02 \x01(\x03\x12\n\n\x02ip\x18\x03 \x01(\x0c\x12\x0e\n\x06number\x18\x04 \x01(\r\"\xc1\x01\n\x0bTokenUpdate\x12\x16\n\taccess_id\x18\x01 \x01(\x05H\x00\x88\x01\x01\x12\x1a\n\rrefresh_token\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x17\n\nauth_token\x18\x03 \x01(\tH\x02\x88\x01\x01\x12\x13\n\x06\x65xpire\x18\x04 \x01(\x03H\x03\x88\x01\x01\x12\x0f\n\x02ip\x18\x05 \x01(\x0cH\x04\x88\x01\x01\x42\x0c\n\n_access_idB\x10\n\x0e_refresh_tokenB\r\n\x0b_auth_tokenB\t\n\x07_expireB\x05\n\x03_ip\"7\n\x11TokenReadResponse\x12\"\n\x06result\x18\x01 \x01(\x0b\x32\x12.token.TokenSchema\"8\n\x11TokenListResponse\x12#\n\x07results\x18\x01 \x03(\x0b\x32\x12.token.TokenSchema\"S\n\x13TokenCreateResponse\x12\x11\n\taccess_id\x18\x01 \x01(\x05\x12\x15\n\rrefresh_token\x18\x02 \x01(\t\x12\x12\n\nauth_token\x18\x03 \x01(\t\"E\n\x17\x41uthTokenCreateResponse\x12*\n\x06tokens\x18\x01 \x03(\x0b\x32\x1a.token.TokenCreateResponse\"@\n\x13TokenUpdateResponse\x12\x15\n\rrefresh_token\x18\x01 \x01(\t\x12\x12\n\nauth_token\x18\x02 \x01(\t\"\x15\n\x13TokenChangeResponse2\xa0\x05\n\x0cTokenService\x12<\n\x0fReadAccessToken\x12\x0f.token.AccessId\x1a\x18.token.TokenReadResponse\x12;\n\rListAuthToken\x12\x10.token.AuthToken\x1a\x18.token.TokenListResponse\x12:\n\x0fListTokenByUser\x12\r.token.UserId\x1a\x18.token.TokenListResponse\x12\x43\n\x11\x43reateAccessToken\x12\x12.token.TokenSchema\x1a\x1a.token.TokenCreateResponse\x12I\n\x0f\x43reateAuthToken\x12\x16.token.AuthTokenCreate\x1a\x1e.token.AuthTokenCreateResponse\x12\x43\n\x11UpdateAccessToken\x12\x12.token.TokenUpdate\x1a\x1a.token.TokenUpdateResponse\x12\x41\n\x0fUpdateAuthToken\x12\x12.token.TokenUpdate\x1a\x1a.token.TokenUpdateResponse\x12@\n\x11\x44\x65leteAccessToken\x12\x0f.token.AccessId\x1a\x1a.token.TokenChangeResponse\x12?\n\x0f\x44\x65leteAuthToken\x12\x10.token.AuthToken\x1a\x1a.token.TokenChangeResponse\x12>\n\x11\x44\x65leteTokenByUser\x12\r.token.UserId\x1a\x1a.token.TokenChangeResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10\x61uth/token.proto\x12\x05token\"\x8a\x01\n\x0bTokenSchema\x12\x11\n\taccess_id\x18\x01 \x01(\x05\x12\x0f\n\x07user_id\x18\x02 \x01(\x0c\x12\x15\n\rrefresh_token\x18\x03 \x01(\t\x12\x12\n\nauth_token\x18\x04 \x01(\t\x12\x0f\n\x07\x63reated\x18\x05 \x01(\x03\x12\x0f\n\x07\x65xpired\x18\x06 \x01(\x03\x12\n\n\x02ip\x18\x07 \x01(\x0c\"\x1f\n\tAuthToken\x12\x12\n\nauth_token\x18\x01 \x01(\t\"\x1d\n\x08\x41\x63\x63\x65ssId\x12\x11\n\taccess_id\x18\x01 \x01(\x05\"\x19\n\x06UserId\x12\x0f\n\x07user_id\x18\x01 \x01(\x0c\"@\n\tTokenTime\x12\x11\n\ttimestamp\x18\x01 \x01(\x03\x12\x14\n\x07user_id\x18\x02 \x01(\x0cH\x00\x88\x01\x01\x42\n\n\x08_user_id\"P\n\x10TokenRangeSingle\x12\r\n\x05\x62\x65gin\x18\x01 \x01(\x03\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x03\x12\x14\n\x07user_id\x18\x03 \x01(\x0cH\x00\x88\x01\x01\x42\n\n\x08_user_id\"t\n\x10TokenRangeDouble\x12\x0f\n\x07\x62\x65gin_1\x18\x01 \x01(\x03\x12\r\n\x05\x65nd_1\x18\x02 \x01(\x03\x12\x0f\n\x07\x62\x65gin_2\x18\x03 \x01(\x03\x12\r\n\x05\x65nd_2\x18\x04 \x01(\x03\x12\x14\n\x07user_id\x18\x05 \x01(\x0cH\x00\x88\x01\x01\x42\n\n\x08_user_id\"N\n\x0f\x41uthTokenCreate\x12\x0f\n\x07user_id\x18\x01 \x01(\x0c\x12\x0e\n\x06\x65xpire\x18\x02 \x01(\x03\x12\n\n\x02ip\x18\x03 \x01(\x0c\x12\x0e\n\x06number\x18\x04 \x01(\r\"\xc1\x01\n\x0bTokenUpdate\x12\x16\n\taccess_id\x18\x01 \x01(\x05H\x00\x88\x01\x01\x12\x1a\n\rrefresh_token\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x17\n\nauth_token\x18\x03 \x01(\tH\x02\x88\x01\x01\x12\x13\n\x06\x65xpire\x18\x04 \x01(\x03H\x03\x88\x01\x01\x12\x0f\n\x02ip\x18\x05 \x01(\x0cH\x04\x88\x01\x01\x42\x0c\n\n_access_idB\x10\n\x0e_refresh_tokenB\r\n\x0b_auth_tokenB\t\n\x07_expireB\x05\n\x03_ip\"7\n\x11TokenReadResponse\x12\"\n\x06result\x18\x01 \x01(\x0b\x32\x12.token.TokenSchema\"8\n\x11TokenListResponse\x12#\n\x07results\x18\x01 \x03(\x0b\x32\x12.token.TokenSchema\"S\n\x13TokenCreateResponse\x12\x11\n\taccess_id\x18\x01 \x01(\x05\x12\x15\n\rrefresh_token\x18\x02 \x01(\t\x12\x12\n\nauth_token\x18\x03 \x01(\t\"E\n\x17\x41uthTokenCreateResponse\x12*\n\x06tokens\x18\x01 \x03(\x0b\x32\x1a.token.TokenCreateResponse\",\n\x13TokenUpdateResponse\x12\x15\n\rrefresh_token\x18\x01 \x01(\t\"\x15\n\x13TokenChangeResponse2\xa3\t\n\x0cTokenService\x12<\n\x0fReadAccessToken\x12\x0f.token.AccessId\x1a\x18.token.TokenReadResponse\x12;\n\rListAuthToken\x12\x10.token.AuthToken\x1a\x18.token.TokenListResponse\x12:\n\x0fListTokenByUser\x12\r.token.UserId\x1a\x18.token.TokenListResponse\x12G\n\x19ListTokenByCreatedEarlier\x12\x10.token.TokenTime\x1a\x18.token.TokenListResponse\x12\x45\n\x17ListTokenByCreatedLater\x12\x10.token.TokenTime\x1a\x18.token.TokenListResponse\x12L\n\x17ListTokenByCreatedRange\x12\x17.token.TokenRangeSingle\x1a\x18.token.TokenListResponse\x12G\n\x19ListTokenByExpiredEarlier\x12\x10.token.TokenTime\x1a\x18.token.TokenListResponse\x12\x45\n\x17ListTokenByExpiredLater\x12\x10.token.TokenTime\x1a\x18.token.TokenListResponse\x12L\n\x17ListTokenByExpiredRange\x12\x17.token.TokenRangeSingle\x1a\x18.token.TokenListResponse\x12\x45\n\x10ListTokenByRange\x12\x17.token.TokenRangeDouble\x1a\x18.token.TokenListResponse\x12\x43\n\x11\x43reateAccessToken\x12\x12.token.TokenSchema\x1a\x1a.token.TokenCreateResponse\x12I\n\x0f\x43reateAuthToken\x12\x16.token.AuthTokenCreate\x1a\x1e.token.AuthTokenCreateResponse\x12\x43\n\x11UpdateAccessToken\x12\x12.token.TokenUpdate\x1a\x1a.token.TokenUpdateResponse\x12\x41\n\x0fUpdateAuthToken\x12\x12.token.TokenUpdate\x1a\x1a.token.TokenUpdateResponse\x12@\n\x11\x44\x65leteAccessToken\x12\x0f.token.AccessId\x1a\x1a.token.TokenChangeResponse\x12?\n\x0f\x44\x65leteAuthToken\x12\x10.token.AuthToken\x1a\x1a.token.TokenChangeResponse\x12>\n\x11\x44\x65leteTokenByUser\x12\r.token.UserId\x1a\x1a.token.TokenChangeResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'auth.token_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_TOKENSCHEMA']._serialized_start=27
-  _globals['_TOKENSCHEMA']._serialized_end=147
-  _globals['_AUTHTOKEN']._serialized_start=149
-  _globals['_AUTHTOKEN']._serialized_end=180
-  _globals['_ACCESSID']._serialized_start=182
-  _globals['_ACCESSID']._serialized_end=211
-  _globals['_USERID']._serialized_start=213
-  _globals['_USERID']._serialized_end=238
-  _globals['_AUTHTOKENCREATE']._serialized_start=240
-  _globals['_AUTHTOKENCREATE']._serialized_end=318
-  _globals['_TOKENUPDATE']._serialized_start=321
-  _globals['_TOKENUPDATE']._serialized_end=514
-  _globals['_TOKENREADRESPONSE']._serialized_start=516
-  _globals['_TOKENREADRESPONSE']._serialized_end=571
-  _globals['_TOKENLISTRESPONSE']._serialized_start=573
-  _globals['_TOKENLISTRESPONSE']._serialized_end=629
-  _globals['_TOKENCREATERESPONSE']._serialized_start=631
-  _globals['_TOKENCREATERESPONSE']._serialized_end=714
-  _globals['_AUTHTOKENCREATERESPONSE']._serialized_start=716
-  _globals['_AUTHTOKENCREATERESPONSE']._serialized_end=785
-  _globals['_TOKENUPDATERESPONSE']._serialized_start=787
-  _globals['_TOKENUPDATERESPONSE']._serialized_end=851
-  _globals['_TOKENCHANGERESPONSE']._serialized_start=853
-  _globals['_TOKENCHANGERESPONSE']._serialized_end=874
-  _globals['_TOKENSERVICE']._serialized_start=877
-  _globals['_TOKENSERVICE']._serialized_end=1549
+  _globals['_TOKENSCHEMA']._serialized_start=28
+  _globals['_TOKENSCHEMA']._serialized_end=166
+  _globals['_AUTHTOKEN']._serialized_start=168
+  _globals['_AUTHTOKEN']._serialized_end=199
+  _globals['_ACCESSID']._serialized_start=201
+  _globals['_ACCESSID']._serialized_end=230
+  _globals['_USERID']._serialized_start=232
+  _globals['_USERID']._serialized_end=257
+  _globals['_TOKENTIME']._serialized_start=259
+  _globals['_TOKENTIME']._serialized_end=323
+  _globals['_TOKENRANGESINGLE']._serialized_start=325
+  _globals['_TOKENRANGESINGLE']._serialized_end=405
+  _globals['_TOKENRANGEDOUBLE']._serialized_start=407
+  _globals['_TOKENRANGEDOUBLE']._serialized_end=523
+  _globals['_AUTHTOKENCREATE']._serialized_start=525
+  _globals['_AUTHTOKENCREATE']._serialized_end=603
+  _globals['_TOKENUPDATE']._serialized_start=606
+  _globals['_TOKENUPDATE']._serialized_end=799
+  _globals['_TOKENREADRESPONSE']._serialized_start=801
+  _globals['_TOKENREADRESPONSE']._serialized_end=856
+  _globals['_TOKENLISTRESPONSE']._serialized_start=858
+  _globals['_TOKENLISTRESPONSE']._serialized_end=914
+  _globals['_TOKENCREATERESPONSE']._serialized_start=916
+  _globals['_TOKENCREATERESPONSE']._serialized_end=999
+  _globals['_AUTHTOKENCREATERESPONSE']._serialized_start=1001
+  _globals['_AUTHTOKENCREATERESPONSE']._serialized_end=1070
+  _globals['_TOKENUPDATERESPONSE']._serialized_start=1072
+  _globals['_TOKENUPDATERESPONSE']._serialized_end=1116
+  _globals['_TOKENCHANGERESPONSE']._serialized_start=1118
+  _globals['_TOKENCHANGERESPONSE']._serialized_end=1139
+  _globals['_TOKENSERVICE']._serialized_start=1142
+  _globals['_TOKENSERVICE']._serialized_end=2329
 # @@protoc_insertion_point(module_scope)

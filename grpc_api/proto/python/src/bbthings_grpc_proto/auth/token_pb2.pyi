@@ -7,20 +7,22 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class TokenSchema(_message.Message):
-    __slots__ = ("access_id", "user_id", "refresh_token", "auth_token", "expire", "ip")
+    __slots__ = ("access_id", "user_id", "refresh_token", "auth_token", "created", "expired", "ip")
     ACCESS_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     REFRESH_TOKEN_FIELD_NUMBER: _ClassVar[int]
     AUTH_TOKEN_FIELD_NUMBER: _ClassVar[int]
-    EXPIRE_FIELD_NUMBER: _ClassVar[int]
+    CREATED_FIELD_NUMBER: _ClassVar[int]
+    EXPIRED_FIELD_NUMBER: _ClassVar[int]
     IP_FIELD_NUMBER: _ClassVar[int]
     access_id: int
     user_id: bytes
     refresh_token: str
     auth_token: str
-    expire: int
+    created: int
+    expired: int
     ip: bytes
-    def __init__(self, access_id: _Optional[int] = ..., user_id: _Optional[bytes] = ..., refresh_token: _Optional[str] = ..., auth_token: _Optional[str] = ..., expire: _Optional[int] = ..., ip: _Optional[bytes] = ...) -> None: ...
+    def __init__(self, access_id: _Optional[int] = ..., user_id: _Optional[bytes] = ..., refresh_token: _Optional[str] = ..., auth_token: _Optional[str] = ..., created: _Optional[int] = ..., expired: _Optional[int] = ..., ip: _Optional[bytes] = ...) -> None: ...
 
 class AuthToken(_message.Message):
     __slots__ = ("auth_token",)
@@ -39,6 +41,38 @@ class UserId(_message.Message):
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     user_id: bytes
     def __init__(self, user_id: _Optional[bytes] = ...) -> None: ...
+
+class TokenTime(_message.Message):
+    __slots__ = ("timestamp", "user_id")
+    TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    timestamp: int
+    user_id: bytes
+    def __init__(self, timestamp: _Optional[int] = ..., user_id: _Optional[bytes] = ...) -> None: ...
+
+class TokenRangeSingle(_message.Message):
+    __slots__ = ("begin", "end", "user_id")
+    BEGIN_FIELD_NUMBER: _ClassVar[int]
+    END_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    begin: int
+    end: int
+    user_id: bytes
+    def __init__(self, begin: _Optional[int] = ..., end: _Optional[int] = ..., user_id: _Optional[bytes] = ...) -> None: ...
+
+class TokenRangeDouble(_message.Message):
+    __slots__ = ("begin_1", "end_1", "begin_2", "end_2", "user_id")
+    BEGIN_1_FIELD_NUMBER: _ClassVar[int]
+    END_1_FIELD_NUMBER: _ClassVar[int]
+    BEGIN_2_FIELD_NUMBER: _ClassVar[int]
+    END_2_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    begin_1: int
+    end_1: int
+    begin_2: int
+    end_2: int
+    user_id: bytes
+    def __init__(self, begin_1: _Optional[int] = ..., end_1: _Optional[int] = ..., begin_2: _Optional[int] = ..., end_2: _Optional[int] = ..., user_id: _Optional[bytes] = ...) -> None: ...
 
 class AuthTokenCreate(_message.Message):
     __slots__ = ("user_id", "expire", "ip", "number")
@@ -95,12 +129,10 @@ class AuthTokenCreateResponse(_message.Message):
     def __init__(self, tokens: _Optional[_Iterable[_Union[TokenCreateResponse, _Mapping]]] = ...) -> None: ...
 
 class TokenUpdateResponse(_message.Message):
-    __slots__ = ("refresh_token", "auth_token")
+    __slots__ = ("refresh_token",)
     REFRESH_TOKEN_FIELD_NUMBER: _ClassVar[int]
-    AUTH_TOKEN_FIELD_NUMBER: _ClassVar[int]
     refresh_token: str
-    auth_token: str
-    def __init__(self, refresh_token: _Optional[str] = ..., auth_token: _Optional[str] = ...) -> None: ...
+    def __init__(self, refresh_token: _Optional[str] = ...) -> None: ...
 
 class TokenChangeResponse(_message.Message):
     __slots__ = ()

@@ -10,8 +10,10 @@ pub struct TokenSchema {
     #[prost(string, tag = "4")]
     pub auth_token: ::prost::alloc::string::String,
     #[prost(int64, tag = "5")]
-    pub expire: i64,
-    #[prost(bytes = "vec", tag = "6")]
+    pub created: i64,
+    #[prost(int64, tag = "6")]
+    pub expired: i64,
+    #[prost(bytes = "vec", tag = "7")]
     pub ip: ::prost::alloc::vec::Vec<u8>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
@@ -28,6 +30,35 @@ pub struct AccessId {
 pub struct UserId {
     #[prost(bytes = "vec", tag = "1")]
     pub user_id: ::prost::alloc::vec::Vec<u8>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct TokenTime {
+    #[prost(int64, tag = "1")]
+    pub timestamp: i64,
+    #[prost(bytes = "vec", optional, tag = "2")]
+    pub user_id: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct TokenRangeSingle {
+    #[prost(int64, tag = "1")]
+    pub begin: i64,
+    #[prost(int64, tag = "2")]
+    pub end: i64,
+    #[prost(bytes = "vec", optional, tag = "3")]
+    pub user_id: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct TokenRangeDouble {
+    #[prost(int64, tag = "1")]
+    pub begin_1: i64,
+    #[prost(int64, tag = "2")]
+    pub end_1: i64,
+    #[prost(int64, tag = "3")]
+    pub begin_2: i64,
+    #[prost(int64, tag = "4")]
+    pub end_2: i64,
+    #[prost(bytes = "vec", optional, tag = "5")]
+    pub user_id: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct AuthTokenCreate {
@@ -81,8 +112,6 @@ pub struct AuthTokenCreateResponse {
 pub struct TokenUpdateResponse {
     #[prost(string, tag = "1")]
     pub refresh_token: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub auth_token: ::prost::alloc::string::String,
 }
 #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct TokenChangeResponse {}
@@ -247,6 +276,186 @@ pub mod token_service_client {
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("token.TokenService", "ListTokenByUser"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_token_by_created_earlier(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TokenTime>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/token.TokenService/ListTokenByCreatedEarlier",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("token.TokenService", "ListTokenByCreatedEarlier"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_token_by_created_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TokenTime>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/token.TokenService/ListTokenByCreatedLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("token.TokenService", "ListTokenByCreatedLater"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_token_by_created_range(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TokenRangeSingle>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/token.TokenService/ListTokenByCreatedRange",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("token.TokenService", "ListTokenByCreatedRange"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_token_by_expired_earlier(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TokenTime>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/token.TokenService/ListTokenByExpiredEarlier",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("token.TokenService", "ListTokenByExpiredEarlier"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_token_by_expired_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TokenTime>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/token.TokenService/ListTokenByExpiredLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("token.TokenService", "ListTokenByExpiredLater"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_token_by_expired_range(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TokenRangeSingle>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/token.TokenService/ListTokenByExpiredRange",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("token.TokenService", "ListTokenByExpiredRange"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_token_by_range(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TokenRangeDouble>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/token.TokenService/ListTokenByRange",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("token.TokenService", "ListTokenByRange"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn create_access_token(
@@ -449,6 +658,55 @@ pub mod token_service_server {
         async fn list_token_by_user(
             &self,
             request: tonic::Request<super::UserId>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        >;
+        async fn list_token_by_created_earlier(
+            &self,
+            request: tonic::Request<super::TokenTime>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        >;
+        async fn list_token_by_created_later(
+            &self,
+            request: tonic::Request<super::TokenTime>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        >;
+        async fn list_token_by_created_range(
+            &self,
+            request: tonic::Request<super::TokenRangeSingle>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        >;
+        async fn list_token_by_expired_earlier(
+            &self,
+            request: tonic::Request<super::TokenTime>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        >;
+        async fn list_token_by_expired_later(
+            &self,
+            request: tonic::Request<super::TokenTime>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        >;
+        async fn list_token_by_expired_range(
+            &self,
+            request: tonic::Request<super::TokenRangeSingle>,
+        ) -> std::result::Result<
+            tonic::Response<super::TokenListResponse>,
+            tonic::Status,
+        >;
+        async fn list_token_by_range(
+            &self,
+            request: tonic::Request<super::TokenRangeDouble>,
         ) -> std::result::Result<
             tonic::Response<super::TokenListResponse>,
             tonic::Status,
@@ -695,6 +953,338 @@ pub mod token_service_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let method = ListTokenByUserSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/token.TokenService/ListTokenByCreatedEarlier" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListTokenByCreatedEarlierSvc<T: TokenService>(pub Arc<T>);
+                    impl<T: TokenService> tonic::server::UnaryService<super::TokenTime>
+                    for ListTokenByCreatedEarlierSvc<T> {
+                        type Response = super::TokenListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TokenTime>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as TokenService>::list_token_by_created_earlier(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListTokenByCreatedEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/token.TokenService/ListTokenByCreatedLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListTokenByCreatedLaterSvc<T: TokenService>(pub Arc<T>);
+                    impl<T: TokenService> tonic::server::UnaryService<super::TokenTime>
+                    for ListTokenByCreatedLaterSvc<T> {
+                        type Response = super::TokenListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TokenTime>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as TokenService>::list_token_by_created_later(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListTokenByCreatedLaterSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/token.TokenService/ListTokenByCreatedRange" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListTokenByCreatedRangeSvc<T: TokenService>(pub Arc<T>);
+                    impl<
+                        T: TokenService,
+                    > tonic::server::UnaryService<super::TokenRangeSingle>
+                    for ListTokenByCreatedRangeSvc<T> {
+                        type Response = super::TokenListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TokenRangeSingle>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as TokenService>::list_token_by_created_range(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListTokenByCreatedRangeSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/token.TokenService/ListTokenByExpiredEarlier" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListTokenByExpiredEarlierSvc<T: TokenService>(pub Arc<T>);
+                    impl<T: TokenService> tonic::server::UnaryService<super::TokenTime>
+                    for ListTokenByExpiredEarlierSvc<T> {
+                        type Response = super::TokenListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TokenTime>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as TokenService>::list_token_by_expired_earlier(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListTokenByExpiredEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/token.TokenService/ListTokenByExpiredLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListTokenByExpiredLaterSvc<T: TokenService>(pub Arc<T>);
+                    impl<T: TokenService> tonic::server::UnaryService<super::TokenTime>
+                    for ListTokenByExpiredLaterSvc<T> {
+                        type Response = super::TokenListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TokenTime>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as TokenService>::list_token_by_expired_later(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListTokenByExpiredLaterSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/token.TokenService/ListTokenByExpiredRange" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListTokenByExpiredRangeSvc<T: TokenService>(pub Arc<T>);
+                    impl<
+                        T: TokenService,
+                    > tonic::server::UnaryService<super::TokenRangeSingle>
+                    for ListTokenByExpiredRangeSvc<T> {
+                        type Response = super::TokenListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TokenRangeSingle>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as TokenService>::list_token_by_expired_range(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListTokenByExpiredRangeSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/token.TokenService/ListTokenByRange" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListTokenByRangeSvc<T: TokenService>(pub Arc<T>);
+                    impl<
+                        T: TokenService,
+                    > tonic::server::UnaryService<super::TokenRangeDouble>
+                    for ListTokenByRangeSvc<T> {
+                        type Response = super::TokenListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TokenRangeDouble>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as TokenService>::list_token_by_range(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListTokenByRangeSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

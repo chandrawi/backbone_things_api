@@ -8,6 +8,20 @@ service TokenService {
 
     rpc ListTokenByUser(UserId) returns (TokenListResponse);
 
+    rpc ListTokenByCreatedEarlier(TokenTime) returns (TokenListResponse);
+
+    rpc ListTokenByCreatedLater(TokenTime) returns (TokenListResponse);
+
+    rpc ListTokenByCreatedRange(TokenRangeSingle) returns (TokenListResponse);
+
+    rpc ListTokenByExpiredEarlier(TokenTime) returns (TokenListResponse);
+
+    rpc ListTokenByExpiredLater(TokenTime) returns (TokenListResponse);
+
+    rpc ListTokenByExpiredRange(TokenRangeSingle) returns (TokenListResponse);
+
+    rpc ListTokenByRange(TokenRangeDouble) returns (TokenListResponse);
+
     rpc CreateAccessToken(TokenSchema) returns (TokenCreateResponse);
 
     rpc CreateAuthToken(AuthTokenCreate) returns (AuthTokenCreateResponse);
@@ -28,8 +42,9 @@ message TokenSchema {
     bytes user_id = 2;
     string refresh_token = 3;
     string auth_token = 4;
-    int64 expire = 5;
-    bytes ip = 6;
+    int64 created = 5;
+    int64 expired = 6;
+    bytes ip = 7;
 }
 
 message AuthToken {
@@ -42,6 +57,25 @@ message AccessId {
 
 message UserId {
     bytes user_id = 1;
+}
+
+message TokenTime {
+    int64 timestamp = 1;
+    optional bytes user_id = 2;
+}
+
+message TokenRangeSingle {
+    int64 begin = 1;
+    int64 end = 2;
+    optional bytes user_id = 3;
+}
+
+message TokenRangeDouble {
+    int64 begin_1 = 1;
+    int64 end_1 = 2;
+    int64 begin_2 = 3;
+    int64 end_2 = 4;
+    optional bytes user_id = 5;
 }
 
 message AuthTokenCreate {
@@ -79,7 +113,6 @@ message AuthTokenCreateResponse {
 
 message TokenUpdateResponse {
     string refresh_token = 1;
-    string auth_token = 2;
 }
 
 message TokenChangeResponse {

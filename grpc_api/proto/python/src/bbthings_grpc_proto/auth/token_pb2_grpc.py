@@ -49,6 +49,41 @@ class TokenServiceStub(object):
                 request_serializer=auth_dot_token__pb2.UserId.SerializeToString,
                 response_deserializer=auth_dot_token__pb2.TokenListResponse.FromString,
                 _registered_method=True)
+        self.ListTokenByCreatedEarlier = channel.unary_unary(
+                '/token.TokenService/ListTokenByCreatedEarlier',
+                request_serializer=auth_dot_token__pb2.TokenTime.SerializeToString,
+                response_deserializer=auth_dot_token__pb2.TokenListResponse.FromString,
+                _registered_method=True)
+        self.ListTokenByCreatedLater = channel.unary_unary(
+                '/token.TokenService/ListTokenByCreatedLater',
+                request_serializer=auth_dot_token__pb2.TokenTime.SerializeToString,
+                response_deserializer=auth_dot_token__pb2.TokenListResponse.FromString,
+                _registered_method=True)
+        self.ListTokenByCreatedRange = channel.unary_unary(
+                '/token.TokenService/ListTokenByCreatedRange',
+                request_serializer=auth_dot_token__pb2.TokenRangeSingle.SerializeToString,
+                response_deserializer=auth_dot_token__pb2.TokenListResponse.FromString,
+                _registered_method=True)
+        self.ListTokenByExpiredEarlier = channel.unary_unary(
+                '/token.TokenService/ListTokenByExpiredEarlier',
+                request_serializer=auth_dot_token__pb2.TokenTime.SerializeToString,
+                response_deserializer=auth_dot_token__pb2.TokenListResponse.FromString,
+                _registered_method=True)
+        self.ListTokenByExpiredLater = channel.unary_unary(
+                '/token.TokenService/ListTokenByExpiredLater',
+                request_serializer=auth_dot_token__pb2.TokenTime.SerializeToString,
+                response_deserializer=auth_dot_token__pb2.TokenListResponse.FromString,
+                _registered_method=True)
+        self.ListTokenByExpiredRange = channel.unary_unary(
+                '/token.TokenService/ListTokenByExpiredRange',
+                request_serializer=auth_dot_token__pb2.TokenRangeSingle.SerializeToString,
+                response_deserializer=auth_dot_token__pb2.TokenListResponse.FromString,
+                _registered_method=True)
+        self.ListTokenByRange = channel.unary_unary(
+                '/token.TokenService/ListTokenByRange',
+                request_serializer=auth_dot_token__pb2.TokenRangeDouble.SerializeToString,
+                response_deserializer=auth_dot_token__pb2.TokenListResponse.FromString,
+                _registered_method=True)
         self.CreateAccessToken = channel.unary_unary(
                 '/token.TokenService/CreateAccessToken',
                 request_serializer=auth_dot_token__pb2.TokenSchema.SerializeToString,
@@ -102,6 +137,48 @@ class TokenServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def ListTokenByUser(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListTokenByCreatedEarlier(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListTokenByCreatedLater(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListTokenByCreatedRange(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListTokenByExpiredEarlier(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListTokenByExpiredLater(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListTokenByExpiredRange(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListTokenByRange(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -165,6 +242,41 @@ def add_TokenServiceServicer_to_server(servicer, server):
             'ListTokenByUser': grpc.unary_unary_rpc_method_handler(
                     servicer.ListTokenByUser,
                     request_deserializer=auth_dot_token__pb2.UserId.FromString,
+                    response_serializer=auth_dot_token__pb2.TokenListResponse.SerializeToString,
+            ),
+            'ListTokenByCreatedEarlier': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListTokenByCreatedEarlier,
+                    request_deserializer=auth_dot_token__pb2.TokenTime.FromString,
+                    response_serializer=auth_dot_token__pb2.TokenListResponse.SerializeToString,
+            ),
+            'ListTokenByCreatedLater': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListTokenByCreatedLater,
+                    request_deserializer=auth_dot_token__pb2.TokenTime.FromString,
+                    response_serializer=auth_dot_token__pb2.TokenListResponse.SerializeToString,
+            ),
+            'ListTokenByCreatedRange': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListTokenByCreatedRange,
+                    request_deserializer=auth_dot_token__pb2.TokenRangeSingle.FromString,
+                    response_serializer=auth_dot_token__pb2.TokenListResponse.SerializeToString,
+            ),
+            'ListTokenByExpiredEarlier': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListTokenByExpiredEarlier,
+                    request_deserializer=auth_dot_token__pb2.TokenTime.FromString,
+                    response_serializer=auth_dot_token__pb2.TokenListResponse.SerializeToString,
+            ),
+            'ListTokenByExpiredLater': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListTokenByExpiredLater,
+                    request_deserializer=auth_dot_token__pb2.TokenTime.FromString,
+                    response_serializer=auth_dot_token__pb2.TokenListResponse.SerializeToString,
+            ),
+            'ListTokenByExpiredRange': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListTokenByExpiredRange,
+                    request_deserializer=auth_dot_token__pb2.TokenRangeSingle.FromString,
+                    response_serializer=auth_dot_token__pb2.TokenListResponse.SerializeToString,
+            ),
+            'ListTokenByRange': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListTokenByRange,
+                    request_deserializer=auth_dot_token__pb2.TokenRangeDouble.FromString,
                     response_serializer=auth_dot_token__pb2.TokenListResponse.SerializeToString,
             ),
             'CreateAccessToken': grpc.unary_unary_rpc_method_handler(
@@ -283,6 +395,195 @@ class TokenService(object):
             target,
             '/token.TokenService/ListTokenByUser',
             auth_dot_token__pb2.UserId.SerializeToString,
+            auth_dot_token__pb2.TokenListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListTokenByCreatedEarlier(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/token.TokenService/ListTokenByCreatedEarlier',
+            auth_dot_token__pb2.TokenTime.SerializeToString,
+            auth_dot_token__pb2.TokenListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListTokenByCreatedLater(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/token.TokenService/ListTokenByCreatedLater',
+            auth_dot_token__pb2.TokenTime.SerializeToString,
+            auth_dot_token__pb2.TokenListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListTokenByCreatedRange(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/token.TokenService/ListTokenByCreatedRange',
+            auth_dot_token__pb2.TokenRangeSingle.SerializeToString,
+            auth_dot_token__pb2.TokenListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListTokenByExpiredEarlier(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/token.TokenService/ListTokenByExpiredEarlier',
+            auth_dot_token__pb2.TokenTime.SerializeToString,
+            auth_dot_token__pb2.TokenListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListTokenByExpiredLater(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/token.TokenService/ListTokenByExpiredLater',
+            auth_dot_token__pb2.TokenTime.SerializeToString,
+            auth_dot_token__pb2.TokenListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListTokenByExpiredRange(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/token.TokenService/ListTokenByExpiredRange',
+            auth_dot_token__pb2.TokenRangeSingle.SerializeToString,
+            auth_dot_token__pb2.TokenListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListTokenByRange(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/token.TokenService/ListTokenByRange',
+            auth_dot_token__pb2.TokenRangeDouble.SerializeToString,
             auth_dot_token__pb2.TokenListResponse.FromString,
             options,
             channel_credentials,

@@ -260,6 +260,433 @@ proto.token.TokenServicePromiseClient.prototype.listTokenByUser =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.token.TokenTime,
+ *   !proto.token.TokenListResponse>}
+ */
+const methodDescriptor_TokenService_ListTokenByCreatedEarlier = new grpc.web.MethodDescriptor(
+  '/token.TokenService/ListTokenByCreatedEarlier',
+  grpc.web.MethodType.UNARY,
+  proto.token.TokenTime,
+  proto.token.TokenListResponse,
+  /**
+   * @param {!proto.token.TokenTime} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.token.TokenListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.token.TokenTime} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.token.TokenListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.token.TokenListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.token.TokenServiceClient.prototype.listTokenByCreatedEarlier =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/token.TokenService/ListTokenByCreatedEarlier',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByCreatedEarlier,
+      callback);
+};
+
+
+/**
+ * @param {!proto.token.TokenTime} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.token.TokenListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.token.TokenServicePromiseClient.prototype.listTokenByCreatedEarlier =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/token.TokenService/ListTokenByCreatedEarlier',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByCreatedEarlier);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.token.TokenTime,
+ *   !proto.token.TokenListResponse>}
+ */
+const methodDescriptor_TokenService_ListTokenByCreatedLater = new grpc.web.MethodDescriptor(
+  '/token.TokenService/ListTokenByCreatedLater',
+  grpc.web.MethodType.UNARY,
+  proto.token.TokenTime,
+  proto.token.TokenListResponse,
+  /**
+   * @param {!proto.token.TokenTime} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.token.TokenListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.token.TokenTime} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.token.TokenListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.token.TokenListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.token.TokenServiceClient.prototype.listTokenByCreatedLater =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/token.TokenService/ListTokenByCreatedLater',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByCreatedLater,
+      callback);
+};
+
+
+/**
+ * @param {!proto.token.TokenTime} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.token.TokenListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.token.TokenServicePromiseClient.prototype.listTokenByCreatedLater =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/token.TokenService/ListTokenByCreatedLater',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByCreatedLater);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.token.TokenRangeSingle,
+ *   !proto.token.TokenListResponse>}
+ */
+const methodDescriptor_TokenService_ListTokenByCreatedRange = new grpc.web.MethodDescriptor(
+  '/token.TokenService/ListTokenByCreatedRange',
+  grpc.web.MethodType.UNARY,
+  proto.token.TokenRangeSingle,
+  proto.token.TokenListResponse,
+  /**
+   * @param {!proto.token.TokenRangeSingle} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.token.TokenListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.token.TokenRangeSingle} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.token.TokenListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.token.TokenListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.token.TokenServiceClient.prototype.listTokenByCreatedRange =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/token.TokenService/ListTokenByCreatedRange',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByCreatedRange,
+      callback);
+};
+
+
+/**
+ * @param {!proto.token.TokenRangeSingle} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.token.TokenListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.token.TokenServicePromiseClient.prototype.listTokenByCreatedRange =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/token.TokenService/ListTokenByCreatedRange',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByCreatedRange);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.token.TokenTime,
+ *   !proto.token.TokenListResponse>}
+ */
+const methodDescriptor_TokenService_ListTokenByExpiredEarlier = new grpc.web.MethodDescriptor(
+  '/token.TokenService/ListTokenByExpiredEarlier',
+  grpc.web.MethodType.UNARY,
+  proto.token.TokenTime,
+  proto.token.TokenListResponse,
+  /**
+   * @param {!proto.token.TokenTime} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.token.TokenListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.token.TokenTime} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.token.TokenListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.token.TokenListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.token.TokenServiceClient.prototype.listTokenByExpiredEarlier =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/token.TokenService/ListTokenByExpiredEarlier',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByExpiredEarlier,
+      callback);
+};
+
+
+/**
+ * @param {!proto.token.TokenTime} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.token.TokenListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.token.TokenServicePromiseClient.prototype.listTokenByExpiredEarlier =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/token.TokenService/ListTokenByExpiredEarlier',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByExpiredEarlier);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.token.TokenTime,
+ *   !proto.token.TokenListResponse>}
+ */
+const methodDescriptor_TokenService_ListTokenByExpiredLater = new grpc.web.MethodDescriptor(
+  '/token.TokenService/ListTokenByExpiredLater',
+  grpc.web.MethodType.UNARY,
+  proto.token.TokenTime,
+  proto.token.TokenListResponse,
+  /**
+   * @param {!proto.token.TokenTime} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.token.TokenListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.token.TokenTime} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.token.TokenListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.token.TokenListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.token.TokenServiceClient.prototype.listTokenByExpiredLater =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/token.TokenService/ListTokenByExpiredLater',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByExpiredLater,
+      callback);
+};
+
+
+/**
+ * @param {!proto.token.TokenTime} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.token.TokenListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.token.TokenServicePromiseClient.prototype.listTokenByExpiredLater =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/token.TokenService/ListTokenByExpiredLater',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByExpiredLater);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.token.TokenRangeSingle,
+ *   !proto.token.TokenListResponse>}
+ */
+const methodDescriptor_TokenService_ListTokenByExpiredRange = new grpc.web.MethodDescriptor(
+  '/token.TokenService/ListTokenByExpiredRange',
+  grpc.web.MethodType.UNARY,
+  proto.token.TokenRangeSingle,
+  proto.token.TokenListResponse,
+  /**
+   * @param {!proto.token.TokenRangeSingle} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.token.TokenListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.token.TokenRangeSingle} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.token.TokenListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.token.TokenListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.token.TokenServiceClient.prototype.listTokenByExpiredRange =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/token.TokenService/ListTokenByExpiredRange',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByExpiredRange,
+      callback);
+};
+
+
+/**
+ * @param {!proto.token.TokenRangeSingle} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.token.TokenListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.token.TokenServicePromiseClient.prototype.listTokenByExpiredRange =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/token.TokenService/ListTokenByExpiredRange',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByExpiredRange);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.token.TokenRangeDouble,
+ *   !proto.token.TokenListResponse>}
+ */
+const methodDescriptor_TokenService_ListTokenByRange = new grpc.web.MethodDescriptor(
+  '/token.TokenService/ListTokenByRange',
+  grpc.web.MethodType.UNARY,
+  proto.token.TokenRangeDouble,
+  proto.token.TokenListResponse,
+  /**
+   * @param {!proto.token.TokenRangeDouble} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.token.TokenListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.token.TokenRangeDouble} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.token.TokenListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.token.TokenListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.token.TokenServiceClient.prototype.listTokenByRange =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/token.TokenService/ListTokenByRange',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByRange,
+      callback);
+};
+
+
+/**
+ * @param {!proto.token.TokenRangeDouble} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.token.TokenListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.token.TokenServicePromiseClient.prototype.listTokenByRange =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/token.TokenService/ListTokenByRange',
+      request,
+      metadata || {},
+      methodDescriptor_TokenService_ListTokenByRange);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.token.TokenSchema,
  *   !proto.token.TokenCreateResponse>}
  */
