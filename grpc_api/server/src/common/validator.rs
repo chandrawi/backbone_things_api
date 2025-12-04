@@ -102,14 +102,14 @@ pub(crate) trait AuthValidator {
         if !self.validator_flag() {
             return Ok(());
         }
-        // get user id from extension
+        // get user id from extension and check if token is expired
         let token = extension.get::<String>()
             .ok_or(Status::unauthenticated(EXT_NOT_FOUND))?;
         let result = self.auth_db().list_auth_token(token).await;
         let user_id = match result {
             Ok(value) => match value.into_iter().next() {
                 Some(v) => {
-                    if v.expired > Utc::now() { return Err(Status::unauthenticated(TOKEN_EXPIRED)) }
+                    if v.expired < Utc::now() { return Err(Status::unauthenticated(TOKEN_EXPIRED)) }
                     v.user_id
                 },
                 None => return Err(Status::unauthenticated(USER_UNREGISTERED))

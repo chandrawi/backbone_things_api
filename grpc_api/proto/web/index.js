@@ -19470,7 +19470,7 @@ function requireToken_pb () {
 		proto.token.AuthTokenCreate.toObject = function(includeInstance, msg) {
 		  var obj = {
 		userId: msg.getUserId_asB64(),
-		expire: jspb.Message.getFieldWithDefault(msg, 2, 0),
+		expired: jspb.Message.getFieldWithDefault(msg, 2, 0),
 		ip: msg.getIp_asB64(),
 		number: jspb.Message.getFieldWithDefault(msg, 4, 0)
 		  };
@@ -19515,7 +19515,7 @@ function requireToken_pb () {
 		      break;
 		    case 2:
 		      var value = /** @type {number} */ (reader.readInt64());
-		      msg.setExpire(value);
+		      msg.setExpired(value);
 		      break;
 		    case 3:
 		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
@@ -19561,7 +19561,7 @@ function requireToken_pb () {
 		      f
 		    );
 		  }
-		  f = message.getExpire();
+		  f = message.getExpired();
 		  if (f !== 0) {
 		    writer.writeInt64(
 		      2,
@@ -19628,10 +19628,10 @@ function requireToken_pb () {
 
 
 		/**
-		 * optional int64 expire = 2;
+		 * optional int64 expired = 2;
 		 * @return {number}
 		 */
-		proto.token.AuthTokenCreate.prototype.getExpire = function() {
+		proto.token.AuthTokenCreate.prototype.getExpired = function() {
 		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 		};
 
@@ -19640,7 +19640,7 @@ function requireToken_pb () {
 		 * @param {number} value
 		 * @return {!proto.token.AuthTokenCreate} returns this
 		 */
-		proto.token.AuthTokenCreate.prototype.setExpire = function(value) {
+		proto.token.AuthTokenCreate.prototype.setExpired = function(value) {
 		  return jspb.Message.setProto3IntField(this, 2, value);
 		};
 
@@ -19740,7 +19740,7 @@ function requireToken_pb () {
 		accessId: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
 		refreshToken: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
 		authToken: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-		expire: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
+		expired: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
 		ip: msg.getIp_asB64()
 		  };
 
@@ -19792,7 +19792,7 @@ function requireToken_pb () {
 		      break;
 		    case 4:
 		      var value = /** @type {number} */ (reader.readInt64());
-		      msg.setExpire(value);
+		      msg.setExpired(value);
 		      break;
 		    case 5:
 		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
@@ -19974,10 +19974,10 @@ function requireToken_pb () {
 
 
 		/**
-		 * optional int64 expire = 4;
+		 * optional int64 expired = 4;
 		 * @return {number}
 		 */
-		proto.token.TokenUpdate.prototype.getExpire = function() {
+		proto.token.TokenUpdate.prototype.getExpired = function() {
 		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 		};
 
@@ -19986,7 +19986,7 @@ function requireToken_pb () {
 		 * @param {number} value
 		 * @return {!proto.token.TokenUpdate} returns this
 		 */
-		proto.token.TokenUpdate.prototype.setExpire = function(value) {
+		proto.token.TokenUpdate.prototype.setExpired = function(value) {
 		  return jspb.Message.setField(this, 4, value);
 		};
 
@@ -19995,7 +19995,7 @@ function requireToken_pb () {
 		 * Clears the field making it undefined.
 		 * @return {!proto.token.TokenUpdate} returns this
 		 */
-		proto.token.TokenUpdate.prototype.clearExpire = function() {
+		proto.token.TokenUpdate.prototype.clearExpired = function() {
 		  return jspb.Message.setField(this, 4, undefined);
 		};
 
@@ -20004,7 +20004,7 @@ function requireToken_pb () {
 		 * Returns whether this field is set.
 		 * @return {boolean}
 		 */
-		proto.token.TokenUpdate.prototype.hasExpire = function() {
+		proto.token.TokenUpdate.prototype.hasExpired = function() {
 		  return jspb.Message.getField(this, 4) != null;
 		};
 

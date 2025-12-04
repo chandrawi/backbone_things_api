@@ -1882,7 +1882,7 @@ proto.token.AuthTokenCreate.prototype.toObject = function(opt_includeInstance) {
 proto.token.AuthTokenCreate.toObject = function(includeInstance, msg) {
   var f, obj = {
 userId: msg.getUserId_asB64(),
-expire: jspb.Message.getFieldWithDefault(msg, 2, 0),
+expired: jspb.Message.getFieldWithDefault(msg, 2, 0),
 ip: msg.getIp_asB64(),
 number: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
@@ -1927,7 +1927,7 @@ proto.token.AuthTokenCreate.deserializeBinaryFromReader = function(msg, reader) 
       break;
     case 2:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setExpire(value);
+      msg.setExpired(value);
       break;
     case 3:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
@@ -1973,7 +1973,7 @@ proto.token.AuthTokenCreate.serializeBinaryToWriter = function(message, writer) 
       f
     );
   }
-  f = message.getExpire();
+  f = message.getExpired();
   if (f !== 0) {
     writer.writeInt64(
       2,
@@ -2040,10 +2040,10 @@ proto.token.AuthTokenCreate.prototype.setUserId = function(value) {
 
 
 /**
- * optional int64 expire = 2;
+ * optional int64 expired = 2;
  * @return {number}
  */
-proto.token.AuthTokenCreate.prototype.getExpire = function() {
+proto.token.AuthTokenCreate.prototype.getExpired = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
@@ -2052,7 +2052,7 @@ proto.token.AuthTokenCreate.prototype.getExpire = function() {
  * @param {number} value
  * @return {!proto.token.AuthTokenCreate} returns this
  */
-proto.token.AuthTokenCreate.prototype.setExpire = function(value) {
+proto.token.AuthTokenCreate.prototype.setExpired = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -2152,7 +2152,7 @@ proto.token.TokenUpdate.toObject = function(includeInstance, msg) {
 accessId: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
 refreshToken: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
 authToken: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-expire: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
+expired: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
 ip: msg.getIp_asB64()
   };
 
@@ -2204,7 +2204,7 @@ proto.token.TokenUpdate.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 4:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setExpire(value);
+      msg.setExpired(value);
       break;
     case 5:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
@@ -2386,10 +2386,10 @@ proto.token.TokenUpdate.prototype.hasAuthToken = function() {
 
 
 /**
- * optional int64 expire = 4;
+ * optional int64 expired = 4;
  * @return {number}
  */
-proto.token.TokenUpdate.prototype.getExpire = function() {
+proto.token.TokenUpdate.prototype.getExpired = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
@@ -2398,7 +2398,7 @@ proto.token.TokenUpdate.prototype.getExpire = function() {
  * @param {number} value
  * @return {!proto.token.TokenUpdate} returns this
  */
-proto.token.TokenUpdate.prototype.setExpire = function(value) {
+proto.token.TokenUpdate.prototype.setExpired = function(value) {
   return jspb.Message.setField(this, 4, value);
 };
 
@@ -2407,7 +2407,7 @@ proto.token.TokenUpdate.prototype.setExpire = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.token.TokenUpdate} returns this
  */
-proto.token.TokenUpdate.prototype.clearExpire = function() {
+proto.token.TokenUpdate.prototype.clearExpired = function() {
   return jspb.Message.setField(this, 4, undefined);
 };
 
@@ -2416,7 +2416,7 @@ proto.token.TokenUpdate.prototype.clearExpire = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.token.TokenUpdate.prototype.hasExpire = function() {
+proto.token.TokenUpdate.prototype.hasExpired = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 

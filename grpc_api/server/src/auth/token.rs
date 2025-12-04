@@ -216,7 +216,7 @@ impl TokenService for TokenServer {
         let request = request.into_inner();
         let result = self.auth_db.create_auth_token(
             Uuid::from_slice(&request.user_id).unwrap_or_default(),
-            Utc.timestamp_nanos(request.expire * 1000),
+            Utc.timestamp_nanos(request.expired * 1000),
             request.ip.as_slice(),
             request.number as usize
         ).await;
@@ -239,7 +239,7 @@ impl TokenService for TokenServer {
         let request = request.into_inner();
         let result = self.auth_db.update_access_token(
             request.access_id.unwrap_or_default(),
-            request.expire.map(|s| Utc.timestamp_nanos(s * 1000)),
+            request.expired.map(|s| Utc.timestamp_nanos(s * 1000)),
             request.ip.as_deref()
         ).await;
         let refresh_token = match result {
@@ -256,7 +256,7 @@ impl TokenService for TokenServer {
         let request = request.into_inner();
         let result = self.auth_db.update_auth_token(
             request.auth_token.unwrap_or_default().as_ref(),
-            request.expire.map(|s| Utc.timestamp_nanos(s * 1000)),
+            request.expired.map(|s| Utc.timestamp_nanos(s * 1000)),
             request.ip.as_deref()
         ).await;
         let refresh_token = match result {

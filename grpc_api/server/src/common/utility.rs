@@ -3,6 +3,7 @@ use rsa::{RsaPrivateKey, RsaPublicKey, Oaep};
 use pkcs8::{DecodePublicKey, EncodePublicKey};
 use argon2::{Argon2, PasswordVerifier, password_hash::PasswordHash};
 use rand::thread_rng;
+pub use bbthings_database::utility::{generate_access_key, generate_token_string, hash_password};
 
 pub fn generate_transport_keys() -> Result<(RsaPrivateKey, RsaPublicKey), rsa::Error>
 {

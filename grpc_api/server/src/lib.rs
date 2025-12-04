@@ -21,4 +21,6 @@ pub mod common {
     pub mod token;
     pub mod validator;
     pub mod interceptor;
+    pub mod test;
 }
+pub use common::utility;

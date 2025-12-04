@@ -75,30 +75,30 @@ class TokenRangeDouble(_message.Message):
     def __init__(self, begin_1: _Optional[int] = ..., end_1: _Optional[int] = ..., begin_2: _Optional[int] = ..., end_2: _Optional[int] = ..., user_id: _Optional[bytes] = ...) -> None: ...
 
 class AuthTokenCreate(_message.Message):
-    __slots__ = ("user_id", "expire", "ip", "number")
+    __slots__ = ("user_id", "expired", "ip", "number")
     USER_ID_FIELD_NUMBER: _ClassVar[int]
-    EXPIRE_FIELD_NUMBER: _ClassVar[int]
+    EXPIRED_FIELD_NUMBER: _ClassVar[int]
     IP_FIELD_NUMBER: _ClassVar[int]
     NUMBER_FIELD_NUMBER: _ClassVar[int]
     user_id: bytes
-    expire: int
+    expired: int
     ip: bytes
     number: int
-    def __init__(self, user_id: _Optional[bytes] = ..., expire: _Optional[int] = ..., ip: _Optional[bytes] = ..., number: _Optional[int] = ...) -> None: ...
+    def __init__(self, user_id: _Optional[bytes] = ..., expired: _Optional[int] = ..., ip: _Optional[bytes] = ..., number: _Optional[int] = ...) -> None: ...
 
 class TokenUpdate(_message.Message):
-    __slots__ = ("access_id", "refresh_token", "auth_token", "expire", "ip")
+    __slots__ = ("access_id", "refresh_token", "auth_token", "expired", "ip")
     ACCESS_ID_FIELD_NUMBER: _ClassVar[int]
     REFRESH_TOKEN_FIELD_NUMBER: _ClassVar[int]
     AUTH_TOKEN_FIELD_NUMBER: _ClassVar[int]
-    EXPIRE_FIELD_NUMBER: _ClassVar[int]
+    EXPIRED_FIELD_NUMBER: _ClassVar[int]
     IP_FIELD_NUMBER: _ClassVar[int]
     access_id: int
     refresh_token: str
     auth_token: str
-    expire: int
+    expired: int
     ip: bytes
-    def __init__(self, access_id: _Optional[int] = ..., refresh_token: _Optional[str] = ..., auth_token: _Optional[str] = ..., expire: _Optional[int] = ..., ip: _Optional[bytes] = ...) -> None: ...
+    def __init__(self, access_id: _Optional[int] = ..., refresh_token: _Optional[str] = ..., auth_token: _Optional[str] = ..., expired: _Optional[int] = ..., ip: _Optional[bytes] = ...) -> None: ...
 
 class TokenReadResponse(_message.Message):
     __slots__ = ("result",)

@@ -65,7 +65,7 @@ pub struct AuthTokenCreate {
     #[prost(bytes = "vec", tag = "1")]
     pub user_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(int64, tag = "2")]
-    pub expire: i64,
+    pub expired: i64,
     #[prost(bytes = "vec", tag = "3")]
     pub ip: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint32, tag = "4")]
@@ -80,7 +80,7 @@ pub struct TokenUpdate {
     #[prost(string, optional, tag = "3")]
     pub auth_token: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(int64, optional, tag = "4")]
-    pub expire: ::core::option::Option<i64>,
+    pub expired: ::core::option::Option<i64>,
     #[prost(bytes = "vec", optional, tag = "5")]
     pub ip: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
 }
