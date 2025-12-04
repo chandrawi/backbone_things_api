@@ -6,3 +6,23 @@ edition = "2024"
 [dependencies]
 bbthings_grpc_proto = { path = "../proto/rust"}
 bbthings_database = { path = "../../database"}
+tokio = { version = "1.48.0", features = ["rt-multi-thread", "macros"] }
+sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "postgres", "migrate", "uuid"] }
+prost = "0.14.1"
+tonic = "0.14.2"
+tonic-reflection = "0.14.2"
+tonic-web = "0.14.2"
+http = "1.3.1"
+tower-http = { version = "0.6.6", features = ["cors"] }
+chrono = { version = "0.4.42", default-features = false, features = ["clock", "iana-time-zone", "oldtime", "std"] }
+uuid = { version = "1.18.1", features = ["v4"] }
+jsonwebtoken = { version = "10.2.0", default-features = false, features = ["rust_crypto"]}
+clap = { version = "4.5.51", features = ["derive"] }
+serde = "1.0.228"
+dotenvy = "0.15.7"
+rand = "0.8.5"
+argon2 = "0.5.3"
+rsa = "0.9.9"
+pkcs8 = "0.10.2"
+spki = "0.7.3"
+sha2 = "0.10.9"
