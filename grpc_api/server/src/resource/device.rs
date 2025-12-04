@@ -1,0 +1,650 @@
+use tonic::{Request, Response, Status};
+use uuid::Uuid;
+use bbthings_database::{Resource, DataType, DataValue};
+use bbthings_grpc_proto::resource::device::device_service_server::DeviceService;
+use bbthings_grpc_proto::resource::device::{
+    ConfigChangeResponse, ConfigCreateResponse, ConfigId, ConfigListResponse, ConfigReadResponse, ConfigSchema, ConfigUpdate, DeviceChangeResponse, DeviceCreateResponse, DeviceId, DeviceIds, DeviceListResponse, DeviceName, DeviceOption, DeviceReadResponse, DeviceSchema, DeviceUpdate, GatewayChangeResponse, GatewayCreateResponse, GatewayId, GatewayIds, GatewayListResponse, GatewayName, GatewayOption, GatewayReadResponse, GatewaySchema, GatewayUpdate, SerialNumber, TypeChangeResponse, TypeCreateResponse, TypeId, TypeIds, TypeListResponse, TypeModel, TypeName, TypeOption, TypeReadResponse, TypeSchema, TypeUpdate
+};
+use crate::common::validator::{AccessValidator, AccessSchema};
+use crate::common::utility::handle_error;
+
+const READ_DEVICE: &str = "read_device";
+const CREATE_DEVICE: &str = "create_device";
+const UPDATE_DEVICE: &str = "update_device";
+const DELETE_DEVICE: &str = "delete_device";
+const READ_DEVICE_CONFIG: &str = "read_device_config";
+const CREATE_DEVICE_CONFIG: &str = "create_device_config";
+const UPDATE_DEVICE_CONFIG: &str = "update_device_config";
+const DELETE_DEVICE_CONFIG: &str = "delete_device_config";
+const READ_TYPE: &str = "read_type";
+const CREATE_TYPE: &str = "create_type";
+const UPDATE_TYPE: &str = "update_type";
+const DELETE_TYPE: &str = "delete_type";
+const CHANGE_TYPE_MODEL: &str = "change_type_model";
+
+#[derive(Debug)]
+pub struct DeviceServer {
+    resource_db: Resource,
+    token_key: Vec<u8>,
+    accesses: Vec<AccessSchema>
+}
+
+impl DeviceServer {
+    pub fn new(resource_db: Resource) -> Self {
+        Self {
+            resource_db,
+            token_key: Vec::new(),
+            accesses: Vec::new()
+        }
+    }
+    pub fn new_with_validator(resource_db: Resource, token_key: &[u8], accesses: &[AccessSchema]) -> Self {
+        const PROCEDURES: &[&str] = &[
+            READ_DEVICE, CREATE_DEVICE, UPDATE_DEVICE, DELETE_DEVICE,
+            READ_DEVICE_CONFIG, CREATE_DEVICE_CONFIG, UPDATE_DEVICE_CONFIG, DELETE_DEVICE_CONFIG,
+            READ_TYPE, CREATE_TYPE, UPDATE_TYPE, DELETE_TYPE, CHANGE_TYPE_MODEL
+        ];
+        Self {
+            resource_db,
+            token_key: token_key.to_vec(),
+            accesses: Self::construct_accesses(accesses, PROCEDURES)
+        }
+    }
+}
+
+#[tonic::async_trait]
+impl DeviceService for DeviceServer {
+    async fn read_device(&self, request: Request<DeviceId>)
+        -> Result<Response<DeviceReadResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.read_device(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        let result = match result {
+            Ok(value) => Some(value.into()),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(DeviceReadResponse { result }))
+    }
+
+    async fn read_device_by_sn(&self, request: Request<SerialNumber>)
+        -> Result<Response<DeviceReadResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.read_device_by_sn(&request.serial_number).await;
+        let result = match result {
+            Ok(value) => Some(value.into()),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(DeviceReadResponse { result }))
+    }
+
+    async fn list_device_by_ids(&self, request: Request<DeviceIds>)
+        -> Result<Response<DeviceListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_device_by_ids(
+            request.ids.into_iter().map(|id| Uuid::from_slice(&id).unwrap_or_default()).collect::<Vec<Uuid>>().as_slice()
+        ).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(DeviceListResponse { results }))
+    }
+
+    async fn list_device_by_gateway(&self, request: Request<GatewayId>)
+        -> Result<Response<DeviceListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_device_by_gateway(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(DeviceListResponse { results }))
+    }
+
+    async fn list_device_by_type(&self, request: Request<TypeId>)
+        -> Result<Response<DeviceListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_device_by_type(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(DeviceListResponse { results }))
+    }
+
+    async fn list_device_by_name(&self, request: Request<DeviceName>)
+        -> Result<Response<DeviceListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_device_by_name(&request.name).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(DeviceListResponse { results }))
+    }
+
+    async fn list_device_option(&self, request: Request<DeviceOption>)
+        -> Result<Response<DeviceListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_device_option(
+            request.gateway_id.map(|id| Uuid::from_slice(&id).unwrap_or_default()),
+            request.type_id.map(|id| Uuid::from_slice(&id).unwrap_or_default()),
+            request.name.as_deref()
+        ).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(DeviceListResponse { results }))
+    }
+
+    async fn create_device(&self, request: Request<DeviceSchema>)
+        -> Result<Response<DeviceCreateResponse>, Status>
+    {
+        self.validate(request.extensions(), CREATE_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.create_device(
+            Uuid::from_slice(&request.id).unwrap_or_default(),
+            Uuid::from_slice(&request.gateway_id).unwrap_or_default(),
+            Uuid::from_slice(&request.device_type.unwrap_or_default().id).unwrap_or_default(),
+            &request.serial_number,
+            &request.name,
+            Some(&request.description)
+        ).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(DeviceCreateResponse { id: request.id }))
+    }
+
+    async fn update_device(&self, request: Request<DeviceUpdate>)
+        -> Result<Response<DeviceChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), UPDATE_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.update_device(
+            Uuid::from_slice(&request.id).unwrap_or_default(),
+            request.gateway_id.map(|x| Uuid::from_slice(&x).unwrap_or_default()),
+            request.type_id.map(|x| Uuid::from_slice(&x).unwrap_or_default()),
+            request.serial_number.as_deref(),
+            request.name.as_deref(),
+            request.description.as_deref()
+        ).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(DeviceChangeResponse { }))
+    }
+
+    async fn delete_device(&self, request: Request<DeviceId>)
+        -> Result<Response<DeviceChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), DELETE_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.delete_device(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(DeviceChangeResponse { }))
+    }
+
+    async fn read_gateway(&self, request: Request<GatewayId>)
+        -> Result<Response<GatewayReadResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.read_gateway(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        let result = match result {
+            Ok(value) => Some(value.into()),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(GatewayReadResponse { result }))
+    }
+
+    async fn read_gateway_by_sn(&self, request: Request<SerialNumber>)
+        -> Result<Response<GatewayReadResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.read_gateway_by_sn(&request.serial_number).await;
+        let result = match result {
+            Ok(value) => Some(value.into()),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(GatewayReadResponse { result }))
+    }
+
+    async fn list_gateway_by_ids(&self, request: Request<GatewayIds>)
+        -> Result<Response<GatewayListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_gateway_by_ids(
+            request.ids.into_iter().map(|id| Uuid::from_slice(&id).unwrap_or_default()).collect::<Vec<Uuid>>().as_slice()
+        ).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(GatewayListResponse { results }))
+    }
+
+    async fn list_gateway_by_type(&self, request: Request<TypeId>)
+        -> Result<Response<GatewayListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_gateway_by_type(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(GatewayListResponse { results }))
+    }
+
+    async fn list_gateway_by_name(&self, request: Request<GatewayName>)
+        -> Result<Response<GatewayListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_gateway_by_name(&request.name).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(GatewayListResponse { results }))
+    }
+
+    async fn list_gateway_option(&self, request: Request<GatewayOption>)
+        -> Result<Response<GatewayListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_gateway_option(
+            request.type_id.map(|id| Uuid::from_slice(&id).unwrap_or_default()),
+            request.name.as_deref()
+        ).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(GatewayListResponse { results }))
+    }
+
+    async fn create_gateway(&self, request: Request<GatewaySchema>)
+        -> Result<Response<GatewayCreateResponse>, Status>
+    {
+        self.validate(request.extensions(), CREATE_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.create_gateway(
+            Uuid::from_slice(&request.id).unwrap_or_default(),
+            Uuid::from_slice(&request.gateway_type.unwrap_or_default().id).unwrap_or_default(),
+            &request.serial_number,
+            &request.name,
+            Some(&request.description)
+        ).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(GatewayCreateResponse { id: request.id }))
+    }
+
+    async fn update_gateway(&self, request: Request<GatewayUpdate>)
+        -> Result<Response<GatewayChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), UPDATE_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.update_gateway(
+            Uuid::from_slice(&request.id).unwrap_or_default(),
+            request.type_id.map(|x| Uuid::from_slice(&x).unwrap_or_default()),
+            request.serial_number.as_deref(),
+            request.name.as_deref(),
+            request.description.as_deref()
+        ).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(GatewayChangeResponse { }))
+    }
+
+    async fn delete_gateway(&self, request: Request<GatewayId>)
+    -> Result<Response<GatewayChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), DELETE_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.delete_gateway(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(GatewayChangeResponse { }))
+    }
+
+    async fn read_device_config(&self, request: Request<ConfigId>)
+        -> Result<Response<ConfigReadResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.read_device_config(request.id).await;
+        let result = match result {
+            Ok(value) => Some(value.into()),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigReadResponse { result }))
+    }
+
+    async fn list_device_config(&self, request: Request<DeviceId>)
+        -> Result<Response<ConfigListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_device_config_by_device(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigListResponse { results }))
+    }
+
+    async fn create_device_config(&self, request: Request<ConfigSchema>)
+        -> Result<Response<ConfigCreateResponse>, Status>
+    {
+        self.validate(request.extensions(), CREATE_DEVICE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.create_device_config(
+            Uuid::from_slice(&request.device_id).unwrap_or_default(),
+            &request.name,
+            DataValue::from_bytes(
+                &request.config_bytes, 
+                DataType::from(request.config_type)
+            ),
+            &request.category
+        ).await;
+        let id = match result {
+            Ok(value) => value,
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigCreateResponse { id }))
+    }
+
+    async fn update_device_config(&self, request: Request<ConfigUpdate>)
+        -> Result<Response<ConfigChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), UPDATE_DEVICE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.update_device_config(
+            request.id,
+            request.name.as_deref(),
+            request.config_bytes.map(|s| {
+                DataValue::from_bytes(
+                    &s,
+                    DataType::from(request.config_type.unwrap_or_default())
+                )
+            }),
+            request.category.as_deref()
+        ).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigChangeResponse { }))
+    }
+
+    async fn delete_device_config(&self, request: Request<ConfigId>)
+        -> Result<Response<ConfigChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), DELETE_DEVICE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.delete_device_config(request.id).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigChangeResponse { }))
+    }
+
+    async fn read_gateway_config(&self, request: Request<ConfigId>)
+        -> Result<Response<ConfigReadResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.read_gateway_config(request.id).await;
+        let result = match result {
+            Ok(value) => Some(value.into()),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigReadResponse { result }))
+    }
+
+    async fn list_gateway_config(&self, request: Request<GatewayId>)
+        -> Result<Response<ConfigListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_gateway_config_by_gateway(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigListResponse { results }))
+    }
+
+    async fn create_gateway_config(&self, request: Request<ConfigSchema>)
+        -> Result<Response<ConfigCreateResponse>, Status>
+    {
+        self.validate(request.extensions(), CREATE_DEVICE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.create_gateway_config(
+            Uuid::from_slice(&request.device_id).unwrap_or_default(),
+            &request.name,
+            DataValue::from_bytes(
+                &request.config_bytes, 
+                DataType::from(request.config_type)
+            ),
+            &request.category
+        ).await;
+        let id = match result {
+            Ok(value) => value,
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigCreateResponse { id }))
+    }
+
+    async fn update_gateway_config(&self, request: Request<ConfigUpdate>)
+        -> Result<Response<ConfigChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), UPDATE_DEVICE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.update_gateway_config(
+            request.id,
+            request.name.as_deref(),
+            request.config_bytes.map(|s| {
+                DataValue::from_bytes(
+                    &s,
+                    DataType::from(request.config_type.unwrap_or_default())
+                )
+            }),
+            request.category.as_deref()
+        ).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigChangeResponse { }))
+    }
+
+    async fn delete_gateway_config(&self, request: Request<ConfigId>)
+        -> Result<Response<ConfigChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), DELETE_DEVICE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.delete_gateway_config(request.id).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigChangeResponse { }))
+    }
+
+    async fn read_type(&self, request: Request<TypeId>)
+        -> Result<Response<TypeReadResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_TYPE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.read_type(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        let result = match result {
+            Ok(value) => Some(value.into()),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(TypeReadResponse { result }))
+    }
+
+    async fn list_type_by_ids(&self, request: Request<TypeIds>)
+        -> Result<Response<TypeListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_DEVICE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_type_by_ids(
+            request.ids.into_iter().map(|id| Uuid::from_slice(&id).unwrap_or_default()).collect::<Vec<Uuid>>().as_slice()
+        ).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(TypeListResponse { results }))
+    }
+
+    async fn list_type_by_name(&self, request: Request<TypeName>)
+        -> Result<Response<TypeListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_TYPE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_type_by_name(&request.name).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(TypeListResponse { results }))
+    }
+
+    async fn list_type_option(&self, request: Request<TypeOption>)
+        -> Result<Response<TypeListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_TYPE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_type_option(request.name.as_deref()).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(TypeListResponse { results }))
+    }
+
+    async fn create_type(&self, request: Request<TypeSchema>)
+        -> Result<Response<TypeCreateResponse>, Status>
+    {
+        self.validate(request.extensions(), CREATE_TYPE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.create_type(
+            Uuid::from_slice(&request.id).unwrap_or_default(),
+            &request.name,
+            Some(&request.description)
+        ).await;
+        let id = match result {
+            Ok(value) => value,
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(TypeCreateResponse { id: id.as_bytes().to_vec() }))
+    }
+
+    async fn update_type(&self, request: Request<TypeUpdate>)
+        -> Result<Response<TypeChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), UPDATE_TYPE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.update_type(
+            Uuid::from_slice(&request.id).unwrap_or_default(),
+            request.name.as_deref(),
+            request.description.as_deref()
+        ).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(TypeChangeResponse { }))
+    }
+
+    async fn delete_type(&self, request: Request<TypeId>)
+        -> Result<Response<TypeChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), DELETE_TYPE)?;
+        let request = request.into_inner();
+        let result = self.resource_db.delete_type(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(TypeChangeResponse { }))
+    }
+
+    async fn add_type_model(&self, request: Request<TypeModel>)
+        -> Result<Response<TypeChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), CHANGE_TYPE_MODEL)?;
+        let request = request.into_inner();
+        let result = self.resource_db.add_type_model(
+            Uuid::from_slice(&request.id).unwrap_or_default(),
+            Uuid::from_slice(&request.model_id).unwrap_or_default()
+        ).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(TypeChangeResponse { }))
+    }
+
+    async fn remove_type_model(&self, request: Request<TypeModel>)
+        -> Result<Response<TypeChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), CHANGE_TYPE_MODEL)?;
+        let request = request.into_inner();
+        let result = self.resource_db.remove_type_model(
+            Uuid::from_slice(&request.id).unwrap_or_default(),
+            Uuid::from_slice(&request.model_id).unwrap_or_default()
+        ).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(TypeChangeResponse { }))
+    }
+}
+
+impl AccessValidator for DeviceServer {
+
+    fn token_key(&self) -> Vec<u8> {
+        self.token_key.clone()
+    }
+
+    fn accesses(&self) -> Vec<AccessSchema> {
+        self.accesses.clone()
+    }
+
+}
