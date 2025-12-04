@@ -3,6 +3,14 @@ name = "bbthings_grpc_server"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "auth_server"
+path = "src/auth_server.rs"
+
+[[bin]]
+name = "resource_server"
+path = "src/resource_server.rs"
+
 [dependencies]
 bbthings_grpc_proto = { path = "../proto/rust"}
 bbthings_database = { path = "../../database"}
