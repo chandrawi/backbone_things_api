@@ -5,4 +5,12 @@ edition = "2024"
 
 [dependencies]
 bbthings_grpc_proto = { path = "../proto/rust"}
+bbthings_grpc_server = { path = "../server"}
 bbthings_database = { path = "../../database"}
+prost = "0.14.1"
+tonic = "0.14.2"
+tonic-reflection = "0.14.2"
+chrono = { version = "0.4.42", default-features = false, features = ["clock", "iana-time-zone", "oldtime", "std"] }
+uuid = { version = "1.18.1", features = ["v4"] }
+jsonwebtoken = { version = "10.2.0", default-features = false, features = ["rust_crypto"]}
+dotenvy = "0.15.7"
