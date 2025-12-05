@@ -5,9 +5,9 @@ mod tests {
     use sqlx::postgres::{Postgres, PgPoolOptions};
     use sqlx::types::chrono::DateTime;
     use uuid::Uuid;
-    use bbthings_database::{ModelConfigSchema, DeviceConfigSchema};
-    use bbthings_database::{Resource, DataType::*, DataValue::{*, self}};
-    use bbthings_database::SetMember;
+    use bbthings_database::Resource;
+    use bbthings_database::{ModelConfigSchema, DeviceConfigSchema, SetMember};
+    use bbthings_database::{DataType::*, DataValue::{*, self}};
     use bbthings_database::tag;
 
     async fn get_connection_pool() -> Result<Pool<Postgres>, Error>
@@ -35,10 +35,10 @@ mod tests {
         unsafe { std::env::set_var("RUST_BACKTRACE", "1"); }
 
         let pool = get_connection_pool().await.unwrap();
-        let resource = Resource::new_with_pool(pool);
+        let resource = Resource::new_with_pool(&pool);
 
         // truncate all resource database tables before test
-        truncate_tables(&resource.pool).await.unwrap();
+        truncate_tables(&pool).await.unwrap();
 
         // create new data model and add data types
         let model_id = resource.create_model(Uuid::new_v4(), &[F32T,F32T], "UPLINK", "speed and direction", None).await.unwrap();

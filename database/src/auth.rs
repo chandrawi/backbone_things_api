@@ -19,17 +19,17 @@ use token::TokenSelector;
 
 #[derive(Debug, Clone)]
 pub struct Auth {
-    pub pool: Pool<Postgres>
+    pool: Pool<Postgres>
 }
 
 impl Auth {
 
-    pub async fn new(host: &str, username: &str, password: &str, database: &str) -> Auth {
+    pub async fn new(host: &str, username: &str, password: &str, database: &str) -> Self {
         let url = format!("postgres://{}:{}@{}/{}", username, password, host, database);
         Auth::new_with_url(&url).await
     }
 
-    pub async fn new_with_url(url: &str) -> Auth {
+    pub async fn new_with_url(url: &str) -> Self {
         let pool = PgPoolOptions::new()
             .max_connections(100)
             .connect(url)
@@ -38,8 +38,8 @@ impl Auth {
         Auth { pool }
     }
 
-    pub fn new_with_pool(pool: Pool<Postgres>) -> Auth {
-        Auth { pool }
+    pub fn new_with_pool(pool: &Pool<Postgres>) -> Self {
+        Auth { pool: pool.to_owned() }
     }
 
     pub async fn read_api(&self, id: Uuid)

@@ -1,6 +1,6 @@
 use sqlx::Error;
 use rand::{thread_rng, Rng};
-use argon2::{Argon2, PasswordHasher, PasswordHash, password_hash::SaltString};
+use argon2::{Argon2, PasswordHasher, PasswordVerifier, PasswordHash, password_hash::SaltString};
 
 pub fn hash_password(password: &str) -> Result<String, argon2::password_hash::Error>
 {
@@ -8,6 +8,12 @@ pub fn hash_password(password: &str) -> Result<String, argon2::password_hash::Er
     let salt = SaltString::generate(&mut thread_rng());
     let password_hash = argon2.hash_password(password.as_bytes(), &salt)?;
     Ok(password_hash.to_string())
+}
+
+pub fn verify_password(password: &str, password_hash: &str) -> Result<(), argon2::password_hash::Error>
+{
+    let parsed_hash = PasswordHash::new(password_hash).unwrap();
+    Argon2::default().verify_password(password.as_bytes(), &parsed_hash)
 }
 
 pub(crate) fn verify_hash_format(password_hash: &str) -> Result<(), Error>

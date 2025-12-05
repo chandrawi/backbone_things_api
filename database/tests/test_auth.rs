@@ -4,11 +4,10 @@ mod tests {
     use sqlx::postgres::{Postgres, PgPoolOptions};
     use sqlx::types::chrono::DateTime;
     use uuid::Uuid;
-    use argon2::{Argon2, PasswordHash, PasswordVerifier};
     use bbthings_database::Auth;
-    use bbthings_database::common::utility;
     use bbthings_database::ProfileMode::*;
     use bbthings_database::{DataType::*, DataValue::*};
+    use bbthings_database::utility;
 
     async fn get_connection_pool() -> Result<Pool<Postgres>, Error>
     {
@@ -35,10 +34,10 @@ mod tests {
         unsafe { std::env::set_var("RUST_BACKTRACE", "1"); }
 
         let pool = get_connection_pool().await.unwrap();
-        let auth = Auth::new_with_pool(pool);
+        let auth = Auth::new_with_pool(&pool);
 
         // truncate all auth database tables before test
-        truncate_tables(&auth.pool).await.unwrap();
+        truncate_tables(&pool).await.unwrap();
 
         // create new resource API
         let password_api = "Ap1_P4s5w0rd";
@@ -68,10 +67,7 @@ mod tests {
         assert!(api_ids.contains(&api_id1));
         assert!(proc_ids.contains(&proc_id1));
         assert_eq!(api_proc_ids, proc_ids);
-
-        let hash = api.password;
-        let parsed_hash = PasswordHash::new(hash.as_str()).unwrap();
-        assert!(Argon2::default().verify_password(password_api.as_bytes(), &parsed_hash).is_ok());
+        assert!(utility::verify_password(password_api, &api.password).is_ok());
 
         // create new role and add access to the procedure
         let role_id1 = auth.create_role(Uuid::new_v4(), api_id1, "administrator", false, false, 900, 28800).await.unwrap();
@@ -142,10 +138,7 @@ mod tests {
         assert_eq!(user.name, "administrator");
         assert_eq!(user.email, "admin@mail.co");
         assert_eq!(user.phone, "+6281234567890");
-
-        let hash = user.password;
-        let parsed_hash = PasswordHash::new(hash.as_str()).unwrap();
-        assert!(Argon2::default().verify_password(password_admin.as_bytes(), &parsed_hash).is_ok());
+        assert!(utility::verify_password(password_admin, &user.password).is_ok());
 
         // update user
         let password_new = "N3w_P4s5w0rd";
@@ -153,9 +146,10 @@ mod tests {
         auth.update_user(user_id2, None, None, None, Some(&password_hash)).await.unwrap();
 
         // get updated user
+        let old_password = user.password;
         let user = auth.read_user_by_name("username").await.unwrap();
 
-        assert_ne!(user.password, hash);
+        assert_ne!(user.password, old_password);
 
         // create role and user profile
         let profile_role_id1 = auth.create_role_profile(role_id1, "name", StringT, SingleRequired).await.unwrap();

@@ -27,17 +27,17 @@ use slice::SliceSelector;
 
 #[derive(Debug, Clone)]
 pub struct Resource {
-    pub pool: Pool<Postgres>
+    pool: Pool<Postgres>
 }
 
 impl Resource {
 
-    pub async fn new(host: &str, username: &str, password: &str, database: &str) -> Resource {
+    pub async fn new(host: &str, username: &str, password: &str, database: &str) -> Self {
         let url = format!("postgres://{}:{}@{}/{}", username, password, host, database);
         Resource::new_with_url(&url).await
     }
 
-    pub async fn new_with_url(url: &str) -> Resource {
+    pub async fn new_with_url(url: &str) -> Self {
         let pool = PgPoolOptions::new()
             .max_connections(100)
             .connect(url)
@@ -46,8 +46,8 @@ impl Resource {
         Resource { pool }
     }
 
-    pub fn new_with_pool(pool: Pool<Postgres>) -> Resource {
-        Resource { pool }
+    pub fn new_with_pool(pool: &Pool<Postgres>) -> Self {
+        Resource { pool: pool.to_owned() }
     }
 
     pub async fn read_model(&self, id: Uuid)
