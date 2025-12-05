@@ -212,6 +212,7 @@ dependencies = [
  "dotenvy",
  "jsonwebtoken",
  "prost",
+ "tokio",
  "tonic",
  "tonic-reflection",
  "uuid",
