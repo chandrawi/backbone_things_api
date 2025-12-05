@@ -43,13 +43,24 @@ pub struct BufferTime {
     pub tag: ::core::option::Option<i32>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
-pub struct BufferLatest {
+pub struct BufferEarlier {
     #[prost(bytes = "vec", tag = "1")]
     pub device_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes = "vec", tag = "2")]
     pub model_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(int64, tag = "3")]
-    pub latest: i64,
+    pub earlier: i64,
+    #[prost(int32, optional, tag = "4")]
+    pub tag: ::core::option::Option<i32>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct BufferLater {
+    #[prost(bytes = "vec", tag = "1")]
+    pub device_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes = "vec", tag = "2")]
+    pub model_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(int64, tag = "3")]
+    pub later: i64,
     #[prost(int32, optional, tag = "4")]
     pub tag: ::core::option::Option<i32>,
 }
@@ -128,13 +139,24 @@ pub struct BufferGroupTime {
     pub tag: ::core::option::Option<i32>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
-pub struct BufferGroupLatest {
+pub struct BufferGroupEarlier {
     #[prost(bytes = "vec", repeated, tag = "1")]
     pub device_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
     #[prost(bytes = "vec", repeated, tag = "2")]
     pub model_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
     #[prost(int64, tag = "3")]
-    pub latest: i64,
+    pub earlier: i64,
+    #[prost(int32, optional, tag = "4")]
+    pub tag: ::core::option::Option<i32>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct BufferGroupLater {
+    #[prost(bytes = "vec", repeated, tag = "1")]
+    pub device_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    #[prost(bytes = "vec", repeated, tag = "2")]
+    pub model_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    #[prost(int64, tag = "3")]
+    pub later: i64,
     #[prost(int32, optional, tag = "4")]
     pub tag: ::core::option::Option<i32>,
 }
@@ -196,11 +218,20 @@ pub struct BufferSetTime {
     pub tag: ::core::option::Option<i32>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
-pub struct BufferSetLatest {
+pub struct BufferSetEarlier {
     #[prost(bytes = "vec", tag = "1")]
     pub set_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(int64, tag = "2")]
-    pub latest: i64,
+    pub earlier: i64,
+    #[prost(int32, optional, tag = "3")]
+    pub tag: ::core::option::Option<i32>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct BufferSetLater {
+    #[prost(bytes = "vec", tag = "1")]
+    pub set_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(int64, tag = "2")]
+    pub later: i64,
     #[prost(int32, optional, tag = "3")]
     pub tag: ::core::option::Option<i32>,
 }
@@ -475,9 +506,9 @@ pub mod buffer_service_client {
                 .insert(GrpcMethod::new("buffer.BufferService", "ListBufferByTime"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn list_buffer_by_latest(
+        pub async fn list_buffer_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::BufferLatest>,
+            request: impl tonic::IntoRequest<super::BufferEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::BufferListResponse>,
             tonic::Status,
@@ -492,11 +523,35 @@ pub mod buffer_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/buffer.BufferService/ListBufferByLatest",
+                "/buffer.BufferService/ListBufferByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("buffer.BufferService", "ListBufferByLatest"));
+                .insert(GrpcMethod::new("buffer.BufferService", "ListBufferByEarlier"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_buffer_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::BufferLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::BufferListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/buffer.BufferService/ListBufferByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("buffer.BufferService", "ListBufferByLater"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn list_buffer_by_range(
@@ -747,9 +802,9 @@ pub mod buffer_service_client {
                 );
             self.inner.unary(req, path, codec).await
         }
-        pub async fn list_buffer_group_by_latest(
+        pub async fn list_buffer_group_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::BufferGroupLatest>,
+            request: impl tonic::IntoRequest<super::BufferGroupEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::BufferListResponse>,
             tonic::Status,
@@ -764,12 +819,38 @@ pub mod buffer_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/buffer.BufferService/ListBufferGroupByLatest",
+                "/buffer.BufferService/ListBufferGroupByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(
-                    GrpcMethod::new("buffer.BufferService", "ListBufferGroupByLatest"),
+                    GrpcMethod::new("buffer.BufferService", "ListBufferGroupByEarlier"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_buffer_group_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::BufferGroupLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::BufferListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/buffer.BufferService/ListBufferGroupByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("buffer.BufferService", "ListBufferGroupByLater"),
                 );
             self.inner.unary(req, path, codec).await
         }
@@ -1053,9 +1134,9 @@ pub mod buffer_service_client {
                 .insert(GrpcMethod::new("buffer.BufferService", "ListBufferSetByTime"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn list_buffer_set_by_latest(
+        pub async fn list_buffer_set_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::BufferSetLatest>,
+            request: impl tonic::IntoRequest<super::BufferSetEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::BufferSetListResponse>,
             tonic::Status,
@@ -1070,13 +1151,37 @@ pub mod buffer_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/buffer.BufferService/ListBufferSetByLatest",
+                "/buffer.BufferService/ListBufferSetByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(
-                    GrpcMethod::new("buffer.BufferService", "ListBufferSetByLatest"),
+                    GrpcMethod::new("buffer.BufferService", "ListBufferSetByEarlier"),
                 );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_buffer_set_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::BufferSetLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::BufferSetListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/buffer.BufferService/ListBufferSetByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("buffer.BufferService", "ListBufferSetByLater"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn list_buffer_set_by_range(
@@ -1271,9 +1376,9 @@ pub mod buffer_service_client {
                 .insert(GrpcMethod::new("buffer.BufferService", "ReadBufferTimestamp"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn list_buffer_timestamp_by_latest(
+        pub async fn list_buffer_timestamp_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::BufferLatest>,
+            request: impl tonic::IntoRequest<super::BufferEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::TimestampListResponse>,
             tonic::Status,
@@ -1288,15 +1393,41 @@ pub mod buffer_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/buffer.BufferService/ListBufferTimestampByLatest",
+                "/buffer.BufferService/ListBufferTimestampByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(
                     GrpcMethod::new(
                         "buffer.BufferService",
-                        "ListBufferTimestampByLatest",
+                        "ListBufferTimestampByEarlier",
                     ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_buffer_timestamp_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::BufferLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::TimestampListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/buffer.BufferService/ListBufferTimestampByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("buffer.BufferService", "ListBufferTimestampByLater"),
                 );
             self.inner.unary(req, path, codec).await
         }
@@ -1404,9 +1535,9 @@ pub mod buffer_service_client {
                 );
             self.inner.unary(req, path, codec).await
         }
-        pub async fn list_buffer_group_timestamp_by_latest(
+        pub async fn list_buffer_group_timestamp_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::BufferGroupLatest>,
+            request: impl tonic::IntoRequest<super::BufferGroupEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::TimestampListResponse>,
             tonic::Status,
@@ -1421,14 +1552,43 @@ pub mod buffer_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/buffer.BufferService/ListBufferGroupTimestampByLatest",
+                "/buffer.BufferService/ListBufferGroupTimestampByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(
                     GrpcMethod::new(
                         "buffer.BufferService",
-                        "ListBufferGroupTimestampByLatest",
+                        "ListBufferGroupTimestampByEarlier",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_buffer_group_timestamp_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::BufferGroupLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::TimestampListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/buffer.BufferService/ListBufferGroupTimestampByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "buffer.BufferService",
+                        "ListBufferGroupTimestampByLater",
                     ),
                 );
             self.inner.unary(req, path, codec).await
@@ -1544,9 +1704,9 @@ pub mod buffer_service_client {
                 .insert(GrpcMethod::new("buffer.BufferService", "CountBuffer"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn count_buffer_by_latest(
+        pub async fn count_buffer_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::BufferLatest>,
+            request: impl tonic::IntoRequest<super::BufferEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::BufferCountResponse>,
             tonic::Status,
@@ -1561,11 +1721,35 @@ pub mod buffer_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/buffer.BufferService/CountBufferByLatest",
+                "/buffer.BufferService/CountBufferByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("buffer.BufferService", "CountBufferByLatest"));
+                .insert(GrpcMethod::new("buffer.BufferService", "CountBufferByEarlier"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn count_buffer_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::BufferLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::BufferCountResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/buffer.BufferService/CountBufferByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("buffer.BufferService", "CountBufferByLater"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn count_buffer_by_range(
@@ -1616,9 +1800,9 @@ pub mod buffer_service_client {
                 .insert(GrpcMethod::new("buffer.BufferService", "CountBufferGroup"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn count_buffer_group_by_latest(
+        pub async fn count_buffer_group_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::BufferGroupLatest>,
+            request: impl tonic::IntoRequest<super::BufferGroupEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::BufferCountResponse>,
             tonic::Status,
@@ -1633,12 +1817,38 @@ pub mod buffer_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/buffer.BufferService/CountBufferGroupByLatest",
+                "/buffer.BufferService/CountBufferGroupByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(
-                    GrpcMethod::new("buffer.BufferService", "CountBufferGroupByLatest"),
+                    GrpcMethod::new("buffer.BufferService", "CountBufferGroupByEarlier"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn count_buffer_group_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::BufferGroupLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::BufferCountResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/buffer.BufferService/CountBufferGroupByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("buffer.BufferService", "CountBufferGroupByLater"),
                 );
             self.inner.unary(req, path, codec).await
         }
@@ -1711,9 +1921,16 @@ pub mod buffer_service_server {
             tonic::Response<super::BufferListResponse>,
             tonic::Status,
         >;
-        async fn list_buffer_by_latest(
+        async fn list_buffer_by_earlier(
             &self,
-            request: tonic::Request<super::BufferLatest>,
+            request: tonic::Request<super::BufferEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::BufferListResponse>,
+            tonic::Status,
+        >;
+        async fn list_buffer_by_later(
+            &self,
+            request: tonic::Request<super::BufferLater>,
         ) -> std::result::Result<
             tonic::Response<super::BufferListResponse>,
             tonic::Status,
@@ -1788,9 +2005,16 @@ pub mod buffer_service_server {
             tonic::Response<super::BufferListResponse>,
             tonic::Status,
         >;
-        async fn list_buffer_group_by_latest(
+        async fn list_buffer_group_by_earlier(
             &self,
-            request: tonic::Request<super::BufferGroupLatest>,
+            request: tonic::Request<super::BufferGroupEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::BufferListResponse>,
+            tonic::Status,
+        >;
+        async fn list_buffer_group_by_later(
+            &self,
+            request: tonic::Request<super::BufferGroupLater>,
         ) -> std::result::Result<
             tonic::Response<super::BufferListResponse>,
             tonic::Status,
@@ -1872,9 +2096,16 @@ pub mod buffer_service_server {
             tonic::Response<super::BufferSetListResponse>,
             tonic::Status,
         >;
-        async fn list_buffer_set_by_latest(
+        async fn list_buffer_set_by_earlier(
             &self,
-            request: tonic::Request<super::BufferSetLatest>,
+            request: tonic::Request<super::BufferSetEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::BufferSetListResponse>,
+            tonic::Status,
+        >;
+        async fn list_buffer_set_by_later(
+            &self,
+            request: tonic::Request<super::BufferSetLater>,
         ) -> std::result::Result<
             tonic::Response<super::BufferSetListResponse>,
             tonic::Status,
@@ -1935,9 +2166,16 @@ pub mod buffer_service_server {
             tonic::Response<super::TimestampReadResponse>,
             tonic::Status,
         >;
-        async fn list_buffer_timestamp_by_latest(
+        async fn list_buffer_timestamp_by_earlier(
             &self,
-            request: tonic::Request<super::BufferLatest>,
+            request: tonic::Request<super::BufferEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::TimestampListResponse>,
+            tonic::Status,
+        >;
+        async fn list_buffer_timestamp_by_later(
+            &self,
+            request: tonic::Request<super::BufferLater>,
         ) -> std::result::Result<
             tonic::Response<super::TimestampListResponse>,
             tonic::Status,
@@ -1970,9 +2208,16 @@ pub mod buffer_service_server {
             tonic::Response<super::TimestampReadResponse>,
             tonic::Status,
         >;
-        async fn list_buffer_group_timestamp_by_latest(
+        async fn list_buffer_group_timestamp_by_earlier(
             &self,
-            request: tonic::Request<super::BufferGroupLatest>,
+            request: tonic::Request<super::BufferGroupEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::TimestampListResponse>,
+            tonic::Status,
+        >;
+        async fn list_buffer_group_timestamp_by_later(
+            &self,
+            request: tonic::Request<super::BufferGroupLater>,
         ) -> std::result::Result<
             tonic::Response<super::TimestampListResponse>,
             tonic::Status,
@@ -2005,9 +2250,16 @@ pub mod buffer_service_server {
             tonic::Response<super::BufferCountResponse>,
             tonic::Status,
         >;
-        async fn count_buffer_by_latest(
+        async fn count_buffer_by_earlier(
             &self,
-            request: tonic::Request<super::BufferLatest>,
+            request: tonic::Request<super::BufferEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::BufferCountResponse>,
+            tonic::Status,
+        >;
+        async fn count_buffer_by_later(
+            &self,
+            request: tonic::Request<super::BufferLater>,
         ) -> std::result::Result<
             tonic::Response<super::BufferCountResponse>,
             tonic::Status,
@@ -2026,9 +2278,16 @@ pub mod buffer_service_server {
             tonic::Response<super::BufferCountResponse>,
             tonic::Status,
         >;
-        async fn count_buffer_group_by_latest(
+        async fn count_buffer_group_by_earlier(
             &self,
-            request: tonic::Request<super::BufferGroupLatest>,
+            request: tonic::Request<super::BufferGroupEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::BufferCountResponse>,
+            tonic::Status,
+        >;
+        async fn count_buffer_group_by_later(
+            &self,
+            request: tonic::Request<super::BufferGroupLater>,
         ) -> std::result::Result<
             tonic::Response<super::BufferCountResponse>,
             tonic::Status,
@@ -2292,13 +2551,13 @@ pub mod buffer_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/buffer.BufferService/ListBufferByLatest" => {
+                "/buffer.BufferService/ListBufferByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct ListBufferByLatestSvc<T: BufferService>(pub Arc<T>);
+                    struct ListBufferByEarlierSvc<T: BufferService>(pub Arc<T>);
                     impl<
                         T: BufferService,
-                    > tonic::server::UnaryService<super::BufferLatest>
-                    for ListBufferByLatestSvc<T> {
+                    > tonic::server::UnaryService<super::BufferEarlier>
+                    for ListBufferByEarlierSvc<T> {
                         type Response = super::BufferListResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -2306,11 +2565,14 @@ pub mod buffer_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::BufferLatest>,
+                            request: tonic::Request<super::BufferEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as BufferService>::list_buffer_by_latest(&inner, request)
+                                <T as BufferService>::list_buffer_by_earlier(
+                                        &inner,
+                                        request,
+                                    )
                                     .await
                             };
                             Box::pin(fut)
@@ -2322,7 +2584,53 @@ pub mod buffer_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = ListBufferByLatestSvc(inner);
+                        let method = ListBufferByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/buffer.BufferService/ListBufferByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListBufferByLaterSvc<T: BufferService>(pub Arc<T>);
+                    impl<
+                        T: BufferService,
+                    > tonic::server::UnaryService<super::BufferLater>
+                    for ListBufferByLaterSvc<T> {
+                        type Response = super::BufferListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::BufferLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as BufferService>::list_buffer_by_later(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListBufferByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -2813,13 +3121,13 @@ pub mod buffer_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/buffer.BufferService/ListBufferGroupByLatest" => {
+                "/buffer.BufferService/ListBufferGroupByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct ListBufferGroupByLatestSvc<T: BufferService>(pub Arc<T>);
+                    struct ListBufferGroupByEarlierSvc<T: BufferService>(pub Arc<T>);
                     impl<
                         T: BufferService,
-                    > tonic::server::UnaryService<super::BufferGroupLatest>
-                    for ListBufferGroupByLatestSvc<T> {
+                    > tonic::server::UnaryService<super::BufferGroupEarlier>
+                    for ListBufferGroupByEarlierSvc<T> {
                         type Response = super::BufferListResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -2827,11 +3135,11 @@ pub mod buffer_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::BufferGroupLatest>,
+                            request: tonic::Request<super::BufferGroupEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as BufferService>::list_buffer_group_by_latest(
+                                <T as BufferService>::list_buffer_group_by_earlier(
                                         &inner,
                                         request,
                                     )
@@ -2846,7 +3154,56 @@ pub mod buffer_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = ListBufferGroupByLatestSvc(inner);
+                        let method = ListBufferGroupByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/buffer.BufferService/ListBufferGroupByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListBufferGroupByLaterSvc<T: BufferService>(pub Arc<T>);
+                    impl<
+                        T: BufferService,
+                    > tonic::server::UnaryService<super::BufferGroupLater>
+                    for ListBufferGroupByLaterSvc<T> {
+                        type Response = super::BufferListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::BufferGroupLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as BufferService>::list_buffer_group_by_later(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListBufferGroupByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -3399,13 +3756,13 @@ pub mod buffer_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/buffer.BufferService/ListBufferSetByLatest" => {
+                "/buffer.BufferService/ListBufferSetByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct ListBufferSetByLatestSvc<T: BufferService>(pub Arc<T>);
+                    struct ListBufferSetByEarlierSvc<T: BufferService>(pub Arc<T>);
                     impl<
                         T: BufferService,
-                    > tonic::server::UnaryService<super::BufferSetLatest>
-                    for ListBufferSetByLatestSvc<T> {
+                    > tonic::server::UnaryService<super::BufferSetEarlier>
+                    for ListBufferSetByEarlierSvc<T> {
                         type Response = super::BufferSetListResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -3413,11 +3770,11 @@ pub mod buffer_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::BufferSetLatest>,
+                            request: tonic::Request<super::BufferSetEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as BufferService>::list_buffer_set_by_latest(
+                                <T as BufferService>::list_buffer_set_by_earlier(
                                         &inner,
                                         request,
                                     )
@@ -3432,7 +3789,56 @@ pub mod buffer_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = ListBufferSetByLatestSvc(inner);
+                        let method = ListBufferSetByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/buffer.BufferService/ListBufferSetByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListBufferSetByLaterSvc<T: BufferService>(pub Arc<T>);
+                    impl<
+                        T: BufferService,
+                    > tonic::server::UnaryService<super::BufferSetLater>
+                    for ListBufferSetByLaterSvc<T> {
+                        type Response = super::BufferSetListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::BufferSetLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as BufferService>::list_buffer_set_by_later(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListBufferSetByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -3813,13 +4219,13 @@ pub mod buffer_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/buffer.BufferService/ListBufferTimestampByLatest" => {
+                "/buffer.BufferService/ListBufferTimestampByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct ListBufferTimestampByLatestSvc<T: BufferService>(pub Arc<T>);
+                    struct ListBufferTimestampByEarlierSvc<T: BufferService>(pub Arc<T>);
                     impl<
                         T: BufferService,
-                    > tonic::server::UnaryService<super::BufferLatest>
-                    for ListBufferTimestampByLatestSvc<T> {
+                    > tonic::server::UnaryService<super::BufferEarlier>
+                    for ListBufferTimestampByEarlierSvc<T> {
                         type Response = super::TimestampListResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -3827,11 +4233,11 @@ pub mod buffer_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::BufferLatest>,
+                            request: tonic::Request<super::BufferEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as BufferService>::list_buffer_timestamp_by_latest(
+                                <T as BufferService>::list_buffer_timestamp_by_earlier(
                                         &inner,
                                         request,
                                     )
@@ -3846,7 +4252,56 @@ pub mod buffer_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = ListBufferTimestampByLatestSvc(inner);
+                        let method = ListBufferTimestampByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/buffer.BufferService/ListBufferTimestampByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListBufferTimestampByLaterSvc<T: BufferService>(pub Arc<T>);
+                    impl<
+                        T: BufferService,
+                    > tonic::server::UnaryService<super::BufferLater>
+                    for ListBufferTimestampByLaterSvc<T> {
+                        type Response = super::TimestampListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::BufferLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as BufferService>::list_buffer_timestamp_by_later(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListBufferTimestampByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -4058,15 +4513,15 @@ pub mod buffer_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/buffer.BufferService/ListBufferGroupTimestampByLatest" => {
+                "/buffer.BufferService/ListBufferGroupTimestampByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct ListBufferGroupTimestampByLatestSvc<T: BufferService>(
+                    struct ListBufferGroupTimestampByEarlierSvc<T: BufferService>(
                         pub Arc<T>,
                     );
                     impl<
                         T: BufferService,
-                    > tonic::server::UnaryService<super::BufferGroupLatest>
-                    for ListBufferGroupTimestampByLatestSvc<T> {
+                    > tonic::server::UnaryService<super::BufferGroupEarlier>
+                    for ListBufferGroupTimestampByEarlierSvc<T> {
                         type Response = super::TimestampListResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -4074,11 +4529,11 @@ pub mod buffer_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::BufferGroupLatest>,
+                            request: tonic::Request<super::BufferGroupEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as BufferService>::list_buffer_group_timestamp_by_latest(
+                                <T as BufferService>::list_buffer_group_timestamp_by_earlier(
                                         &inner,
                                         request,
                                     )
@@ -4093,7 +4548,58 @@ pub mod buffer_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = ListBufferGroupTimestampByLatestSvc(inner);
+                        let method = ListBufferGroupTimestampByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/buffer.BufferService/ListBufferGroupTimestampByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListBufferGroupTimestampByLaterSvc<T: BufferService>(
+                        pub Arc<T>,
+                    );
+                    impl<
+                        T: BufferService,
+                    > tonic::server::UnaryService<super::BufferGroupLater>
+                    for ListBufferGroupTimestampByLaterSvc<T> {
+                        type Response = super::TimestampListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::BufferGroupLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as BufferService>::list_buffer_group_timestamp_by_later(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListBufferGroupTimestampByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -4303,13 +4809,13 @@ pub mod buffer_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/buffer.BufferService/CountBufferByLatest" => {
+                "/buffer.BufferService/CountBufferByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct CountBufferByLatestSvc<T: BufferService>(pub Arc<T>);
+                    struct CountBufferByEarlierSvc<T: BufferService>(pub Arc<T>);
                     impl<
                         T: BufferService,
-                    > tonic::server::UnaryService<super::BufferLatest>
-                    for CountBufferByLatestSvc<T> {
+                    > tonic::server::UnaryService<super::BufferEarlier>
+                    for CountBufferByEarlierSvc<T> {
                         type Response = super::BufferCountResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -4317,11 +4823,11 @@ pub mod buffer_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::BufferLatest>,
+                            request: tonic::Request<super::BufferEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as BufferService>::count_buffer_by_latest(
+                                <T as BufferService>::count_buffer_by_earlier(
                                         &inner,
                                         request,
                                     )
@@ -4336,7 +4842,53 @@ pub mod buffer_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = CountBufferByLatestSvc(inner);
+                        let method = CountBufferByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/buffer.BufferService/CountBufferByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct CountBufferByLaterSvc<T: BufferService>(pub Arc<T>);
+                    impl<
+                        T: BufferService,
+                    > tonic::server::UnaryService<super::BufferLater>
+                    for CountBufferByLaterSvc<T> {
+                        type Response = super::BufferCountResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::BufferLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as BufferService>::count_buffer_by_later(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CountBufferByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -4444,13 +4996,13 @@ pub mod buffer_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/buffer.BufferService/CountBufferGroupByLatest" => {
+                "/buffer.BufferService/CountBufferGroupByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct CountBufferGroupByLatestSvc<T: BufferService>(pub Arc<T>);
+                    struct CountBufferGroupByEarlierSvc<T: BufferService>(pub Arc<T>);
                     impl<
                         T: BufferService,
-                    > tonic::server::UnaryService<super::BufferGroupLatest>
-                    for CountBufferGroupByLatestSvc<T> {
+                    > tonic::server::UnaryService<super::BufferGroupEarlier>
+                    for CountBufferGroupByEarlierSvc<T> {
                         type Response = super::BufferCountResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -4458,11 +5010,11 @@ pub mod buffer_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::BufferGroupLatest>,
+                            request: tonic::Request<super::BufferGroupEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as BufferService>::count_buffer_group_by_latest(
+                                <T as BufferService>::count_buffer_group_by_earlier(
                                         &inner,
                                         request,
                                     )
@@ -4477,7 +5029,56 @@ pub mod buffer_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = CountBufferGroupByLatestSvc(inner);
+                        let method = CountBufferGroupByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/buffer.BufferService/CountBufferGroupByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct CountBufferGroupByLaterSvc<T: BufferService>(pub Arc<T>);
+                    impl<
+                        T: BufferService,
+                    > tonic::server::UnaryService<super::BufferGroupLater>
+                    for CountBufferGroupByLaterSvc<T> {
+                        type Response = super::BufferCountResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::BufferGroupLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as BufferService>::count_buffer_group_by_later(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CountBufferGroupByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

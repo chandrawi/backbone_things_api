@@ -19,7 +19,8 @@ pub(crate) enum Data {
 
 pub enum DataSelector {
     Time(DateTime<Utc>),
-    Latest(DateTime<Utc>),
+    Earlier(DateTime<Utc>),
+    Later(DateTime<Utc>),
     Range(DateTime<Utc>, DateTime<Utc>),
     NumberBefore(DateTime<Utc>, usize),
     NumberAfter(DateTime<Utc>, usize)
@@ -64,8 +65,13 @@ pub fn select_data(
         DataSelector::Time(time) => {
             stmt = stmt.and_where(Expr::col((Data::Table, Data::Timestamp)).eq(time)).to_owned();
         },
-        DataSelector::Latest(last) => {
-            stmt = stmt.and_where(Expr::col((Data::Table, Data::Timestamp)).gt(last))
+        DataSelector::Earlier(earlier) => {
+            stmt = stmt.and_where(Expr::col((Data::Table, Data::Timestamp)).lt(earlier))
+                .order_by((Data::Table, Data::Timestamp), Order::Asc)
+                .to_owned();
+        },
+        DataSelector::Later(later) => {
+            stmt = stmt.and_where(Expr::col((Data::Table, Data::Timestamp)).gt(later))
                 .order_by((Data::Table, Data::Timestamp), Order::Asc)
                 .to_owned();
         },
@@ -128,8 +134,13 @@ pub fn select_data_timestamp(
         DataSelector::Time(time) => {
             stmt = stmt.and_where(Expr::col((Data::Table, Data::Timestamp)).eq(time)).to_owned();
         },
-        DataSelector::Latest(last) => {
-            stmt = stmt.and_where(Expr::col((Data::Table, Data::Timestamp)).gt(last))
+        DataSelector::Earlier(earlier) => {
+            stmt = stmt.and_where(Expr::col((Data::Table, Data::Timestamp)).lt(earlier))
+            .order_by((Data::Table, Data::Timestamp), Order::Asc)
+            .to_owned();
+        },
+        DataSelector::Later(later) => {
+            stmt = stmt.and_where(Expr::col((Data::Table, Data::Timestamp)).gt(later))
             .order_by((Data::Table, Data::Timestamp), Order::Asc)
             .to_owned();
         },
@@ -293,9 +304,15 @@ pub fn select_data_set(
         DataSelector::Time(time) => {
             stmt = stmt.and_where(Expr::col((Data::Table, Data::Timestamp)).eq(time)).to_owned();
         },
-        DataSelector::Latest(last) => {
+        DataSelector::Earlier(earlier) => {
             stmt = stmt
-                .and_where(Expr::col((Data::Table, Data::Timestamp)).gt(last))
+                .and_where(Expr::col((Data::Table, Data::Timestamp)).lt(earlier))
+                .order_by((Data::Table, Data::Timestamp), Order::Asc)
+                .to_owned();
+        },
+        DataSelector::Later(later) => {
+            stmt = stmt
+                .and_where(Expr::col((Data::Table, Data::Timestamp)).gt(later))
                 .order_by((Data::Table, Data::Timestamp), Order::Asc)
                 .to_owned();
         },
@@ -346,8 +363,11 @@ pub fn count_data(
     }
 
     match selector {
-        DataSelector::Latest(last) => {
-            stmt = stmt.and_where(Expr::col(Data::Timestamp).gt(last)).to_owned();
+        DataSelector::Earlier(earlier) => {
+            stmt = stmt.and_where(Expr::col(Data::Timestamp).lt(earlier)).to_owned();
+        },
+        DataSelector::Later(later) => {
+            stmt = stmt.and_where(Expr::col(Data::Timestamp).gt(later)).to_owned();
         },
         DataSelector::Range(begin, end) => {
             stmt = stmt

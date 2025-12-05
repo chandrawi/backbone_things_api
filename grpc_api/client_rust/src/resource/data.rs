@@ -5,9 +5,9 @@ use bbthings_database::common::type_value::{DataValue, ArrayDataValue};
 use bbthings_database::common::tag as Tag;
 use bbthings_grpc_proto::resource::data::data_service_client::DataServiceClient;
 use bbthings_grpc_proto::resource::data::{
-    DataSchema, DataMultipleSchema, DataTime, DataLatest, DataRange, DataNumber, 
-    DataGroupTime, DataGroupLatest, DataGroupRange, DataGroupNumber,
-    DataSetSchema, DataSetTime, DataSetLatest, DataSetRange
+    DataSchema, DataMultipleSchema, DataTime, DataEarlier, DataLater, DataRange, DataNumber, 
+    DataGroupTime, DataGroupEarlier, DataGroupLater, DataGroupRange, DataGroupNumber,
+    DataSetSchema, DataSetTime, DataSetEarlier, DataSetLater, DataSetRange
 };
 use crate::resource::Resource;
 use bbthings_grpc_server::common::interceptor::TokenInterceptor;
@@ -51,19 +51,37 @@ pub(crate) async fn list_data_by_time(resource: &Resource, device_id: Uuid, mode
     Ok(response.results)
 }
 
-pub(crate) async fn list_data_by_latest(resource: &Resource, device_id: Uuid, model_id: Uuid, latest: DateTime<Utc>, tag: Option<i16>)
+pub(crate) async fn list_data_by_earlier(resource: &Resource, device_id: Uuid, model_id: Uuid, earlier: DateTime<Utc>, tag: Option<i16>)
     -> Result<Vec<DataSchema>, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
-    let request = Request::new(DataLatest {
+    let request = Request::new(DataEarlier {
         device_id: device_id.as_bytes().to_vec(),
         model_id: model_id.as_bytes().to_vec(),
-        latest: latest.timestamp_micros(),
+        earlier: earlier.timestamp_micros(),
         tag: tag.map(|t| t as i32)
     });
-    let response = client.list_data_by_latest(request)
+    let response = client.list_data_by_earlier(request)
+        .await?
+        .into_inner();
+    Ok(response.results)
+}
+
+pub(crate) async fn list_data_by_later(resource: &Resource, device_id: Uuid, model_id: Uuid, later: DateTime<Utc>, tag: Option<i16>)
+    -> Result<Vec<DataSchema>, Status>
+{
+    let interceptor = TokenInterceptor(resource.access_token.clone());
+    let mut client = 
+        DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let request = Request::new(DataLater {
+        device_id: device_id.as_bytes().to_vec(),
+        model_id: model_id.as_bytes().to_vec(),
+        later: later.timestamp_micros(),
+        tag: tag.map(|t| t as i32)
+    });
+    let response = client.list_data_by_later(request)
         .await?
         .into_inner();
     Ok(response.results)
@@ -144,19 +162,37 @@ pub(crate) async fn list_data_group_by_time(resource: &Resource, device_ids: &[U
     Ok(response.results)
 }
 
-pub(crate) async fn list_data_group_by_latest(resource: &Resource, device_ids: &[Uuid], model_ids: &[Uuid], latest: DateTime<Utc>, tag: Option<i16>)
+pub(crate) async fn list_data_group_by_earlier(resource: &Resource, device_ids: &[Uuid], model_ids: &[Uuid], earlier: DateTime<Utc>, tag: Option<i16>)
     -> Result<Vec<DataSchema>, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
-    let request = Request::new(DataGroupLatest {
+    let request = Request::new(DataGroupEarlier {
         device_ids: device_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         model_ids: model_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
-        latest: latest.timestamp_micros(),
+        earlier: earlier.timestamp_micros(),
         tag: tag.map(|t| t as i32)
     });
-    let response = client.list_data_group_by_latest(request)
+    let response = client.list_data_group_by_earlier(request)
+        .await?
+        .into_inner();
+    Ok(response.results)
+}
+
+pub(crate) async fn list_data_group_by_later(resource: &Resource, device_ids: &[Uuid], model_ids: &[Uuid], later: DateTime<Utc>, tag: Option<i16>)
+    -> Result<Vec<DataSchema>, Status>
+{
+    let interceptor = TokenInterceptor(resource.access_token.clone());
+    let mut client = 
+        DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let request = Request::new(DataGroupLater {
+        device_ids: device_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
+        model_ids: model_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
+        later: later.timestamp_micros(),
+        tag: tag.map(|t| t as i32)
+    });
+    let response = client.list_data_group_by_later(request)
         .await?
         .into_inner();
     Ok(response.results)
@@ -253,18 +289,35 @@ pub(crate) async fn list_data_set_by_time(resource: &Resource, set_id: Uuid, tim
     Ok(response.results)
 }
 
-pub(crate) async fn list_data_set_by_latest(resource: &Resource, set_id: Uuid, latest: DateTime<Utc>, tag: Option<i16>)
+pub(crate) async fn list_data_set_by_earlier(resource: &Resource, set_id: Uuid, earlier: DateTime<Utc>, tag: Option<i16>)
     -> Result<Vec<DataSetSchema>, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
-    let request = Request::new(DataSetLatest {
+    let request = Request::new(DataSetEarlier {
         set_id: set_id.as_bytes().to_vec(),
-        latest: latest.timestamp_micros(),
+        earlier: earlier.timestamp_micros(),
         tag: tag.map(|t| t as i32)
     });
-    let response = client.list_data_set_by_latest(request)
+    let response = client.list_data_set_by_earlier(request)
+        .await?
+        .into_inner();
+    Ok(response.results)
+}
+
+pub(crate) async fn list_data_set_by_later(resource: &Resource, set_id: Uuid, later: DateTime<Utc>, tag: Option<i16>)
+    -> Result<Vec<DataSetSchema>, Status>
+{
+    let interceptor = TokenInterceptor(resource.access_token.clone());
+    let mut client = 
+        DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let request = Request::new(DataSetLater {
+        set_id: set_id.as_bytes().to_vec(),
+        later: later.timestamp_micros(),
+        tag: tag.map(|t| t as i32)
+    });
+    let response = client.list_data_set_by_later(request)
         .await?
         .into_inner();
     Ok(response.results)
@@ -371,19 +424,37 @@ pub(crate) async fn read_data_timestamp(resource: &Resource, device_id: Uuid, mo
     Ok(Utc.timestamp_nanos(response.timestamp * 1000))
 }
 
-pub(crate) async fn list_data_timestamp_by_latest(resource: &Resource, device_id: Uuid, model_id: Uuid, latest: DateTime<Utc>, tag: Option<i16>)
+pub(crate) async fn list_data_timestamp_by_earlier(resource: &Resource, device_id: Uuid, model_id: Uuid, earlier: DateTime<Utc>, tag: Option<i16>)
     -> Result<Vec<DateTime<Utc>>, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
-    let request = Request::new(DataLatest {
+    let request = Request::new(DataEarlier {
         device_id: device_id.as_bytes().to_vec(),
         model_id: model_id.as_bytes().to_vec(),
-        latest: latest.timestamp_micros(),
+        earlier: earlier.timestamp_micros(),
         tag: tag.map(|t| t as i32)
     });
-    let response = client.list_data_timestamp_by_latest(request)
+    let response = client.list_data_timestamp_by_earlier(request)
+        .await?
+        .into_inner();
+    Ok(response.timestamps.into_iter().map(|t| Utc.timestamp_nanos(t * 1000)).collect())
+}
+
+pub(crate) async fn list_data_timestamp_by_later(resource: &Resource, device_id: Uuid, model_id: Uuid, later: DateTime<Utc>, tag: Option<i16>)
+    -> Result<Vec<DateTime<Utc>>, Status>
+{
+    let interceptor = TokenInterceptor(resource.access_token.clone());
+    let mut client = 
+        DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let request = Request::new(DataLater {
+        device_id: device_id.as_bytes().to_vec(),
+        model_id: model_id.as_bytes().to_vec(),
+        later: later.timestamp_micros(),
+        tag: tag.map(|t| t as i32)
+    });
+    let response = client.list_data_timestamp_by_later(request)
         .await?
         .into_inner();
     Ok(response.timestamps.into_iter().map(|t| Utc.timestamp_nanos(t * 1000)).collect())
@@ -426,19 +497,37 @@ pub(crate) async fn read_data_group_timestamp(resource: &Resource, device_ids: &
     Ok(Utc.timestamp_nanos(response.timestamp * 1000))
 }
 
-pub(crate) async fn list_data_group_timestamp_by_latest(resource: &Resource, device_ids: &[Uuid], model_ids: &[Uuid], latest: DateTime<Utc>, tag: Option<i16>)
+pub(crate) async fn list_data_group_timestamp_by_earlier(resource: &Resource, device_ids: &[Uuid], model_ids: &[Uuid], earlier: DateTime<Utc>, tag: Option<i16>)
     -> Result<Vec<DateTime<Utc>>, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
-    let request = Request::new(DataGroupLatest {
+    let request = Request::new(DataGroupEarlier {
         device_ids: device_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         model_ids: model_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
-        latest: latest.timestamp_micros(),
+        earlier: earlier.timestamp_micros(),
         tag: tag.map(|t| t as i32)
     });
-    let response = client.list_data_group_timestamp_by_latest(request)
+    let response = client.list_data_group_timestamp_by_earlier(request)
+        .await?
+        .into_inner();
+    Ok(response.timestamps.into_iter().map(|t| Utc.timestamp_nanos(t * 1000)).collect())
+}
+
+pub(crate) async fn list_data_group_timestamp_by_later(resource: &Resource, device_ids: &[Uuid], model_ids: &[Uuid], later: DateTime<Utc>, tag: Option<i16>)
+    -> Result<Vec<DateTime<Utc>>, Status>
+{
+    let interceptor = TokenInterceptor(resource.access_token.clone());
+    let mut client = 
+        DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let request = Request::new(DataGroupLater {
+        device_ids: device_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
+        model_ids: model_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
+        later: later.timestamp_micros(),
+        tag: tag.map(|t| t as i32)
+    });
+    let response = client.list_data_group_timestamp_by_later(request)
         .await?
         .into_inner();
     Ok(response.timestamps.into_iter().map(|t| Utc.timestamp_nanos(t * 1000)).collect())
@@ -481,19 +570,37 @@ pub(crate) async fn count_data(resource: &Resource, device_id: Uuid, model_id: U
     Ok(response.count as usize)
 }
 
-pub(crate) async fn count_data_by_latest(resource: &Resource, device_id: Uuid, model_id: Uuid, latest: DateTime<Utc>, tag: Option<i16>)
+pub(crate) async fn count_data_by_earlier(resource: &Resource, device_id: Uuid, model_id: Uuid, earlier: DateTime<Utc>, tag: Option<i16>)
     -> Result<usize, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
-    let request = Request::new(DataLatest {
+    let request = Request::new(DataEarlier {
         device_id: device_id.as_bytes().to_vec(),
         model_id: model_id.as_bytes().to_vec(),
-        latest: latest.timestamp_micros(),
+        earlier: earlier.timestamp_micros(),
         tag: tag.map(|t| t as i32)
     });
-    let response = client.count_data_by_latest(request)
+    let response = client.count_data_by_earlier(request)
+        .await?
+        .into_inner();
+    Ok(response.count as usize)
+}
+
+pub(crate) async fn count_data_by_later(resource: &Resource, device_id: Uuid, model_id: Uuid, later: DateTime<Utc>, tag: Option<i16>)
+    -> Result<usize, Status>
+{
+    let interceptor = TokenInterceptor(resource.access_token.clone());
+    let mut client = 
+        DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let request = Request::new(DataLater {
+        device_id: device_id.as_bytes().to_vec(),
+        model_id: model_id.as_bytes().to_vec(),
+        later: later.timestamp_micros(),
+        tag: tag.map(|t| t as i32)
+    });
+    let response = client.count_data_by_later(request)
         .await?
         .into_inner();
     Ok(response.count as usize)
@@ -536,19 +643,37 @@ pub(crate) async fn count_data_group(resource: &Resource, device_ids: &[Uuid], m
     Ok(response.count as usize)
 }
 
-pub(crate) async fn count_data_group_by_latest(resource: &Resource, device_ids: &[Uuid], model_ids: &[Uuid], latest: DateTime<Utc>, tag: Option<i16>)
+pub(crate) async fn count_data_group_by_earlier(resource: &Resource, device_ids: &[Uuid], model_ids: &[Uuid], earlier: DateTime<Utc>, tag: Option<i16>)
     -> Result<usize, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
-    let request = Request::new(DataGroupLatest {
+    let request = Request::new(DataGroupEarlier {
         device_ids: device_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         model_ids: model_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
-        latest: latest.timestamp_micros(),
+        earlier: earlier.timestamp_micros(),
         tag: tag.map(|t| t as i32)
     });
-    let response = client.count_data_group_by_latest(request)
+    let response = client.count_data_group_by_earlier(request)
+        .await?
+        .into_inner();
+    Ok(response.count as usize)
+}
+
+pub(crate) async fn count_data_group_by_later(resource: &Resource, device_ids: &[Uuid], model_ids: &[Uuid], later: DateTime<Utc>, tag: Option<i16>)
+    -> Result<usize, Status>
+{
+    let interceptor = TokenInterceptor(resource.access_token.clone());
+    let mut client = 
+        DataServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let request = Request::new(DataGroupLater {
+        device_ids: device_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
+        model_ids: model_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
+        later: later.timestamp_micros(),
+        tag: tag.map(|t| t as i32)
+    });
+    let response = client.count_data_group_by_later(request)
         .await?
         .into_inner();
     Ok(response.count as usize)

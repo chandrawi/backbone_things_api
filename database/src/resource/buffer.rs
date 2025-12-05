@@ -20,7 +20,8 @@ pub(crate) enum DataBuffer {
 
 pub enum BufferSelector {
     Time(DateTime<Utc>),
-    Latest(DateTime<Utc>),
+    Earlier(DateTime<Utc>),
+    Later(DateTime<Utc>),
     Range(DateTime<Utc>, DateTime<Utc>),
     NumberBefore(DateTime<Utc>, usize),
     NumberAfter(DateTime<Utc>, usize),
@@ -81,8 +82,13 @@ pub fn select_buffer(
         BufferSelector::Time(timestamp) => {
             stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).eq(timestamp)).to_owned();
         },
-        BufferSelector::Latest(last) => {
-            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).gt(last))
+        BufferSelector::Earlier(earlier) => {
+            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).lt(earlier))
+                .order_by((DataBuffer::Table, DataBuffer::Timestamp), Order::Asc)
+                .to_owned();
+        },
+        BufferSelector::Later(later) => {
+            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).gt(later))
                 .order_by((DataBuffer::Table, DataBuffer::Timestamp), Order::Asc)
                 .to_owned();
         },
@@ -164,8 +170,13 @@ pub fn select_buffer_timestamp(
         BufferSelector::Time(timestamp) => {
             stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).eq(timestamp)).to_owned();
         },
-        BufferSelector::Latest(last) => {
-            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).gt(last))
+        BufferSelector::Earlier(earlier) => {
+            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).lt(earlier))
+                .order_by((DataBuffer::Table, DataBuffer::Timestamp), Order::Asc)
+                .to_owned();
+        },
+        BufferSelector::Later(later) => {
+            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).gt(later))
                 .order_by((DataBuffer::Table, DataBuffer::Timestamp), Order::Asc)
                 .to_owned();
         },
@@ -408,8 +419,13 @@ pub fn select_buffer_set(
         BufferSelector::Time(timestamp) => {
             stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).eq(timestamp)).to_owned();
         },
-        BufferSelector::Latest(last) => {
-            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).gt(last))
+        BufferSelector::Earlier(earlier) => {
+            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).lt(earlier))
+                .order_by((DataBuffer::Table, DataBuffer::Timestamp), Order::Asc)
+                .to_owned();
+        },
+        BufferSelector::Later(later) => {
+            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).gt(later))
                 .order_by((DataBuffer::Table, DataBuffer::Timestamp), Order::Asc)
                 .to_owned();
         },
@@ -460,8 +476,11 @@ pub fn count_buffer(
     }
 
     match selector {
-        BufferSelector::Latest(last) => {
-            stmt = stmt.and_where(Expr::col(DataBuffer::Timestamp).gt(last)).to_owned();
+        BufferSelector::Earlier(earlier) => {
+            stmt = stmt.and_where(Expr::col(DataBuffer::Timestamp).lt(earlier)).to_owned();
+        }
+        BufferSelector::Later(later) => {
+            stmt = stmt.and_where(Expr::col(DataBuffer::Timestamp).gt(later)).to_owned();
         },
         BufferSelector::Range(begin, end) => {
             stmt = stmt

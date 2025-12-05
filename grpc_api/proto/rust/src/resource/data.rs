@@ -31,13 +31,24 @@ pub struct DataTime {
     pub tag: ::core::option::Option<i32>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
-pub struct DataLatest {
+pub struct DataEarlier {
     #[prost(bytes = "vec", tag = "1")]
     pub device_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes = "vec", tag = "2")]
     pub model_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(int64, tag = "3")]
-    pub latest: i64,
+    pub earlier: i64,
+    #[prost(int32, optional, tag = "4")]
+    pub tag: ::core::option::Option<i32>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct DataLater {
+    #[prost(bytes = "vec", tag = "1")]
+    pub device_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes = "vec", tag = "2")]
+    pub model_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(int64, tag = "3")]
+    pub later: i64,
     #[prost(int32, optional, tag = "4")]
     pub tag: ::core::option::Option<i32>,
 }
@@ -92,13 +103,24 @@ pub struct DataGroupTime {
     pub tag: ::core::option::Option<i32>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
-pub struct DataGroupLatest {
+pub struct DataGroupEarlier {
     #[prost(bytes = "vec", repeated, tag = "1")]
     pub device_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
     #[prost(bytes = "vec", repeated, tag = "2")]
     pub model_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
     #[prost(int64, tag = "3")]
-    pub latest: i64,
+    pub earlier: i64,
+    #[prost(int32, optional, tag = "4")]
+    pub tag: ::core::option::Option<i32>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct DataGroupLater {
+    #[prost(bytes = "vec", repeated, tag = "1")]
+    pub device_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    #[prost(bytes = "vec", repeated, tag = "2")]
+    pub model_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    #[prost(int64, tag = "3")]
+    pub later: i64,
     #[prost(int32, optional, tag = "4")]
     pub tag: ::core::option::Option<i32>,
 }
@@ -138,11 +160,20 @@ pub struct DataSetTime {
     pub tag: ::core::option::Option<i32>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
-pub struct DataSetLatest {
+pub struct DataSetEarlier {
     #[prost(bytes = "vec", tag = "1")]
     pub set_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(int64, tag = "2")]
-    pub latest: i64,
+    pub earlier: i64,
+    #[prost(int32, optional, tag = "3")]
+    pub tag: ::core::option::Option<i32>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct DataSetLater {
+    #[prost(bytes = "vec", tag = "1")]
+    pub set_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(int64, tag = "2")]
+    pub later: i64,
     #[prost(int32, optional, tag = "3")]
     pub tag: ::core::option::Option<i32>,
 }
@@ -332,9 +363,9 @@ pub mod data_service_client {
                 .insert(GrpcMethod::new("data.DataService", "ListDataByTime"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn list_data_by_latest(
+        pub async fn list_data_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::DataLatest>,
+            request: impl tonic::IntoRequest<super::DataEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::DataListResponse>,
             tonic::Status,
@@ -349,11 +380,35 @@ pub mod data_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/data.DataService/ListDataByLatest",
+                "/data.DataService/ListDataByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("data.DataService", "ListDataByLatest"));
+                .insert(GrpcMethod::new("data.DataService", "ListDataByEarlier"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_data_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DataLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::DataListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/data.DataService/ListDataByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("data.DataService", "ListDataByLater"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn list_data_by_range(
@@ -452,9 +507,9 @@ pub mod data_service_client {
                 .insert(GrpcMethod::new("data.DataService", "ListDataGroupByTime"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn list_data_group_by_latest(
+        pub async fn list_data_group_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::DataGroupLatest>,
+            request: impl tonic::IntoRequest<super::DataGroupEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::DataListResponse>,
             tonic::Status,
@@ -469,11 +524,35 @@ pub mod data_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/data.DataService/ListDataGroupByLatest",
+                "/data.DataService/ListDataGroupByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("data.DataService", "ListDataGroupByLatest"));
+                .insert(GrpcMethod::new("data.DataService", "ListDataGroupByEarlier"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_data_group_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DataGroupLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::DataListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/data.DataService/ListDataGroupByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("data.DataService", "ListDataGroupByLater"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn list_data_group_by_range(
@@ -600,9 +679,9 @@ pub mod data_service_client {
                 .insert(GrpcMethod::new("data.DataService", "ListDataSetByTime"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn list_data_set_by_latest(
+        pub async fn list_data_set_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::DataSetLatest>,
+            request: impl tonic::IntoRequest<super::DataSetEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::DataSetListResponse>,
             tonic::Status,
@@ -617,11 +696,35 @@ pub mod data_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/data.DataService/ListDataSetByLatest",
+                "/data.DataService/ListDataSetByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("data.DataService", "ListDataSetByLatest"));
+                .insert(GrpcMethod::new("data.DataService", "ListDataSetByEarlier"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_data_set_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DataSetLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::DataSetListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/data.DataService/ListDataSetByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("data.DataService", "ListDataSetByLater"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn list_data_set_by_range(
@@ -744,9 +847,9 @@ pub mod data_service_client {
                 .insert(GrpcMethod::new("data.DataService", "ReadDataTimestamp"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn list_data_timestamp_by_latest(
+        pub async fn list_data_timestamp_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::DataLatest>,
+            request: impl tonic::IntoRequest<super::DataEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::TimestampListResponse>,
             tonic::Status,
@@ -761,13 +864,37 @@ pub mod data_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/data.DataService/ListDataTimestampByLatest",
+                "/data.DataService/ListDataTimestampByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(
-                    GrpcMethod::new("data.DataService", "ListDataTimestampByLatest"),
+                    GrpcMethod::new("data.DataService", "ListDataTimestampByEarlier"),
                 );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_data_timestamp_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DataLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::TimestampListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/data.DataService/ListDataTimestampByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("data.DataService", "ListDataTimestampByLater"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn list_data_timestamp_by_range(
@@ -818,9 +945,9 @@ pub mod data_service_client {
                 .insert(GrpcMethod::new("data.DataService", "ReadDataGroupTimestamp"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn list_data_group_timestamp_by_latest(
+        pub async fn list_data_group_timestamp_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::DataGroupLatest>,
+            request: impl tonic::IntoRequest<super::DataGroupEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::TimestampListResponse>,
             tonic::Status,
@@ -835,12 +962,41 @@ pub mod data_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/data.DataService/ListDataGroupTimestampByLatest",
+                "/data.DataService/ListDataGroupTimestampByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(
-                    GrpcMethod::new("data.DataService", "ListDataGroupTimestampByLatest"),
+                    GrpcMethod::new(
+                        "data.DataService",
+                        "ListDataGroupTimestampByEarlier",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_data_group_timestamp_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DataGroupLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::TimestampListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/data.DataService/ListDataGroupTimestampByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("data.DataService", "ListDataGroupTimestampByLater"),
                 );
             self.inner.unary(req, path, codec).await
         }
@@ -894,9 +1050,9 @@ pub mod data_service_client {
                 .insert(GrpcMethod::new("data.DataService", "CountData"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn count_data_by_latest(
+        pub async fn count_data_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::DataLatest>,
+            request: impl tonic::IntoRequest<super::DataEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::DataCountResponse>,
             tonic::Status,
@@ -911,11 +1067,35 @@ pub mod data_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/data.DataService/CountDataByLatest",
+                "/data.DataService/CountDataByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("data.DataService", "CountDataByLatest"));
+                .insert(GrpcMethod::new("data.DataService", "CountDataByEarlier"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn count_data_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DataLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::DataCountResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/data.DataService/CountDataByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("data.DataService", "CountDataByLater"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn count_data_by_range(
@@ -966,9 +1146,9 @@ pub mod data_service_client {
                 .insert(GrpcMethod::new("data.DataService", "CountDataGroup"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn count_data_group_by_latest(
+        pub async fn count_data_group_by_earlier(
             &mut self,
-            request: impl tonic::IntoRequest<super::DataGroupLatest>,
+            request: impl tonic::IntoRequest<super::DataGroupEarlier>,
         ) -> std::result::Result<
             tonic::Response<super::DataCountResponse>,
             tonic::Status,
@@ -983,11 +1163,35 @@ pub mod data_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/data.DataService/CountDataGroupByLatest",
+                "/data.DataService/CountDataGroupByEarlier",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("data.DataService", "CountDataGroupByLatest"));
+                .insert(GrpcMethod::new("data.DataService", "CountDataGroupByEarlier"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn count_data_group_by_later(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DataGroupLater>,
+        ) -> std::result::Result<
+            tonic::Response<super::DataCountResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/data.DataService/CountDataGroupByLater",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("data.DataService", "CountDataGroupByLater"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn count_data_group_by_range(
@@ -1043,9 +1247,16 @@ pub mod data_service_server {
             tonic::Response<super::DataListResponse>,
             tonic::Status,
         >;
-        async fn list_data_by_latest(
+        async fn list_data_by_earlier(
             &self,
-            request: tonic::Request<super::DataLatest>,
+            request: tonic::Request<super::DataEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::DataListResponse>,
+            tonic::Status,
+        >;
+        async fn list_data_by_later(
+            &self,
+            request: tonic::Request<super::DataLater>,
         ) -> std::result::Result<
             tonic::Response<super::DataListResponse>,
             tonic::Status,
@@ -1078,9 +1289,16 @@ pub mod data_service_server {
             tonic::Response<super::DataListResponse>,
             tonic::Status,
         >;
-        async fn list_data_group_by_latest(
+        async fn list_data_group_by_earlier(
             &self,
-            request: tonic::Request<super::DataGroupLatest>,
+            request: tonic::Request<super::DataGroupEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::DataListResponse>,
+            tonic::Status,
+        >;
+        async fn list_data_group_by_later(
+            &self,
+            request: tonic::Request<super::DataGroupLater>,
         ) -> std::result::Result<
             tonic::Response<super::DataListResponse>,
             tonic::Status,
@@ -1120,9 +1338,16 @@ pub mod data_service_server {
             tonic::Response<super::DataSetListResponse>,
             tonic::Status,
         >;
-        async fn list_data_set_by_latest(
+        async fn list_data_set_by_earlier(
             &self,
-            request: tonic::Request<super::DataSetLatest>,
+            request: tonic::Request<super::DataSetEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::DataSetListResponse>,
+            tonic::Status,
+        >;
+        async fn list_data_set_by_later(
+            &self,
+            request: tonic::Request<super::DataSetLater>,
         ) -> std::result::Result<
             tonic::Response<super::DataSetListResponse>,
             tonic::Status,
@@ -1162,9 +1387,16 @@ pub mod data_service_server {
             tonic::Response<super::TimestampReadResponse>,
             tonic::Status,
         >;
-        async fn list_data_timestamp_by_latest(
+        async fn list_data_timestamp_by_earlier(
             &self,
-            request: tonic::Request<super::DataLatest>,
+            request: tonic::Request<super::DataEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::TimestampListResponse>,
+            tonic::Status,
+        >;
+        async fn list_data_timestamp_by_later(
+            &self,
+            request: tonic::Request<super::DataLater>,
         ) -> std::result::Result<
             tonic::Response<super::TimestampListResponse>,
             tonic::Status,
@@ -1183,9 +1415,16 @@ pub mod data_service_server {
             tonic::Response<super::TimestampReadResponse>,
             tonic::Status,
         >;
-        async fn list_data_group_timestamp_by_latest(
+        async fn list_data_group_timestamp_by_earlier(
             &self,
-            request: tonic::Request<super::DataGroupLatest>,
+            request: tonic::Request<super::DataGroupEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::TimestampListResponse>,
+            tonic::Status,
+        >;
+        async fn list_data_group_timestamp_by_later(
+            &self,
+            request: tonic::Request<super::DataGroupLater>,
         ) -> std::result::Result<
             tonic::Response<super::TimestampListResponse>,
             tonic::Status,
@@ -1204,9 +1443,16 @@ pub mod data_service_server {
             tonic::Response<super::DataCountResponse>,
             tonic::Status,
         >;
-        async fn count_data_by_latest(
+        async fn count_data_by_earlier(
             &self,
-            request: tonic::Request<super::DataLatest>,
+            request: tonic::Request<super::DataEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::DataCountResponse>,
+            tonic::Status,
+        >;
+        async fn count_data_by_later(
+            &self,
+            request: tonic::Request<super::DataLater>,
         ) -> std::result::Result<
             tonic::Response<super::DataCountResponse>,
             tonic::Status,
@@ -1225,9 +1471,16 @@ pub mod data_service_server {
             tonic::Response<super::DataCountResponse>,
             tonic::Status,
         >;
-        async fn count_data_group_by_latest(
+        async fn count_data_group_by_earlier(
             &self,
-            request: tonic::Request<super::DataGroupLatest>,
+            request: tonic::Request<super::DataGroupEarlier>,
+        ) -> std::result::Result<
+            tonic::Response<super::DataCountResponse>,
+            tonic::Status,
+        >;
+        async fn count_data_group_by_later(
+            &self,
+            request: tonic::Request<super::DataGroupLater>,
         ) -> std::result::Result<
             tonic::Response<super::DataCountResponse>,
             tonic::Status,
@@ -1402,11 +1655,11 @@ pub mod data_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/data.DataService/ListDataByLatest" => {
+                "/data.DataService/ListDataByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct ListDataByLatestSvc<T: DataService>(pub Arc<T>);
-                    impl<T: DataService> tonic::server::UnaryService<super::DataLatest>
-                    for ListDataByLatestSvc<T> {
+                    struct ListDataByEarlierSvc<T: DataService>(pub Arc<T>);
+                    impl<T: DataService> tonic::server::UnaryService<super::DataEarlier>
+                    for ListDataByEarlierSvc<T> {
                         type Response = super::DataListResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -1414,11 +1667,11 @@ pub mod data_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::DataLatest>,
+                            request: tonic::Request<super::DataEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as DataService>::list_data_by_latest(&inner, request)
+                                <T as DataService>::list_data_by_earlier(&inner, request)
                                     .await
                             };
                             Box::pin(fut)
@@ -1430,7 +1683,51 @@ pub mod data_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = ListDataByLatestSvc(inner);
+                        let method = ListDataByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/data.DataService/ListDataByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListDataByLaterSvc<T: DataService>(pub Arc<T>);
+                    impl<T: DataService> tonic::server::UnaryService<super::DataLater>
+                    for ListDataByLaterSvc<T> {
+                        type Response = super::DataListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DataLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as DataService>::list_data_by_later(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListDataByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -1630,13 +1927,13 @@ pub mod data_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/data.DataService/ListDataGroupByLatest" => {
+                "/data.DataService/ListDataGroupByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct ListDataGroupByLatestSvc<T: DataService>(pub Arc<T>);
+                    struct ListDataGroupByEarlierSvc<T: DataService>(pub Arc<T>);
                     impl<
                         T: DataService,
-                    > tonic::server::UnaryService<super::DataGroupLatest>
-                    for ListDataGroupByLatestSvc<T> {
+                    > tonic::server::UnaryService<super::DataGroupEarlier>
+                    for ListDataGroupByEarlierSvc<T> {
                         type Response = super::DataListResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -1644,11 +1941,11 @@ pub mod data_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::DataGroupLatest>,
+                            request: tonic::Request<super::DataGroupEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as DataService>::list_data_group_by_latest(
+                                <T as DataService>::list_data_group_by_earlier(
                                         &inner,
                                         request,
                                     )
@@ -1663,7 +1960,56 @@ pub mod data_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = ListDataGroupByLatestSvc(inner);
+                        let method = ListDataGroupByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/data.DataService/ListDataGroupByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListDataGroupByLaterSvc<T: DataService>(pub Arc<T>);
+                    impl<
+                        T: DataService,
+                    > tonic::server::UnaryService<super::DataGroupLater>
+                    for ListDataGroupByLaterSvc<T> {
+                        type Response = super::DataListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DataGroupLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as DataService>::list_data_group_by_later(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListDataGroupByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -1913,13 +2259,13 @@ pub mod data_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/data.DataService/ListDataSetByLatest" => {
+                "/data.DataService/ListDataSetByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct ListDataSetByLatestSvc<T: DataService>(pub Arc<T>);
+                    struct ListDataSetByEarlierSvc<T: DataService>(pub Arc<T>);
                     impl<
                         T: DataService,
-                    > tonic::server::UnaryService<super::DataSetLatest>
-                    for ListDataSetByLatestSvc<T> {
+                    > tonic::server::UnaryService<super::DataSetEarlier>
+                    for ListDataSetByEarlierSvc<T> {
                         type Response = super::DataSetListResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -1927,11 +2273,14 @@ pub mod data_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::DataSetLatest>,
+                            request: tonic::Request<super::DataSetEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as DataService>::list_data_set_by_latest(&inner, request)
+                                <T as DataService>::list_data_set_by_earlier(
+                                        &inner,
+                                        request,
+                                    )
                                     .await
                             };
                             Box::pin(fut)
@@ -1943,7 +2292,51 @@ pub mod data_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = ListDataSetByLatestSvc(inner);
+                        let method = ListDataSetByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/data.DataService/ListDataSetByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListDataSetByLaterSvc<T: DataService>(pub Arc<T>);
+                    impl<T: DataService> tonic::server::UnaryService<super::DataSetLater>
+                    for ListDataSetByLaterSvc<T> {
+                        type Response = super::DataSetListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DataSetLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as DataService>::list_data_set_by_later(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListDataSetByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -2179,11 +2572,11 @@ pub mod data_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/data.DataService/ListDataTimestampByLatest" => {
+                "/data.DataService/ListDataTimestampByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct ListDataTimestampByLatestSvc<T: DataService>(pub Arc<T>);
-                    impl<T: DataService> tonic::server::UnaryService<super::DataLatest>
-                    for ListDataTimestampByLatestSvc<T> {
+                    struct ListDataTimestampByEarlierSvc<T: DataService>(pub Arc<T>);
+                    impl<T: DataService> tonic::server::UnaryService<super::DataEarlier>
+                    for ListDataTimestampByEarlierSvc<T> {
                         type Response = super::TimestampListResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -2191,11 +2584,11 @@ pub mod data_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::DataLatest>,
+                            request: tonic::Request<super::DataEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as DataService>::list_data_timestamp_by_latest(
+                                <T as DataService>::list_data_timestamp_by_earlier(
                                         &inner,
                                         request,
                                     )
@@ -2210,7 +2603,54 @@ pub mod data_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = ListDataTimestampByLatestSvc(inner);
+                        let method = ListDataTimestampByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/data.DataService/ListDataTimestampByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListDataTimestampByLaterSvc<T: DataService>(pub Arc<T>);
+                    impl<T: DataService> tonic::server::UnaryService<super::DataLater>
+                    for ListDataTimestampByLaterSvc<T> {
+                        type Response = super::TimestampListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DataLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as DataService>::list_data_timestamp_by_later(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListDataTimestampByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -2322,13 +2762,15 @@ pub mod data_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/data.DataService/ListDataGroupTimestampByLatest" => {
+                "/data.DataService/ListDataGroupTimestampByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct ListDataGroupTimestampByLatestSvc<T: DataService>(pub Arc<T>);
+                    struct ListDataGroupTimestampByEarlierSvc<T: DataService>(
+                        pub Arc<T>,
+                    );
                     impl<
                         T: DataService,
-                    > tonic::server::UnaryService<super::DataGroupLatest>
-                    for ListDataGroupTimestampByLatestSvc<T> {
+                    > tonic::server::UnaryService<super::DataGroupEarlier>
+                    for ListDataGroupTimestampByEarlierSvc<T> {
                         type Response = super::TimestampListResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -2336,11 +2778,11 @@ pub mod data_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::DataGroupLatest>,
+                            request: tonic::Request<super::DataGroupEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as DataService>::list_data_group_timestamp_by_latest(
+                                <T as DataService>::list_data_group_timestamp_by_earlier(
                                         &inner,
                                         request,
                                     )
@@ -2355,7 +2797,56 @@ pub mod data_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = ListDataGroupTimestampByLatestSvc(inner);
+                        let method = ListDataGroupTimestampByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/data.DataService/ListDataGroupTimestampByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListDataGroupTimestampByLaterSvc<T: DataService>(pub Arc<T>);
+                    impl<
+                        T: DataService,
+                    > tonic::server::UnaryService<super::DataGroupLater>
+                    for ListDataGroupTimestampByLaterSvc<T> {
+                        type Response = super::TimestampListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DataGroupLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as DataService>::list_data_group_timestamp_by_later(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListDataGroupTimestampByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -2463,11 +2954,11 @@ pub mod data_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/data.DataService/CountDataByLatest" => {
+                "/data.DataService/CountDataByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct CountDataByLatestSvc<T: DataService>(pub Arc<T>);
-                    impl<T: DataService> tonic::server::UnaryService<super::DataLatest>
-                    for CountDataByLatestSvc<T> {
+                    struct CountDataByEarlierSvc<T: DataService>(pub Arc<T>);
+                    impl<T: DataService> tonic::server::UnaryService<super::DataEarlier>
+                    for CountDataByEarlierSvc<T> {
                         type Response = super::DataCountResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -2475,11 +2966,11 @@ pub mod data_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::DataLatest>,
+                            request: tonic::Request<super::DataEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as DataService>::count_data_by_latest(&inner, request)
+                                <T as DataService>::count_data_by_earlier(&inner, request)
                                     .await
                             };
                             Box::pin(fut)
@@ -2491,7 +2982,51 @@ pub mod data_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = CountDataByLatestSvc(inner);
+                        let method = CountDataByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/data.DataService/CountDataByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct CountDataByLaterSvc<T: DataService>(pub Arc<T>);
+                    impl<T: DataService> tonic::server::UnaryService<super::DataLater>
+                    for CountDataByLaterSvc<T> {
+                        type Response = super::DataCountResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DataLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as DataService>::count_data_by_later(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CountDataByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -2596,13 +3131,13 @@ pub mod data_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/data.DataService/CountDataGroupByLatest" => {
+                "/data.DataService/CountDataGroupByEarlier" => {
                     #[allow(non_camel_case_types)]
-                    struct CountDataGroupByLatestSvc<T: DataService>(pub Arc<T>);
+                    struct CountDataGroupByEarlierSvc<T: DataService>(pub Arc<T>);
                     impl<
                         T: DataService,
-                    > tonic::server::UnaryService<super::DataGroupLatest>
-                    for CountDataGroupByLatestSvc<T> {
+                    > tonic::server::UnaryService<super::DataGroupEarlier>
+                    for CountDataGroupByEarlierSvc<T> {
                         type Response = super::DataCountResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -2610,11 +3145,11 @@ pub mod data_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::DataGroupLatest>,
+                            request: tonic::Request<super::DataGroupEarlier>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as DataService>::count_data_group_by_latest(
+                                <T as DataService>::count_data_group_by_earlier(
                                         &inner,
                                         request,
                                     )
@@ -2629,7 +3164,56 @@ pub mod data_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = CountDataGroupByLatestSvc(inner);
+                        let method = CountDataGroupByEarlierSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/data.DataService/CountDataGroupByLater" => {
+                    #[allow(non_camel_case_types)]
+                    struct CountDataGroupByLaterSvc<T: DataService>(pub Arc<T>);
+                    impl<
+                        T: DataService,
+                    > tonic::server::UnaryService<super::DataGroupLater>
+                    for CountDataGroupByLaterSvc<T> {
+                        type Response = super::DataCountResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DataGroupLater>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as DataService>::count_data_group_by_later(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CountDataGroupByLaterSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

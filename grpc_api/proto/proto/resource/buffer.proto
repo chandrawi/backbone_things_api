@@ -10,7 +10,9 @@ service BufferService {
 
     rpc ListBufferByTime(BufferTime) returns (BufferListResponse);
 
-    rpc ListBufferByLatest(BufferLatest) returns (BufferListResponse);
+    rpc ListBufferByEarlier(BufferEarlier) returns (BufferListResponse);
+
+    rpc ListBufferByLater(BufferLater) returns (BufferListResponse);
 
     rpc ListBufferByRange(BufferRange) returns (BufferListResponse);
 
@@ -32,7 +34,9 @@ service BufferService {
 
     rpc ListBufferGroupByTime(BufferGroupTime) returns (BufferListResponse);
 
-    rpc ListBufferGroupByLatest(BufferGroupLatest) returns (BufferListResponse);
+    rpc ListBufferGroupByEarlier(BufferGroupEarlier) returns (BufferListResponse);
+
+    rpc ListBufferGroupByLater(BufferGroupLater) returns (BufferListResponse);
 
     rpc ListBufferGroupByRange(BufferGroupRange) returns (BufferListResponse);
 
@@ -56,7 +60,9 @@ service BufferService {
 
     rpc ListBufferSetByTime(BufferSetTime) returns (BufferSetListResponse);
 
-    rpc ListBufferSetByLatest(BufferSetLatest) returns (BufferSetListResponse);
+    rpc ListBufferSetByEarlier(BufferSetEarlier) returns (BufferSetListResponse);
+
+    rpc ListBufferSetByLater(BufferSetLater) returns (BufferSetListResponse);
 
     rpc ListBufferSetByRange(BufferSetRange) returns (BufferSetListResponse);
 
@@ -74,7 +80,9 @@ service BufferService {
 
     rpc ReadBufferTimestamp(BufferTime) returns (TimestampReadResponse);
 
-    rpc ListBufferTimestampByLatest(BufferLatest) returns (TimestampListResponse);
+    rpc ListBufferTimestampByEarlier(BufferEarlier) returns (TimestampListResponse);
+
+    rpc ListBufferTimestampByLater(BufferLater) returns (TimestampListResponse);
 
     rpc ListBufferTimestampByRange(BufferRange) returns (TimestampListResponse);
 
@@ -84,7 +92,9 @@ service BufferService {
 
     rpc ReadBufferGroupTimestamp(BufferGroupTime) returns (TimestampReadResponse);
 
-    rpc ListBufferGroupTimestampByLatest(BufferGroupLatest) returns (TimestampListResponse);
+    rpc ListBufferGroupTimestampByEarlier(BufferGroupEarlier) returns (TimestampListResponse);
+
+    rpc ListBufferGroupTimestampByLater(BufferGroupLater) returns (TimestampListResponse);
 
     rpc ListBufferGroupTimestampByRange(BufferGroupRange) returns (TimestampListResponse);
 
@@ -94,13 +104,17 @@ service BufferService {
 
     rpc CountBuffer(BufferTime) returns (BufferCountResponse);
 
-    rpc CountBufferByLatest(BufferLatest) returns (BufferCountResponse);
+    rpc CountBufferByEarlier(BufferEarlier) returns (BufferCountResponse);
+
+    rpc CountBufferByLater(BufferLater) returns (BufferCountResponse);
 
     rpc CountBufferByRange(BufferRange) returns (BufferCountResponse);
 
     rpc CountBufferGroup(BufferGroupTime) returns (BufferCountResponse);
 
-    rpc CountBufferGroupByLatest(BufferGroupLatest) returns (BufferCountResponse);
+    rpc CountBufferGroupByEarlier(BufferGroupEarlier) returns (BufferCountResponse);
+
+    rpc CountBufferGroupByLater(BufferGroupLater) returns (BufferCountResponse);
 
     rpc CountBufferGroupByRange(BufferGroupRange) returns (BufferCountResponse);
 }
@@ -134,10 +148,17 @@ message BufferTime {
     optional int32 tag = 4;
 }
 
-message BufferLatest {
+message BufferEarlier {
     bytes device_id = 1;
     bytes model_id = 2;
-    int64 latest = 3;
+    int64 earlier = 3;
+    optional int32 tag = 4;
+}
+
+message BufferLater {
+    bytes device_id = 1;
+    bytes model_id = 2;
+    int64 later = 3;
     optional int32 tag = 4;
 }
 
@@ -187,10 +208,17 @@ message BufferGroupTime {
     optional int32 tag = 4;
 }
 
-message BufferGroupLatest {
+message BufferGroupEarlier {
     repeated bytes device_ids = 1;
     repeated bytes model_ids = 2;
-    int64 latest = 3;
+    int64 earlier = 3;
+    optional int32 tag = 4;
+}
+
+message BufferGroupLater {
+    repeated bytes device_ids = 1;
+    repeated bytes model_ids = 2;
+    int64 later = 3;
     optional int32 tag = 4;
 }
 
@@ -230,9 +258,15 @@ message BufferSetTime {
     optional int32 tag = 3;
 }
 
-message BufferSetLatest {
+message BufferSetEarlier {
     bytes set_id = 1;
-    int64 latest = 2;
+    int64 earlier = 2;
+    optional int32 tag = 3;
+}
+
+message BufferSetLater {
+    bytes set_id = 1;
+    int64 later = 2;
     optional int32 tag = 3;
 }
 
