@@ -1,4 +1,5 @@
 pub(crate) mod _schema;
+pub(crate) mod _row;
 pub mod api;
 pub mod role;
 pub mod user;

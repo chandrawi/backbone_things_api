@@ -1,9 +1,8 @@
 use sha2::Sha256;
 use rsa::{RsaPrivateKey, RsaPublicKey, Oaep};
 use pkcs8::{DecodePublicKey, EncodePublicKey};
-use argon2::{Argon2, PasswordVerifier, password_hash::PasswordHash};
 use rand::thread_rng;
-pub use bbthings_database::utility::{generate_access_key, generate_token_string, hash_password};
+pub use bbthings_database::utility::{generate_access_key, generate_token_string, hash_password, verify_password};
 
 pub fn generate_transport_keys() -> Result<(RsaPrivateKey, RsaPublicKey), rsa::Error>
 {
@@ -36,13 +35,6 @@ pub fn encrypt_message(message: &[u8], pub_key: RsaPublicKey) -> Result<Vec<u8>,
 {
     let padding = Oaep::new_with_mgf_hash::<Sha256, Sha256>();
     pub_key.encrypt(&mut thread_rng(), padding, message)
-}
-
-pub(crate) fn verify_password(password: &[u8], hash: &str) -> Result<(), argon2::password_hash::Error>
-{
-    let argon2 = Argon2::default();
-    let parsed_hash = PasswordHash::new(&hash)?;
-    argon2.verify_password(password, &parsed_hash)
 }
 
 pub(crate) fn handle_error(e: sqlx::Error) -> tonic::Status {
