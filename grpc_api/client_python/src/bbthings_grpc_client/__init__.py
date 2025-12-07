@@ -13,3 +13,4 @@ from .resource._schema import \
     DataSchema, DataSetSchema, BufferSchema, BufferSetSchema, \
     SliceSchema, SliceSetSchema
 from .auth import Auth
+from .resource import Resource
