@@ -44,9 +44,14 @@ class DataServiceStub(object):
                 request_serializer=resource_dot_data__pb2.DataTime.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.DataListResponse.FromString,
                 _registered_method=True)
-        self.ListDataByLatest = channel.unary_unary(
-                '/data.DataService/ListDataByLatest',
-                request_serializer=resource_dot_data__pb2.DataLatest.SerializeToString,
+        self.ListDataByEarlier = channel.unary_unary(
+                '/data.DataService/ListDataByEarlier',
+                request_serializer=resource_dot_data__pb2.DataEarlier.SerializeToString,
+                response_deserializer=resource_dot_data__pb2.DataListResponse.FromString,
+                _registered_method=True)
+        self.ListDataByLater = channel.unary_unary(
+                '/data.DataService/ListDataByLater',
+                request_serializer=resource_dot_data__pb2.DataLater.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.DataListResponse.FromString,
                 _registered_method=True)
         self.ListDataByRange = channel.unary_unary(
@@ -69,9 +74,14 @@ class DataServiceStub(object):
                 request_serializer=resource_dot_data__pb2.DataGroupTime.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.DataListResponse.FromString,
                 _registered_method=True)
-        self.ListDataGroupByLatest = channel.unary_unary(
-                '/data.DataService/ListDataGroupByLatest',
-                request_serializer=resource_dot_data__pb2.DataGroupLatest.SerializeToString,
+        self.ListDataGroupByEarlier = channel.unary_unary(
+                '/data.DataService/ListDataGroupByEarlier',
+                request_serializer=resource_dot_data__pb2.DataGroupEarlier.SerializeToString,
+                response_deserializer=resource_dot_data__pb2.DataListResponse.FromString,
+                _registered_method=True)
+        self.ListDataGroupByLater = channel.unary_unary(
+                '/data.DataService/ListDataGroupByLater',
+                request_serializer=resource_dot_data__pb2.DataGroupLater.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.DataListResponse.FromString,
                 _registered_method=True)
         self.ListDataGroupByRange = channel.unary_unary(
@@ -99,9 +109,14 @@ class DataServiceStub(object):
                 request_serializer=resource_dot_data__pb2.DataSetTime.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.DataSetListResponse.FromString,
                 _registered_method=True)
-        self.ListDataSetByLatest = channel.unary_unary(
-                '/data.DataService/ListDataSetByLatest',
-                request_serializer=resource_dot_data__pb2.DataSetLatest.SerializeToString,
+        self.ListDataSetByEarlier = channel.unary_unary(
+                '/data.DataService/ListDataSetByEarlier',
+                request_serializer=resource_dot_data__pb2.DataSetEarlier.SerializeToString,
+                response_deserializer=resource_dot_data__pb2.DataSetListResponse.FromString,
+                _registered_method=True)
+        self.ListDataSetByLater = channel.unary_unary(
+                '/data.DataService/ListDataSetByLater',
+                request_serializer=resource_dot_data__pb2.DataSetLater.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.DataSetListResponse.FromString,
                 _registered_method=True)
         self.ListDataSetByRange = channel.unary_unary(
@@ -129,9 +144,14 @@ class DataServiceStub(object):
                 request_serializer=resource_dot_data__pb2.DataTime.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.TimestampReadResponse.FromString,
                 _registered_method=True)
-        self.ListDataTimestampByLatest = channel.unary_unary(
-                '/data.DataService/ListDataTimestampByLatest',
-                request_serializer=resource_dot_data__pb2.DataLatest.SerializeToString,
+        self.ListDataTimestampByEarlier = channel.unary_unary(
+                '/data.DataService/ListDataTimestampByEarlier',
+                request_serializer=resource_dot_data__pb2.DataEarlier.SerializeToString,
+                response_deserializer=resource_dot_data__pb2.TimestampListResponse.FromString,
+                _registered_method=True)
+        self.ListDataTimestampByLater = channel.unary_unary(
+                '/data.DataService/ListDataTimestampByLater',
+                request_serializer=resource_dot_data__pb2.DataLater.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.TimestampListResponse.FromString,
                 _registered_method=True)
         self.ListDataTimestampByRange = channel.unary_unary(
@@ -144,9 +164,14 @@ class DataServiceStub(object):
                 request_serializer=resource_dot_data__pb2.DataGroupTime.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.TimestampReadResponse.FromString,
                 _registered_method=True)
-        self.ListDataGroupTimestampByLatest = channel.unary_unary(
-                '/data.DataService/ListDataGroupTimestampByLatest',
-                request_serializer=resource_dot_data__pb2.DataGroupLatest.SerializeToString,
+        self.ListDataGroupTimestampByEarlier = channel.unary_unary(
+                '/data.DataService/ListDataGroupTimestampByEarlier',
+                request_serializer=resource_dot_data__pb2.DataGroupEarlier.SerializeToString,
+                response_deserializer=resource_dot_data__pb2.TimestampListResponse.FromString,
+                _registered_method=True)
+        self.ListDataGroupTimestampByLater = channel.unary_unary(
+                '/data.DataService/ListDataGroupTimestampByLater',
+                request_serializer=resource_dot_data__pb2.DataGroupLater.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.TimestampListResponse.FromString,
                 _registered_method=True)
         self.ListDataGroupTimestampByRange = channel.unary_unary(
@@ -159,9 +184,14 @@ class DataServiceStub(object):
                 request_serializer=resource_dot_data__pb2.DataTime.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.DataCountResponse.FromString,
                 _registered_method=True)
-        self.CountDataByLatest = channel.unary_unary(
-                '/data.DataService/CountDataByLatest',
-                request_serializer=resource_dot_data__pb2.DataLatest.SerializeToString,
+        self.CountDataByEarlier = channel.unary_unary(
+                '/data.DataService/CountDataByEarlier',
+                request_serializer=resource_dot_data__pb2.DataEarlier.SerializeToString,
+                response_deserializer=resource_dot_data__pb2.DataCountResponse.FromString,
+                _registered_method=True)
+        self.CountDataByLater = channel.unary_unary(
+                '/data.DataService/CountDataByLater',
+                request_serializer=resource_dot_data__pb2.DataLater.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.DataCountResponse.FromString,
                 _registered_method=True)
         self.CountDataByRange = channel.unary_unary(
@@ -174,9 +204,14 @@ class DataServiceStub(object):
                 request_serializer=resource_dot_data__pb2.DataGroupTime.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.DataCountResponse.FromString,
                 _registered_method=True)
-        self.CountDataGroupByLatest = channel.unary_unary(
-                '/data.DataService/CountDataGroupByLatest',
-                request_serializer=resource_dot_data__pb2.DataGroupLatest.SerializeToString,
+        self.CountDataGroupByEarlier = channel.unary_unary(
+                '/data.DataService/CountDataGroupByEarlier',
+                request_serializer=resource_dot_data__pb2.DataGroupEarlier.SerializeToString,
+                response_deserializer=resource_dot_data__pb2.DataCountResponse.FromString,
+                _registered_method=True)
+        self.CountDataGroupByLater = channel.unary_unary(
+                '/data.DataService/CountDataGroupByLater',
+                request_serializer=resource_dot_data__pb2.DataGroupLater.SerializeToString,
                 response_deserializer=resource_dot_data__pb2.DataCountResponse.FromString,
                 _registered_method=True)
         self.CountDataGroupByRange = channel.unary_unary(
@@ -201,7 +236,13 @@ class DataServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ListDataByLatest(self, request, context):
+    def ListDataByEarlier(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListDataByLater(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -231,7 +272,13 @@ class DataServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ListDataGroupByLatest(self, request, context):
+    def ListDataGroupByEarlier(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListDataGroupByLater(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -267,7 +314,13 @@ class DataServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ListDataSetByLatest(self, request, context):
+    def ListDataSetByEarlier(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListDataSetByLater(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -303,7 +356,13 @@ class DataServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ListDataTimestampByLatest(self, request, context):
+    def ListDataTimestampByEarlier(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListDataTimestampByLater(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -321,7 +380,13 @@ class DataServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ListDataGroupTimestampByLatest(self, request, context):
+    def ListDataGroupTimestampByEarlier(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListDataGroupTimestampByLater(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -339,7 +404,13 @@ class DataServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def CountDataByLatest(self, request, context):
+    def CountDataByEarlier(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CountDataByLater(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -357,7 +428,13 @@ class DataServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def CountDataGroupByLatest(self, request, context):
+    def CountDataGroupByEarlier(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CountDataGroupByLater(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -382,9 +459,14 @@ def add_DataServiceServicer_to_server(servicer, server):
                     request_deserializer=resource_dot_data__pb2.DataTime.FromString,
                     response_serializer=resource_dot_data__pb2.DataListResponse.SerializeToString,
             ),
-            'ListDataByLatest': grpc.unary_unary_rpc_method_handler(
-                    servicer.ListDataByLatest,
-                    request_deserializer=resource_dot_data__pb2.DataLatest.FromString,
+            'ListDataByEarlier': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDataByEarlier,
+                    request_deserializer=resource_dot_data__pb2.DataEarlier.FromString,
+                    response_serializer=resource_dot_data__pb2.DataListResponse.SerializeToString,
+            ),
+            'ListDataByLater': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDataByLater,
+                    request_deserializer=resource_dot_data__pb2.DataLater.FromString,
                     response_serializer=resource_dot_data__pb2.DataListResponse.SerializeToString,
             ),
             'ListDataByRange': grpc.unary_unary_rpc_method_handler(
@@ -407,9 +489,14 @@ def add_DataServiceServicer_to_server(servicer, server):
                     request_deserializer=resource_dot_data__pb2.DataGroupTime.FromString,
                     response_serializer=resource_dot_data__pb2.DataListResponse.SerializeToString,
             ),
-            'ListDataGroupByLatest': grpc.unary_unary_rpc_method_handler(
-                    servicer.ListDataGroupByLatest,
-                    request_deserializer=resource_dot_data__pb2.DataGroupLatest.FromString,
+            'ListDataGroupByEarlier': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDataGroupByEarlier,
+                    request_deserializer=resource_dot_data__pb2.DataGroupEarlier.FromString,
+                    response_serializer=resource_dot_data__pb2.DataListResponse.SerializeToString,
+            ),
+            'ListDataGroupByLater': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDataGroupByLater,
+                    request_deserializer=resource_dot_data__pb2.DataGroupLater.FromString,
                     response_serializer=resource_dot_data__pb2.DataListResponse.SerializeToString,
             ),
             'ListDataGroupByRange': grpc.unary_unary_rpc_method_handler(
@@ -437,9 +524,14 @@ def add_DataServiceServicer_to_server(servicer, server):
                     request_deserializer=resource_dot_data__pb2.DataSetTime.FromString,
                     response_serializer=resource_dot_data__pb2.DataSetListResponse.SerializeToString,
             ),
-            'ListDataSetByLatest': grpc.unary_unary_rpc_method_handler(
-                    servicer.ListDataSetByLatest,
-                    request_deserializer=resource_dot_data__pb2.DataSetLatest.FromString,
+            'ListDataSetByEarlier': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDataSetByEarlier,
+                    request_deserializer=resource_dot_data__pb2.DataSetEarlier.FromString,
+                    response_serializer=resource_dot_data__pb2.DataSetListResponse.SerializeToString,
+            ),
+            'ListDataSetByLater': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDataSetByLater,
+                    request_deserializer=resource_dot_data__pb2.DataSetLater.FromString,
                     response_serializer=resource_dot_data__pb2.DataSetListResponse.SerializeToString,
             ),
             'ListDataSetByRange': grpc.unary_unary_rpc_method_handler(
@@ -467,9 +559,14 @@ def add_DataServiceServicer_to_server(servicer, server):
                     request_deserializer=resource_dot_data__pb2.DataTime.FromString,
                     response_serializer=resource_dot_data__pb2.TimestampReadResponse.SerializeToString,
             ),
-            'ListDataTimestampByLatest': grpc.unary_unary_rpc_method_handler(
-                    servicer.ListDataTimestampByLatest,
-                    request_deserializer=resource_dot_data__pb2.DataLatest.FromString,
+            'ListDataTimestampByEarlier': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDataTimestampByEarlier,
+                    request_deserializer=resource_dot_data__pb2.DataEarlier.FromString,
+                    response_serializer=resource_dot_data__pb2.TimestampListResponse.SerializeToString,
+            ),
+            'ListDataTimestampByLater': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDataTimestampByLater,
+                    request_deserializer=resource_dot_data__pb2.DataLater.FromString,
                     response_serializer=resource_dot_data__pb2.TimestampListResponse.SerializeToString,
             ),
             'ListDataTimestampByRange': grpc.unary_unary_rpc_method_handler(
@@ -482,9 +579,14 @@ def add_DataServiceServicer_to_server(servicer, server):
                     request_deserializer=resource_dot_data__pb2.DataGroupTime.FromString,
                     response_serializer=resource_dot_data__pb2.TimestampReadResponse.SerializeToString,
             ),
-            'ListDataGroupTimestampByLatest': grpc.unary_unary_rpc_method_handler(
-                    servicer.ListDataGroupTimestampByLatest,
-                    request_deserializer=resource_dot_data__pb2.DataGroupLatest.FromString,
+            'ListDataGroupTimestampByEarlier': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDataGroupTimestampByEarlier,
+                    request_deserializer=resource_dot_data__pb2.DataGroupEarlier.FromString,
+                    response_serializer=resource_dot_data__pb2.TimestampListResponse.SerializeToString,
+            ),
+            'ListDataGroupTimestampByLater': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDataGroupTimestampByLater,
+                    request_deserializer=resource_dot_data__pb2.DataGroupLater.FromString,
                     response_serializer=resource_dot_data__pb2.TimestampListResponse.SerializeToString,
             ),
             'ListDataGroupTimestampByRange': grpc.unary_unary_rpc_method_handler(
@@ -497,9 +599,14 @@ def add_DataServiceServicer_to_server(servicer, server):
                     request_deserializer=resource_dot_data__pb2.DataTime.FromString,
                     response_serializer=resource_dot_data__pb2.DataCountResponse.SerializeToString,
             ),
-            'CountDataByLatest': grpc.unary_unary_rpc_method_handler(
-                    servicer.CountDataByLatest,
-                    request_deserializer=resource_dot_data__pb2.DataLatest.FromString,
+            'CountDataByEarlier': grpc.unary_unary_rpc_method_handler(
+                    servicer.CountDataByEarlier,
+                    request_deserializer=resource_dot_data__pb2.DataEarlier.FromString,
+                    response_serializer=resource_dot_data__pb2.DataCountResponse.SerializeToString,
+            ),
+            'CountDataByLater': grpc.unary_unary_rpc_method_handler(
+                    servicer.CountDataByLater,
+                    request_deserializer=resource_dot_data__pb2.DataLater.FromString,
                     response_serializer=resource_dot_data__pb2.DataCountResponse.SerializeToString,
             ),
             'CountDataByRange': grpc.unary_unary_rpc_method_handler(
@@ -512,9 +619,14 @@ def add_DataServiceServicer_to_server(servicer, server):
                     request_deserializer=resource_dot_data__pb2.DataGroupTime.FromString,
                     response_serializer=resource_dot_data__pb2.DataCountResponse.SerializeToString,
             ),
-            'CountDataGroupByLatest': grpc.unary_unary_rpc_method_handler(
-                    servicer.CountDataGroupByLatest,
-                    request_deserializer=resource_dot_data__pb2.DataGroupLatest.FromString,
+            'CountDataGroupByEarlier': grpc.unary_unary_rpc_method_handler(
+                    servicer.CountDataGroupByEarlier,
+                    request_deserializer=resource_dot_data__pb2.DataGroupEarlier.FromString,
+                    response_serializer=resource_dot_data__pb2.DataCountResponse.SerializeToString,
+            ),
+            'CountDataGroupByLater': grpc.unary_unary_rpc_method_handler(
+                    servicer.CountDataGroupByLater,
+                    request_deserializer=resource_dot_data__pb2.DataGroupLater.FromString,
                     response_serializer=resource_dot_data__pb2.DataCountResponse.SerializeToString,
             ),
             'CountDataGroupByRange': grpc.unary_unary_rpc_method_handler(
@@ -588,7 +700,7 @@ class DataService(object):
             _registered_method=True)
 
     @staticmethod
-    def ListDataByLatest(request,
+    def ListDataByEarlier(request,
             target,
             options=(),
             channel_credentials=None,
@@ -601,8 +713,35 @@ class DataService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/data.DataService/ListDataByLatest',
-            resource_dot_data__pb2.DataLatest.SerializeToString,
+            '/data.DataService/ListDataByEarlier',
+            resource_dot_data__pb2.DataEarlier.SerializeToString,
+            resource_dot_data__pb2.DataListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListDataByLater(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/data.DataService/ListDataByLater',
+            resource_dot_data__pb2.DataLater.SerializeToString,
             resource_dot_data__pb2.DataListResponse.FromString,
             options,
             channel_credentials,
@@ -723,7 +862,7 @@ class DataService(object):
             _registered_method=True)
 
     @staticmethod
-    def ListDataGroupByLatest(request,
+    def ListDataGroupByEarlier(request,
             target,
             options=(),
             channel_credentials=None,
@@ -736,8 +875,35 @@ class DataService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/data.DataService/ListDataGroupByLatest',
-            resource_dot_data__pb2.DataGroupLatest.SerializeToString,
+            '/data.DataService/ListDataGroupByEarlier',
+            resource_dot_data__pb2.DataGroupEarlier.SerializeToString,
+            resource_dot_data__pb2.DataListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListDataGroupByLater(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/data.DataService/ListDataGroupByLater',
+            resource_dot_data__pb2.DataGroupLater.SerializeToString,
             resource_dot_data__pb2.DataListResponse.FromString,
             options,
             channel_credentials,
@@ -885,7 +1051,7 @@ class DataService(object):
             _registered_method=True)
 
     @staticmethod
-    def ListDataSetByLatest(request,
+    def ListDataSetByEarlier(request,
             target,
             options=(),
             channel_credentials=None,
@@ -898,8 +1064,35 @@ class DataService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/data.DataService/ListDataSetByLatest',
-            resource_dot_data__pb2.DataSetLatest.SerializeToString,
+            '/data.DataService/ListDataSetByEarlier',
+            resource_dot_data__pb2.DataSetEarlier.SerializeToString,
+            resource_dot_data__pb2.DataSetListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListDataSetByLater(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/data.DataService/ListDataSetByLater',
+            resource_dot_data__pb2.DataSetLater.SerializeToString,
             resource_dot_data__pb2.DataSetListResponse.FromString,
             options,
             channel_credentials,
@@ -1047,7 +1240,7 @@ class DataService(object):
             _registered_method=True)
 
     @staticmethod
-    def ListDataTimestampByLatest(request,
+    def ListDataTimestampByEarlier(request,
             target,
             options=(),
             channel_credentials=None,
@@ -1060,8 +1253,35 @@ class DataService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/data.DataService/ListDataTimestampByLatest',
-            resource_dot_data__pb2.DataLatest.SerializeToString,
+            '/data.DataService/ListDataTimestampByEarlier',
+            resource_dot_data__pb2.DataEarlier.SerializeToString,
+            resource_dot_data__pb2.TimestampListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListDataTimestampByLater(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/data.DataService/ListDataTimestampByLater',
+            resource_dot_data__pb2.DataLater.SerializeToString,
             resource_dot_data__pb2.TimestampListResponse.FromString,
             options,
             channel_credentials,
@@ -1128,7 +1348,7 @@ class DataService(object):
             _registered_method=True)
 
     @staticmethod
-    def ListDataGroupTimestampByLatest(request,
+    def ListDataGroupTimestampByEarlier(request,
             target,
             options=(),
             channel_credentials=None,
@@ -1141,8 +1361,35 @@ class DataService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/data.DataService/ListDataGroupTimestampByLatest',
-            resource_dot_data__pb2.DataGroupLatest.SerializeToString,
+            '/data.DataService/ListDataGroupTimestampByEarlier',
+            resource_dot_data__pb2.DataGroupEarlier.SerializeToString,
+            resource_dot_data__pb2.TimestampListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListDataGroupTimestampByLater(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/data.DataService/ListDataGroupTimestampByLater',
+            resource_dot_data__pb2.DataGroupLater.SerializeToString,
             resource_dot_data__pb2.TimestampListResponse.FromString,
             options,
             channel_credentials,
@@ -1209,7 +1456,7 @@ class DataService(object):
             _registered_method=True)
 
     @staticmethod
-    def CountDataByLatest(request,
+    def CountDataByEarlier(request,
             target,
             options=(),
             channel_credentials=None,
@@ -1222,8 +1469,35 @@ class DataService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/data.DataService/CountDataByLatest',
-            resource_dot_data__pb2.DataLatest.SerializeToString,
+            '/data.DataService/CountDataByEarlier',
+            resource_dot_data__pb2.DataEarlier.SerializeToString,
+            resource_dot_data__pb2.DataCountResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CountDataByLater(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/data.DataService/CountDataByLater',
+            resource_dot_data__pb2.DataLater.SerializeToString,
             resource_dot_data__pb2.DataCountResponse.FromString,
             options,
             channel_credentials,
@@ -1290,7 +1564,7 @@ class DataService(object):
             _registered_method=True)
 
     @staticmethod
-    def CountDataGroupByLatest(request,
+    def CountDataGroupByEarlier(request,
             target,
             options=(),
             channel_credentials=None,
@@ -1303,8 +1577,35 @@ class DataService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/data.DataService/CountDataGroupByLatest',
-            resource_dot_data__pb2.DataGroupLatest.SerializeToString,
+            '/data.DataService/CountDataGroupByEarlier',
+            resource_dot_data__pb2.DataGroupEarlier.SerializeToString,
+            resource_dot_data__pb2.DataCountResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CountDataGroupByLater(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/data.DataService/CountDataGroupByLater',
+            resource_dot_data__pb2.DataGroupLater.SerializeToString,
             resource_dot_data__pb2.DataCountResponse.FromString,
             options,
             channel_credentials,

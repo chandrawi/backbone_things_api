@@ -54,17 +54,29 @@ class BufferTime(_message.Message):
     tag: int
     def __init__(self, device_id: _Optional[bytes] = ..., model_id: _Optional[bytes] = ..., timestamp: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
 
-class BufferLatest(_message.Message):
-    __slots__ = ("device_id", "model_id", "latest", "tag")
+class BufferEarlier(_message.Message):
+    __slots__ = ("device_id", "model_id", "earlier", "tag")
     DEVICE_ID_FIELD_NUMBER: _ClassVar[int]
     MODEL_ID_FIELD_NUMBER: _ClassVar[int]
-    LATEST_FIELD_NUMBER: _ClassVar[int]
+    EARLIER_FIELD_NUMBER: _ClassVar[int]
     TAG_FIELD_NUMBER: _ClassVar[int]
     device_id: bytes
     model_id: bytes
-    latest: int
+    earlier: int
     tag: int
-    def __init__(self, device_id: _Optional[bytes] = ..., model_id: _Optional[bytes] = ..., latest: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
+    def __init__(self, device_id: _Optional[bytes] = ..., model_id: _Optional[bytes] = ..., earlier: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
+
+class BufferLater(_message.Message):
+    __slots__ = ("device_id", "model_id", "later", "tag")
+    DEVICE_ID_FIELD_NUMBER: _ClassVar[int]
+    MODEL_ID_FIELD_NUMBER: _ClassVar[int]
+    LATER_FIELD_NUMBER: _ClassVar[int]
+    TAG_FIELD_NUMBER: _ClassVar[int]
+    device_id: bytes
+    model_id: bytes
+    later: int
+    tag: int
+    def __init__(self, device_id: _Optional[bytes] = ..., model_id: _Optional[bytes] = ..., later: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
 
 class BufferRange(_message.Message):
     __slots__ = ("device_id", "model_id", "begin", "end", "tag")
@@ -146,17 +158,29 @@ class BufferGroupTime(_message.Message):
     tag: int
     def __init__(self, device_ids: _Optional[_Iterable[bytes]] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., timestamp: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
 
-class BufferGroupLatest(_message.Message):
-    __slots__ = ("device_ids", "model_ids", "latest", "tag")
+class BufferGroupEarlier(_message.Message):
+    __slots__ = ("device_ids", "model_ids", "earlier", "tag")
     DEVICE_IDS_FIELD_NUMBER: _ClassVar[int]
     MODEL_IDS_FIELD_NUMBER: _ClassVar[int]
-    LATEST_FIELD_NUMBER: _ClassVar[int]
+    EARLIER_FIELD_NUMBER: _ClassVar[int]
     TAG_FIELD_NUMBER: _ClassVar[int]
     device_ids: _containers.RepeatedScalarFieldContainer[bytes]
     model_ids: _containers.RepeatedScalarFieldContainer[bytes]
-    latest: int
+    earlier: int
     tag: int
-    def __init__(self, device_ids: _Optional[_Iterable[bytes]] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., latest: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
+    def __init__(self, device_ids: _Optional[_Iterable[bytes]] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., earlier: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
+
+class BufferGroupLater(_message.Message):
+    __slots__ = ("device_ids", "model_ids", "later", "tag")
+    DEVICE_IDS_FIELD_NUMBER: _ClassVar[int]
+    MODEL_IDS_FIELD_NUMBER: _ClassVar[int]
+    LATER_FIELD_NUMBER: _ClassVar[int]
+    TAG_FIELD_NUMBER: _ClassVar[int]
+    device_ids: _containers.RepeatedScalarFieldContainer[bytes]
+    model_ids: _containers.RepeatedScalarFieldContainer[bytes]
+    later: int
+    tag: int
+    def __init__(self, device_ids: _Optional[_Iterable[bytes]] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., later: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
 
 class BufferGroupRange(_message.Message):
     __slots__ = ("device_ids", "model_ids", "begin", "end", "tag")
@@ -220,15 +244,25 @@ class BufferSetTime(_message.Message):
     tag: int
     def __init__(self, set_id: _Optional[bytes] = ..., timestamp: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
 
-class BufferSetLatest(_message.Message):
-    __slots__ = ("set_id", "latest", "tag")
+class BufferSetEarlier(_message.Message):
+    __slots__ = ("set_id", "earlier", "tag")
     SET_ID_FIELD_NUMBER: _ClassVar[int]
-    LATEST_FIELD_NUMBER: _ClassVar[int]
+    EARLIER_FIELD_NUMBER: _ClassVar[int]
     TAG_FIELD_NUMBER: _ClassVar[int]
     set_id: bytes
-    latest: int
+    earlier: int
     tag: int
-    def __init__(self, set_id: _Optional[bytes] = ..., latest: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
+    def __init__(self, set_id: _Optional[bytes] = ..., earlier: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
+
+class BufferSetLater(_message.Message):
+    __slots__ = ("set_id", "later", "tag")
+    SET_ID_FIELD_NUMBER: _ClassVar[int]
+    LATER_FIELD_NUMBER: _ClassVar[int]
+    TAG_FIELD_NUMBER: _ClassVar[int]
+    set_id: bytes
+    later: int
+    tag: int
+    def __init__(self, set_id: _Optional[bytes] = ..., later: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
 
 class BufferSetRange(_message.Message):
     __slots__ = ("set_id", "begin", "end", "tag")
