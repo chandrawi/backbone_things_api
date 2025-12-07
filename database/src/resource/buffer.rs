@@ -387,8 +387,7 @@ pub fn select_buffer_set(
     tags: Option<Vec<i16>>
 ) -> QueryStatement
 {
-    let mut stmt = Query::select().to_owned();
-    stmt = stmt
+    let mut stmt = Query::select()
         .columns([
             (DataBuffer::Table, DataBuffer::Id),
             (DataBuffer::Table, DataBuffer::DeviceId),

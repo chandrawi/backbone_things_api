@@ -122,7 +122,6 @@ pub fn select_device(
     }
     let stmt = stmt
         .order_by((Device::Table, Device::DeviceId), Order::Asc)
-        .order_by((DeviceType::Table, DeviceType::TypeId), Order::Asc)
         .order_by((DeviceTypeModel::Table, DeviceTypeModel::ModelId), Order::Asc)
         .order_by((DeviceConfig::Table, DeviceConfig::Id), Order::Asc)
         .to_owned();

@@ -232,7 +232,6 @@ dependencies = [
 name = "bbthings_grpc_server"
 version = "0.1.0"
 dependencies = [
- "argon2",
  "bbthings_database",
  "bbthings_grpc_proto",
  "chrono",
