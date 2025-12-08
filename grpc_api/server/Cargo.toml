@@ -12,12 +12,12 @@ name = "resource_server"
 path = "src/resource_server.rs"
 
 [dependencies]
-bbthings_grpc_proto = { path = "../proto/rust"}
 bbthings_database = { path = "../../database"}
 tokio = { version = "1.48.0", features = ["rt-multi-thread", "macros"] }
 sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "postgres", "migrate", "uuid"] }
 prost = "0.14.1"
 tonic = "0.14.2"
+tonic-prost = "0.14.2"
 tonic-reflection = "0.14.2"
 tonic-web = "0.14.2"
 http = "1.3.1"
@@ -33,3 +33,6 @@ rsa = "0.9.9"
 pkcs8 = "0.10.2"
 spki = "0.7.3"
 sha2 = "0.10.9"
+
+[build-dependencies]
+tonic-prost-build = "0.14.2"

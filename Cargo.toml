@@ -1,7 +1,6 @@
 [workspace]
 members = [
     "database",
-    "grpc_api/proto/rust",
     "grpc_api/server",
     "grpc_api/client_rust"
 ]

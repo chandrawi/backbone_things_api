@@ -1,4 +1,5 @@
 pub mod auth {
+    pub mod _schema;
     pub mod api;
     pub mod role;
     pub mod user;
@@ -7,6 +8,7 @@ pub mod auth {
     pub mod auth;
 }
 pub mod resource {
+    pub mod _schema;
     pub mod model;
     pub mod device;
     pub mod group;
@@ -24,3 +26,24 @@ pub mod common {
     pub mod test;
 }
 pub use common::utility;
+
+pub mod proto {
+    pub mod auth {
+        pub mod api;
+        pub mod role;
+        pub mod user;
+        pub mod profile;
+        pub mod token;
+        pub mod auth;
+    }
+    pub mod resource {
+        pub mod model;
+        pub mod device;
+        pub mod group;
+        pub mod set;
+        pub mod data;
+        pub mod buffer;
+        pub mod slice;
+    }
+    pub mod descriptor;
+}
