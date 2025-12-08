@@ -127,25 +127,25 @@ def list_token_by_range(auth, b_created: datetime, e_created: datetime, b_expire
         for result in response.results: ls.append(TokenSchema.from_response(result))
         return ls
 
-def create_access_token(auth, user_id: UUID, auth_token: str, expire: datetime, ip: bytes):
+def create_access_token(auth, user_id: UUID, auth_token: str, expired: datetime, ip: bytes):
     with grpc.insecure_channel(auth.address) as channel:
         stub = token_pb2_grpc.TokenServiceStub(channel)
         request = token_pb2.TokenSchema(
             user_id=user_id.bytes,
             auth_token=auth_token,
-            expire=int(expire.timestamp()*1000000),
+            expired=int(expired.timestamp()*1000000),
             ip=ip
         )
         response = stub.CreateAccessToken(request=request, metadata=auth.metadata)
         return (response.access_id, response.refresh_token, response.auth_token)
 
-def create_auth_token(auth, user_id: UUID, expire: datetime, ip: bytes, number: int):
+def create_auth_token(auth, user_id: UUID, expired: datetime, ip: bytes, number: int):
     with grpc.insecure_channel(auth.address) as channel:
         stub = token_pb2_grpc.TokenServiceStub(channel)
         request = token_pb2.AuthTokenCreate(
             user_id=user_id.bytes,
             number=number,
-            expire=int(expire.timestamp()*1000000),
+            expired=int(expired.timestamp()*1000000),
             ip=ip
         )
         response = stub.CreateAuthToken(request=request, metadata=auth.metadata)
@@ -153,27 +153,27 @@ def create_auth_token(auth, user_id: UUID, expire: datetime, ip: bytes, number: 
         for token in response.tokens: tokens.append((token.access_id, token.refresh_token, token.auth_token))
         return tokens
 
-def update_access_token(auth, access_id: int, expire: Optional[datetime], ip: Optional[bytes]):
+def update_access_token(auth, access_id: int, expired: Optional[datetime], ip: Optional[bytes]):
     with grpc.insecure_channel(auth.address) as channel:
         stub = token_pb2_grpc.TokenServiceStub(channel)
         request = token_pb2.TokenUpdate(
             access_id=access_id,
-            expire=int(expire.timestamp()*1000000),
+            expired=int(expired.timestamp()*1000000),
             ip=ip
         )
         response = stub.UpdateAccessToken(request=request, metadata=auth.metadata)
-        return (response.refresh_token, response.auth_token)
+        return response.refresh_token
 
-def update_auth_token(auth, auth_token: str, expire: Optional[datetime], ip: Optional[bytes]):
+def update_auth_token(auth, auth_token: str, expired: Optional[datetime], ip: Optional[bytes]):
     with grpc.insecure_channel(auth.address) as channel:
         stub = token_pb2_grpc.TokenServiceStub(channel)
         request = token_pb2.TokenUpdate(
             auth_token=auth_token,
-            expire=int(expire.timestamp()*1000000),
+            expired=int(expired.timestamp()*1000000),
             ip=ip
         )
         response = stub.UpdateAuthToken(request=request, metadata=auth.metadata)
-        return (response.refresh_token, response.auth_token)
+        return response.refresh_token
 
 def delete_access_token(auth, access_id: int):
     with grpc.insecure_channel(auth.address) as channel:

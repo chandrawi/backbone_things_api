@@ -154,11 +154,12 @@ class TokenSchema:
     user_id: UUID
     refresh_token: str
     auth_token: str
-    expire: datetime
+    created: datetime
+    expired: datetime
     ip: bytes
 
     def from_response(r):
-        return TokenSchema(r.access_id, UUID(bytes=r.user_id), r.refresh_token, r.auth_token, datetime.fromtimestamp(r.expire/1000000.0), r.ip)
+        return TokenSchema(r.access_id, UUID(bytes=r.user_id), r.refresh_token, r.auth_token, datetime.fromtimestamp(r.created/1000000.0), datetime.fromtimestamp(r.expired/1000000.0), r.ip)
 
 
 @dataclass
