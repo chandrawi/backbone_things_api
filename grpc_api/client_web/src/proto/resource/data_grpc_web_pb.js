@@ -199,16 +199,16 @@ proto.data.DataServicePromiseClient.prototype.listDataByTime =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.data.DataLatest,
+ *   !proto.data.DataEarlier,
  *   !proto.data.DataListResponse>}
  */
-const methodDescriptor_DataService_ListDataByLatest = new grpc.web.MethodDescriptor(
-  '/data.DataService/ListDataByLatest',
+const methodDescriptor_DataService_ListDataByEarlier = new grpc.web.MethodDescriptor(
+  '/data.DataService/ListDataByEarlier',
   grpc.web.MethodType.UNARY,
-  proto.data.DataLatest,
+  proto.data.DataEarlier,
   proto.data.DataListResponse,
   /**
-   * @param {!proto.data.DataLatest} request
+   * @param {!proto.data.DataEarlier} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -219,7 +219,7 @@ const methodDescriptor_DataService_ListDataByLatest = new grpc.web.MethodDescrip
 
 
 /**
- * @param {!proto.data.DataLatest} request The
+ * @param {!proto.data.DataEarlier} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -228,32 +228,93 @@ const methodDescriptor_DataService_ListDataByLatest = new grpc.web.MethodDescrip
  * @return {!grpc.web.ClientReadableStream<!proto.data.DataListResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.data.DataServiceClient.prototype.listDataByLatest =
+proto.data.DataServiceClient.prototype.listDataByEarlier =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/data.DataService/ListDataByLatest',
+      '/data.DataService/ListDataByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_ListDataByLatest,
+      methodDescriptor_DataService_ListDataByEarlier,
       callback);
 };
 
 
 /**
- * @param {!proto.data.DataLatest} request The
+ * @param {!proto.data.DataEarlier} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.data.DataListResponse>}
  *     Promise that resolves to the response
  */
-proto.data.DataServicePromiseClient.prototype.listDataByLatest =
+proto.data.DataServicePromiseClient.prototype.listDataByEarlier =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/data.DataService/ListDataByLatest',
+      '/data.DataService/ListDataByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_ListDataByLatest);
+      methodDescriptor_DataService_ListDataByEarlier);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.data.DataLater,
+ *   !proto.data.DataListResponse>}
+ */
+const methodDescriptor_DataService_ListDataByLater = new grpc.web.MethodDescriptor(
+  '/data.DataService/ListDataByLater',
+  grpc.web.MethodType.UNARY,
+  proto.data.DataLater,
+  proto.data.DataListResponse,
+  /**
+   * @param {!proto.data.DataLater} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.data.DataListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.data.DataLater} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.data.DataListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.data.DataListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.data.DataServiceClient.prototype.listDataByLater =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/data.DataService/ListDataByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_ListDataByLater,
+      callback);
+};
+
+
+/**
+ * @param {!proto.data.DataLater} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.data.DataListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.data.DataServicePromiseClient.prototype.listDataByLater =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/data.DataService/ListDataByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_ListDataByLater);
 };
 
 
@@ -504,16 +565,16 @@ proto.data.DataServicePromiseClient.prototype.listDataGroupByTime =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.data.DataGroupLatest,
+ *   !proto.data.DataGroupEarlier,
  *   !proto.data.DataListResponse>}
  */
-const methodDescriptor_DataService_ListDataGroupByLatest = new grpc.web.MethodDescriptor(
-  '/data.DataService/ListDataGroupByLatest',
+const methodDescriptor_DataService_ListDataGroupByEarlier = new grpc.web.MethodDescriptor(
+  '/data.DataService/ListDataGroupByEarlier',
   grpc.web.MethodType.UNARY,
-  proto.data.DataGroupLatest,
+  proto.data.DataGroupEarlier,
   proto.data.DataListResponse,
   /**
-   * @param {!proto.data.DataGroupLatest} request
+   * @param {!proto.data.DataGroupEarlier} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -524,7 +585,7 @@ const methodDescriptor_DataService_ListDataGroupByLatest = new grpc.web.MethodDe
 
 
 /**
- * @param {!proto.data.DataGroupLatest} request The
+ * @param {!proto.data.DataGroupEarlier} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -533,32 +594,93 @@ const methodDescriptor_DataService_ListDataGroupByLatest = new grpc.web.MethodDe
  * @return {!grpc.web.ClientReadableStream<!proto.data.DataListResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.data.DataServiceClient.prototype.listDataGroupByLatest =
+proto.data.DataServiceClient.prototype.listDataGroupByEarlier =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/data.DataService/ListDataGroupByLatest',
+      '/data.DataService/ListDataGroupByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_ListDataGroupByLatest,
+      methodDescriptor_DataService_ListDataGroupByEarlier,
       callback);
 };
 
 
 /**
- * @param {!proto.data.DataGroupLatest} request The
+ * @param {!proto.data.DataGroupEarlier} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.data.DataListResponse>}
  *     Promise that resolves to the response
  */
-proto.data.DataServicePromiseClient.prototype.listDataGroupByLatest =
+proto.data.DataServicePromiseClient.prototype.listDataGroupByEarlier =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/data.DataService/ListDataGroupByLatest',
+      '/data.DataService/ListDataGroupByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_ListDataGroupByLatest);
+      methodDescriptor_DataService_ListDataGroupByEarlier);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.data.DataGroupLater,
+ *   !proto.data.DataListResponse>}
+ */
+const methodDescriptor_DataService_ListDataGroupByLater = new grpc.web.MethodDescriptor(
+  '/data.DataService/ListDataGroupByLater',
+  grpc.web.MethodType.UNARY,
+  proto.data.DataGroupLater,
+  proto.data.DataListResponse,
+  /**
+   * @param {!proto.data.DataGroupLater} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.data.DataListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.data.DataGroupLater} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.data.DataListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.data.DataListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.data.DataServiceClient.prototype.listDataGroupByLater =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/data.DataService/ListDataGroupByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_ListDataGroupByLater,
+      callback);
+};
+
+
+/**
+ * @param {!proto.data.DataGroupLater} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.data.DataListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.data.DataServicePromiseClient.prototype.listDataGroupByLater =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/data.DataService/ListDataGroupByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_ListDataGroupByLater);
 };
 
 
@@ -870,16 +992,16 @@ proto.data.DataServicePromiseClient.prototype.listDataSetByTime =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.data.DataSetLatest,
+ *   !proto.data.DataSetEarlier,
  *   !proto.data.DataSetListResponse>}
  */
-const methodDescriptor_DataService_ListDataSetByLatest = new grpc.web.MethodDescriptor(
-  '/data.DataService/ListDataSetByLatest',
+const methodDescriptor_DataService_ListDataSetByEarlier = new grpc.web.MethodDescriptor(
+  '/data.DataService/ListDataSetByEarlier',
   grpc.web.MethodType.UNARY,
-  proto.data.DataSetLatest,
+  proto.data.DataSetEarlier,
   proto.data.DataSetListResponse,
   /**
-   * @param {!proto.data.DataSetLatest} request
+   * @param {!proto.data.DataSetEarlier} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -890,7 +1012,7 @@ const methodDescriptor_DataService_ListDataSetByLatest = new grpc.web.MethodDesc
 
 
 /**
- * @param {!proto.data.DataSetLatest} request The
+ * @param {!proto.data.DataSetEarlier} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -899,32 +1021,93 @@ const methodDescriptor_DataService_ListDataSetByLatest = new grpc.web.MethodDesc
  * @return {!grpc.web.ClientReadableStream<!proto.data.DataSetListResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.data.DataServiceClient.prototype.listDataSetByLatest =
+proto.data.DataServiceClient.prototype.listDataSetByEarlier =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/data.DataService/ListDataSetByLatest',
+      '/data.DataService/ListDataSetByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_ListDataSetByLatest,
+      methodDescriptor_DataService_ListDataSetByEarlier,
       callback);
 };
 
 
 /**
- * @param {!proto.data.DataSetLatest} request The
+ * @param {!proto.data.DataSetEarlier} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.data.DataSetListResponse>}
  *     Promise that resolves to the response
  */
-proto.data.DataServicePromiseClient.prototype.listDataSetByLatest =
+proto.data.DataServicePromiseClient.prototype.listDataSetByEarlier =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/data.DataService/ListDataSetByLatest',
+      '/data.DataService/ListDataSetByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_ListDataSetByLatest);
+      methodDescriptor_DataService_ListDataSetByEarlier);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.data.DataSetLater,
+ *   !proto.data.DataSetListResponse>}
+ */
+const methodDescriptor_DataService_ListDataSetByLater = new grpc.web.MethodDescriptor(
+  '/data.DataService/ListDataSetByLater',
+  grpc.web.MethodType.UNARY,
+  proto.data.DataSetLater,
+  proto.data.DataSetListResponse,
+  /**
+   * @param {!proto.data.DataSetLater} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.data.DataSetListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.data.DataSetLater} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.data.DataSetListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.data.DataSetListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.data.DataServiceClient.prototype.listDataSetByLater =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/data.DataService/ListDataSetByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_ListDataSetByLater,
+      callback);
+};
+
+
+/**
+ * @param {!proto.data.DataSetLater} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.data.DataSetListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.data.DataServicePromiseClient.prototype.listDataSetByLater =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/data.DataService/ListDataSetByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_ListDataSetByLater);
 };
 
 
@@ -1236,16 +1419,16 @@ proto.data.DataServicePromiseClient.prototype.readDataTimestamp =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.data.DataLatest,
+ *   !proto.data.DataEarlier,
  *   !proto.data.TimestampListResponse>}
  */
-const methodDescriptor_DataService_ListDataTimestampByLatest = new grpc.web.MethodDescriptor(
-  '/data.DataService/ListDataTimestampByLatest',
+const methodDescriptor_DataService_ListDataTimestampByEarlier = new grpc.web.MethodDescriptor(
+  '/data.DataService/ListDataTimestampByEarlier',
   grpc.web.MethodType.UNARY,
-  proto.data.DataLatest,
+  proto.data.DataEarlier,
   proto.data.TimestampListResponse,
   /**
-   * @param {!proto.data.DataLatest} request
+   * @param {!proto.data.DataEarlier} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1256,7 +1439,7 @@ const methodDescriptor_DataService_ListDataTimestampByLatest = new grpc.web.Meth
 
 
 /**
- * @param {!proto.data.DataLatest} request The
+ * @param {!proto.data.DataEarlier} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1265,32 +1448,93 @@ const methodDescriptor_DataService_ListDataTimestampByLatest = new grpc.web.Meth
  * @return {!grpc.web.ClientReadableStream<!proto.data.TimestampListResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.data.DataServiceClient.prototype.listDataTimestampByLatest =
+proto.data.DataServiceClient.prototype.listDataTimestampByEarlier =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/data.DataService/ListDataTimestampByLatest',
+      '/data.DataService/ListDataTimestampByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_ListDataTimestampByLatest,
+      methodDescriptor_DataService_ListDataTimestampByEarlier,
       callback);
 };
 
 
 /**
- * @param {!proto.data.DataLatest} request The
+ * @param {!proto.data.DataEarlier} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.data.TimestampListResponse>}
  *     Promise that resolves to the response
  */
-proto.data.DataServicePromiseClient.prototype.listDataTimestampByLatest =
+proto.data.DataServicePromiseClient.prototype.listDataTimestampByEarlier =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/data.DataService/ListDataTimestampByLatest',
+      '/data.DataService/ListDataTimestampByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_ListDataTimestampByLatest);
+      methodDescriptor_DataService_ListDataTimestampByEarlier);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.data.DataLater,
+ *   !proto.data.TimestampListResponse>}
+ */
+const methodDescriptor_DataService_ListDataTimestampByLater = new grpc.web.MethodDescriptor(
+  '/data.DataService/ListDataTimestampByLater',
+  grpc.web.MethodType.UNARY,
+  proto.data.DataLater,
+  proto.data.TimestampListResponse,
+  /**
+   * @param {!proto.data.DataLater} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.data.TimestampListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.data.DataLater} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.data.TimestampListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.data.TimestampListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.data.DataServiceClient.prototype.listDataTimestampByLater =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/data.DataService/ListDataTimestampByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_ListDataTimestampByLater,
+      callback);
+};
+
+
+/**
+ * @param {!proto.data.DataLater} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.data.TimestampListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.data.DataServicePromiseClient.prototype.listDataTimestampByLater =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/data.DataService/ListDataTimestampByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_ListDataTimestampByLater);
 };
 
 
@@ -1419,16 +1663,16 @@ proto.data.DataServicePromiseClient.prototype.readDataGroupTimestamp =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.data.DataGroupLatest,
+ *   !proto.data.DataGroupEarlier,
  *   !proto.data.TimestampListResponse>}
  */
-const methodDescriptor_DataService_ListDataGroupTimestampByLatest = new grpc.web.MethodDescriptor(
-  '/data.DataService/ListDataGroupTimestampByLatest',
+const methodDescriptor_DataService_ListDataGroupTimestampByEarlier = new grpc.web.MethodDescriptor(
+  '/data.DataService/ListDataGroupTimestampByEarlier',
   grpc.web.MethodType.UNARY,
-  proto.data.DataGroupLatest,
+  proto.data.DataGroupEarlier,
   proto.data.TimestampListResponse,
   /**
-   * @param {!proto.data.DataGroupLatest} request
+   * @param {!proto.data.DataGroupEarlier} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1439,7 +1683,7 @@ const methodDescriptor_DataService_ListDataGroupTimestampByLatest = new grpc.web
 
 
 /**
- * @param {!proto.data.DataGroupLatest} request The
+ * @param {!proto.data.DataGroupEarlier} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1448,32 +1692,93 @@ const methodDescriptor_DataService_ListDataGroupTimestampByLatest = new grpc.web
  * @return {!grpc.web.ClientReadableStream<!proto.data.TimestampListResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.data.DataServiceClient.prototype.listDataGroupTimestampByLatest =
+proto.data.DataServiceClient.prototype.listDataGroupTimestampByEarlier =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/data.DataService/ListDataGroupTimestampByLatest',
+      '/data.DataService/ListDataGroupTimestampByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_ListDataGroupTimestampByLatest,
+      methodDescriptor_DataService_ListDataGroupTimestampByEarlier,
       callback);
 };
 
 
 /**
- * @param {!proto.data.DataGroupLatest} request The
+ * @param {!proto.data.DataGroupEarlier} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.data.TimestampListResponse>}
  *     Promise that resolves to the response
  */
-proto.data.DataServicePromiseClient.prototype.listDataGroupTimestampByLatest =
+proto.data.DataServicePromiseClient.prototype.listDataGroupTimestampByEarlier =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/data.DataService/ListDataGroupTimestampByLatest',
+      '/data.DataService/ListDataGroupTimestampByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_ListDataGroupTimestampByLatest);
+      methodDescriptor_DataService_ListDataGroupTimestampByEarlier);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.data.DataGroupLater,
+ *   !proto.data.TimestampListResponse>}
+ */
+const methodDescriptor_DataService_ListDataGroupTimestampByLater = new grpc.web.MethodDescriptor(
+  '/data.DataService/ListDataGroupTimestampByLater',
+  grpc.web.MethodType.UNARY,
+  proto.data.DataGroupLater,
+  proto.data.TimestampListResponse,
+  /**
+   * @param {!proto.data.DataGroupLater} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.data.TimestampListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.data.DataGroupLater} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.data.TimestampListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.data.TimestampListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.data.DataServiceClient.prototype.listDataGroupTimestampByLater =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/data.DataService/ListDataGroupTimestampByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_ListDataGroupTimestampByLater,
+      callback);
+};
+
+
+/**
+ * @param {!proto.data.DataGroupLater} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.data.TimestampListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.data.DataServicePromiseClient.prototype.listDataGroupTimestampByLater =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/data.DataService/ListDataGroupTimestampByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_ListDataGroupTimestampByLater);
 };
 
 
@@ -1602,16 +1907,16 @@ proto.data.DataServicePromiseClient.prototype.countData =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.data.DataLatest,
+ *   !proto.data.DataEarlier,
  *   !proto.data.DataCountResponse>}
  */
-const methodDescriptor_DataService_CountDataByLatest = new grpc.web.MethodDescriptor(
-  '/data.DataService/CountDataByLatest',
+const methodDescriptor_DataService_CountDataByEarlier = new grpc.web.MethodDescriptor(
+  '/data.DataService/CountDataByEarlier',
   grpc.web.MethodType.UNARY,
-  proto.data.DataLatest,
+  proto.data.DataEarlier,
   proto.data.DataCountResponse,
   /**
-   * @param {!proto.data.DataLatest} request
+   * @param {!proto.data.DataEarlier} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1622,7 +1927,7 @@ const methodDescriptor_DataService_CountDataByLatest = new grpc.web.MethodDescri
 
 
 /**
- * @param {!proto.data.DataLatest} request The
+ * @param {!proto.data.DataEarlier} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1631,32 +1936,93 @@ const methodDescriptor_DataService_CountDataByLatest = new grpc.web.MethodDescri
  * @return {!grpc.web.ClientReadableStream<!proto.data.DataCountResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.data.DataServiceClient.prototype.countDataByLatest =
+proto.data.DataServiceClient.prototype.countDataByEarlier =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/data.DataService/CountDataByLatest',
+      '/data.DataService/CountDataByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_CountDataByLatest,
+      methodDescriptor_DataService_CountDataByEarlier,
       callback);
 };
 
 
 /**
- * @param {!proto.data.DataLatest} request The
+ * @param {!proto.data.DataEarlier} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.data.DataCountResponse>}
  *     Promise that resolves to the response
  */
-proto.data.DataServicePromiseClient.prototype.countDataByLatest =
+proto.data.DataServicePromiseClient.prototype.countDataByEarlier =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/data.DataService/CountDataByLatest',
+      '/data.DataService/CountDataByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_CountDataByLatest);
+      methodDescriptor_DataService_CountDataByEarlier);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.data.DataLater,
+ *   !proto.data.DataCountResponse>}
+ */
+const methodDescriptor_DataService_CountDataByLater = new grpc.web.MethodDescriptor(
+  '/data.DataService/CountDataByLater',
+  grpc.web.MethodType.UNARY,
+  proto.data.DataLater,
+  proto.data.DataCountResponse,
+  /**
+   * @param {!proto.data.DataLater} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.data.DataCountResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.data.DataLater} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.data.DataCountResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.data.DataCountResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.data.DataServiceClient.prototype.countDataByLater =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/data.DataService/CountDataByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_CountDataByLater,
+      callback);
+};
+
+
+/**
+ * @param {!proto.data.DataLater} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.data.DataCountResponse>}
+ *     Promise that resolves to the response
+ */
+proto.data.DataServicePromiseClient.prototype.countDataByLater =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/data.DataService/CountDataByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_CountDataByLater);
 };
 
 
@@ -1785,16 +2151,16 @@ proto.data.DataServicePromiseClient.prototype.countDataGroup =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.data.DataGroupLatest,
+ *   !proto.data.DataGroupEarlier,
  *   !proto.data.DataCountResponse>}
  */
-const methodDescriptor_DataService_CountDataGroupByLatest = new grpc.web.MethodDescriptor(
-  '/data.DataService/CountDataGroupByLatest',
+const methodDescriptor_DataService_CountDataGroupByEarlier = new grpc.web.MethodDescriptor(
+  '/data.DataService/CountDataGroupByEarlier',
   grpc.web.MethodType.UNARY,
-  proto.data.DataGroupLatest,
+  proto.data.DataGroupEarlier,
   proto.data.DataCountResponse,
   /**
-   * @param {!proto.data.DataGroupLatest} request
+   * @param {!proto.data.DataGroupEarlier} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1805,7 +2171,7 @@ const methodDescriptor_DataService_CountDataGroupByLatest = new grpc.web.MethodD
 
 
 /**
- * @param {!proto.data.DataGroupLatest} request The
+ * @param {!proto.data.DataGroupEarlier} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1814,32 +2180,93 @@ const methodDescriptor_DataService_CountDataGroupByLatest = new grpc.web.MethodD
  * @return {!grpc.web.ClientReadableStream<!proto.data.DataCountResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.data.DataServiceClient.prototype.countDataGroupByLatest =
+proto.data.DataServiceClient.prototype.countDataGroupByEarlier =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/data.DataService/CountDataGroupByLatest',
+      '/data.DataService/CountDataGroupByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_CountDataGroupByLatest,
+      methodDescriptor_DataService_CountDataGroupByEarlier,
       callback);
 };
 
 
 /**
- * @param {!proto.data.DataGroupLatest} request The
+ * @param {!proto.data.DataGroupEarlier} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.data.DataCountResponse>}
  *     Promise that resolves to the response
  */
-proto.data.DataServicePromiseClient.prototype.countDataGroupByLatest =
+proto.data.DataServicePromiseClient.prototype.countDataGroupByEarlier =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/data.DataService/CountDataGroupByLatest',
+      '/data.DataService/CountDataGroupByEarlier',
       request,
       metadata || {},
-      methodDescriptor_DataService_CountDataGroupByLatest);
+      methodDescriptor_DataService_CountDataGroupByEarlier);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.data.DataGroupLater,
+ *   !proto.data.DataCountResponse>}
+ */
+const methodDescriptor_DataService_CountDataGroupByLater = new grpc.web.MethodDescriptor(
+  '/data.DataService/CountDataGroupByLater',
+  grpc.web.MethodType.UNARY,
+  proto.data.DataGroupLater,
+  proto.data.DataCountResponse,
+  /**
+   * @param {!proto.data.DataGroupLater} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.data.DataCountResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.data.DataGroupLater} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.data.DataCountResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.data.DataCountResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.data.DataServiceClient.prototype.countDataGroupByLater =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/data.DataService/CountDataGroupByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_CountDataGroupByLater,
+      callback);
+};
+
+
+/**
+ * @param {!proto.data.DataGroupLater} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.data.DataCountResponse>}
+ *     Promise that resolves to the response
+ */
+proto.data.DataServicePromiseClient.prototype.countDataGroupByLater =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/data.DataService/CountDataGroupByLater',
+      request,
+      metadata || {},
+      methodDescriptor_DataService_CountDataGroupByLater);
 };
 
 
