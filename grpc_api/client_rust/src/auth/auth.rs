@@ -1,7 +1,7 @@
 use tonic::{Request, Status};
 use uuid::Uuid;
-use bbthings_grpc_proto::auth::auth::auth_service_client::AuthServiceClient;
-use bbthings_grpc_proto::auth::auth::{
+use bbthings_grpc_server::proto::auth::auth::auth_service_client::AuthServiceClient;
+use bbthings_grpc_server::proto::auth::auth::{
     UserKeyRequest, UserLoginRequest, UserLoginResponse,
     UserRefreshRequest, UserRefreshResponse,
     UserLogoutRequest, UserLogoutResponse

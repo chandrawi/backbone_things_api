@@ -1,8 +1,8 @@
 use tonic::{Request, Response, Status};
 use uuid::Uuid;
 use bbthings_database::Resource;
-use bbthings_grpc_proto::resource::set::set_service_server::SetService;
-use bbthings_grpc_proto::resource::set::{
+use crate::proto::resource::set::set_service_server::SetService;
+use crate::proto::resource::set::{
     SetSchema, SetId, SetIds, SetName, SetOption, SetUpdate, SetMemberRequest, SetMemberSwap,
     SetTemplateSchema, SetTemplateId, SetTemplateIds, SetTemplateName, SetTemplateOption, 
     SetTemplateUpdate, SetTemplateMemberRequest, SetTemplateMemberSwap,

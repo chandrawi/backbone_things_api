@@ -3,8 +3,8 @@ use uuid::Uuid;
 use chrono::{Duration, Utc};
 use bbthings_database::Auth;
 use bbthings_database::utility::generate_access_key;
-use bbthings_grpc_proto::auth::auth::auth_service_server::AuthService;
-use bbthings_grpc_proto::auth::auth::{
+use crate::proto::auth::auth::auth_service_server::AuthService;
+use crate::proto::auth::auth::{
     ApiKeyRequest, ApiKeyResponse, ApiLoginRequest, ApiLoginResponse,
     UserKeyRequest, UserKeyResponse, UserLoginRequest, UserLoginResponse,
     UserRefreshRequest, UserRefreshResponse, UserLogoutRequest, UserLogoutResponse,

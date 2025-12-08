@@ -1,8 +1,8 @@
 use tonic::{Request, Response, Status};
 use uuid::Uuid;
 use bbthings_database::Resource;
-use bbthings_grpc_proto::resource::group::group_service_server::GroupService;
-use bbthings_grpc_proto::resource::group::{
+use crate::proto::resource::group::group_service_server::GroupService;
+use crate::proto::resource::group::{
     GroupModelSchema, GroupDeviceSchema, GroupId, GroupIds, GroupName, GroupCategory, GroupOption, GroupUpdate,
     GroupModel, GroupDevice,
     GroupModelReadResponse, GroupModelListResponse, GroupCreateResponse, GroupChangeResponse,

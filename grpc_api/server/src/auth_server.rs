@@ -1,11 +1,11 @@
 use bbthings_database::Auth;
-use bbthings_grpc_proto::auth::api::api_service_server::ApiServiceServer;
-use bbthings_grpc_proto::auth::role::role_service_server::RoleServiceServer;
-use bbthings_grpc_proto::auth::user::user_service_server::UserServiceServer;
-use bbthings_grpc_proto::auth::profile::profile_service_server::ProfileServiceServer;
-use bbthings_grpc_proto::auth::token::token_service_server::TokenServiceServer;
-use bbthings_grpc_proto::auth::auth::auth_service_server::AuthServiceServer;
-use bbthings_grpc_proto::descriptor;
+use bbthings_grpc_server::proto::auth::api::api_service_server::ApiServiceServer;
+use bbthings_grpc_server::proto::auth::role::role_service_server::RoleServiceServer;
+use bbthings_grpc_server::proto::auth::user::user_service_server::UserServiceServer;
+use bbthings_grpc_server::proto::auth::profile::profile_service_server::ProfileServiceServer;
+use bbthings_grpc_server::proto::auth::token::token_service_server::TokenServiceServer;
+use bbthings_grpc_server::proto::auth::auth::auth_service_server::AuthServiceServer;
+use bbthings_grpc_server::proto::descriptor;
 use bbthings_grpc_server::auth::api::ApiServer;
 use bbthings_grpc_server::auth::role::RoleServer;
 use bbthings_grpc_server::auth::user::UserServer;
@@ -77,12 +77,12 @@ async fn auth_server(db_url: String, address: String) -> Result<(), Box<dyn std:
     let token_server = TokenServer::new(auth_db.clone());
     let auth_server = AuthServer::new(auth_db.clone());
 
-    let api_server = ApiServiceServer::new(api_server);
-    let role_server = RoleServiceServer::new(role_server);
-    let user_server = UserServiceServer::new(user_server);
-    let profile_server = ProfileServiceServer::new(profile_server);
-    let token_server = TokenServiceServer::new(token_server);
-    let auth_server = AuthServiceServer::new(auth_server);
+    let api_service = ApiServiceServer::new(api_server);
+    let role_service = RoleServiceServer::new(role_server);
+    let user_service = UserServiceServer::new(user_server);
+    let profile_service = ProfileServiceServer::new(profile_server);
+    let token_service = TokenServiceServer::new(token_server);
+    let auth_service = AuthServiceServer::new(auth_server);
 
     let reflection_service = tonic_reflection::server::Builder::configure()
         .register_encoded_file_descriptor_set(descriptor::api::DESCRIPTOR_SET)
@@ -102,12 +102,12 @@ async fn auth_server(db_url: String, address: String) -> Result<(), Box<dyn std:
             .expose_headers([HeaderName::from_static("grpc-status"), HeaderName::from_static("grpc-message")])
         )
         .layer(GrpcWebLayer::new())
-        .add_service(api_server)
-        .add_service(role_server)
-        .add_service(user_server)
-        .add_service(profile_server)
-        .add_service(token_server)
-        .add_service(auth_server)
+        .add_service(api_service)
+        .add_service(role_service)
+        .add_service(user_service)
+        .add_service(profile_service)
+        .add_service(token_service)
+        .add_service(auth_service)
         .add_service(reflection_service?)
         .serve(addr)
         .await?;
@@ -127,12 +127,12 @@ async fn auth_server_secured(db_url: String, address: String) -> Result<(), Box<
     let token_server = TokenServer::new_with_validator(auth_db.clone());
     let auth_server = AuthServer::new(auth_db.clone());
 
-    let api_server = ApiServiceServer::with_interceptor(api_server, interceptor);
-    let role_server = RoleServiceServer::with_interceptor(role_server, interceptor);
-    let user_server = UserServiceServer::with_interceptor(user_server, interceptor);
-    let profile_server = ProfileServiceServer::with_interceptor(profile_server, interceptor);
-    let token_server = TokenServiceServer::with_interceptor(token_server, interceptor);
-    let auth_server = AuthServiceServer::new(auth_server);
+    let api_service = ApiServiceServer::with_interceptor(api_server, interceptor);
+    let role_service = RoleServiceServer::with_interceptor(role_server, interceptor);
+    let user_service = UserServiceServer::with_interceptor(user_server, interceptor);
+    let profile_service = ProfileServiceServer::with_interceptor(profile_server, interceptor);
+    let token_service = TokenServiceServer::with_interceptor(token_server, interceptor);
+    let auth_service = AuthServiceServer::new(auth_server);
 
     let reflection_service = tonic_reflection::server::Builder::configure()
         .register_encoded_file_descriptor_set(descriptor::api::DESCRIPTOR_SET)
@@ -152,12 +152,12 @@ async fn auth_server_secured(db_url: String, address: String) -> Result<(), Box<
             .expose_headers([HeaderName::from_static("grpc-status"), HeaderName::from_static("grpc-message")])
         )
         .layer(GrpcWebLayer::new())
-        .add_service(api_server)
-        .add_service(role_server)
-        .add_service(user_server)
-        .add_service(profile_server)
-        .add_service(token_server)
-        .add_service(auth_server)
+        .add_service(api_service)
+        .add_service(role_service)
+        .add_service(user_service)
+        .add_service(profile_service)
+        .add_service(token_service)
+        .add_service(auth_service)
         .add_service(reflection_service?)
         .serve(addr)
         .await?;

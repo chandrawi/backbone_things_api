@@ -1,8 +1,8 @@
 use tonic::{Request, Status};
 use uuid::Uuid;
 use bbthings_database::common::type_value::{DataType, DataValue};
-use bbthings_grpc_proto::resource::model::model_service_client::ModelServiceClient;
-use bbthings_grpc_proto::resource::model::{
+use bbthings_grpc_server::proto::resource::model::model_service_client::ModelServiceClient;
+use bbthings_grpc_server::proto::resource::model::{
     ModelSchema, ModelId, ModelIds, ModelName, ModelCategory, ModelOption, TypeId, ModelUpdate, 
     ConfigSchema, ConfigId, ConfigUpdate, TagSchema, TagId, TagUpdate
 };

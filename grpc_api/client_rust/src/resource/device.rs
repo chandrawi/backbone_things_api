@@ -1,8 +1,8 @@
 use tonic::{Request, Status};
 use uuid::Uuid;
 use bbthings_database::common::type_value::DataValue;
-use bbthings_grpc_proto::resource::device::device_service_client::DeviceServiceClient;
-use bbthings_grpc_proto::resource::device::{
+use bbthings_grpc_server::proto::resource::device::device_service_client::DeviceServiceClient;
+use bbthings_grpc_server::proto::resource::device::{
     DeviceSchema, DeviceId, DeviceIds, DeviceName, DeviceOption, DeviceUpdate,
     GatewaySchema, GatewayId, GatewayIds, GatewayName, SerialNumber, GatewayOption, GatewayUpdate,
     ConfigSchema, ConfigId, ConfigUpdate,

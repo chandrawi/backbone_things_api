@@ -1,8 +1,8 @@
 use tonic::{Request, Response, Status};
 use uuid::Uuid;
 use bbthings_database::Auth;
-use bbthings_grpc_proto::auth::api::api_service_server::ApiService;
-use bbthings_grpc_proto::auth::api::{
+use crate::proto::auth::api::api_service_server::ApiService;
+use crate::proto::auth::api::{
     ApiSchema, ApiId, ApiIds, ApiName, ApiCategory, ApiOption, ApiUpdate,
     ProcedureSchema, ProcedureId, ProcedureIds, ProcedureName, ProcedureOption, ProcedureUpdate,
     ApiReadResponse, ApiListResponse, ApiCreateResponse, ApiChangeResponse,

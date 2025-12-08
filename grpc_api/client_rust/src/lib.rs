@@ -15,7 +15,7 @@ pub use bbthings_database::{
 };
 pub use bbthings_database::common::type_value::{DataType, DataValue, ArrayDataValue};
 pub use bbthings_database::common::tag;
-pub use bbthings_grpc_proto::auth::auth::{
+pub use bbthings_grpc_server::proto::auth::auth::{
     UserLoginResponse, UserRefreshResponse, UserLogoutResponse, AccessTokenMap
 };
 

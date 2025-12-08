@@ -2,8 +2,8 @@ use tonic::{Request, Response, Status};
 use chrono::{DateTime, Utc, TimeZone};
 use uuid::Uuid;
 use bbthings_database::{Resource, DataValue, DataType, ArrayDataValue};
-use bbthings_grpc_proto::resource::data::data_service_server::DataService;
-use bbthings_grpc_proto::resource::data::{
+use crate::proto::resource::data::data_service_server::DataService;
+use crate::proto::resource::data::{
     DataSchema, DataMultipleSchema, DataTime, DataEarlier, DataLater, DataRange, DataNumber,
     DataGroupTime, DataGroupEarlier, DataGroupLater, DataGroupRange, DataGroupNumber,
     DataSetTime, DataSetEarlier, DataSetLater, DataSetRange,

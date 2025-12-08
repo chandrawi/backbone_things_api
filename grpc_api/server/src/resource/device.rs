@@ -1,8 +1,8 @@
 use tonic::{Request, Response, Status};
 use uuid::Uuid;
 use bbthings_database::{Resource, DataType, DataValue};
-use bbthings_grpc_proto::resource::device::device_service_server::DeviceService;
-use bbthings_grpc_proto::resource::device::{
+use crate::proto::resource::device::device_service_server::DeviceService;
+use crate::proto::resource::device::{
     ConfigChangeResponse, ConfigCreateResponse, ConfigId, ConfigListResponse, ConfigReadResponse, ConfigSchema, ConfigUpdate, DeviceChangeResponse, DeviceCreateResponse, DeviceId, DeviceIds, DeviceListResponse, DeviceName, DeviceOption, DeviceReadResponse, DeviceSchema, DeviceUpdate, GatewayChangeResponse, GatewayCreateResponse, GatewayId, GatewayIds, GatewayListResponse, GatewayName, GatewayOption, GatewayReadResponse, GatewaySchema, GatewayUpdate, SerialNumber, TypeChangeResponse, TypeCreateResponse, TypeId, TypeIds, TypeListResponse, TypeModel, TypeName, TypeOption, TypeReadResponse, TypeSchema, TypeUpdate
 };
 use crate::common::validator::{AccessValidator, AccessSchema};

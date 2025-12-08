@@ -2,8 +2,8 @@ use tonic::{Request, Response, Status};
 use chrono::{Utc, TimeZone};
 use uuid::Uuid;
 use bbthings_database::Resource;
-use bbthings_grpc_proto::resource::slice::slice_service_server::SliceService;
-use bbthings_grpc_proto::resource::slice::{
+use crate::proto::resource::slice::slice_service_server::SliceService;
+use crate::proto::resource::slice::{
     SliceSchema, SliceId, SliceIds, SliceTime, SliceRange, SliceNameTime, SliceNameRange, SliceUpdate, SliceOption,
     SliceGroupTime, SliceGroupRange, SliceGroupOption,
     SliceSetSchema, SliceSetTime, SliceSetRange, SliceSetOption,

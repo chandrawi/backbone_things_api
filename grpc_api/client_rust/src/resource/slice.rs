@@ -1,8 +1,8 @@
 use tonic::{Request, Status};
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
-use bbthings_grpc_proto::resource::slice::slice_service_client::SliceServiceClient;
-use bbthings_grpc_proto::resource::slice::{
+use bbthings_grpc_server::proto::resource::slice::slice_service_client::SliceServiceClient;
+use bbthings_grpc_server::proto::resource::slice::{
     SliceSchema, SliceId, SliceIds, SliceTime, SliceRange, SliceNameTime, SliceNameRange, SliceUpdate, SliceOption,
     SliceGroupTime, SliceGroupRange, SliceGroupOption,
     SliceSetSchema, SliceSetTime, SliceSetRange, SliceSetOption

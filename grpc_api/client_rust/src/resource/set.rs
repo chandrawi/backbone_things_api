@@ -1,7 +1,7 @@
 use tonic::{Request, Status};
 use uuid::Uuid;
-use bbthings_grpc_proto::resource::set::set_service_client::SetServiceClient;
-use bbthings_grpc_proto::resource::set::{
+use bbthings_grpc_server::proto::resource::set::set_service_client::SetServiceClient;
+use bbthings_grpc_server::proto::resource::set::{
     SetSchema, SetId, SetIds, SetName, SetOption, SetUpdate, SetMemberRequest, SetMemberSwap,
     SetTemplateSchema, SetTemplateId, SetTemplateIds, SetTemplateName, SetTemplateOption, SetTemplateUpdate, 
     SetTemplateMemberRequest, SetTemplateMemberSwap

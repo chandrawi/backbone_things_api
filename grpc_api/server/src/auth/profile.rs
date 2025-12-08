@@ -1,8 +1,8 @@
 use tonic::{Request, Response, Status};
 use uuid::Uuid;
 use bbthings_database::{Auth, ProfileMode, DataType, DataValue};
-use bbthings_grpc_proto::auth::profile::profile_service_server::ProfileService;
-use bbthings_grpc_proto::auth::profile::{
+use crate::proto::auth::profile::profile_service_server::ProfileService;
+use crate::proto::auth::profile::{
     RoleProfileSchema, UserProfileSchema, ProfileId, RoleId, UserId, 
     RoleProfileUpdate, UserProfileUpdate, UserProfileSwap, 
     RoleProfileReadResponse, RoleProfileListResponse, UserProfileReadResponse, UserProfileListResponse,

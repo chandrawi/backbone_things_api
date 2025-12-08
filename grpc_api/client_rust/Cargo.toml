@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bbthings_grpc_proto = { path = "../proto/rust"}
 bbthings_grpc_server = { path = "../server"}
 bbthings_database = { path = "../../database"}
 tokio = { version = "1.48.0", features = ["rt-multi-thread", "macros"] }

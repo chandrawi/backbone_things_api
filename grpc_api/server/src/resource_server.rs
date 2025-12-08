@@ -1,14 +1,14 @@
 use bbthings_database::Resource;
-use bbthings_grpc_proto::auth::auth::auth_service_client::AuthServiceClient;
-use bbthings_grpc_proto::auth::auth::{ApiKeyRequest, ApiLoginRequest, ApiLoginResponse};
-use bbthings_grpc_proto::resource::model::model_service_server::ModelServiceServer;
-use bbthings_grpc_proto::resource::device::device_service_server::DeviceServiceServer;
-use bbthings_grpc_proto::resource::group::group_service_server::GroupServiceServer;
-use bbthings_grpc_proto::resource::set::set_service_server::SetServiceServer;
-use bbthings_grpc_proto::resource::data::data_service_server::DataServiceServer;
-use bbthings_grpc_proto::resource::buffer::buffer_service_server::BufferServiceServer;
-use bbthings_grpc_proto::resource::slice::slice_service_server::SliceServiceServer;
-use bbthings_grpc_proto::descriptor;
+use bbthings_grpc_server::proto::auth::auth::auth_service_client::AuthServiceClient;
+use bbthings_grpc_server::proto::auth::auth::{ApiKeyRequest, ApiLoginRequest, ApiLoginResponse};
+use bbthings_grpc_server::proto::resource::model::model_service_server::ModelServiceServer;
+use bbthings_grpc_server::proto::resource::device::device_service_server::DeviceServiceServer;
+use bbthings_grpc_server::proto::resource::group::group_service_server::GroupServiceServer;
+use bbthings_grpc_server::proto::resource::set::set_service_server::SetServiceServer;
+use bbthings_grpc_server::proto::resource::data::data_service_server::DataServiceServer;
+use bbthings_grpc_server::proto::resource::buffer::buffer_service_server::BufferServiceServer;
+use bbthings_grpc_server::proto::resource::slice::slice_service_server::SliceServiceServer;
+use bbthings_grpc_server::proto::descriptor;
 use bbthings_grpc_server::resource::model::ModelServer;
 use bbthings_grpc_server::resource::device::DeviceServer;
 use bbthings_grpc_server::resource::group::GroupServer;
@@ -107,13 +107,13 @@ async fn resource_server(db_url: String, address: String) -> Result<(), Box<dyn 
     let buffer_server = BufferServer::new(resource_db.clone());
     let slice_server = SliceServer::new(resource_db.clone());
 
-    let model_server = ModelServiceServer::new(model_server);
-    let device_server = DeviceServiceServer::new(device_server);
-    let group_server = GroupServiceServer::new(group_server);
-    let set_server = SetServiceServer::new(set_server);
-    let data_server = DataServiceServer::new(data_server);
-    let buffer_server = BufferServiceServer::new(buffer_server);
-    let slice_server = SliceServiceServer::new(slice_server);
+    let model_service = ModelServiceServer::new(model_server);
+    let device_service = DeviceServiceServer::new(device_server);
+    let group_service = GroupServiceServer::new(group_server);
+    let set_service = SetServiceServer::new(set_server);
+    let data_service = DataServiceServer::new(data_server);
+    let buffer_service = BufferServiceServer::new(buffer_server);
+    let slice_service = SliceServiceServer::new(slice_server);
 
     let reflection_service = tonic_reflection::server::Builder::configure()
         .register_encoded_file_descriptor_set(descriptor::model::DESCRIPTOR_SET)
@@ -134,13 +134,13 @@ async fn resource_server(db_url: String, address: String) -> Result<(), Box<dyn 
             .expose_headers([HeaderName::from_static("grpc-status"), HeaderName::from_static("grpc-message")])
         )
         .layer(GrpcWebLayer::new())
-        .add_service(model_server)
-        .add_service(device_server)
-        .add_service(group_server)
-        .add_service(set_server)
-        .add_service(data_server)
-        .add_service(buffer_server)
-        .add_service(slice_server)
+        .add_service(model_service)
+        .add_service(device_service)
+        .add_service(group_service)
+        .add_service(set_service)
+        .add_service(data_service)
+        .add_service(buffer_service)
+        .add_service(slice_service)
         .add_service(reflection_service?)
         .serve(addr)
         .await?;
@@ -170,13 +170,13 @@ async fn resource_server_secured(db_url: String, address: String, auth_address: 
     let buffer_server = BufferServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
     let slice_server = SliceServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
 
-    let model_server = ModelServiceServer::with_interceptor(model_server, interceptor);
-    let device_server = DeviceServiceServer::with_interceptor(device_server, interceptor);
-    let group_server = GroupServiceServer::with_interceptor(group_server, interceptor);
-    let set_server = SetServiceServer::with_interceptor(set_server, interceptor);
-    let data_server = DataServiceServer::with_interceptor(data_server, interceptor);
-    let buffer_server = BufferServiceServer::with_interceptor(buffer_server, interceptor);
-    let slice_server = SliceServiceServer::with_interceptor(slice_server, interceptor);
+    let model_service = ModelServiceServer::with_interceptor(model_server, interceptor);
+    let device_service = DeviceServiceServer::with_interceptor(device_server, interceptor);
+    let group_service = GroupServiceServer::with_interceptor(group_server, interceptor);
+    let set_service = SetServiceServer::with_interceptor(set_server, interceptor);
+    let data_service = DataServiceServer::with_interceptor(data_server, interceptor);
+    let buffer_service = BufferServiceServer::with_interceptor(buffer_server, interceptor);
+    let slice_service = SliceServiceServer::with_interceptor(slice_server, interceptor);
 
     let reflection_service = tonic_reflection::server::Builder::configure()
         .register_encoded_file_descriptor_set(descriptor::model::DESCRIPTOR_SET)
@@ -197,13 +197,13 @@ async fn resource_server_secured(db_url: String, address: String, auth_address: 
             .expose_headers([HeaderName::from_static("grpc-status"), HeaderName::from_static("grpc-message")])
         )
         .layer(GrpcWebLayer::new())
-        .add_service(model_server)
-        .add_service(device_server)
-        .add_service(group_server)
-        .add_service(set_server)
-        .add_service(data_server)
-        .add_service(buffer_server)
-        .add_service(slice_server)
+        .add_service(model_service)
+        .add_service(device_service)
+        .add_service(group_service)
+        .add_service(set_service)
+        .add_service(data_service)
+        .add_service(buffer_service)
+        .add_service(slice_service)
         .add_service(reflection_service?)
         .serve(addr)
         .await?;

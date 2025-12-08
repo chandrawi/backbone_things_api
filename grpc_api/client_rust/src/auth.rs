@@ -13,7 +13,7 @@ use bbthings_database::{
     RoleProfileSchema, UserProfileSchema, ProfileMode, TokenSchema,
     DataValue, DataType
 };
-use bbthings_grpc_proto::auth::auth::{UserLoginResponse, UserRefreshResponse, UserLogoutResponse};
+use bbthings_grpc_server::proto::auth::auth::{UserLoginResponse, UserRefreshResponse, UserLogoutResponse};
 
 #[derive(Debug, Clone)]
 pub struct Auth {

@@ -1,8 +1,8 @@
 use tonic::{Request, Status};
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
-use bbthings_grpc_proto::auth::token::token_service_client::TokenServiceClient;
-use bbthings_grpc_proto::auth::token::{
+use bbthings_grpc_server::proto::auth::token::token_service_client::TokenServiceClient;
+use bbthings_grpc_server::proto::auth::token::{
     TokenSchema, AccessId, AuthToken, UserId, TokenTime, TokenRangeSingle, TokenRangeDouble,
     AuthTokenCreate, TokenUpdate
 };

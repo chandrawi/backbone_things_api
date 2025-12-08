@@ -1,7 +1,7 @@
 use tonic::{Request, Status};
 use uuid::Uuid;
-use bbthings_grpc_proto::resource::group::group_service_client::GroupServiceClient;
-use bbthings_grpc_proto::resource::group::{
+use bbthings_grpc_server::proto::resource::group::group_service_client::GroupServiceClient;
+use bbthings_grpc_server::proto::resource::group::{
     GroupModelSchema, GroupDeviceSchema, GroupId, GroupIds, GroupName, GroupOption, GroupCategory, GroupUpdate,
     GroupModel, GroupDevice
 };

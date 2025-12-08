@@ -1,7 +1,7 @@
 use tonic::{Request, Status};
 use uuid::Uuid;
-use bbthings_grpc_proto::auth::user::user_service_client::UserServiceClient;
-use bbthings_grpc_proto::auth::user::{
+use bbthings_grpc_server::proto::auth::user::user_service_client::UserServiceClient;
+use bbthings_grpc_server::proto::auth::user::{
     UserId, UserIds, UserName, ApiId, RoleId, UserOption, UserSchema, UserUpdate, UserRole
 };
 use crate::auth::Auth;

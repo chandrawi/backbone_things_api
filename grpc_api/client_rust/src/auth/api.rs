@@ -1,7 +1,7 @@
 use tonic::{Request, Status};
 use uuid::Uuid;
-use bbthings_grpc_proto::auth::api::api_service_client::ApiServiceClient;
-use bbthings_grpc_proto::auth::api::{
+use bbthings_grpc_server::proto::auth::api::api_service_client::ApiServiceClient;
+use bbthings_grpc_server::proto::auth::api::{
     ApiId, ApiIds, ApiName, ApiCategory, ApiOption, ApiSchema, ApiUpdate, 
     ProcedureId, ProcedureIds, ProcedureName, ProcedureOption, ProcedureSchema, ProcedureUpdate
 };

@@ -192,7 +192,6 @@ name = "bbthings_database"
 version = "0.1.0"
 dependencies = [
  "argon2",
- "bbthings_grpc_proto",
  "dotenvy",
  "rand",
  "sea-query",
@@ -206,7 +205,6 @@ name = "bbthings_grpc_client"
 version = "0.1.0"
 dependencies = [
  "bbthings_database",
- "bbthings_grpc_proto",
  "bbthings_grpc_server",
  "chrono",
  "dotenvy",
@@ -219,21 +217,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "bbthings_grpc_proto"
-version = "0.1.0"
-dependencies = [
- "prost",
- "tonic",
- "tonic-prost",
- "tonic-prost-build",
-]
-
-[[package]]
 name = "bbthings_grpc_server"
 version = "0.1.0"
 dependencies = [
  "bbthings_database",
- "bbthings_grpc_proto",
  "chrono",
  "clap",
  "dotenvy",
@@ -249,6 +236,8 @@ dependencies = [
  "sqlx",
  "tokio",
  "tonic",
+ "tonic-prost",
+ "tonic-prost-build",
  "tonic-reflection",
  "tonic-web",
  "tower-http",

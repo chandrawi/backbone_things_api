@@ -3,8 +3,8 @@ use chrono::{DateTime, Utc, TimeZone};
 use uuid::Uuid;
 use bbthings_database::common::type_value::{DataValue, ArrayDataValue};
 use bbthings_database::common::tag as Tag;
-use bbthings_grpc_proto::resource::data::data_service_client::DataServiceClient;
-use bbthings_grpc_proto::resource::data::{
+use bbthings_grpc_server::proto::resource::data::data_service_client::DataServiceClient;
+use bbthings_grpc_server::proto::resource::data::{
     DataSchema, DataMultipleSchema, DataTime, DataEarlier, DataLater, DataRange, DataNumber, 
     DataGroupTime, DataGroupEarlier, DataGroupLater, DataGroupRange, DataGroupNumber,
     DataSetSchema, DataSetTime, DataSetEarlier, DataSetLater, DataSetRange

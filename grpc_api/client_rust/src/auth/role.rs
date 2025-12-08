@@ -1,7 +1,7 @@
 use tonic::{Request, Status};
 use uuid::Uuid;
-use bbthings_grpc_proto::auth::role::role_service_client::RoleServiceClient;
-use bbthings_grpc_proto::auth::role::{
+use bbthings_grpc_server::proto::auth::role::role_service_client::RoleServiceClient;
+use bbthings_grpc_server::proto::auth::role::{
     RoleId, RoleIds, RoleName, ApiId, UserId, RoleOption, RoleSchema, RoleUpdate, RoleAccess
 };
 use crate::auth::Auth;

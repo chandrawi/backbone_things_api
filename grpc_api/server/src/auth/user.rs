@@ -1,8 +1,8 @@
 use tonic::{Request, Response, Status};
 use uuid::Uuid;
 use bbthings_database::Auth;
-use bbthings_grpc_proto::auth::user::user_service_server::UserService;
-use bbthings_grpc_proto::auth::user::{
+use crate::proto::auth::user::user_service_server::UserService;
+use crate::proto::auth::user::{
     UserSchema, UserId, UserIds, UserName, ApiId, RoleId, UserOption, UserUpdate, UserRole,
     UserReadResponse, UserListResponse, UserCreateResponse, UserChangeResponse
 };

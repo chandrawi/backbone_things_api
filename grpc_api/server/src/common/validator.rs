@@ -4,7 +4,7 @@ use chrono::Utc;
 use super::token::decode_token;
 use super::config::{ROOT_ID, ROOT_NAME, ROOT_DATA};
 use bbthings_database::Auth;
-use bbthings_grpc_proto::auth::auth::ProcedureMap;
+use crate::proto::auth::auth::ProcedureMap;
 
 const EXT_NOT_FOUND: &str = "Extension not found";
 const TOKEN_EXPIRED: &str = "Token is broken or expired";

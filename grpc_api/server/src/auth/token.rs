@@ -2,8 +2,8 @@ use tonic::{Request, Response, Status};
 use chrono::{Utc, TimeZone};
 use uuid::Uuid;
 use bbthings_database::Auth;
-use bbthings_grpc_proto::auth::token::token_service_server::TokenService;
-use bbthings_grpc_proto::auth::token::{
+use crate::proto::auth::token::token_service_server::TokenService;
+use crate::proto::auth::token::{
     TokenSchema, AuthToken, AccessId, UserId, AuthTokenCreate, TokenUpdate,
     TokenTime, TokenRangeSingle, TokenRangeDouble,
     TokenReadResponse, TokenListResponse, TokenCreateResponse, AuthTokenCreateResponse, 

@@ -3,16 +3,16 @@
 mod tests {
     use tonic::{Request, transport::Channel};
     use uuid::Uuid;
-    use bbthings_grpc_proto::auth::api::api_service_client::ApiServiceClient;
-    use bbthings_grpc_proto::auth::api::{ApiSchema, ProcedureSchema, ApiId, ProcedureId};
-    use bbthings_grpc_proto::auth::role::role_service_client::RoleServiceClient;
-    use bbthings_grpc_proto::auth::role::{RoleSchema, RoleAccess, RoleId};
-    use bbthings_grpc_proto::auth::user::user_service_client::UserServiceClient;
-    use bbthings_grpc_proto::auth::user::{UserSchema, UserRole, UserId};
-    use bbthings_grpc_proto::auth::auth::auth_service_client::AuthServiceClient;
-    use bbthings_grpc_proto::auth::auth::{UserKeyRequest, UserLoginRequest, UserRefreshRequest, UserLogoutRequest};
-    use bbthings_grpc_proto::resource::model::model_service_client::ModelServiceClient;
-    use bbthings_grpc_proto::resource::model::{ModelSchema, TagSchema, ModelId};
+    use bbthings_grpc_server::proto::auth::api::api_service_client::ApiServiceClient;
+    use bbthings_grpc_server::proto::auth::api::{ApiSchema, ProcedureSchema, ApiId, ProcedureId};
+    use bbthings_grpc_server::proto::auth::role::role_service_client::RoleServiceClient;
+    use bbthings_grpc_server::proto::auth::role::{RoleSchema, RoleAccess, RoleId};
+    use bbthings_grpc_server::proto::auth::user::user_service_client::UserServiceClient;
+    use bbthings_grpc_server::proto::auth::user::{UserSchema, UserRole, UserId};
+    use bbthings_grpc_server::proto::auth::auth::auth_service_client::AuthServiceClient;
+    use bbthings_grpc_server::proto::auth::auth::{UserKeyRequest, UserLoginRequest, UserRefreshRequest, UserLogoutRequest};
+    use bbthings_grpc_server::proto::resource::model::model_service_client::ModelServiceClient;
+    use bbthings_grpc_server::proto::resource::model::{ModelSchema, TagSchema, ModelId};
     use bbthings_grpc_server::common::utility::{import_public_key, encrypt_message, hash_password};
     use bbthings_grpc_server::common::config::{ROOT_NAME, ROOT_DATA};
     use bbthings_grpc_server::common::interceptor::TokenInterceptor;
