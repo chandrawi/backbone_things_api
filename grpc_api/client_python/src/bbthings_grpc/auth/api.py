@@ -1,4 +1,4 @@
-from bbthings_grpc_proto.auth import api_pb2, api_pb2_grpc
+from ..proto.auth import api_pb2, api_pb2_grpc
 from typing import Optional, List
 from uuid import UUID
 import grpc

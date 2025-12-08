@@ -1,4 +1,4 @@
-from bbthings_grpc_proto.resource import slice_pb2, slice_pb2_grpc
+from ..proto.resource import slice_pb2, slice_pb2_grpc
 from typing import Optional, List
 from datetime import datetime
 from uuid import UUID

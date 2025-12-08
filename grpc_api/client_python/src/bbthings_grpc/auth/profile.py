@@ -1,4 +1,4 @@
-from bbthings_grpc_proto.auth import profile_pb2, profile_pb2_grpc
+from ..proto.auth import profile_pb2, profile_pb2_grpc
 from typing import Optional, Union
 from uuid import UUID
 import grpc

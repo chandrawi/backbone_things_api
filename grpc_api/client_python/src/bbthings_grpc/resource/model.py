@@ -1,4 +1,4 @@
-from bbthings_grpc_proto.resource import model_pb2, model_pb2_grpc
+from ..proto.resource import model_pb2, model_pb2_grpc
 from typing import Optional, Union, List
 from uuid import UUID
 import grpc

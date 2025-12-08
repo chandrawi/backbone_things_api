@@ -1,4 +1,4 @@
-from bbthings_grpc_proto.auth import token_pb2, token_pb2_grpc
+from ..proto.auth import token_pb2, token_pb2_grpc
 from typing import Optional
 from datetime import datetime
 from uuid import UUID

@@ -6,7 +6,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bbthings_grpc_client"
+name = "bbthings_grpc"
 version = "0.1.0"
 authors = [
   { name="Chandra Wijaya Sentosa", email="chandra.w.sentosa@gmail.com" },

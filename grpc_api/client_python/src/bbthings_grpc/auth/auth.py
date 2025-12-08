@@ -1,4 +1,4 @@
-from bbthings_grpc_proto.auth import auth_pb2, auth_pb2_grpc
+from ..proto.auth import auth_pb2, auth_pb2_grpc
 from uuid import UUID
 import grpc
 from Crypto.PublicKey import RSA

@@ -1,4 +1,4 @@
-from bbthings_grpc_proto.resource import set_pb2, set_pb2_grpc
+from ..proto.resource import set_pb2, set_pb2_grpc
 from typing import Optional, List
 from uuid import UUID
 import grpc

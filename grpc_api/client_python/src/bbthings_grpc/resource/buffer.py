@@ -1,4 +1,4 @@
-from bbthings_grpc_proto.resource import buffer_pb2, buffer_pb2_grpc
+from ..proto.resource import buffer_pb2, buffer_pb2_grpc
 from typing import Optional, Union, List
 from datetime import datetime
 from uuid import UUID
