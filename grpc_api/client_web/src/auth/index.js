@@ -1,9 +1,3 @@
-export * as auth from './auth/index.js';
-export * as utility from './common/utility.js';
-export {DataType} from './common/type_value.js';
-export {Tag} from './common/tag.js';
-
-
 export {
     read_api,
     read_api_by_name,
@@ -23,7 +17,7 @@ export {
     create_procedure,
     update_procedure,
     delete_procedure
-} from './auth/api.js';
+} from './api.js';
 export {
     read_role,
     read_role_by_name,
@@ -37,7 +31,7 @@ export {
     delete_role,
     add_role_access,
     remove_role_access
-} from './auth/role.js';
+} from './role.js';
 export {
     read_user,
     read_user_by_name,
@@ -51,7 +45,7 @@ export {
     delete_user,
     add_user_role,
     remove_user_role
-} from './auth/user.js';
+} from './user.js';
 export {
     read_role_profile,
     list_role_profile_by_role,
@@ -64,7 +58,7 @@ export {
     update_user_profile,
     delete_user_profile,
     swap_user_profile
-} from './auth/profile.js';
+} from './profile.js';
 export {
     read_access_token,
     list_auth_token,
@@ -83,10 +77,10 @@ export {
     delete_access_token,
     delete_auth_token,
     delete_token_by_user
-} from './auth/token.js';
+} from './token.js';
 export {
     user_login_key,
     user_login,
     user_refresh,
     user_logout
-} from './auth/auth.js';
+} from './auth.js';
