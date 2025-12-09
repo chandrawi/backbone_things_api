@@ -334,7 +334,7 @@ export async function create_access_token(server, request) {
     const tokenSchema = new pb_token.TokenSchema();
     tokenSchema.setUserId(uuid_hex_to_base64(request.user_id));
     tokenSchema.setAuthToken(request.auth_token);
-    tokenSchema.setExpire(request.expired.valueOf() * 1000);
+    tokenSchema.setExpired(request.expired.valueOf() * 1000);
     tokenSchema.setIp(bytes_to_base64(request.ip));
     return client.createAccessToken(tokenSchema, metadata(server))
         .then(response => get_token_create_response(response.toObject()));
@@ -350,7 +350,7 @@ export async function create_auth_token(server, request) {
     const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
     const authTokenCreate = new pb_token.AuthTokenCreate();
     authTokenCreate.setUserId(uuid_hex_to_base64(request.user_id));
-    authTokenCreate.setExpire(request.expired.valueOf() * 1000);
+    authTokenCreate.setExpired(request.expired.valueOf() * 1000);
     authTokenCreate.setIp(bytes_to_base64(request.ip));
     authTokenCreate.setNumber(request.number);
     return client.createAuthToken(authTokenCreate, metadata(server))
@@ -368,7 +368,7 @@ export async function update_access_token(server, request) {
     const tokenUpdate = new pb_token.TokenUpdate();
     tokenUpdate.setAccessId(request.access_id);
     if (request.expired instanceof Date) {
-        tokenUpdate.setExpire(request.expired.valueOf() * 1000);
+        tokenUpdate.setExpired(request.expired.valueOf() * 1000);
     }
     if (request.ip) {
         tokenUpdate.setIp(bytes_to_base64(request.ip));
@@ -388,7 +388,7 @@ export async function update_auth_token(server, request) {
     const tokenUpdate = new pb_token.TokenUpdate();
     tokenUpdate.setAuthToken(request.auth_token);
     if (request.expired instanceof Date) {
-        tokenUpdate.setExpire(request.expired.valueOf() * 1000);
+        tokenUpdate.setExpired(request.expired.valueOf() * 1000);
     }
     if (request.ip) {
         tokenUpdate.setIp(bytes_to_base64(request.ip));
