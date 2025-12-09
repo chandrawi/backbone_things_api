@@ -1,98 +1,3 @@
-export * as auth from './auth/index.js';
-export * as resource from './resource/index.js';
-export * as utility from './common/utility.js';
-export {DataType} from './common/type_value.js';
-export {Tag} from './common/tag.js';
-
-
-export {
-    read_api,
-    read_api_by_name,
-    list_api_by_ids,
-    list_api_by_name,
-    list_api_by_category,
-    list_api_option,
-    create_api,
-    update_api,
-    delete_api,
-    read_procedure,
-    read_procedure_by_name,
-    list_procedure_by_ids,
-    list_procedure_by_api,
-    list_procedure_by_name,
-    list_procedure_option,
-    create_procedure,
-    update_procedure,
-    delete_procedure
-} from './auth/api.js';
-export {
-    read_role,
-    read_role_by_name,
-    list_role_by_ids,
-    list_role_by_api,
-    list_role_by_user,
-    list_role_by_name,
-    list_role_option,
-    create_role,
-    update_role,
-    delete_role,
-    add_role_access,
-    remove_role_access
-} from './auth/role.js';
-export {
-    read_user,
-    read_user_by_name,
-    list_user_by_ids,
-    list_user_by_api,
-    list_user_by_role,
-    list_user_by_name,
-    list_user_option,
-    create_user,
-    update_user,
-    delete_user,
-    add_user_role,
-    remove_user_role
-} from './auth/user.js';
-export {
-    read_role_profile,
-    list_role_profile_by_role,
-    create_role_profile,
-    update_role_profile,
-    delete_role_profile,
-    read_user_profile,
-    list_user_profile_by_user,
-    create_user_profile,
-    update_user_profile,
-    delete_user_profile,
-    swap_user_profile
-} from './auth/profile.js';
-export {
-    read_access_token,
-    list_auth_token,
-    list_token_by_user,
-    list_token_by_created_earlier,
-    list_token_by_created_later,
-    list_token_by_created_range,
-    list_token_by_expired_earlier,
-    list_token_by_expired_later,
-    list_token_by_expired_range,
-    list_token_by_range,
-    create_access_token,
-    create_auth_token,
-    update_access_token,
-    update_auth_token,
-    delete_access_token,
-    delete_auth_token,
-    delete_token_by_user
-} from './auth/token.js';
-export {
-    user_login_key,
-    user_login,
-    user_refresh,
-    user_logout
-} from './auth/auth.js';
-
-
 export {
     read_model,
     list_model_by_ids,
@@ -113,7 +18,7 @@ export {
     create_tag,
     update_tag,
     delete_tag
-} from './resource/model.js';
+} from './model.js';
 export {
     read_device,
     read_device_by_sn,
@@ -153,7 +58,7 @@ export {
     delete_type,
     add_type_model,
     remove_type_model
-} from './resource/device.js';
+} from './device.js';
 export {
     read_group_model,
     list_group_model_by_ids,
@@ -185,7 +90,7 @@ export {
     delete_group_gateway,
     add_group_gateway_member,
     remove_group_gateway_member
-} from './resource/group.js';
+} from './group.js';
 export {
     read_set,
     list_set_by_ids,
@@ -208,7 +113,7 @@ export {
     add_set_template_member,
     remove_set_template_member,
     swap_set_template_member
-} from './resource/set.js';
+} from './set.js';
 export {
     read_slice,
     list_slice_by_ids,
@@ -233,7 +138,7 @@ export {
     create_slice_set,
     update_slice_set,
     delete_slice_set
-} from './resource/slice.js';
+} from './slice.js';
 export {
     read_data,
     list_data_by_time,
@@ -272,7 +177,7 @@ export {
     count_data_group_by_earlier,
     count_data_group_by_later,
     count_data_group_by_range
-} from './resource/data.js';
+} from './data.js';
 export {
     read_buffer,
     read_buffer_by_time,
@@ -332,4 +237,4 @@ export {
     count_buffer_group_by_earlier,
     count_buffer_group_by_later,
     count_buffer_group_by_range
-} from './resource/buffer.js';
+} from './buffer.js';
