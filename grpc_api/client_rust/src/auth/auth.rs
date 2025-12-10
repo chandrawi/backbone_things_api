@@ -7,10 +7,7 @@ use bbthings_grpc_server::proto::auth::auth::{
     UserLogoutRequest, UserLogoutResponse
 };
 use crate::auth::Auth;
-use bbthings_grpc_server::utility::{import_public_key, encrypt_message};
-
-const KEY_IMPORT_ERR: &str = "key import error";
-const ENCRYPT_ERR: &str = "encrypt password error";
+use bbthings_grpc_server::utility::encrypt_message;
 
 pub(crate) async fn user_login(auth: &Auth, username: &str, password: &str)
     -> Result<UserLoginResponse, Status>
@@ -19,11 +16,8 @@ pub(crate) async fn user_login(auth: &Auth, username: &str, password: &str)
     let request = Request::new(UserKeyRequest {
     });
     // get transport public key of requested user and encrypt the password
-    let response = client.user_login_key(request).await?.into_inner();
-    let pub_key = import_public_key(response.public_key.as_slice())
-        .map_err(|_| Status::internal(KEY_IMPORT_ERR))?;
-    let passhash = encrypt_message(password.as_bytes(), pub_key)
-        .map_err(|_| Status::internal(ENCRYPT_ERR))?;
+    let response = client.user_password_key(request).await?.into_inner();
+    let passhash = encrypt_message(password.as_bytes(), &response.public_key)?;
     // request access and refresh tokens
     let request = Request::new(UserLoginRequest {
         username: username.to_owned(),

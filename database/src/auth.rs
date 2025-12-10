@@ -85,22 +85,23 @@ impl Auth {
         qs.fetch_api_schema(&self.pool).await
     }
 
-    pub async fn create_api(&self, id: Uuid, name: &str, address: &str, category: &str, description: &str, password_hash: &str, access_key: &[u8])
+    pub async fn create_api(&self, id: Uuid, name: &str, address: &str, category: &str, description: &str, password: &str, access_key: &[u8])
         -> Result<Uuid, Error>
     {
-        utility::verify_hash_format(password_hash)?;
+        let password_hash = utility::hash_password(password).map_err(|_| Error::InvalidArgument(String::from(utility::HASH_ERROR)))?;
         let qs = api::insert_api(id, name, address, category, description, &password_hash, access_key);
         qs.execute(&self.pool).await?;
         Ok(id)
     }
 
-    pub async fn update_api(&self, id: Uuid, name: Option<&str>, address: Option<&str>, category: Option<&str>, description: Option<&str>, password_hash: Option<&str>, access_key: Option<&[u8]>)
+    pub async fn update_api(&self, id: Uuid, name: Option<&str>, address: Option<&str>, category: Option<&str>, description: Option<&str>, password: Option<&str>, access_key: Option<&[u8]>)
         -> Result<(), Error>
     {
-        if let Some(hash) = password_hash {
-            utility::verify_hash_format(hash)?;
-        }
-        let qs = api::update_api(id, name, address, category, description, password_hash, access_key);
+        let password_hash = match password {
+            Some(pw) => Some(utility::hash_password(pw).map_err(|_| Error::InvalidArgument(String::from(utility::HASH_ERROR)))?),
+            None => None
+        };
+        let qs = api::update_api(id, name, address, category, description, password_hash.as_deref(), access_key);
         qs.execute(&self.pool).await
     }
 
@@ -346,22 +347,23 @@ impl Auth {
         qs.fetch_user_schema(&self.pool).await
     }
 
-    pub async fn create_user(&self, id: Uuid, name: &str, email: &str, phone: &str, password_hash: &str)
+    pub async fn create_user(&self, id: Uuid, name: &str, email: &str, phone: &str, password: &str)
         -> Result<Uuid, Error>
     {
-        utility::verify_hash_format(password_hash)?;
+        let password_hash = utility::hash_password(password).map_err(|_| Error::InvalidArgument(String::from(utility::HASH_ERROR)))?;
         let qs = user::insert_user(id, name, email, phone, &password_hash);
         qs.execute(&self.pool).await?;
         Ok(id)
     }
 
-    pub async fn update_user(&self, id: Uuid, name: Option<&str>, email: Option<&str>, phone: Option<&str>, password_hash: Option<&str>)
+    pub async fn update_user(&self, id: Uuid, name: Option<&str>, email: Option<&str>, phone: Option<&str>, password: Option<&str>)
         -> Result<(), Error>
     {
-        if let Some(hash) = password_hash {
-            utility::verify_hash_format(hash)?;
-        }
-        let qs = user::update_user(id, name, email, phone, password_hash);
+        let password_hash = match password {
+            Some(pw) => Some(utility::hash_password(pw).map_err(|_| Error::InvalidArgument(String::from(utility::HASH_ERROR)))?),
+            None => None
+        };
+        let qs = user::update_user(id, name, email, phone, password_hash.as_deref());
         qs.execute(&self.pool).await
     }
 

@@ -11,8 +11,8 @@ pub struct ApiSchema {
     pub category: ::prost::alloc::string::String,
     #[prost(string, tag = "5")]
     pub description: ::prost::alloc::string::String,
-    #[prost(string, tag = "6")]
-    pub password: ::prost::alloc::string::String,
+    #[prost(bytes = "vec", tag = "6")]
+    pub password: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes = "vec", tag = "7")]
     pub access_key: ::prost::alloc::vec::Vec<u8>,
     #[prost(message, repeated, tag = "8")]
@@ -57,8 +57,8 @@ pub struct ApiUpdate {
     pub category: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag = "5")]
     pub description: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag = "6")]
-    pub password: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(bytes = "vec", optional, tag = "6")]
+    pub password: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     #[prost(bytes = "vec", optional, tag = "7")]
     pub access_key: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
 }

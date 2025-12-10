@@ -7,7 +7,8 @@ use crate::proto::auth::user::{
     UserReadResponse, UserListResponse, UserCreateResponse, UserChangeResponse
 };
 use crate::common::validator::{AuthValidator, ValidatorKind};
-use crate::common::utility::handle_error;
+use crate::common::utility::{self, handle_error};
+use crate::common::config::{USER_KEY, TransportKey};
 
 pub struct UserServer {
     auth_db: Auth,
@@ -135,12 +136,16 @@ impl UserService for UserServer {
     {
         self.validate(request.extensions(), ValidatorKind::Root).await?;
         let request = request.into_inner();
+        // decrypt encrypted password and then hash the password
+        let user_key = USER_KEY.get_or_init(|| TransportKey::new());
+        let priv_key = user_key.private_key.clone();
+        let password_decrypt = utility::decrypt_message_string(&request.password, priv_key)?;
         let result = self.auth_db.create_user(
             Uuid::from_slice(&request.id).unwrap_or_default(),
             &request.name,
             &request.email,
             &request.phone,
-            &request.password
+            &password_decrypt
         ).await;
         let id = match result {
             Ok(value) => value,
@@ -155,12 +160,19 @@ impl UserService for UserServer {
         let extension = request.extensions();
         let request = request.get_ref();
         self.validate(extension, ValidatorKind::User(Uuid::from_slice(&request.id).unwrap_or_default())).await?;
+        // decrypt encrypted password and then hash the password
+        let mut password_decrypt = None;
+        if let Some(password) = &request.password {
+            let user_key = USER_KEY.get_or_init(|| TransportKey::new());
+            let priv_key = user_key.private_key.clone();
+            password_decrypt = Some(utility::decrypt_message_string(password, priv_key)?);
+        }
         let result = self.auth_db.update_user(
             Uuid::from_slice(&request.id).unwrap_or_default(),
             request.name.as_deref(),
             request.email.as_deref(),
             request.phone.as_deref(),
-            request.password.as_deref()
+            password_decrypt.as_deref()
         ).await;
         match result {
             Ok(_) => (),

@@ -1,6 +1,4 @@
 use bbthings_database::Resource;
-use bbthings_grpc_server::proto::auth::auth::auth_service_client::AuthServiceClient;
-use bbthings_grpc_server::proto::auth::auth::{ApiKeyRequest, ApiLoginRequest, ApiLoginResponse};
 use bbthings_grpc_server::proto::resource::model::model_service_server::ModelServiceServer;
 use bbthings_grpc_server::proto::resource::device::device_service_server::DeviceServiceServer;
 use bbthings_grpc_server::proto::resource::group::group_service_server::GroupServiceServer;
@@ -9,6 +7,7 @@ use bbthings_grpc_server::proto::resource::data::data_service_server::DataServic
 use bbthings_grpc_server::proto::resource::buffer::buffer_service_server::BufferServiceServer;
 use bbthings_grpc_server::proto::resource::slice::slice_service_server::SliceServiceServer;
 use bbthings_grpc_server::proto::descriptor;
+use bbthings_grpc_server::auth::auth::api_login;
 use bbthings_grpc_server::resource::model::ModelServer;
 use bbthings_grpc_server::resource::device::DeviceServer;
 use bbthings_grpc_server::resource::group::GroupServer;
@@ -20,7 +19,6 @@ use bbthings_grpc_server::common::config::{ROOT_DATA, RootData};
 use bbthings_grpc_server::common::validator::AccessSchema;
 use bbthings_grpc_server::common::interceptor::interceptor;
 use bbthings_grpc_server::common::utility;
-use tonic::{Request, transport::Channel};
 use tonic::transport::Server;
 use tonic_web::GrpcWebLayer;
 use http::{header::HeaderName, Method};
@@ -209,32 +207,4 @@ async fn resource_server_secured(db_url: String, address: String, auth_address: 
         .await?;
 
     Ok(())
-}
-
-pub async fn api_login(addr: &str, api_id: Uuid, password: &str)
-    -> Option<ApiLoginResponse>
-{
-    let channel = Channel::from_shared(addr.to_owned())
-        .expect("Invalid address")
-        .connect()
-        .await
-        .expect(&format!("Error making channel to {}", addr));
-    let mut client = AuthServiceClient::new(channel.to_owned());
-    let request = Request::new(ApiKeyRequest {
-    });
-    // get transport public key of requested API and encrypt the password
-    let response = client.api_login_key(request).await.ok()?.into_inner();
-    let pub_key = utility::import_public_key(response.public_key.as_slice()).ok()?;
-    let passhash = utility::encrypt_message(password.as_bytes(), pub_key).ok()?;
-    // request API key and procedures access from server
-    let (priv_key, pub_key) = utility::generate_transport_keys().ok()?;
-    let pub_der = utility::export_public_key(pub_key).ok()?;
-    let request = Request::new(ApiLoginRequest {
-        api_id: api_id.as_bytes().to_vec(),
-        password: passhash,
-        public_key: pub_der
-    });
-    let mut response = client.api_login(request).await.ok()?.into_inner();
-    response.access_key = utility::decrypt_message(&response.access_key, priv_key).ok()?;
-    Some(response)
 }

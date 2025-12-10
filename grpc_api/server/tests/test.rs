@@ -10,10 +10,10 @@ mod tests {
     use bbthings_grpc_server::proto::auth::user::user_service_client::UserServiceClient;
     use bbthings_grpc_server::proto::auth::user::{UserSchema, UserRole, UserId};
     use bbthings_grpc_server::proto::auth::auth::auth_service_client::AuthServiceClient;
-    use bbthings_grpc_server::proto::auth::auth::{UserKeyRequest, UserLoginRequest, UserRefreshRequest, UserLogoutRequest};
+    use bbthings_grpc_server::proto::auth::auth::{ApiKeyRequest, UserKeyRequest, UserLoginRequest, UserRefreshRequest, UserLogoutRequest};
     use bbthings_grpc_server::proto::resource::model::model_service_client::ModelServiceClient;
     use bbthings_grpc_server::proto::resource::model::{ModelSchema, TagSchema, ModelId};
-    use bbthings_grpc_server::common::utility::{import_public_key, encrypt_message, hash_password};
+    use bbthings_grpc_server::common::utility::encrypt_message;
     use bbthings_grpc_server::common::config::{ROOT_NAME, ROOT_DATA};
     use bbthings_grpc_server::common::interceptor::TokenInterceptor;
     use bbthings_grpc_server::common::test::{TestServerKind, TestServer};
@@ -42,9 +42,8 @@ mod tests {
         let mut client = AuthServiceClient::new(channel);
         let request = Request::new(UserKeyRequest { });
         // get transport public key of requested user and encrypt the password
-        let response = client.user_login_key(request).await.unwrap().into_inner();
-        let pub_key = import_public_key(response.public_key.as_slice()).unwrap();
-        let passhash = encrypt_message(password.as_bytes(), pub_key).unwrap();
+        let response = client.user_password_key(request).await.unwrap().into_inner();
+        let passhash = encrypt_message(password.as_bytes(), &response.public_key).unwrap();
         // request access and refresh tokens
         let request = Request::new(UserLoginRequest {
             username: username.to_owned(),
@@ -96,6 +95,8 @@ mod tests {
         // construct api, role, and user service using root token
         let channel = Channel::from_shared(auth_server.address.clone()).unwrap().connect().await.unwrap();
         let interceptor = TokenInterceptor(root_auth.to_owned());
+        let mut auth_service = 
+            AuthServiceClient::new(channel.clone());
         let mut api_service = 
             ApiServiceClient::with_interceptor(channel.clone(), interceptor.clone());
         let mut role_service = 
@@ -103,15 +104,19 @@ mod tests {
         let mut user_service = 
             UserServiceClient::with_interceptor(channel.clone(), interceptor.clone());
 
+        // get api password key to securely sending api schema containing password to server
+        let request = Request::new(ApiKeyRequest{});
+        let response = auth_service.api_password_key(request).await.unwrap().into_inner();
         // create api and procedures
         let password = String::from("Api_pa55w0rd");
+        let password_encrypt = encrypt_message(password.as_bytes(), &response.public_key).unwrap();
         let request = Request::new(ApiSchema {
             id: Uuid::new_v4().as_bytes().to_vec(),
             name: String::from("resource api"),
             address: String::new(),
             category: String::from("resource"),
             description: String::new(),
-            password: hash_password(&password).unwrap(),
+            password: password_encrypt,
             access_key: Vec::new(),
             procedures: Vec::new()
         });
@@ -169,15 +174,19 @@ mod tests {
             role_service.add_role_access(request).await.unwrap();
         }
 
+        // get user password key to securely sending api schema containing password to server
+        let request = Request::new(UserKeyRequest{});
+        let response = auth_service.user_password_key(request).await.unwrap().into_inner();
         // create users and link it to a role
         let mut user_roles = Vec::new();
         for &(user, password, role) in USERS {
+            let password_encrypt = encrypt_message(password.as_bytes(), &response.public_key).unwrap();
             let request = Request::new(UserSchema {
                 id: Uuid::new_v4().as_bytes().to_vec(),
                 name: user.to_owned(),
                 email: String::new(),
                 phone: String::new(),
-                password: hash_password(&password).unwrap(),
+                password: password_encrypt,
                 roles: Vec::new()
             });
             let response = user_service.create_user(request).await.unwrap().into_inner();

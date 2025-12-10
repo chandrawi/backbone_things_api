@@ -1,4 +1,3 @@
-use sqlx::Error;
 use rand::{thread_rng, Rng};
 use argon2::{Argon2, PasswordHasher, PasswordVerifier, PasswordHash, password_hash::SaltString};
 
@@ -16,13 +15,7 @@ pub fn verify_password<T: AsRef<[u8]>>(password: T, password_hash: &str) -> Resu
     Argon2::default().verify_password(password.as_ref(), &parsed_hash)
 }
 
-pub(crate) fn verify_hash_format(password_hash: &str) -> Result<(), Error>
-{
-    match PasswordHash::new(password_hash) {
-        Ok(_) => Ok(()),
-        Err(_) => Err(Error::InvalidArgument(String::from("Invalid password hash format")))
-    }
-}
+pub(crate) const HASH_ERROR: &str = "Hash password error";
 
 pub fn generate_access_key() -> Vec<u8>
 {

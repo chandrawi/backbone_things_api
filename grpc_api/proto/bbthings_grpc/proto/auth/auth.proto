@@ -2,11 +2,11 @@ syntax = "proto3";
 package auth;
 
 service AuthService {
-    rpc ApiLoginKey(ApiKeyRequest) returns (ApiKeyResponse);
+    rpc ApiPasswordKey(ApiKeyRequest) returns (ApiKeyResponse);
 
     rpc ApiLogin(ApiLoginRequest) returns (ApiLoginResponse);
 
-    rpc UserLoginKey(UserKeyRequest) returns (UserKeyResponse);
+    rpc UserPasswordKey(UserKeyRequest) returns (UserKeyResponse);
 
     rpc UserLogin(UserLoginRequest) returns (UserLoginResponse);
 

@@ -42,7 +42,7 @@ message UserSchema {
     string name = 2;
     string email = 3;
     string phone = 4;
-    string password = 5;
+    bytes password = 5;
     repeated UserRoleSchema roles = 6;
 }
 
@@ -77,7 +77,7 @@ message UserUpdate {
     optional string name = 2;
     optional string email = 3;
     optional string phone = 4;
-    optional string password = 5;
+    optional bytes password = 5;
 }
 
 message UserRole {

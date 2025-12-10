@@ -177,7 +177,7 @@ pub mod auth_service_client {
             self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
-        pub async fn api_login_key(
+        pub async fn api_password_key(
             &mut self,
             request: impl tonic::IntoRequest<super::ApiKeyRequest>,
         ) -> std::result::Result<tonic::Response<super::ApiKeyResponse>, tonic::Status> {
@@ -191,11 +191,11 @@ pub mod auth_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/auth.AuthService/ApiLoginKey",
+                "/auth.AuthService/ApiPasswordKey",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("auth.AuthService", "ApiLoginKey"));
+                .insert(GrpcMethod::new("auth.AuthService", "ApiPasswordKey"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn api_login(
@@ -221,7 +221,7 @@ pub mod auth_service_client {
             req.extensions_mut().insert(GrpcMethod::new("auth.AuthService", "ApiLogin"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn user_login_key(
+        pub async fn user_password_key(
             &mut self,
             request: impl tonic::IntoRequest<super::UserKeyRequest>,
         ) -> std::result::Result<
@@ -238,11 +238,11 @@ pub mod auth_service_client {
                 })?;
             let codec = tonic_prost::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/auth.AuthService/UserLoginKey",
+                "/auth.AuthService/UserPasswordKey",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("auth.AuthService", "UserLoginKey"));
+                .insert(GrpcMethod::new("auth.AuthService", "UserPasswordKey"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn user_login(
@@ -332,7 +332,7 @@ pub mod auth_service_server {
     /// Generated trait containing gRPC methods that should be implemented for use with AuthServiceServer.
     #[async_trait]
     pub trait AuthService: std::marker::Send + std::marker::Sync + 'static {
-        async fn api_login_key(
+        async fn api_password_key(
             &self,
             request: tonic::Request<super::ApiKeyRequest>,
         ) -> std::result::Result<tonic::Response<super::ApiKeyResponse>, tonic::Status>;
@@ -343,7 +343,7 @@ pub mod auth_service_server {
             tonic::Response<super::ApiLoginResponse>,
             tonic::Status,
         >;
-        async fn user_login_key(
+        async fn user_password_key(
             &self,
             request: tonic::Request<super::UserKeyRequest>,
         ) -> std::result::Result<tonic::Response<super::UserKeyResponse>, tonic::Status>;
@@ -445,13 +445,13 @@ pub mod auth_service_server {
         }
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             match req.uri().path() {
-                "/auth.AuthService/ApiLoginKey" => {
+                "/auth.AuthService/ApiPasswordKey" => {
                     #[allow(non_camel_case_types)]
-                    struct ApiLoginKeySvc<T: AuthService>(pub Arc<T>);
+                    struct ApiPasswordKeySvc<T: AuthService>(pub Arc<T>);
                     impl<
                         T: AuthService,
                     > tonic::server::UnaryService<super::ApiKeyRequest>
-                    for ApiLoginKeySvc<T> {
+                    for ApiPasswordKeySvc<T> {
                         type Response = super::ApiKeyResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -463,7 +463,7 @@ pub mod auth_service_server {
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as AuthService>::api_login_key(&inner, request).await
+                                <T as AuthService>::api_password_key(&inner, request).await
                             };
                             Box::pin(fut)
                         }
@@ -474,7 +474,7 @@ pub mod auth_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = ApiLoginKeySvc(inner);
+                        let method = ApiPasswordKeySvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -535,13 +535,13 @@ pub mod auth_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/auth.AuthService/UserLoginKey" => {
+                "/auth.AuthService/UserPasswordKey" => {
                     #[allow(non_camel_case_types)]
-                    struct UserLoginKeySvc<T: AuthService>(pub Arc<T>);
+                    struct UserPasswordKeySvc<T: AuthService>(pub Arc<T>);
                     impl<
                         T: AuthService,
                     > tonic::server::UnaryService<super::UserKeyRequest>
-                    for UserLoginKeySvc<T> {
+                    for UserPasswordKeySvc<T> {
                         type Response = super::UserKeyResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -553,7 +553,7 @@ pub mod auth_service_server {
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as AuthService>::user_login_key(&inner, request).await
+                                <T as AuthService>::user_password_key(&inner, request).await
                             };
                             Box::pin(fut)
                         }
@@ -564,7 +564,7 @@ pub mod auth_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = UserLoginKeySvc(inner);
+                        let method = UserPasswordKeySvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

@@ -17,7 +17,7 @@ impl From<ApiSchema> for api::ApiSchema {
             address: value.address,
             category: value.category,
             description: value.description,
-            password: value.password,
+            password: value.password.as_bytes().to_vec(),
             access_key: value.access_key,
             procedures: value.procedures.into_iter().map(|v| v.into()).collect()
         }
@@ -32,7 +32,7 @@ impl From<api::ApiSchema> for ApiSchema {
             address: value.address,
             category: value.category,
             description: value.description,
-            password: value.password,
+            password: String::from_utf8(value.password).unwrap_or_default(),
             access_key: value.access_key,
             procedures: value.procedures.into_iter().map(|v| v.into()).collect()
         }
@@ -102,7 +102,7 @@ impl From<UserSchema> for user::UserSchema {
             name: value.name,
             email: value.email,
             phone: value.phone,
-            password: value.password,
+            password: value.password.as_bytes().to_vec(),
             roles: value.roles.into_iter().map(|v| v.into()).collect()
         }
     }
@@ -115,7 +115,7 @@ impl From<user::UserSchema> for UserSchema {
             name: value.name,
             email: value.email,
             phone: value.phone,
-            password: value.password,
+            password: String::from_utf8(value.password).unwrap_or_default(),
             roles: value.roles.into_iter().map(|v| v.into()).collect()
         }
     }

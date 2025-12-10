@@ -24,7 +24,6 @@ pub mod utility {
         generate_access_key, generate_token_string, hash_password, verify_password
     };
     pub use bbthings_grpc_server::common::utility::{
-        generate_transport_keys, export_public_key, import_public_key, 
-        decrypt_message, encrypt_message, hex_to_bytes
+        encrypt_message, hex_to_bytes
     };
 }

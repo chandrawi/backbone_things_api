@@ -26,8 +26,8 @@ pub struct UserSchema {
     pub email: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
     pub phone: ::prost::alloc::string::String,
-    #[prost(string, tag = "5")]
-    pub password: ::prost::alloc::string::String,
+    #[prost(bytes = "vec", tag = "5")]
+    pub password: ::prost::alloc::vec::Vec<u8>,
     #[prost(message, repeated, tag = "6")]
     pub roles: ::prost::alloc::vec::Vec<UserRoleSchema>,
 }
@@ -75,8 +75,8 @@ pub struct UserUpdate {
     pub email: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag = "4")]
     pub phone: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag = "5")]
-    pub password: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(bytes = "vec", optional, tag = "5")]
+    pub password: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct UserRole {

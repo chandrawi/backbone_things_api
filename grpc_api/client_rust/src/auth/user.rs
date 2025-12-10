@@ -4,8 +4,11 @@ use bbthings_grpc_server::proto::auth::user::user_service_client::UserServiceCli
 use bbthings_grpc_server::proto::auth::user::{
     UserId, UserIds, UserName, ApiId, RoleId, UserOption, UserSchema, UserUpdate, UserRole
 };
+use bbthings_grpc_server::proto::auth::auth::auth_service_client::AuthServiceClient;
+use bbthings_grpc_server::proto::auth::auth::UserKeyRequest;
 use crate::auth::Auth;
 use bbthings_grpc_server::common::interceptor::TokenInterceptor;
+use bbthings_grpc_server::utility::encrypt_message;
 
 const USER_NOT_FOUND: &str = "requested user not found";
 
@@ -119,6 +122,11 @@ pub(crate) async fn list_user_option(auth: &Auth, api_id: Option<Uuid>, role_id:
 pub(crate) async fn create_user(auth: &Auth, id: Uuid, name: &str, email: &str, phone: &str, password: &str)
     -> Result<Uuid, Status>
 {
+    let mut auth_client = AuthServiceClient::new(auth.channel.to_owned());
+    // get transport public key from server and encrypt the password
+    let request = Request::new(UserKeyRequest{});
+    let response = auth_client.user_password_key(request).await?.into_inner();
+    let password_encrypt = encrypt_message(password.as_bytes(), &response.public_key)?;
     let interceptor = TokenInterceptor(auth.auth_token.clone());
     let mut client = 
         UserServiceClient::with_interceptor(auth.channel.to_owned(), interceptor);
@@ -127,7 +135,7 @@ pub(crate) async fn create_user(auth: &Auth, id: Uuid, name: &str, email: &str, 
         name: name.to_owned(),
         email: email.to_owned(),
         phone: phone.to_owned(),
-        password: password.to_owned(),
+        password: password_encrypt,
         roles: Vec::new()
     });
     let response = client.create_user(request)
@@ -139,6 +147,14 @@ pub(crate) async fn create_user(auth: &Auth, id: Uuid, name: &str, email: &str, 
 pub(crate) async fn update_user(auth: &Auth, id: Uuid, name: Option<&str>, email: Option<&str>, phone: Option<&str>, password: Option<&str>)
     -> Result<(), Status>
 {
+    let mut auth_client = AuthServiceClient::new(auth.channel.to_owned());
+    // get transport public key from server and encrypt the password
+    let mut password_encrypt = None;
+    if let Some(password) = password {
+        let request = Request::new(UserKeyRequest{});
+        let response = auth_client.user_password_key(request).await?.into_inner();
+        password_encrypt = Some(encrypt_message(password.as_bytes(), &response.public_key)?)
+    }
     let interceptor = TokenInterceptor(auth.auth_token.clone());
     let mut client = 
         UserServiceClient::with_interceptor(auth.channel.to_owned(), interceptor);
@@ -147,7 +163,7 @@ pub(crate) async fn update_user(auth: &Auth, id: Uuid, name: Option<&str>, email
         name: name.map(|s| s.to_owned()),
         email: email.map(|s| s.to_owned()),
         phone: phone.map(|s| s.to_owned()),
-        password: password.map(|s| s.to_owned())
+        password: password_encrypt
     });
     client.update_user(request)
         .await?;

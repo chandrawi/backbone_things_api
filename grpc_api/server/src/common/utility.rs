@@ -2,9 +2,13 @@ use sha2::Sha256;
 use rsa::{RsaPrivateKey, RsaPublicKey, Oaep};
 use pkcs8::{DecodePublicKey, EncodePublicKey};
 use rand::thread_rng;
+use tonic::Status;
 pub use bbthings_database::utility::{generate_access_key, generate_token_string, hash_password, verify_password};
 
-pub fn generate_transport_keys() -> Result<(RsaPrivateKey, RsaPublicKey), rsa::Error>
+const ENCRYPT_ERR: &str = "encrypt message error";
+const DECRYPT_ERR: &str = "decrypt password error";
+
+pub(crate) fn generate_transport_keys() -> Result<(RsaPrivateKey, RsaPublicKey), rsa::Error>
 {
     let mut rng = thread_rng();
     let bits = 1024;
@@ -13,28 +17,32 @@ pub fn generate_transport_keys() -> Result<(RsaPrivateKey, RsaPublicKey), rsa::E
     Ok((priv_key, pub_key))
 }
 
-pub fn export_public_key(pub_key: RsaPublicKey) -> Result<Vec<u8>, spki::Error>
+pub(crate) fn export_public_key(pub_key: RsaPublicKey) -> Result<Vec<u8>, spki::Error>
 {
     let pub_der = pub_key.to_public_key_der()?.to_vec();
     Ok(pub_der)
 }
 
-pub fn import_public_key(pub_der: &[u8]) -> Result<RsaPublicKey, spki::Error>
-{
-    let pub_key = RsaPublicKey::from_public_key_der(pub_der)?;
-    Ok(pub_key)
-}
-
-pub fn decrypt_message(ciphertext: &[u8], priv_key: RsaPrivateKey) -> Result<Vec<u8>, rsa::Error>
+pub(crate) fn decrypt_message(ciphertext: &[u8], priv_key: RsaPrivateKey) -> Result<Vec<u8>, Status>
 {
     let padding = Oaep::new_with_mgf_hash::<Sha256, Sha256>();
     priv_key.decrypt(padding, ciphertext)
+        .map_err(|_| Status::internal(DECRYPT_ERR))
 }
 
-pub fn encrypt_message(message: &[u8], pub_key: RsaPublicKey) -> Result<Vec<u8>, rsa::Error>
+pub(crate) fn decrypt_message_string(ciphertext: &[u8], priv_key: RsaPrivateKey) -> Result<String, Status>
 {
+    String::from_utf8(decrypt_message(ciphertext, priv_key)?)
+        .map_err(|_| Status::internal(DECRYPT_ERR))
+}
+
+pub fn encrypt_message(message: &[u8], pub_der: &[u8]) -> Result<Vec<u8>, Status>
+{
+    let pub_key = RsaPublicKey::from_public_key_der(pub_der)
+        .map_err(|_| Status::internal(ENCRYPT_ERR))?;
     let padding = Oaep::new_with_mgf_hash::<Sha256, Sha256>();
     pub_key.encrypt(&mut thread_rng(), padding, message)
+        .map_err(|_| Status::internal(ENCRYPT_ERR))
 }
 
 pub(crate) fn handle_error(e: sqlx::Error) -> tonic::Status {

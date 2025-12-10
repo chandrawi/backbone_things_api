@@ -5,8 +5,11 @@ use bbthings_grpc_server::proto::auth::api::{
     ApiId, ApiIds, ApiName, ApiCategory, ApiOption, ApiSchema, ApiUpdate, 
     ProcedureId, ProcedureIds, ProcedureName, ProcedureOption, ProcedureSchema, ProcedureUpdate
 };
+use bbthings_grpc_server::proto::auth::auth::auth_service_client::AuthServiceClient;
+use bbthings_grpc_server::proto::auth::auth::ApiKeyRequest;
 use crate::auth::Auth;
 use bbthings_grpc_server::common::interceptor::TokenInterceptor;
+use bbthings_grpc_server::utility::encrypt_message;
 
 const API_NOT_FOUND: &str = "requested api not found";
 const PROC_NOT_FOUND: &str = "requested procedure not found";
@@ -103,6 +106,11 @@ pub(crate) async fn list_api_option(auth: &Auth, name: Option<&str>, category: O
 pub(crate) async fn create_api(auth: &Auth, id: Uuid, name: &str, address: &str, category: &str, description: &str, password: &str, access_key: &[u8])
     -> Result<Uuid, Status>
 {
+    let mut client = AuthServiceClient::new(auth.channel.to_owned());
+    // get transport public key from server and encrypt the password
+    let request = Request::new(ApiKeyRequest{});
+    let response = client.api_password_key(request).await?.into_inner();
+    let password_encrypt = encrypt_message(password.as_bytes(), &response.public_key)?;
     let interceptor = TokenInterceptor(auth.auth_token.clone());
     let mut client = 
         ApiServiceClient::with_interceptor(auth.channel.to_owned(), interceptor);
@@ -112,7 +120,7 @@ pub(crate) async fn create_api(auth: &Auth, id: Uuid, name: &str, address: &str,
         address: address.to_owned(),
         category: category.to_owned(),
         description: description.to_owned(),
-        password: password.to_owned(),
+        password: password_encrypt,
         access_key: access_key.to_vec(),
         procedures: Vec::new()
     });
@@ -125,6 +133,14 @@ pub(crate) async fn create_api(auth: &Auth, id: Uuid, name: &str, address: &str,
 pub(crate) async fn update_api(auth: &Auth, id: Uuid, name: Option<&str>, address: Option<&str>, category: Option<&str>, description: Option<&str>, password: Option<&str>, access_key: Option<&[u8]>)
     -> Result<(), Status>
 {
+    let mut client = AuthServiceClient::new(auth.channel.to_owned());
+    // get transport public key from server and encrypt the password
+    let mut password_encrypt = None;
+    if let Some(password) = password {
+        let request = Request::new(ApiKeyRequest{});
+        let response = client.api_password_key(request).await?.into_inner();
+        password_encrypt = Some(encrypt_message(password.as_bytes(), &response.public_key)?);
+    }
     let interceptor = TokenInterceptor(auth.auth_token.clone());
     let mut client = 
         ApiServiceClient::with_interceptor(auth.channel.to_owned(), interceptor);
@@ -134,7 +150,7 @@ pub(crate) async fn update_api(auth: &Auth, id: Uuid, name: Option<&str>, addres
         address: address.map(|s| s.to_owned()),
         category: category.map(|s| s.to_owned()),
         description: description.map(|s| s.to_owned()),
-        password: password.map(|s| s.to_owned()),
+        password: password_encrypt,
         access_key: access_key.map(|v| v.to_vec())
     });
     client.update_api(request)

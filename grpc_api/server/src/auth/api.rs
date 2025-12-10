@@ -9,7 +9,8 @@ use crate::proto::auth::api::{
     ProcedureReadResponse, ProcedureListResponse, ProcedureCreateResponse, ProcedureChangeResponse
 };
 use crate::common::validator::{AuthValidator, ValidatorKind};
-use crate::common::utility::handle_error;
+use crate::common::utility::{self, handle_error};
+use crate::common::config::{API_KEY, TransportKey};
 
 pub struct ApiServer {
     auth_db: Auth,
@@ -122,13 +123,17 @@ impl ApiService for ApiServer {
     {
         self.validate(request.extensions(), ValidatorKind::Root).await?;
         let request = request.into_inner();
+        // decrypt encrypted password and then hash the password
+        let user_key = API_KEY.get_or_init(|| TransportKey::new());
+        let priv_key = user_key.private_key.clone();
+        let password_decrypt = utility::decrypt_message_string(&request.password, priv_key)?;
         let result = self.auth_db.create_api(
             Uuid::from_slice(&request.id).unwrap_or_default(),
             &request.name, 
             &request.address,
             &request.category,
             &request.description,
-            &request.password,
+            &password_decrypt,
             &request.access_key
         ).await;
         let id = match result {
@@ -143,13 +148,20 @@ impl ApiService for ApiServer {
     {
         self.validate(request.extensions(), ValidatorKind::Root).await?;
         let request = request.into_inner();
+        // decrypt encrypted password and then hash the password
+        let mut password_decrypt = None;
+        if let Some(password) = &request.password {
+            let user_key = API_KEY.get_or_init(|| TransportKey::new());
+            let priv_key = user_key.private_key.clone();
+            password_decrypt = Some(utility::decrypt_message_string(password, priv_key)?);
+        }
         let result = self.auth_db.update_api(
             Uuid::from_slice(&request.id).unwrap_or_default(),
             request.name.as_deref(),
             request.address.as_deref(),
             request.category.as_deref(),
             request.description.as_deref(),
-            request.password.as_deref(),
+            password_decrypt.as_deref(),
             request.access_key.as_deref()
         ).await;
         match result {

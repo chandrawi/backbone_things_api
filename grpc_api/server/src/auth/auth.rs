@@ -1,4 +1,4 @@
-use tonic::{Request, Response, Status};
+use tonic::{Request, Response, Status, transport::Channel};
 use uuid::Uuid;
 use chrono::{Duration, Utc};
 use bbthings_database::Auth;
@@ -10,13 +10,11 @@ use crate::proto::auth::auth::{
     UserRefreshRequest, UserRefreshResponse, UserLogoutRequest, UserLogoutResponse,
     ProcedureMap, AccessTokenMap
 };
+use crate::proto::auth::auth::auth_service_client::AuthServiceClient;
 use crate::common::{token, utility, utility::handle_error};
 use crate::common::config::{ROOT_ID, ROOT_NAME, ROOT_DATA, API_KEY, USER_KEY, TransportKey};
 
 const TOKEN_NOT_FOUND: &str = "requested token not found";
-const KEY_IMPORT_ERR: &str = "key import error";
-const DECRYPT_ERR: &str = "decrypt password error";
-const ENCRYPT_ERR: &str = "encrypt key error";
 const PASSWORD_MISMATCH: &str = "password does not match";
 const GENERATE_TOKEN_ERR: &str = "error generate token";
 const TOKEN_MISMATCH: &str = "token is not match";
@@ -37,7 +35,7 @@ impl AuthServer {
 #[tonic::async_trait]
 impl AuthService for AuthServer {
 
-    async fn api_login_key(&self, _: Request<ApiKeyRequest>)
+    async fn api_password_key(&self, _: Request<ApiKeyRequest>)
         -> Result<Response<ApiKeyResponse>, Status>
     {
         let api_key = API_KEY.get_or_init(|| TransportKey::new());
@@ -56,19 +54,15 @@ impl AuthService for AuthServer {
                 // decrypt encrypted password hash and return error if password is not verified
                 let api_key = API_KEY.get_or_init(|| TransportKey::new());
                 let priv_key = api_key.private_key.clone();
+                let password = utility::decrypt_message(&request.password, priv_key)?;
                 let hash = api.password.clone();
-                let password = utility::decrypt_message(&request.password, priv_key)
-                    .map_err(|_| Status::internal(DECRYPT_ERR))?;
                 utility::verify_password(&password, &hash)
                     .map_err(|_| Status::invalid_argument(PASSWORD_MISMATCH))?;
-                let pub_key = utility::import_public_key(&request.public_key)
-                    .map_err(|_| Status::internal(KEY_IMPORT_ERR))?;
                 // update api with generated access key
                 let key = generate_access_key();
                 self.auth_db.update_api(id, None, None, None, None, None, Some(&key)).await
                     .map_err(|e| handle_error(e))?;
-                let access_key = utility::encrypt_message(&key, pub_key)
-                    .map_err(|_| Status::internal(ENCRYPT_ERR))?;
+                let access_key = utility::encrypt_message(&key, &request.public_key)?;
                 let procedures = api.procedures.into_iter()
                     .map(|e| ProcedureMap { procedure: e.name, roles: e.roles })
                     .collect();
@@ -79,7 +73,7 @@ impl AuthService for AuthServer {
         Ok(Response::new(ApiLoginResponse { access_key, access_procedures }))
     }
 
-    async fn user_login_key(&self, _: Request<UserKeyRequest>)
+    async fn user_password_key(&self, _: Request<UserKeyRequest>)
         -> Result<Response<UserKeyResponse>, Status>
     {
         let user_key = USER_KEY.get_or_init(|| TransportKey::new());
@@ -108,9 +102,8 @@ impl AuthService for AuthServer {
                 // decrypt encrypted password hash and return error if password is not verified
                 let user_key = USER_KEY.get_or_init(|| TransportKey::new());
                 let priv_key = user_key.private_key.clone();
+                let password = utility::decrypt_message(&request.password, priv_key)?;
                 let hash = user.password.clone();
-                let password = utility::decrypt_message(&request.password, priv_key)
-                    .map_err(|_| Status::internal(DECRYPT_ERR))?;
                 if user.name == ROOT_NAME {
                     // add delay to overcome brute force attack
                     std::thread::sleep(std::time::Duration::from_millis(500));
@@ -241,4 +234,31 @@ impl AuthService for AuthServer {
         Ok(Response::new(UserLogoutResponse { }))
     }
 
+}
+
+pub async fn api_login(addr: &str, api_id: Uuid, password: &str)
+    -> Option<ApiLoginResponse>
+{
+    let channel = Channel::from_shared(addr.to_owned())
+        .expect("Invalid address")
+        .connect()
+        .await
+        .expect(&format!("Error making channel to {}", addr));
+    let mut client = AuthServiceClient::new(channel.to_owned());
+    let request = Request::new(ApiKeyRequest {
+    });
+    // get transport public key of requested API and encrypt the password
+    let response = client.api_password_key(request).await.ok()?.into_inner();
+    let passhash = utility::encrypt_message(password.as_bytes(), response.public_key.as_slice()).ok()?;
+    // request API key and procedures access from server
+    let (priv_key, pub_key) = utility::generate_transport_keys().ok()?;
+    let pub_der = utility::export_public_key(pub_key).ok()?;
+    let request = Request::new(ApiLoginRequest {
+        api_id: api_id.as_bytes().to_vec(),
+        password: passhash,
+        public_key: pub_der
+    });
+    let mut response = client.api_login(request).await.ok()?.into_inner();
+    response.access_key = utility::decrypt_message(&response.access_key, priv_key).ok()?;
+    Some(response)
 }

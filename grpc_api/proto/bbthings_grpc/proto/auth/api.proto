@@ -45,7 +45,7 @@ message ApiSchema {
     string address = 3;
     string category = 4;
     string description = 5;
-    string password = 6;
+    bytes password = 6;
     bytes access_key = 7;
     repeated ProcedureSchema procedures = 8;
 }
@@ -77,7 +77,7 @@ message ApiUpdate {
     optional string address = 3;
     optional string category = 4;
     optional string description = 5;
-    optional string password = 6;
+    optional bytes password = 6;
     optional bytes access_key = 7;
 }
 
