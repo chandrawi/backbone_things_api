@@ -34,8 +34,8 @@ class AuthServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.ApiLoginKey = channel.unary_unary(
-                '/auth.AuthService/ApiLoginKey',
+        self.ApiPasswordKey = channel.unary_unary(
+                '/auth.AuthService/ApiPasswordKey',
                 request_serializer=bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.ApiKeyRequest.SerializeToString,
                 response_deserializer=bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.ApiKeyResponse.FromString,
                 _registered_method=True)
@@ -44,8 +44,8 @@ class AuthServiceStub(object):
                 request_serializer=bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.ApiLoginRequest.SerializeToString,
                 response_deserializer=bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.ApiLoginResponse.FromString,
                 _registered_method=True)
-        self.UserLoginKey = channel.unary_unary(
-                '/auth.AuthService/UserLoginKey',
+        self.UserPasswordKey = channel.unary_unary(
+                '/auth.AuthService/UserPasswordKey',
                 request_serializer=bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.UserKeyRequest.SerializeToString,
                 response_deserializer=bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.UserKeyResponse.FromString,
                 _registered_method=True)
@@ -69,7 +69,7 @@ class AuthServiceStub(object):
 class AuthServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def ApiLoginKey(self, request, context):
+    def ApiPasswordKey(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -81,7 +81,7 @@ class AuthServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def UserLoginKey(self, request, context):
+    def UserPasswordKey(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -108,8 +108,8 @@ class AuthServiceServicer(object):
 
 def add_AuthServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'ApiLoginKey': grpc.unary_unary_rpc_method_handler(
-                    servicer.ApiLoginKey,
+            'ApiPasswordKey': grpc.unary_unary_rpc_method_handler(
+                    servicer.ApiPasswordKey,
                     request_deserializer=bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.ApiKeyRequest.FromString,
                     response_serializer=bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.ApiKeyResponse.SerializeToString,
             ),
@@ -118,8 +118,8 @@ def add_AuthServiceServicer_to_server(servicer, server):
                     request_deserializer=bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.ApiLoginRequest.FromString,
                     response_serializer=bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.ApiLoginResponse.SerializeToString,
             ),
-            'UserLoginKey': grpc.unary_unary_rpc_method_handler(
-                    servicer.UserLoginKey,
+            'UserPasswordKey': grpc.unary_unary_rpc_method_handler(
+                    servicer.UserPasswordKey,
                     request_deserializer=bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.UserKeyRequest.FromString,
                     response_serializer=bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.UserKeyResponse.SerializeToString,
             ),
@@ -150,7 +150,7 @@ class AuthService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def ApiLoginKey(request,
+    def ApiPasswordKey(request,
             target,
             options=(),
             channel_credentials=None,
@@ -163,7 +163,7 @@ class AuthService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/auth.AuthService/ApiLoginKey',
+            '/auth.AuthService/ApiPasswordKey',
             bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.ApiKeyRequest.SerializeToString,
             bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.ApiKeyResponse.FromString,
             options,
@@ -204,7 +204,7 @@ class AuthService(object):
             _registered_method=True)
 
     @staticmethod
-    def UserLoginKey(request,
+    def UserPasswordKey(request,
             target,
             options=(),
             channel_credentials=None,
@@ -217,7 +217,7 @@ class AuthService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/auth.AuthService/UserLoginKey',
+            '/auth.AuthService/UserPasswordKey',
             bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.UserKeyRequest.SerializeToString,
             bbthings__grpc_dot_proto_dot_auth_dot_auth__pb2.UserKeyResponse.FromString,
             options,

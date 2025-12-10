@@ -542,7 +542,7 @@ function requireApi_pb () {
 		address: jspb.Message.getFieldWithDefault(msg, 3, ""),
 		category: jspb.Message.getFieldWithDefault(msg, 4, ""),
 		description: jspb.Message.getFieldWithDefault(msg, 5, ""),
-		password: jspb.Message.getFieldWithDefault(msg, 6, ""),
+		password: msg.getPassword_asB64(),
 		accessKey: msg.getAccessKey_asB64(),
 		proceduresList: jspb.Message.toObjectList(msg.getProceduresList(),
 		    proto.api.ProcedureSchema.toObject, includeInstance)
@@ -603,7 +603,7 @@ function requireApi_pb () {
 		      msg.setDescription(value);
 		      break;
 		    case 6:
-		      var value = /** @type {string} */ (reader.readString());
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
 		      msg.setPassword(value);
 		      break;
 		    case 7:
@@ -679,9 +679,9 @@ function requireApi_pb () {
 		      f
 		    );
 		  }
-		  f = message.getPassword();
+		  f = message.getPassword_asU8();
 		  if (f.length > 0) {
-		    writer.writeString(
+		    writer.writeBytes(
 		      6,
 		      f
 		    );
@@ -819,20 +819,44 @@ function requireApi_pb () {
 
 
 		/**
-		 * optional string password = 6;
-		 * @return {string}
+		 * optional bytes password = 6;
+		 * @return {!(string|Uint8Array)}
 		 */
 		proto.api.ApiSchema.prototype.getPassword = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 		};
 
 
 		/**
-		 * @param {string} value
+		 * optional bytes password = 6;
+		 * This is a type-conversion wrapper around `getPassword()`
+		 * @return {string}
+		 */
+		proto.api.ApiSchema.prototype.getPassword_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getPassword()));
+		};
+
+
+		/**
+		 * optional bytes password = 6;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getPassword()`
+		 * @return {!Uint8Array}
+		 */
+		proto.api.ApiSchema.prototype.getPassword_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getPassword()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
 		 * @return {!proto.api.ApiSchema} returns this
 		 */
 		proto.api.ApiSchema.prototype.setPassword = function(value) {
-		  return jspb.Message.setProto3StringField(this, 6, value);
+		  return jspb.Message.setProto3BytesField(this, 6, value);
 		};
 
 
@@ -1743,7 +1767,7 @@ function requireApi_pb () {
 		address: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
 		category: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
 		description: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
-		password: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
+		password: msg.getPassword_asB64(),
 		accessKey: msg.getAccessKey_asB64()
 		  };
 
@@ -1802,7 +1826,7 @@ function requireApi_pb () {
 		      msg.setDescription(value);
 		      break;
 		    case 6:
-		      var value = /** @type {string} */ (reader.readString());
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
 		      msg.setPassword(value);
 		      break;
 		    case 7:
@@ -1873,9 +1897,9 @@ function requireApi_pb () {
 		      f
 		    );
 		  }
-		  f = /** @type {string} */ (jspb.Message.getField(message, 6));
+		  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 6));
 		  if (f != null) {
-		    writer.writeString(
+		    writer.writeBytes(
 		      6,
 		      f
 		    );
@@ -2077,16 +2101,40 @@ function requireApi_pb () {
 
 
 		/**
-		 * optional string password = 6;
-		 * @return {string}
+		 * optional bytes password = 6;
+		 * @return {!(string|Uint8Array)}
 		 */
 		proto.api.ApiUpdate.prototype.getPassword = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 		};
 
 
 		/**
-		 * @param {string} value
+		 * optional bytes password = 6;
+		 * This is a type-conversion wrapper around `getPassword()`
+		 * @return {string}
+		 */
+		proto.api.ApiUpdate.prototype.getPassword_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getPassword()));
+		};
+
+
+		/**
+		 * optional bytes password = 6;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getPassword()`
+		 * @return {!Uint8Array}
+		 */
+		proto.api.ApiUpdate.prototype.getPassword_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getPassword()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
 		 * @return {!proto.api.ApiUpdate} returns this
 		 */
 		proto.api.ApiUpdate.prototype.setPassword = function(value) {
@@ -5806,6 +5854,3275 @@ function requireApi_grpc_web_pb () {
 var api_grpc_web_pbExports = requireApi_grpc_web_pb();
 var pb_api = /*@__PURE__*/getDefaultExportFromCjs(api_grpc_web_pbExports);
 
+var auth_pb = {};
+
+var hasRequiredAuth_pb;
+
+function requireAuth_pb () {
+	if (hasRequiredAuth_pb) return auth_pb;
+	hasRequiredAuth_pb = 1;
+	(function (exports$1) {
+		// source: auth/auth.proto
+		/**
+		 * @fileoverview
+		 * @enhanceable
+		 * @suppress {missingRequire} reports error on implicit type usages.
+		 * @suppress {messageConventions} JS Compiler reports an error if a variable or
+		 *     field starts with 'MSG_' and isn't a translatable message.
+		 * @public
+		 */
+		// GENERATED CODE -- DO NOT EDIT!
+		/* eslint-disable */
+		// @ts-nocheck
+
+		var jspb = require$$0;
+		var goog = jspb;
+		var global =
+		    (typeof globalThis !== 'undefined' && globalThis) ||
+		    (typeof window !== 'undefined' && window) ||
+		    (typeof global !== 'undefined' && global) ||
+		    (typeof self !== 'undefined' && self) ||
+		    (function () { return this; }).call(null) ||
+		    Function('return this')();
+
+		goog.exportSymbol('proto.auth.AccessTokenMap', null, global);
+		goog.exportSymbol('proto.auth.ApiKeyRequest', null, global);
+		goog.exportSymbol('proto.auth.ApiKeyResponse', null, global);
+		goog.exportSymbol('proto.auth.ApiLoginRequest', null, global);
+		goog.exportSymbol('proto.auth.ApiLoginResponse', null, global);
+		goog.exportSymbol('proto.auth.ProcedureMap', null, global);
+		goog.exportSymbol('proto.auth.UserKeyRequest', null, global);
+		goog.exportSymbol('proto.auth.UserKeyResponse', null, global);
+		goog.exportSymbol('proto.auth.UserLoginRequest', null, global);
+		goog.exportSymbol('proto.auth.UserLoginResponse', null, global);
+		goog.exportSymbol('proto.auth.UserLogoutRequest', null, global);
+		goog.exportSymbol('proto.auth.UserLogoutResponse', null, global);
+		goog.exportSymbol('proto.auth.UserRefreshRequest', null, global);
+		goog.exportSymbol('proto.auth.UserRefreshResponse', null, global);
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.ApiKeyRequest = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+		};
+		goog.inherits(proto.auth.ApiKeyRequest, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.ApiKeyRequest.displayName = 'proto.auth.ApiKeyRequest';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.ApiKeyResponse = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+		};
+		goog.inherits(proto.auth.ApiKeyResponse, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.ApiKeyResponse.displayName = 'proto.auth.ApiKeyResponse';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.ApiLoginRequest = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+		};
+		goog.inherits(proto.auth.ApiLoginRequest, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.ApiLoginRequest.displayName = 'proto.auth.ApiLoginRequest';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.ProcedureMap = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, proto.auth.ProcedureMap.repeatedFields_, null);
+		};
+		goog.inherits(proto.auth.ProcedureMap, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.ProcedureMap.displayName = 'proto.auth.ProcedureMap';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.ApiLoginResponse = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, proto.auth.ApiLoginResponse.repeatedFields_, null);
+		};
+		goog.inherits(proto.auth.ApiLoginResponse, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.ApiLoginResponse.displayName = 'proto.auth.ApiLoginResponse';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.UserKeyRequest = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+		};
+		goog.inherits(proto.auth.UserKeyRequest, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.UserKeyRequest.displayName = 'proto.auth.UserKeyRequest';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.UserKeyResponse = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+		};
+		goog.inherits(proto.auth.UserKeyResponse, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.UserKeyResponse.displayName = 'proto.auth.UserKeyResponse';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.UserLoginRequest = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+		};
+		goog.inherits(proto.auth.UserLoginRequest, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.UserLoginRequest.displayName = 'proto.auth.UserLoginRequest';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.AccessTokenMap = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+		};
+		goog.inherits(proto.auth.AccessTokenMap, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.AccessTokenMap.displayName = 'proto.auth.AccessTokenMap';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.UserLoginResponse = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, proto.auth.UserLoginResponse.repeatedFields_, null);
+		};
+		goog.inherits(proto.auth.UserLoginResponse, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.UserLoginResponse.displayName = 'proto.auth.UserLoginResponse';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.UserRefreshRequest = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+		};
+		goog.inherits(proto.auth.UserRefreshRequest, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.UserRefreshRequest.displayName = 'proto.auth.UserRefreshRequest';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.UserRefreshResponse = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+		};
+		goog.inherits(proto.auth.UserRefreshResponse, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.UserRefreshResponse.displayName = 'proto.auth.UserRefreshResponse';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.UserLogoutRequest = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+		};
+		goog.inherits(proto.auth.UserLogoutRequest, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.UserLogoutRequest.displayName = 'proto.auth.UserLogoutRequest';
+		}
+		/**
+		 * Generated by JsPbCodeGenerator.
+		 * @param {Array=} opt_data Optional initial data array, typically from a
+		 * server response, or constructed directly in Javascript. The array is used
+		 * in place and becomes part of the constructed object. It is not cloned.
+		 * If no data is provided, the constructed object will be empty, but still
+		 * valid.
+		 * @extends {jspb.Message}
+		 * @constructor
+		 */
+		proto.auth.UserLogoutResponse = function(opt_data) {
+		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+		};
+		goog.inherits(proto.auth.UserLogoutResponse, jspb.Message);
+		if (goog.DEBUG && !COMPILED) {
+		  /**
+		   * @public
+		   * @override
+		   */
+		  proto.auth.UserLogoutResponse.displayName = 'proto.auth.UserLogoutResponse';
+		}
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.ApiKeyRequest.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.ApiKeyRequest.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.ApiKeyRequest} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.ApiKeyRequest.toObject = function(includeInstance, msg) {
+		  var obj = {
+
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.ApiKeyRequest}
+		 */
+		proto.auth.ApiKeyRequest.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.ApiKeyRequest;
+		  return proto.auth.ApiKeyRequest.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.ApiKeyRequest} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.ApiKeyRequest}
+		 */
+		proto.auth.ApiKeyRequest.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.ApiKeyRequest.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.ApiKeyRequest.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.ApiKeyRequest} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.ApiKeyRequest.serializeBinaryToWriter = function(message, writer) {
+		};
+
+
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.ApiKeyResponse.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.ApiKeyResponse.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.ApiKeyResponse} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.ApiKeyResponse.toObject = function(includeInstance, msg) {
+		  var obj = {
+		publicKey: msg.getPublicKey_asB64()
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.ApiKeyResponse}
+		 */
+		proto.auth.ApiKeyResponse.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.ApiKeyResponse;
+		  return proto.auth.ApiKeyResponse.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.ApiKeyResponse} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.ApiKeyResponse}
+		 */
+		proto.auth.ApiKeyResponse.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    case 1:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setPublicKey(value);
+		      break;
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.ApiKeyResponse.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.ApiKeyResponse.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.ApiKeyResponse} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.ApiKeyResponse.serializeBinaryToWriter = function(message, writer) {
+		  var f = undefined;
+		  f = message.getPublicKey_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      1,
+		      f
+		    );
+		  }
+		};
+
+
+		/**
+		 * optional bytes public_key = 1;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.auth.ApiKeyResponse.prototype.getPublicKey = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+		};
+
+
+		/**
+		 * optional bytes public_key = 1;
+		 * This is a type-conversion wrapper around `getPublicKey()`
+		 * @return {string}
+		 */
+		proto.auth.ApiKeyResponse.prototype.getPublicKey_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getPublicKey()));
+		};
+
+
+		/**
+		 * optional bytes public_key = 1;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getPublicKey()`
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.ApiKeyResponse.prototype.getPublicKey_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getPublicKey()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.auth.ApiKeyResponse} returns this
+		 */
+		proto.auth.ApiKeyResponse.prototype.setPublicKey = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 1, value);
+		};
+
+
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.ApiLoginRequest.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.ApiLoginRequest.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.ApiLoginRequest} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.ApiLoginRequest.toObject = function(includeInstance, msg) {
+		  var obj = {
+		apiId: msg.getApiId_asB64(),
+		password: msg.getPassword_asB64(),
+		publicKey: msg.getPublicKey_asB64()
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.ApiLoginRequest}
+		 */
+		proto.auth.ApiLoginRequest.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.ApiLoginRequest;
+		  return proto.auth.ApiLoginRequest.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.ApiLoginRequest} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.ApiLoginRequest}
+		 */
+		proto.auth.ApiLoginRequest.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    case 1:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setApiId(value);
+		      break;
+		    case 2:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setPassword(value);
+		      break;
+		    case 3:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setPublicKey(value);
+		      break;
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.ApiLoginRequest.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.ApiLoginRequest.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.ApiLoginRequest} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.ApiLoginRequest.serializeBinaryToWriter = function(message, writer) {
+		  var f = undefined;
+		  f = message.getApiId_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      1,
+		      f
+		    );
+		  }
+		  f = message.getPassword_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      2,
+		      f
+		    );
+		  }
+		  f = message.getPublicKey_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      3,
+		      f
+		    );
+		  }
+		};
+
+
+		/**
+		 * optional bytes api_id = 1;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.auth.ApiLoginRequest.prototype.getApiId = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+		};
+
+
+		/**
+		 * optional bytes api_id = 1;
+		 * This is a type-conversion wrapper around `getApiId()`
+		 * @return {string}
+		 */
+		proto.auth.ApiLoginRequest.prototype.getApiId_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getApiId()));
+		};
+
+
+		/**
+		 * optional bytes api_id = 1;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getApiId()`
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.ApiLoginRequest.prototype.getApiId_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getApiId()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.auth.ApiLoginRequest} returns this
+		 */
+		proto.auth.ApiLoginRequest.prototype.setApiId = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 1, value);
+		};
+
+
+		/**
+		 * optional bytes password = 2;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.auth.ApiLoginRequest.prototype.getPassword = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+		};
+
+
+		/**
+		 * optional bytes password = 2;
+		 * This is a type-conversion wrapper around `getPassword()`
+		 * @return {string}
+		 */
+		proto.auth.ApiLoginRequest.prototype.getPassword_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getPassword()));
+		};
+
+
+		/**
+		 * optional bytes password = 2;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getPassword()`
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.ApiLoginRequest.prototype.getPassword_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getPassword()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.auth.ApiLoginRequest} returns this
+		 */
+		proto.auth.ApiLoginRequest.prototype.setPassword = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 2, value);
+		};
+
+
+		/**
+		 * optional bytes public_key = 3;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.auth.ApiLoginRequest.prototype.getPublicKey = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+		};
+
+
+		/**
+		 * optional bytes public_key = 3;
+		 * This is a type-conversion wrapper around `getPublicKey()`
+		 * @return {string}
+		 */
+		proto.auth.ApiLoginRequest.prototype.getPublicKey_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getPublicKey()));
+		};
+
+
+		/**
+		 * optional bytes public_key = 3;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getPublicKey()`
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.ApiLoginRequest.prototype.getPublicKey_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getPublicKey()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.auth.ApiLoginRequest} returns this
+		 */
+		proto.auth.ApiLoginRequest.prototype.setPublicKey = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 3, value);
+		};
+
+
+
+		/**
+		 * List of repeated fields within this message type.
+		 * @private {!Array<number>}
+		 * @const
+		 */
+		proto.auth.ProcedureMap.repeatedFields_ = [2];
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.ProcedureMap.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.ProcedureMap.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.ProcedureMap} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.ProcedureMap.toObject = function(includeInstance, msg) {
+		  var f, obj = {
+		procedure: jspb.Message.getFieldWithDefault(msg, 1, ""),
+		rolesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.ProcedureMap}
+		 */
+		proto.auth.ProcedureMap.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.ProcedureMap;
+		  return proto.auth.ProcedureMap.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.ProcedureMap} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.ProcedureMap}
+		 */
+		proto.auth.ProcedureMap.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    case 1:
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setProcedure(value);
+		      break;
+		    case 2:
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.addRoles(value);
+		      break;
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.ProcedureMap.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.ProcedureMap.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.ProcedureMap} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.ProcedureMap.serializeBinaryToWriter = function(message, writer) {
+		  var f = undefined;
+		  f = message.getProcedure();
+		  if (f.length > 0) {
+		    writer.writeString(
+		      1,
+		      f
+		    );
+		  }
+		  f = message.getRolesList();
+		  if (f.length > 0) {
+		    writer.writeRepeatedString(
+		      2,
+		      f
+		    );
+		  }
+		};
+
+
+		/**
+		 * optional string procedure = 1;
+		 * @return {string}
+		 */
+		proto.auth.ProcedureMap.prototype.getProcedure = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @return {!proto.auth.ProcedureMap} returns this
+		 */
+		proto.auth.ProcedureMap.prototype.setProcedure = function(value) {
+		  return jspb.Message.setProto3StringField(this, 1, value);
+		};
+
+
+		/**
+		 * repeated string roles = 2;
+		 * @return {!Array<string>}
+		 */
+		proto.auth.ProcedureMap.prototype.getRolesList = function() {
+		  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
+		};
+
+
+		/**
+		 * @param {!Array<string>} value
+		 * @return {!proto.auth.ProcedureMap} returns this
+		 */
+		proto.auth.ProcedureMap.prototype.setRolesList = function(value) {
+		  return jspb.Message.setField(this, 2, value || []);
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @param {number=} opt_index
+		 * @return {!proto.auth.ProcedureMap} returns this
+		 */
+		proto.auth.ProcedureMap.prototype.addRoles = function(value, opt_index) {
+		  return jspb.Message.addToRepeatedField(this, 2, value, opt_index);
+		};
+
+
+		/**
+		 * Clears the list making it empty but non-null.
+		 * @return {!proto.auth.ProcedureMap} returns this
+		 */
+		proto.auth.ProcedureMap.prototype.clearRolesList = function() {
+		  return this.setRolesList([]);
+		};
+
+
+
+		/**
+		 * List of repeated fields within this message type.
+		 * @private {!Array<number>}
+		 * @const
+		 */
+		proto.auth.ApiLoginResponse.repeatedFields_ = [2];
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.ApiLoginResponse.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.ApiLoginResponse.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.ApiLoginResponse} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.ApiLoginResponse.toObject = function(includeInstance, msg) {
+		  var obj = {
+		accessKey: msg.getAccessKey_asB64(),
+		accessProceduresList: jspb.Message.toObjectList(msg.getAccessProceduresList(),
+		    proto.auth.ProcedureMap.toObject, includeInstance)
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.ApiLoginResponse}
+		 */
+		proto.auth.ApiLoginResponse.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.ApiLoginResponse;
+		  return proto.auth.ApiLoginResponse.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.ApiLoginResponse} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.ApiLoginResponse}
+		 */
+		proto.auth.ApiLoginResponse.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    case 1:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setAccessKey(value);
+		      break;
+		    case 2:
+		      var value = new proto.auth.ProcedureMap;
+		      reader.readMessage(value,proto.auth.ProcedureMap.deserializeBinaryFromReader);
+		      msg.addAccessProcedures(value);
+		      break;
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.ApiLoginResponse.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.ApiLoginResponse.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.ApiLoginResponse} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.ApiLoginResponse.serializeBinaryToWriter = function(message, writer) {
+		  var f = undefined;
+		  f = message.getAccessKey_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      1,
+		      f
+		    );
+		  }
+		  f = message.getAccessProceduresList();
+		  if (f.length > 0) {
+		    writer.writeRepeatedMessage(
+		      2,
+		      f,
+		      proto.auth.ProcedureMap.serializeBinaryToWriter
+		    );
+		  }
+		};
+
+
+		/**
+		 * optional bytes access_key = 1;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.auth.ApiLoginResponse.prototype.getAccessKey = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+		};
+
+
+		/**
+		 * optional bytes access_key = 1;
+		 * This is a type-conversion wrapper around `getAccessKey()`
+		 * @return {string}
+		 */
+		proto.auth.ApiLoginResponse.prototype.getAccessKey_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getAccessKey()));
+		};
+
+
+		/**
+		 * optional bytes access_key = 1;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getAccessKey()`
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.ApiLoginResponse.prototype.getAccessKey_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getAccessKey()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.auth.ApiLoginResponse} returns this
+		 */
+		proto.auth.ApiLoginResponse.prototype.setAccessKey = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 1, value);
+		};
+
+
+		/**
+		 * repeated ProcedureMap access_procedures = 2;
+		 * @return {!Array<!proto.auth.ProcedureMap>}
+		 */
+		proto.auth.ApiLoginResponse.prototype.getAccessProceduresList = function() {
+		  return /** @type{!Array<!proto.auth.ProcedureMap>} */ (
+		    jspb.Message.getRepeatedWrapperField(this, proto.auth.ProcedureMap, 2));
+		};
+
+
+		/**
+		 * @param {!Array<!proto.auth.ProcedureMap>} value
+		 * @return {!proto.auth.ApiLoginResponse} returns this
+		*/
+		proto.auth.ApiLoginResponse.prototype.setAccessProceduresList = function(value) {
+		  return jspb.Message.setRepeatedWrapperField(this, 2, value);
+		};
+
+
+		/**
+		 * @param {!proto.auth.ProcedureMap=} opt_value
+		 * @param {number=} opt_index
+		 * @return {!proto.auth.ProcedureMap}
+		 */
+		proto.auth.ApiLoginResponse.prototype.addAccessProcedures = function(opt_value, opt_index) {
+		  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.auth.ProcedureMap, opt_index);
+		};
+
+
+		/**
+		 * Clears the list making it empty but non-null.
+		 * @return {!proto.auth.ApiLoginResponse} returns this
+		 */
+		proto.auth.ApiLoginResponse.prototype.clearAccessProceduresList = function() {
+		  return this.setAccessProceduresList([]);
+		};
+
+
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.UserKeyRequest.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.UserKeyRequest.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.UserKeyRequest} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserKeyRequest.toObject = function(includeInstance, msg) {
+		  var obj = {
+
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.UserKeyRequest}
+		 */
+		proto.auth.UserKeyRequest.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.UserKeyRequest;
+		  return proto.auth.UserKeyRequest.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.UserKeyRequest} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.UserKeyRequest}
+		 */
+		proto.auth.UserKeyRequest.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserKeyRequest.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.UserKeyRequest.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.UserKeyRequest} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserKeyRequest.serializeBinaryToWriter = function(message, writer) {
+		};
+
+
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.UserKeyResponse.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.UserKeyResponse.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.UserKeyResponse} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserKeyResponse.toObject = function(includeInstance, msg) {
+		  var obj = {
+		publicKey: msg.getPublicKey_asB64()
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.UserKeyResponse}
+		 */
+		proto.auth.UserKeyResponse.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.UserKeyResponse;
+		  return proto.auth.UserKeyResponse.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.UserKeyResponse} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.UserKeyResponse}
+		 */
+		proto.auth.UserKeyResponse.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    case 1:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setPublicKey(value);
+		      break;
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserKeyResponse.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.UserKeyResponse.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.UserKeyResponse} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserKeyResponse.serializeBinaryToWriter = function(message, writer) {
+		  var f = undefined;
+		  f = message.getPublicKey_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      1,
+		      f
+		    );
+		  }
+		};
+
+
+		/**
+		 * optional bytes public_key = 1;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.auth.UserKeyResponse.prototype.getPublicKey = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+		};
+
+
+		/**
+		 * optional bytes public_key = 1;
+		 * This is a type-conversion wrapper around `getPublicKey()`
+		 * @return {string}
+		 */
+		proto.auth.UserKeyResponse.prototype.getPublicKey_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getPublicKey()));
+		};
+
+
+		/**
+		 * optional bytes public_key = 1;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getPublicKey()`
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserKeyResponse.prototype.getPublicKey_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getPublicKey()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.auth.UserKeyResponse} returns this
+		 */
+		proto.auth.UserKeyResponse.prototype.setPublicKey = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 1, value);
+		};
+
+
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.UserLoginRequest.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.UserLoginRequest.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.UserLoginRequest} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserLoginRequest.toObject = function(includeInstance, msg) {
+		  var obj = {
+		username: jspb.Message.getFieldWithDefault(msg, 1, ""),
+		password: msg.getPassword_asB64()
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.UserLoginRequest}
+		 */
+		proto.auth.UserLoginRequest.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.UserLoginRequest;
+		  return proto.auth.UserLoginRequest.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.UserLoginRequest} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.UserLoginRequest}
+		 */
+		proto.auth.UserLoginRequest.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    case 1:
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setUsername(value);
+		      break;
+		    case 2:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setPassword(value);
+		      break;
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserLoginRequest.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.UserLoginRequest.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.UserLoginRequest} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserLoginRequest.serializeBinaryToWriter = function(message, writer) {
+		  var f = undefined;
+		  f = message.getUsername();
+		  if (f.length > 0) {
+		    writer.writeString(
+		      1,
+		      f
+		    );
+		  }
+		  f = message.getPassword_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      2,
+		      f
+		    );
+		  }
+		};
+
+
+		/**
+		 * optional string username = 1;
+		 * @return {string}
+		 */
+		proto.auth.UserLoginRequest.prototype.getUsername = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @return {!proto.auth.UserLoginRequest} returns this
+		 */
+		proto.auth.UserLoginRequest.prototype.setUsername = function(value) {
+		  return jspb.Message.setProto3StringField(this, 1, value);
+		};
+
+
+		/**
+		 * optional bytes password = 2;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.auth.UserLoginRequest.prototype.getPassword = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+		};
+
+
+		/**
+		 * optional bytes password = 2;
+		 * This is a type-conversion wrapper around `getPassword()`
+		 * @return {string}
+		 */
+		proto.auth.UserLoginRequest.prototype.getPassword_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getPassword()));
+		};
+
+
+		/**
+		 * optional bytes password = 2;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getPassword()`
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserLoginRequest.prototype.getPassword_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getPassword()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.auth.UserLoginRequest} returns this
+		 */
+		proto.auth.UserLoginRequest.prototype.setPassword = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 2, value);
+		};
+
+
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.AccessTokenMap.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.AccessTokenMap.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.AccessTokenMap} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.AccessTokenMap.toObject = function(includeInstance, msg) {
+		  var obj = {
+		apiId: msg.getApiId_asB64(),
+		accessToken: jspb.Message.getFieldWithDefault(msg, 2, ""),
+		refreshToken: jspb.Message.getFieldWithDefault(msg, 3, "")
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.AccessTokenMap}
+		 */
+		proto.auth.AccessTokenMap.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.AccessTokenMap;
+		  return proto.auth.AccessTokenMap.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.AccessTokenMap} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.AccessTokenMap}
+		 */
+		proto.auth.AccessTokenMap.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    case 1:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setApiId(value);
+		      break;
+		    case 2:
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setAccessToken(value);
+		      break;
+		    case 3:
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setRefreshToken(value);
+		      break;
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.AccessTokenMap.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.AccessTokenMap.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.AccessTokenMap} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.AccessTokenMap.serializeBinaryToWriter = function(message, writer) {
+		  var f = undefined;
+		  f = message.getApiId_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      1,
+		      f
+		    );
+		  }
+		  f = message.getAccessToken();
+		  if (f.length > 0) {
+		    writer.writeString(
+		      2,
+		      f
+		    );
+		  }
+		  f = message.getRefreshToken();
+		  if (f.length > 0) {
+		    writer.writeString(
+		      3,
+		      f
+		    );
+		  }
+		};
+
+
+		/**
+		 * optional bytes api_id = 1;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.auth.AccessTokenMap.prototype.getApiId = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+		};
+
+
+		/**
+		 * optional bytes api_id = 1;
+		 * This is a type-conversion wrapper around `getApiId()`
+		 * @return {string}
+		 */
+		proto.auth.AccessTokenMap.prototype.getApiId_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getApiId()));
+		};
+
+
+		/**
+		 * optional bytes api_id = 1;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getApiId()`
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.AccessTokenMap.prototype.getApiId_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getApiId()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.auth.AccessTokenMap} returns this
+		 */
+		proto.auth.AccessTokenMap.prototype.setApiId = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 1, value);
+		};
+
+
+		/**
+		 * optional string access_token = 2;
+		 * @return {string}
+		 */
+		proto.auth.AccessTokenMap.prototype.getAccessToken = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @return {!proto.auth.AccessTokenMap} returns this
+		 */
+		proto.auth.AccessTokenMap.prototype.setAccessToken = function(value) {
+		  return jspb.Message.setProto3StringField(this, 2, value);
+		};
+
+
+		/**
+		 * optional string refresh_token = 3;
+		 * @return {string}
+		 */
+		proto.auth.AccessTokenMap.prototype.getRefreshToken = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @return {!proto.auth.AccessTokenMap} returns this
+		 */
+		proto.auth.AccessTokenMap.prototype.setRefreshToken = function(value) {
+		  return jspb.Message.setProto3StringField(this, 3, value);
+		};
+
+
+
+		/**
+		 * List of repeated fields within this message type.
+		 * @private {!Array<number>}
+		 * @const
+		 */
+		proto.auth.UserLoginResponse.repeatedFields_ = [3];
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.UserLoginResponse.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.UserLoginResponse.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.UserLoginResponse} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserLoginResponse.toObject = function(includeInstance, msg) {
+		  var obj = {
+		userId: msg.getUserId_asB64(),
+		authToken: jspb.Message.getFieldWithDefault(msg, 2, ""),
+		accessTokensList: jspb.Message.toObjectList(msg.getAccessTokensList(),
+		    proto.auth.AccessTokenMap.toObject, includeInstance)
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.UserLoginResponse}
+		 */
+		proto.auth.UserLoginResponse.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.UserLoginResponse;
+		  return proto.auth.UserLoginResponse.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.UserLoginResponse} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.UserLoginResponse}
+		 */
+		proto.auth.UserLoginResponse.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    case 1:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setUserId(value);
+		      break;
+		    case 2:
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setAuthToken(value);
+		      break;
+		    case 3:
+		      var value = new proto.auth.AccessTokenMap;
+		      reader.readMessage(value,proto.auth.AccessTokenMap.deserializeBinaryFromReader);
+		      msg.addAccessTokens(value);
+		      break;
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserLoginResponse.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.UserLoginResponse.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.UserLoginResponse} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserLoginResponse.serializeBinaryToWriter = function(message, writer) {
+		  var f = undefined;
+		  f = message.getUserId_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      1,
+		      f
+		    );
+		  }
+		  f = message.getAuthToken();
+		  if (f.length > 0) {
+		    writer.writeString(
+		      2,
+		      f
+		    );
+		  }
+		  f = message.getAccessTokensList();
+		  if (f.length > 0) {
+		    writer.writeRepeatedMessage(
+		      3,
+		      f,
+		      proto.auth.AccessTokenMap.serializeBinaryToWriter
+		    );
+		  }
+		};
+
+
+		/**
+		 * optional bytes user_id = 1;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.auth.UserLoginResponse.prototype.getUserId = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+		};
+
+
+		/**
+		 * optional bytes user_id = 1;
+		 * This is a type-conversion wrapper around `getUserId()`
+		 * @return {string}
+		 */
+		proto.auth.UserLoginResponse.prototype.getUserId_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getUserId()));
+		};
+
+
+		/**
+		 * optional bytes user_id = 1;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getUserId()`
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserLoginResponse.prototype.getUserId_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getUserId()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.auth.UserLoginResponse} returns this
+		 */
+		proto.auth.UserLoginResponse.prototype.setUserId = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 1, value);
+		};
+
+
+		/**
+		 * optional string auth_token = 2;
+		 * @return {string}
+		 */
+		proto.auth.UserLoginResponse.prototype.getAuthToken = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @return {!proto.auth.UserLoginResponse} returns this
+		 */
+		proto.auth.UserLoginResponse.prototype.setAuthToken = function(value) {
+		  return jspb.Message.setProto3StringField(this, 2, value);
+		};
+
+
+		/**
+		 * repeated AccessTokenMap access_tokens = 3;
+		 * @return {!Array<!proto.auth.AccessTokenMap>}
+		 */
+		proto.auth.UserLoginResponse.prototype.getAccessTokensList = function() {
+		  return /** @type{!Array<!proto.auth.AccessTokenMap>} */ (
+		    jspb.Message.getRepeatedWrapperField(this, proto.auth.AccessTokenMap, 3));
+		};
+
+
+		/**
+		 * @param {!Array<!proto.auth.AccessTokenMap>} value
+		 * @return {!proto.auth.UserLoginResponse} returns this
+		*/
+		proto.auth.UserLoginResponse.prototype.setAccessTokensList = function(value) {
+		  return jspb.Message.setRepeatedWrapperField(this, 3, value);
+		};
+
+
+		/**
+		 * @param {!proto.auth.AccessTokenMap=} opt_value
+		 * @param {number=} opt_index
+		 * @return {!proto.auth.AccessTokenMap}
+		 */
+		proto.auth.UserLoginResponse.prototype.addAccessTokens = function(opt_value, opt_index) {
+		  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.auth.AccessTokenMap, opt_index);
+		};
+
+
+		/**
+		 * Clears the list making it empty but non-null.
+		 * @return {!proto.auth.UserLoginResponse} returns this
+		 */
+		proto.auth.UserLoginResponse.prototype.clearAccessTokensList = function() {
+		  return this.setAccessTokensList([]);
+		};
+
+
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.UserRefreshRequest.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.UserRefreshRequest.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.UserRefreshRequest} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserRefreshRequest.toObject = function(includeInstance, msg) {
+		  var obj = {
+		apiId: msg.getApiId_asB64(),
+		accessToken: jspb.Message.getFieldWithDefault(msg, 2, ""),
+		refreshToken: jspb.Message.getFieldWithDefault(msg, 3, "")
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.UserRefreshRequest}
+		 */
+		proto.auth.UserRefreshRequest.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.UserRefreshRequest;
+		  return proto.auth.UserRefreshRequest.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.UserRefreshRequest} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.UserRefreshRequest}
+		 */
+		proto.auth.UserRefreshRequest.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    case 1:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setApiId(value);
+		      break;
+		    case 2:
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setAccessToken(value);
+		      break;
+		    case 3:
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setRefreshToken(value);
+		      break;
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserRefreshRequest.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.UserRefreshRequest.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.UserRefreshRequest} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserRefreshRequest.serializeBinaryToWriter = function(message, writer) {
+		  var f = undefined;
+		  f = message.getApiId_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      1,
+		      f
+		    );
+		  }
+		  f = message.getAccessToken();
+		  if (f.length > 0) {
+		    writer.writeString(
+		      2,
+		      f
+		    );
+		  }
+		  f = message.getRefreshToken();
+		  if (f.length > 0) {
+		    writer.writeString(
+		      3,
+		      f
+		    );
+		  }
+		};
+
+
+		/**
+		 * optional bytes api_id = 1;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.auth.UserRefreshRequest.prototype.getApiId = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+		};
+
+
+		/**
+		 * optional bytes api_id = 1;
+		 * This is a type-conversion wrapper around `getApiId()`
+		 * @return {string}
+		 */
+		proto.auth.UserRefreshRequest.prototype.getApiId_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getApiId()));
+		};
+
+
+		/**
+		 * optional bytes api_id = 1;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getApiId()`
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserRefreshRequest.prototype.getApiId_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getApiId()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.auth.UserRefreshRequest} returns this
+		 */
+		proto.auth.UserRefreshRequest.prototype.setApiId = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 1, value);
+		};
+
+
+		/**
+		 * optional string access_token = 2;
+		 * @return {string}
+		 */
+		proto.auth.UserRefreshRequest.prototype.getAccessToken = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @return {!proto.auth.UserRefreshRequest} returns this
+		 */
+		proto.auth.UserRefreshRequest.prototype.setAccessToken = function(value) {
+		  return jspb.Message.setProto3StringField(this, 2, value);
+		};
+
+
+		/**
+		 * optional string refresh_token = 3;
+		 * @return {string}
+		 */
+		proto.auth.UserRefreshRequest.prototype.getRefreshToken = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @return {!proto.auth.UserRefreshRequest} returns this
+		 */
+		proto.auth.UserRefreshRequest.prototype.setRefreshToken = function(value) {
+		  return jspb.Message.setProto3StringField(this, 3, value);
+		};
+
+
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.UserRefreshResponse.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.UserRefreshResponse.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.UserRefreshResponse} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserRefreshResponse.toObject = function(includeInstance, msg) {
+		  var obj = {
+		accessToken: jspb.Message.getFieldWithDefault(msg, 1, ""),
+		refreshToken: jspb.Message.getFieldWithDefault(msg, 2, "")
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.UserRefreshResponse}
+		 */
+		proto.auth.UserRefreshResponse.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.UserRefreshResponse;
+		  return proto.auth.UserRefreshResponse.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.UserRefreshResponse} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.UserRefreshResponse}
+		 */
+		proto.auth.UserRefreshResponse.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    case 1:
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setAccessToken(value);
+		      break;
+		    case 2:
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setRefreshToken(value);
+		      break;
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserRefreshResponse.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.UserRefreshResponse.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.UserRefreshResponse} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserRefreshResponse.serializeBinaryToWriter = function(message, writer) {
+		  var f = undefined;
+		  f = message.getAccessToken();
+		  if (f.length > 0) {
+		    writer.writeString(
+		      1,
+		      f
+		    );
+		  }
+		  f = message.getRefreshToken();
+		  if (f.length > 0) {
+		    writer.writeString(
+		      2,
+		      f
+		    );
+		  }
+		};
+
+
+		/**
+		 * optional string access_token = 1;
+		 * @return {string}
+		 */
+		proto.auth.UserRefreshResponse.prototype.getAccessToken = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @return {!proto.auth.UserRefreshResponse} returns this
+		 */
+		proto.auth.UserRefreshResponse.prototype.setAccessToken = function(value) {
+		  return jspb.Message.setProto3StringField(this, 1, value);
+		};
+
+
+		/**
+		 * optional string refresh_token = 2;
+		 * @return {string}
+		 */
+		proto.auth.UserRefreshResponse.prototype.getRefreshToken = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @return {!proto.auth.UserRefreshResponse} returns this
+		 */
+		proto.auth.UserRefreshResponse.prototype.setRefreshToken = function(value) {
+		  return jspb.Message.setProto3StringField(this, 2, value);
+		};
+
+
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.UserLogoutRequest.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.UserLogoutRequest.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.UserLogoutRequest} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserLogoutRequest.toObject = function(includeInstance, msg) {
+		  var obj = {
+		userId: msg.getUserId_asB64(),
+		authToken: jspb.Message.getFieldWithDefault(msg, 2, "")
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.UserLogoutRequest}
+		 */
+		proto.auth.UserLogoutRequest.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.UserLogoutRequest;
+		  return proto.auth.UserLogoutRequest.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.UserLogoutRequest} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.UserLogoutRequest}
+		 */
+		proto.auth.UserLogoutRequest.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    case 1:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setUserId(value);
+		      break;
+		    case 2:
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setAuthToken(value);
+		      break;
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserLogoutRequest.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.UserLogoutRequest.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.UserLogoutRequest} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserLogoutRequest.serializeBinaryToWriter = function(message, writer) {
+		  var f = undefined;
+		  f = message.getUserId_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      1,
+		      f
+		    );
+		  }
+		  f = message.getAuthToken();
+		  if (f.length > 0) {
+		    writer.writeString(
+		      2,
+		      f
+		    );
+		  }
+		};
+
+
+		/**
+		 * optional bytes user_id = 1;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.auth.UserLogoutRequest.prototype.getUserId = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+		};
+
+
+		/**
+		 * optional bytes user_id = 1;
+		 * This is a type-conversion wrapper around `getUserId()`
+		 * @return {string}
+		 */
+		proto.auth.UserLogoutRequest.prototype.getUserId_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getUserId()));
+		};
+
+
+		/**
+		 * optional bytes user_id = 1;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getUserId()`
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserLogoutRequest.prototype.getUserId_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getUserId()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.auth.UserLogoutRequest} returns this
+		 */
+		proto.auth.UserLogoutRequest.prototype.setUserId = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 1, value);
+		};
+
+
+		/**
+		 * optional string auth_token = 2;
+		 * @return {string}
+		 */
+		proto.auth.UserLogoutRequest.prototype.getAuthToken = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @return {!proto.auth.UserLogoutRequest} returns this
+		 */
+		proto.auth.UserLogoutRequest.prototype.setAuthToken = function(value) {
+		  return jspb.Message.setProto3StringField(this, 2, value);
+		};
+
+
+
+
+
+		if (jspb.Message.GENERATE_TO_OBJECT) {
+		/**
+		 * Creates an object representation of this proto.
+		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
+		 * Optional fields that are not set will be set to undefined.
+		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+		 * For the list of reserved names please see:
+		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+		 *     JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @return {!Object}
+		 */
+		proto.auth.UserLogoutResponse.prototype.toObject = function(opt_includeInstance) {
+		  return proto.auth.UserLogoutResponse.toObject(opt_includeInstance, this);
+		};
+
+
+		/**
+		 * Static version of the {@see toObject} method.
+		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+		 *     the JSPB instance for transitional soy proto support:
+		 *     http://goto/soy-param-migration
+		 * @param {!proto.auth.UserLogoutResponse} msg The msg instance to transform.
+		 * @return {!Object}
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserLogoutResponse.toObject = function(includeInstance, msg) {
+		  var obj = {
+
+		  };
+
+		  if (includeInstance) {
+		    obj.$jspbMessageInstance = msg;
+		  }
+		  return obj;
+		};
+		}
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format).
+		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
+		 * @return {!proto.auth.UserLogoutResponse}
+		 */
+		proto.auth.UserLogoutResponse.deserializeBinary = function(bytes) {
+		  var reader = new jspb.BinaryReader(bytes);
+		  var msg = new proto.auth.UserLogoutResponse;
+		  return proto.auth.UserLogoutResponse.deserializeBinaryFromReader(msg, reader);
+		};
+
+
+		/**
+		 * Deserializes binary data (in protobuf wire format) from the
+		 * given reader into the given message object.
+		 * @param {!proto.auth.UserLogoutResponse} msg The message object to deserialize into.
+		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+		 * @return {!proto.auth.UserLogoutResponse}
+		 */
+		proto.auth.UserLogoutResponse.deserializeBinaryFromReader = function(msg, reader) {
+		  while (reader.nextField()) {
+		    if (reader.isEndGroup()) {
+		      break;
+		    }
+		    var field = reader.getFieldNumber();
+		    switch (field) {
+		    default:
+		      reader.skipField();
+		      break;
+		    }
+		  }
+		  return msg;
+		};
+
+
+		/**
+		 * Serializes the message to binary data (in protobuf wire format).
+		 * @return {!Uint8Array}
+		 */
+		proto.auth.UserLogoutResponse.prototype.serializeBinary = function() {
+		  var writer = new jspb.BinaryWriter();
+		  proto.auth.UserLogoutResponse.serializeBinaryToWriter(this, writer);
+		  return writer.getResultBuffer();
+		};
+
+
+		/**
+		 * Serializes the given message to binary data (in protobuf wire
+		 * format), writing to the given BinaryWriter.
+		 * @param {!proto.auth.UserLogoutResponse} message
+		 * @param {!jspb.BinaryWriter} writer
+		 * @suppress {unusedLocalVariables} f is only used for nested messages
+		 */
+		proto.auth.UserLogoutResponse.serializeBinaryToWriter = function(message, writer) {
+		};
+
+
+		goog.object.extend(exports$1, proto.auth); 
+	} (auth_pb));
+	return auth_pb;
+}
+
+/**
+ * @fileoverview gRPC-Web generated client stub for auth
+ * @enhanceable
+ * @public
+ */
+
+var auth_grpc_web_pb;
+var hasRequiredAuth_grpc_web_pb;
+
+function requireAuth_grpc_web_pb () {
+	if (hasRequiredAuth_grpc_web_pb) return auth_grpc_web_pb;
+	hasRequiredAuth_grpc_web_pb = 1;
+	// Code generated by protoc-gen-grpc-web. DO NOT EDIT.
+	// versions:
+	// 	protoc-gen-grpc-web v2.0.2
+	// 	protoc              v6.33.1
+	// source: auth/auth.proto
+
+
+	/* eslint-disable */
+	// @ts-nocheck
+
+
+
+	const grpc = {};
+	grpc.web = require$$0$1;
+
+	const proto = {};
+	proto.auth = requireAuth_pb();
+
+	/**
+	 * @param {string} hostname
+	 * @param {?Object} credentials
+	 * @param {?grpc.web.ClientOptions} options
+	 * @constructor
+	 * @struct
+	 * @final
+	 */
+	proto.auth.AuthServiceClient =
+	    function(hostname, credentials, options) {
+	  if (!options) options = {};
+	  options.format = 'text';
+
+	  /**
+	   * @private @const {!grpc.web.GrpcWebClientBase} The client
+	   */
+	  this.client_ = new grpc.web.GrpcWebClientBase(options);
+
+	  /**
+	   * @private @const {string} The hostname
+	   */
+	  this.hostname_ = hostname.replace(/\/+$/, '');
+
+	};
+
+
+	/**
+	 * @param {string} hostname
+	 * @param {?Object} credentials
+	 * @param {?grpc.web.ClientOptions} options
+	 * @constructor
+	 * @struct
+	 * @final
+	 */
+	proto.auth.AuthServicePromiseClient =
+	    function(hostname, credentials, options) {
+	  if (!options) options = {};
+	  options.format = 'text';
+
+	  /**
+	   * @private @const {!grpc.web.GrpcWebClientBase} The client
+	   */
+	  this.client_ = new grpc.web.GrpcWebClientBase(options);
+
+	  /**
+	   * @private @const {string} The hostname
+	   */
+	  this.hostname_ = hostname.replace(/\/+$/, '');
+
+	};
+
+
+	/**
+	 * @const
+	 * @type {!grpc.web.MethodDescriptor<
+	 *   !proto.auth.ApiKeyRequest,
+	 *   !proto.auth.ApiKeyResponse>}
+	 */
+	const methodDescriptor_AuthService_ApiPasswordKey = new grpc.web.MethodDescriptor(
+	  '/auth.AuthService/ApiPasswordKey',
+	  grpc.web.MethodType.UNARY,
+	  proto.auth.ApiKeyRequest,
+	  proto.auth.ApiKeyResponse,
+	  /**
+	   * @param {!proto.auth.ApiKeyRequest} request
+	   * @return {!Uint8Array}
+	   */
+	  function(request) {
+	    return request.serializeBinary();
+	  },
+	  proto.auth.ApiKeyResponse.deserializeBinary
+	);
+
+
+	/**
+	 * @param {!proto.auth.ApiKeyRequest} request The
+	 *     request proto
+	 * @param {?Object<string, string>} metadata User defined
+	 *     call metadata
+	 * @param {function(?grpc.web.RpcError, ?proto.auth.ApiKeyResponse)}
+	 *     callback The callback function(error, response)
+	 * @return {!grpc.web.ClientReadableStream<!proto.auth.ApiKeyResponse>|undefined}
+	 *     The XHR Node Readable Stream
+	 */
+	proto.auth.AuthServiceClient.prototype.apiPasswordKey =
+	    function(request, metadata, callback) {
+	  return this.client_.rpcCall(this.hostname_ +
+	      '/auth.AuthService/ApiPasswordKey',
+	      request,
+	      metadata || {},
+	      methodDescriptor_AuthService_ApiPasswordKey,
+	      callback);
+	};
+
+
+	/**
+	 * @param {!proto.auth.ApiKeyRequest} request The
+	 *     request proto
+	 * @param {?Object<string, string>=} metadata User defined
+	 *     call metadata
+	 * @return {!Promise<!proto.auth.ApiKeyResponse>}
+	 *     Promise that resolves to the response
+	 */
+	proto.auth.AuthServicePromiseClient.prototype.apiPasswordKey =
+	    function(request, metadata) {
+	  return this.client_.unaryCall(this.hostname_ +
+	      '/auth.AuthService/ApiPasswordKey',
+	      request,
+	      metadata || {},
+	      methodDescriptor_AuthService_ApiPasswordKey);
+	};
+
+
+	/**
+	 * @const
+	 * @type {!grpc.web.MethodDescriptor<
+	 *   !proto.auth.ApiLoginRequest,
+	 *   !proto.auth.ApiLoginResponse>}
+	 */
+	const methodDescriptor_AuthService_ApiLogin = new grpc.web.MethodDescriptor(
+	  '/auth.AuthService/ApiLogin',
+	  grpc.web.MethodType.UNARY,
+	  proto.auth.ApiLoginRequest,
+	  proto.auth.ApiLoginResponse,
+	  /**
+	   * @param {!proto.auth.ApiLoginRequest} request
+	   * @return {!Uint8Array}
+	   */
+	  function(request) {
+	    return request.serializeBinary();
+	  },
+	  proto.auth.ApiLoginResponse.deserializeBinary
+	);
+
+
+	/**
+	 * @param {!proto.auth.ApiLoginRequest} request The
+	 *     request proto
+	 * @param {?Object<string, string>} metadata User defined
+	 *     call metadata
+	 * @param {function(?grpc.web.RpcError, ?proto.auth.ApiLoginResponse)}
+	 *     callback The callback function(error, response)
+	 * @return {!grpc.web.ClientReadableStream<!proto.auth.ApiLoginResponse>|undefined}
+	 *     The XHR Node Readable Stream
+	 */
+	proto.auth.AuthServiceClient.prototype.apiLogin =
+	    function(request, metadata, callback) {
+	  return this.client_.rpcCall(this.hostname_ +
+	      '/auth.AuthService/ApiLogin',
+	      request,
+	      metadata || {},
+	      methodDescriptor_AuthService_ApiLogin,
+	      callback);
+	};
+
+
+	/**
+	 * @param {!proto.auth.ApiLoginRequest} request The
+	 *     request proto
+	 * @param {?Object<string, string>=} metadata User defined
+	 *     call metadata
+	 * @return {!Promise<!proto.auth.ApiLoginResponse>}
+	 *     Promise that resolves to the response
+	 */
+	proto.auth.AuthServicePromiseClient.prototype.apiLogin =
+	    function(request, metadata) {
+	  return this.client_.unaryCall(this.hostname_ +
+	      '/auth.AuthService/ApiLogin',
+	      request,
+	      metadata || {},
+	      methodDescriptor_AuthService_ApiLogin);
+	};
+
+
+	/**
+	 * @const
+	 * @type {!grpc.web.MethodDescriptor<
+	 *   !proto.auth.UserKeyRequest,
+	 *   !proto.auth.UserKeyResponse>}
+	 */
+	const methodDescriptor_AuthService_UserPasswordKey = new grpc.web.MethodDescriptor(
+	  '/auth.AuthService/UserPasswordKey',
+	  grpc.web.MethodType.UNARY,
+	  proto.auth.UserKeyRequest,
+	  proto.auth.UserKeyResponse,
+	  /**
+	   * @param {!proto.auth.UserKeyRequest} request
+	   * @return {!Uint8Array}
+	   */
+	  function(request) {
+	    return request.serializeBinary();
+	  },
+	  proto.auth.UserKeyResponse.deserializeBinary
+	);
+
+
+	/**
+	 * @param {!proto.auth.UserKeyRequest} request The
+	 *     request proto
+	 * @param {?Object<string, string>} metadata User defined
+	 *     call metadata
+	 * @param {function(?grpc.web.RpcError, ?proto.auth.UserKeyResponse)}
+	 *     callback The callback function(error, response)
+	 * @return {!grpc.web.ClientReadableStream<!proto.auth.UserKeyResponse>|undefined}
+	 *     The XHR Node Readable Stream
+	 */
+	proto.auth.AuthServiceClient.prototype.userPasswordKey =
+	    function(request, metadata, callback) {
+	  return this.client_.rpcCall(this.hostname_ +
+	      '/auth.AuthService/UserPasswordKey',
+	      request,
+	      metadata || {},
+	      methodDescriptor_AuthService_UserPasswordKey,
+	      callback);
+	};
+
+
+	/**
+	 * @param {!proto.auth.UserKeyRequest} request The
+	 *     request proto
+	 * @param {?Object<string, string>=} metadata User defined
+	 *     call metadata
+	 * @return {!Promise<!proto.auth.UserKeyResponse>}
+	 *     Promise that resolves to the response
+	 */
+	proto.auth.AuthServicePromiseClient.prototype.userPasswordKey =
+	    function(request, metadata) {
+	  return this.client_.unaryCall(this.hostname_ +
+	      '/auth.AuthService/UserPasswordKey',
+	      request,
+	      metadata || {},
+	      methodDescriptor_AuthService_UserPasswordKey);
+	};
+
+
+	/**
+	 * @const
+	 * @type {!grpc.web.MethodDescriptor<
+	 *   !proto.auth.UserLoginRequest,
+	 *   !proto.auth.UserLoginResponse>}
+	 */
+	const methodDescriptor_AuthService_UserLogin = new grpc.web.MethodDescriptor(
+	  '/auth.AuthService/UserLogin',
+	  grpc.web.MethodType.UNARY,
+	  proto.auth.UserLoginRequest,
+	  proto.auth.UserLoginResponse,
+	  /**
+	   * @param {!proto.auth.UserLoginRequest} request
+	   * @return {!Uint8Array}
+	   */
+	  function(request) {
+	    return request.serializeBinary();
+	  },
+	  proto.auth.UserLoginResponse.deserializeBinary
+	);
+
+
+	/**
+	 * @param {!proto.auth.UserLoginRequest} request The
+	 *     request proto
+	 * @param {?Object<string, string>} metadata User defined
+	 *     call metadata
+	 * @param {function(?grpc.web.RpcError, ?proto.auth.UserLoginResponse)}
+	 *     callback The callback function(error, response)
+	 * @return {!grpc.web.ClientReadableStream<!proto.auth.UserLoginResponse>|undefined}
+	 *     The XHR Node Readable Stream
+	 */
+	proto.auth.AuthServiceClient.prototype.userLogin =
+	    function(request, metadata, callback) {
+	  return this.client_.rpcCall(this.hostname_ +
+	      '/auth.AuthService/UserLogin',
+	      request,
+	      metadata || {},
+	      methodDescriptor_AuthService_UserLogin,
+	      callback);
+	};
+
+
+	/**
+	 * @param {!proto.auth.UserLoginRequest} request The
+	 *     request proto
+	 * @param {?Object<string, string>=} metadata User defined
+	 *     call metadata
+	 * @return {!Promise<!proto.auth.UserLoginResponse>}
+	 *     Promise that resolves to the response
+	 */
+	proto.auth.AuthServicePromiseClient.prototype.userLogin =
+	    function(request, metadata) {
+	  return this.client_.unaryCall(this.hostname_ +
+	      '/auth.AuthService/UserLogin',
+	      request,
+	      metadata || {},
+	      methodDescriptor_AuthService_UserLogin);
+	};
+
+
+	/**
+	 * @const
+	 * @type {!grpc.web.MethodDescriptor<
+	 *   !proto.auth.UserRefreshRequest,
+	 *   !proto.auth.UserRefreshResponse>}
+	 */
+	const methodDescriptor_AuthService_UserRefresh = new grpc.web.MethodDescriptor(
+	  '/auth.AuthService/UserRefresh',
+	  grpc.web.MethodType.UNARY,
+	  proto.auth.UserRefreshRequest,
+	  proto.auth.UserRefreshResponse,
+	  /**
+	   * @param {!proto.auth.UserRefreshRequest} request
+	   * @return {!Uint8Array}
+	   */
+	  function(request) {
+	    return request.serializeBinary();
+	  },
+	  proto.auth.UserRefreshResponse.deserializeBinary
+	);
+
+
+	/**
+	 * @param {!proto.auth.UserRefreshRequest} request The
+	 *     request proto
+	 * @param {?Object<string, string>} metadata User defined
+	 *     call metadata
+	 * @param {function(?grpc.web.RpcError, ?proto.auth.UserRefreshResponse)}
+	 *     callback The callback function(error, response)
+	 * @return {!grpc.web.ClientReadableStream<!proto.auth.UserRefreshResponse>|undefined}
+	 *     The XHR Node Readable Stream
+	 */
+	proto.auth.AuthServiceClient.prototype.userRefresh =
+	    function(request, metadata, callback) {
+	  return this.client_.rpcCall(this.hostname_ +
+	      '/auth.AuthService/UserRefresh',
+	      request,
+	      metadata || {},
+	      methodDescriptor_AuthService_UserRefresh,
+	      callback);
+	};
+
+
+	/**
+	 * @param {!proto.auth.UserRefreshRequest} request The
+	 *     request proto
+	 * @param {?Object<string, string>=} metadata User defined
+	 *     call metadata
+	 * @return {!Promise<!proto.auth.UserRefreshResponse>}
+	 *     Promise that resolves to the response
+	 */
+	proto.auth.AuthServicePromiseClient.prototype.userRefresh =
+	    function(request, metadata) {
+	  return this.client_.unaryCall(this.hostname_ +
+	      '/auth.AuthService/UserRefresh',
+	      request,
+	      metadata || {},
+	      methodDescriptor_AuthService_UserRefresh);
+	};
+
+
+	/**
+	 * @const
+	 * @type {!grpc.web.MethodDescriptor<
+	 *   !proto.auth.UserLogoutRequest,
+	 *   !proto.auth.UserLogoutResponse>}
+	 */
+	const methodDescriptor_AuthService_UserLogout = new grpc.web.MethodDescriptor(
+	  '/auth.AuthService/UserLogout',
+	  grpc.web.MethodType.UNARY,
+	  proto.auth.UserLogoutRequest,
+	  proto.auth.UserLogoutResponse,
+	  /**
+	   * @param {!proto.auth.UserLogoutRequest} request
+	   * @return {!Uint8Array}
+	   */
+	  function(request) {
+	    return request.serializeBinary();
+	  },
+	  proto.auth.UserLogoutResponse.deserializeBinary
+	);
+
+
+	/**
+	 * @param {!proto.auth.UserLogoutRequest} request The
+	 *     request proto
+	 * @param {?Object<string, string>} metadata User defined
+	 *     call metadata
+	 * @param {function(?grpc.web.RpcError, ?proto.auth.UserLogoutResponse)}
+	 *     callback The callback function(error, response)
+	 * @return {!grpc.web.ClientReadableStream<!proto.auth.UserLogoutResponse>|undefined}
+	 *     The XHR Node Readable Stream
+	 */
+	proto.auth.AuthServiceClient.prototype.userLogout =
+	    function(request, metadata, callback) {
+	  return this.client_.rpcCall(this.hostname_ +
+	      '/auth.AuthService/UserLogout',
+	      request,
+	      metadata || {},
+	      methodDescriptor_AuthService_UserLogout,
+	      callback);
+	};
+
+
+	/**
+	 * @param {!proto.auth.UserLogoutRequest} request The
+	 *     request proto
+	 * @param {?Object<string, string>=} metadata User defined
+	 *     call metadata
+	 * @return {!Promise<!proto.auth.UserLogoutResponse>}
+	 *     Promise that resolves to the response
+	 */
+	proto.auth.AuthServicePromiseClient.prototype.userLogout =
+	    function(request, metadata) {
+	  return this.client_.unaryCall(this.hostname_ +
+	      '/auth.AuthService/UserLogout',
+	      request,
+	      metadata || {},
+	      methodDescriptor_AuthService_UserLogout);
+	};
+
+
+	auth_grpc_web_pb = proto.auth;
+	return auth_grpc_web_pb;
+}
+
+var auth_grpc_web_pbExports = requireAuth_grpc_web_pb();
+var pb_auth = /*@__PURE__*/getDefaultExportFromCjs(auth_grpc_web_pbExports);
+
 /**
  * Construct request metadata
  * @param {{address:string,token:string}} server 
@@ -5950,6 +9267,209 @@ var utility = /*#__PURE__*/Object.freeze({
 	uuid_hex_to_base64: uuid_hex_to_base64,
 	uuid_v4_hex: uuid_v4_hex
 });
+
+/**
+ * @typedef {(string|Uint8Array)} Uuid
+ */
+
+/**
+ * @typedef {Object} ServerConfig
+ * @property {string} address
+ * @property {?string} token
+ */
+
+/**
+ * @typedef {Object} UserKeyResponse
+ * @property {string} public_key
+ */
+
+/**
+ * @typedef {Object} UserLoginRequest
+ * @property {string} username
+ * @property {string} password
+ */
+
+/**
+ * @typedef {Object} AccessTokenMap
+ * @property {Uuid} api_id
+ * @property {string} access_token
+ * @property {string} refresh_token
+ */
+
+/**
+ * @param {*} r 
+ * @returns {AccessTokenMap}
+ */
+function get_access_token(r) {
+    return {
+        api_id: base64_to_uuid_hex(r.apiId),
+        access_token: r.accessToken,
+        refresh_token: r.refreshToken
+    };
+}
+
+/**
+ * @typedef {Object} UserLoginResponse
+ * @property {Uuid} user_id
+ * @property {string} auth_token
+ * @property {AccessTokenMap[]} access_tokens
+ */
+
+/**
+ * @param {*} r 
+ * @returns {UserLoginResponse}
+ */
+function get_login_response(r) {
+    return {
+        user_id: base64_to_uuid_hex(r.userId),
+        auth_token: r.authToken,
+        access_tokens: r.accessTokensList.map((v) => {return get_access_token(v)})
+    };
+}
+
+/**
+ * @typedef {Object} UserRefreshRequest
+ * @property {Uuid} api_id
+ * @property {string} access_token
+ * @property {string} refresh_token
+ */
+
+/**
+ * @typedef {Object} UserRefreshResponse
+ * @property {string} access_token
+ * @property {string} refresh_token
+ */
+
+/**
+ * @param {*} r 
+ * @returns {UserRefreshResponse}
+ */
+function get_refresh_response(r) {
+    return {
+        access_token: r.accessToken,
+        refresh_token: r.refreshToken
+    };
+}
+
+/**
+ * @typedef {Object} UserLogoutRequest
+ * @property {Uuid} user_id
+ * @property {string} auth_token
+ */
+
+/**
+ * Import a PEM encoded RSA public key, to use for RSA-OAEP / RSASSA-PKCS1-v1_5 encryption
+ * @param {string} pem 
+ * @returns 
+ */
+function importKey(pem) {
+    try {
+        const binaryDerString = window.atob(pem);
+        const binaryDer = string_to_array_buffer(binaryDerString);
+        return window.crypto.subtle.importKey(
+            "spki",
+            binaryDer,
+            {
+                name: "RSA-OAEP",
+                hash: "SHA-256"
+            },
+            true,
+            ["encrypt"]
+        );
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Get the encoded message, encrypt it and display a representation of the ciphertext
+ * @param {string} message 
+ * @param {CryptoKey} encryptionKey 
+ * @returns 
+ */
+async function encryptMessage(message, encryptionKey)
+{
+    try {
+        const enc = new TextEncoder();
+        const encoded = enc.encode(message);
+        const buf = await window.crypto.subtle.encrypt(
+            {
+                name: "RSA-OAEP"
+            },
+            encryptionKey,
+            encoded
+        );
+        const chars = String.fromCharCode.apply(null, new Uint8Array(buf));
+        return btoa(chars);
+    } catch {
+        return null;
+    }
+}
+
+
+/**
+ * Get user login key
+ * @param {ServerConfig} server server configuration: address, token
+ * @param {} request empty object
+ * @return {Promise<UserKeyResponse>} user key: public_key
+ */
+async function user_login_key(server, request) {
+    const client = new pb_auth.AuthServicePromiseClient(server.address, null, null);
+    const userKeyRequest = new pb_auth.UserKeyRequest();
+    return client.userPasswordKey(userKeyRequest, metadata(server))
+        .then(response => response.toObject());
+}
+
+/**
+ * User login
+ * @param {ServerConfig} server server configuration: address, token
+ * @param {UserLoginRequest} request user login request: username, password
+ * @return {Promise<UserLoginResponse>} user login response: user_id, auth_token, access_tokens
+ */
+async function user_login(server, request) {
+    const client = new pb_auth.AuthServicePromiseClient(server.address, null, null);
+    const userKeyRequest = new pb_auth.UserKeyRequest();
+    const userLoginRequest = new pb_auth.UserLoginRequest();
+    userLoginRequest.setUsername(request.username);
+    const key = await client.userPasswordKey(userKeyRequest, metadata(server))
+        .then(response => response.toObject().publicKey);
+    const pubkey = await importKey(key);
+    const ciphertext = await encryptMessage(request.password, pubkey);
+    userLoginRequest.setPassword(ciphertext);
+    return client.userLogin(userLoginRequest, metadata(server))
+        .then(response => get_login_response(response.toObject()));
+}
+
+/**
+ * Refresh user token
+ * @param {ServerConfig} server server configuration: address, token
+ * @param {UserRefreshRequest} request user refresh request: api_id, access_token, refresh_token
+ * @return {Promise<UserRefreshResponse>} user refresh response: access_token, refresh_token
+ */
+async function user_refresh(server, request) {
+    const client = new pb_auth.AuthServicePromiseClient(server.address, null, null);
+    const userRefreshRequest = new pb_auth.UserRefreshRequest();
+    userRefreshRequest.setApiId(uuid_hex_to_base64(request.api_id));
+    userRefreshRequest.setAccessToken(request.access_token);
+    userRefreshRequest.setRefreshToken(request.refresh_token);
+    return client.userRefresh(userRefreshRequest, metadata(server))
+        .then(response => get_refresh_response(response.toObject()));
+}
+
+/**
+ * User logout
+ * @param {ServerConfig} server server configuration: address, token
+ * @param {UserLogoutRequest} request user logout request: user_id, auth_token
+ * @return {Promise<{}>} user logout response
+ */
+async function user_logout(server, request) {
+    const client = new pb_auth.AuthServicePromiseClient(server.address, null, null);
+    const userLogoutRequest = new pb_auth.UserLogoutRequest();
+    userLogoutRequest.setUserId(uuid_hex_to_base64(request.user_id));
+    userLogoutRequest.setAuthToken(request.auth_token);
+    return client.userLogout(userLogoutRequest, metadata(server))
+        .then(response => response.toObject());
+}
 
 /**
  * @typedef {(string|Uint8Array)} Uuid
@@ -6208,6 +9728,8 @@ async function list_api_option(server, request) {
  * @returns {Promise<ApiId>} api id: id
  */
 async function create_api(server, request) {
+    const client_auth = new pb_auth.AuthServicePromiseClient(server.address, null, null);
+    const apiKeyRequest = new pb_auth.ApiKeyRequest();
     const client = new pb_api.ApiServicePromiseClient(server.address, null, null);
     const apiSchema = new pb_api.ApiSchema();
     apiSchema.setId(uuid_hex_to_base64(request.id));
@@ -6215,7 +9737,11 @@ async function create_api(server, request) {
     apiSchema.setAddress(request.address);
     apiSchema.setCategory(request.category);
     apiSchema.setDescription(request.description);
-    apiSchema.setPassword(request.password);
+    const key = await client_auth.apiPasswordKey(apiKeyRequest, metadata(server))
+        .then(response => response.toObject().publicKey);
+    const pubkey = await importKey(key);
+    const ciphertext = await encryptMessage(request.password, pubkey);
+    apiSchema.setPassword(ciphertext);
     apiSchema.setAccessKey(request.access_key);
     return client.createApi(apiSchema, metadata(server))
         .then(response => getApiId(response.toObject()));
@@ -6228,6 +9754,8 @@ async function create_api(server, request) {
  * @returns {Promise<{}>} update response
  */
 async function update_api(server, request) {
+    const client_auth = new pb_auth.AuthServicePromiseClient(server.address, null, null);
+    const apiKeyRequest = new pb_auth.ApiKeyRequest();
     const client = new pb_api.ApiServicePromiseClient(server.address, null, null);
     const apiUpdate = new pb_api.ApiUpdate();
     apiUpdate.setId(uuid_hex_to_base64(request.id));
@@ -6235,7 +9763,13 @@ async function update_api(server, request) {
     apiUpdate.setAddress(request.address);
     apiUpdate.setCategory(request.category);
     apiUpdate.setDescription(request.description);
-    apiUpdate.setPassword(request.password);
+    if (request.password) {
+        const key = await client_auth.apiPasswordKey(apiKeyRequest, metadata(server))
+            .then(response => response.toObject().publicKey);
+        const pubkey = await importKey(key);
+        const ciphertext = await encryptMessage(request.password, pubkey);
+        apiUpdate.setPassword(ciphertext);
+    }
     apiUpdate.setAccessKey(request.access_key);
     return client.updateApi(apiUpdate, metadata(server))
         .then(response => response.toObject());
@@ -11348,7 +14882,7 @@ function requireUser_pb () {
 		name: jspb.Message.getFieldWithDefault(msg, 2, ""),
 		email: jspb.Message.getFieldWithDefault(msg, 3, ""),
 		phone: jspb.Message.getFieldWithDefault(msg, 4, ""),
-		password: jspb.Message.getFieldWithDefault(msg, 5, ""),
+		password: msg.getPassword_asB64(),
 		rolesList: jspb.Message.toObjectList(msg.getRolesList(),
 		    proto.user.UserRoleSchema.toObject, includeInstance)
 		  };
@@ -11404,7 +14938,7 @@ function requireUser_pb () {
 		      msg.setPhone(value);
 		      break;
 		    case 5:
-		      var value = /** @type {string} */ (reader.readString());
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
 		      msg.setPassword(value);
 		      break;
 		    case 6:
@@ -11469,9 +15003,9 @@ function requireUser_pb () {
 		      f
 		    );
 		  }
-		  f = message.getPassword();
+		  f = message.getPassword_asU8();
 		  if (f.length > 0) {
-		    writer.writeString(
+		    writer.writeBytes(
 		      5,
 		      f
 		    );
@@ -11584,20 +15118,44 @@ function requireUser_pb () {
 
 
 		/**
-		 * optional string password = 5;
-		 * @return {string}
+		 * optional bytes password = 5;
+		 * @return {!(string|Uint8Array)}
 		 */
 		proto.user.UserSchema.prototype.getPassword = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 		};
 
 
 		/**
-		 * @param {string} value
+		 * optional bytes password = 5;
+		 * This is a type-conversion wrapper around `getPassword()`
+		 * @return {string}
+		 */
+		proto.user.UserSchema.prototype.getPassword_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getPassword()));
+		};
+
+
+		/**
+		 * optional bytes password = 5;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getPassword()`
+		 * @return {!Uint8Array}
+		 */
+		proto.user.UserSchema.prototype.getPassword_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getPassword()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
 		 * @return {!proto.user.UserSchema} returns this
 		 */
 		proto.user.UserSchema.prototype.setPassword = function(value) {
-		  return jspb.Message.setProto3StringField(this, 5, value);
+		  return jspb.Message.setProto3BytesField(this, 5, value);
 		};
 
 
@@ -12739,7 +16297,7 @@ function requireUser_pb () {
 		name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
 		email: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
 		phone: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-		password: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
+		password: msg.getPassword_asB64()
 		  };
 
 		  if (includeInstance) {
@@ -12793,7 +16351,7 @@ function requireUser_pb () {
 		      msg.setPhone(value);
 		      break;
 		    case 5:
-		      var value = /** @type {string} */ (reader.readString());
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
 		      msg.setPassword(value);
 		      break;
 		    default:
@@ -12853,9 +16411,9 @@ function requireUser_pb () {
 		      f
 		    );
 		  }
-		  f = /** @type {string} */ (jspb.Message.getField(message, 5));
+		  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 5));
 		  if (f != null) {
-		    writer.writeString(
+		    writer.writeBytes(
 		      5,
 		      f
 		    );
@@ -13014,16 +16572,40 @@ function requireUser_pb () {
 
 
 		/**
-		 * optional string password = 5;
-		 * @return {string}
+		 * optional bytes password = 5;
+		 * @return {!(string|Uint8Array)}
 		 */
 		proto.user.UserUpdate.prototype.getPassword = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 		};
 
 
 		/**
-		 * @param {string} value
+		 * optional bytes password = 5;
+		 * This is a type-conversion wrapper around `getPassword()`
+		 * @return {string}
+		 */
+		proto.user.UserUpdate.prototype.getPassword_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getPassword()));
+		};
+
+
+		/**
+		 * optional bytes password = 5;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getPassword()`
+		 * @return {!Uint8Array}
+		 */
+		proto.user.UserUpdate.prototype.getPassword_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getPassword()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
 		 * @return {!proto.user.UserUpdate} returns this
 		 */
 		proto.user.UserUpdate.prototype.setPassword = function(value) {
@@ -14887,13 +18469,19 @@ async function list_user_option(server, request) {
  * @returns {Promise<UserId>} user id: id
  */
 async function create_user(server, request) {
+    const client_auth = new pb_auth.AuthServicePromiseClient(server.address, null, null);
+    const userKeyRequest = new pb_auth.UserKeyRequest();
     const client = new pb_user.UserServicePromiseClient(server.address, null, null);
     const userSchema = new pb_user.UserSchema();
     userSchema.setId(uuid_hex_to_base64(request.id));
     userSchema.setName(request.name);
     userSchema.setEmail(request.email);
     userSchema.setPhone(request.phone);
-    userSchema.setPassword(request.password);
+    const key = await client_auth.userPasswordKey(userKeyRequest, metadata(server))
+        .then(response => response.toObject().publicKey);
+    const pubkey = await importKey(key);
+    const ciphertext = await encryptMessage(request.password, pubkey);
+    userSchema.setPassword(ciphertext);
     return client.createUser(userSchema, metadata(server))
         .then(response => get_user_id(response.toObject()));
 }
@@ -14905,13 +18493,21 @@ async function create_user(server, request) {
  * @returns {Promise<{}>} update response
  */
 async function update_user(server, request) {
+    const client_auth = new pb_auth.AuthServicePromiseClient(server.address, null, null);
+    const userKeyRequest = new pb_auth.UserKeyRequest();
     const client = new pb_user.UserServicePromiseClient(server.address, null, null);
     const userUpdate = new pb_user.UserUpdate();
     userUpdate.setId(uuid_hex_to_base64(request.id));
     userUpdate.setName(request.name);
     userUpdate.setEmail(request.email);
     userUpdate.setPhone(request.phone);
-    userUpdate.setPassword(request.password);
+    if (request.password) {
+        const key = await client_auth.userPasswordKey(userKeyRequest, metadata(server))
+            .then(response => response.toObject().publicKey);
+        const pubkey = await importKey(key);
+        const ciphertext = await encryptMessage(request.password, pubkey);
+        userUpdate.setPassword(ciphertext);
+    }
     return client.updateUser(userUpdate, metadata(server))
         .then(response => response.toObject());
 }
@@ -24322,3478 +27918,6 @@ async function delete_token_by_user(server, request) {
     const userId = new pb_token.UserId();
     userId.setUserId(uuid_hex_to_base64(request.id));
     return client.deleteTokenByUser(userId, metadata(server))
-        .then(response => response.toObject());
-}
-
-var auth_pb = {};
-
-var hasRequiredAuth_pb;
-
-function requireAuth_pb () {
-	if (hasRequiredAuth_pb) return auth_pb;
-	hasRequiredAuth_pb = 1;
-	(function (exports$1) {
-		// source: auth/auth.proto
-		/**
-		 * @fileoverview
-		 * @enhanceable
-		 * @suppress {missingRequire} reports error on implicit type usages.
-		 * @suppress {messageConventions} JS Compiler reports an error if a variable or
-		 *     field starts with 'MSG_' and isn't a translatable message.
-		 * @public
-		 */
-		// GENERATED CODE -- DO NOT EDIT!
-		/* eslint-disable */
-		// @ts-nocheck
-
-		var jspb = require$$0;
-		var goog = jspb;
-		var global =
-		    (typeof globalThis !== 'undefined' && globalThis) ||
-		    (typeof window !== 'undefined' && window) ||
-		    (typeof global !== 'undefined' && global) ||
-		    (typeof self !== 'undefined' && self) ||
-		    (function () { return this; }).call(null) ||
-		    Function('return this')();
-
-		goog.exportSymbol('proto.auth.AccessTokenMap', null, global);
-		goog.exportSymbol('proto.auth.ApiKeyRequest', null, global);
-		goog.exportSymbol('proto.auth.ApiKeyResponse', null, global);
-		goog.exportSymbol('proto.auth.ApiLoginRequest', null, global);
-		goog.exportSymbol('proto.auth.ApiLoginResponse', null, global);
-		goog.exportSymbol('proto.auth.ProcedureMap', null, global);
-		goog.exportSymbol('proto.auth.UserKeyRequest', null, global);
-		goog.exportSymbol('proto.auth.UserKeyResponse', null, global);
-		goog.exportSymbol('proto.auth.UserLoginRequest', null, global);
-		goog.exportSymbol('proto.auth.UserLoginResponse', null, global);
-		goog.exportSymbol('proto.auth.UserLogoutRequest', null, global);
-		goog.exportSymbol('proto.auth.UserLogoutResponse', null, global);
-		goog.exportSymbol('proto.auth.UserRefreshRequest', null, global);
-		goog.exportSymbol('proto.auth.UserRefreshResponse', null, global);
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.ApiKeyRequest = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-		};
-		goog.inherits(proto.auth.ApiKeyRequest, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.ApiKeyRequest.displayName = 'proto.auth.ApiKeyRequest';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.ApiKeyResponse = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-		};
-		goog.inherits(proto.auth.ApiKeyResponse, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.ApiKeyResponse.displayName = 'proto.auth.ApiKeyResponse';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.ApiLoginRequest = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-		};
-		goog.inherits(proto.auth.ApiLoginRequest, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.ApiLoginRequest.displayName = 'proto.auth.ApiLoginRequest';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.ProcedureMap = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, proto.auth.ProcedureMap.repeatedFields_, null);
-		};
-		goog.inherits(proto.auth.ProcedureMap, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.ProcedureMap.displayName = 'proto.auth.ProcedureMap';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.ApiLoginResponse = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, proto.auth.ApiLoginResponse.repeatedFields_, null);
-		};
-		goog.inherits(proto.auth.ApiLoginResponse, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.ApiLoginResponse.displayName = 'proto.auth.ApiLoginResponse';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.UserKeyRequest = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-		};
-		goog.inherits(proto.auth.UserKeyRequest, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.UserKeyRequest.displayName = 'proto.auth.UserKeyRequest';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.UserKeyResponse = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-		};
-		goog.inherits(proto.auth.UserKeyResponse, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.UserKeyResponse.displayName = 'proto.auth.UserKeyResponse';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.UserLoginRequest = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-		};
-		goog.inherits(proto.auth.UserLoginRequest, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.UserLoginRequest.displayName = 'proto.auth.UserLoginRequest';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.AccessTokenMap = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-		};
-		goog.inherits(proto.auth.AccessTokenMap, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.AccessTokenMap.displayName = 'proto.auth.AccessTokenMap';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.UserLoginResponse = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, proto.auth.UserLoginResponse.repeatedFields_, null);
-		};
-		goog.inherits(proto.auth.UserLoginResponse, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.UserLoginResponse.displayName = 'proto.auth.UserLoginResponse';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.UserRefreshRequest = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-		};
-		goog.inherits(proto.auth.UserRefreshRequest, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.UserRefreshRequest.displayName = 'proto.auth.UserRefreshRequest';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.UserRefreshResponse = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-		};
-		goog.inherits(proto.auth.UserRefreshResponse, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.UserRefreshResponse.displayName = 'proto.auth.UserRefreshResponse';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.UserLogoutRequest = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-		};
-		goog.inherits(proto.auth.UserLogoutRequest, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.UserLogoutRequest.displayName = 'proto.auth.UserLogoutRequest';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.auth.UserLogoutResponse = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-		};
-		goog.inherits(proto.auth.UserLogoutResponse, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.auth.UserLogoutResponse.displayName = 'proto.auth.UserLogoutResponse';
-		}
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.ApiKeyRequest.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.ApiKeyRequest.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.ApiKeyRequest} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.ApiKeyRequest.toObject = function(includeInstance, msg) {
-		  var obj = {
-
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.ApiKeyRequest}
-		 */
-		proto.auth.ApiKeyRequest.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.ApiKeyRequest;
-		  return proto.auth.ApiKeyRequest.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.ApiKeyRequest} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.ApiKeyRequest}
-		 */
-		proto.auth.ApiKeyRequest.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.ApiKeyRequest.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.ApiKeyRequest.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.ApiKeyRequest} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.ApiKeyRequest.serializeBinaryToWriter = function(message, writer) {
-		};
-
-
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.ApiKeyResponse.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.ApiKeyResponse.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.ApiKeyResponse} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.ApiKeyResponse.toObject = function(includeInstance, msg) {
-		  var obj = {
-		publicKey: msg.getPublicKey_asB64()
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.ApiKeyResponse}
-		 */
-		proto.auth.ApiKeyResponse.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.ApiKeyResponse;
-		  return proto.auth.ApiKeyResponse.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.ApiKeyResponse} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.ApiKeyResponse}
-		 */
-		proto.auth.ApiKeyResponse.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    case 1:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setPublicKey(value);
-		      break;
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.ApiKeyResponse.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.ApiKeyResponse.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.ApiKeyResponse} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.ApiKeyResponse.serializeBinaryToWriter = function(message, writer) {
-		  var f = undefined;
-		  f = message.getPublicKey_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
-		      1,
-		      f
-		    );
-		  }
-		};
-
-
-		/**
-		 * optional bytes public_key = 1;
-		 * @return {!(string|Uint8Array)}
-		 */
-		proto.auth.ApiKeyResponse.prototype.getPublicKey = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-		};
-
-
-		/**
-		 * optional bytes public_key = 1;
-		 * This is a type-conversion wrapper around `getPublicKey()`
-		 * @return {string}
-		 */
-		proto.auth.ApiKeyResponse.prototype.getPublicKey_asB64 = function() {
-		  return /** @type {string} */ (jspb.Message.bytesAsB64(
-		      this.getPublicKey()));
-		};
-
-
-		/**
-		 * optional bytes public_key = 1;
-		 * Note that Uint8Array is not supported on all browsers.
-		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getPublicKey()`
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.ApiKeyResponse.prototype.getPublicKey_asU8 = function() {
-		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-		      this.getPublicKey()));
-		};
-
-
-		/**
-		 * @param {!(string|Uint8Array)} value
-		 * @return {!proto.auth.ApiKeyResponse} returns this
-		 */
-		proto.auth.ApiKeyResponse.prototype.setPublicKey = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 1, value);
-		};
-
-
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.ApiLoginRequest.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.ApiLoginRequest.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.ApiLoginRequest} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.ApiLoginRequest.toObject = function(includeInstance, msg) {
-		  var obj = {
-		apiId: msg.getApiId_asB64(),
-		password: msg.getPassword_asB64(),
-		publicKey: msg.getPublicKey_asB64()
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.ApiLoginRequest}
-		 */
-		proto.auth.ApiLoginRequest.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.ApiLoginRequest;
-		  return proto.auth.ApiLoginRequest.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.ApiLoginRequest} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.ApiLoginRequest}
-		 */
-		proto.auth.ApiLoginRequest.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    case 1:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setApiId(value);
-		      break;
-		    case 2:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setPassword(value);
-		      break;
-		    case 3:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setPublicKey(value);
-		      break;
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.ApiLoginRequest.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.ApiLoginRequest.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.ApiLoginRequest} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.ApiLoginRequest.serializeBinaryToWriter = function(message, writer) {
-		  var f = undefined;
-		  f = message.getApiId_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
-		      1,
-		      f
-		    );
-		  }
-		  f = message.getPassword_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
-		      2,
-		      f
-		    );
-		  }
-		  f = message.getPublicKey_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
-		      3,
-		      f
-		    );
-		  }
-		};
-
-
-		/**
-		 * optional bytes api_id = 1;
-		 * @return {!(string|Uint8Array)}
-		 */
-		proto.auth.ApiLoginRequest.prototype.getApiId = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-		};
-
-
-		/**
-		 * optional bytes api_id = 1;
-		 * This is a type-conversion wrapper around `getApiId()`
-		 * @return {string}
-		 */
-		proto.auth.ApiLoginRequest.prototype.getApiId_asB64 = function() {
-		  return /** @type {string} */ (jspb.Message.bytesAsB64(
-		      this.getApiId()));
-		};
-
-
-		/**
-		 * optional bytes api_id = 1;
-		 * Note that Uint8Array is not supported on all browsers.
-		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getApiId()`
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.ApiLoginRequest.prototype.getApiId_asU8 = function() {
-		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-		      this.getApiId()));
-		};
-
-
-		/**
-		 * @param {!(string|Uint8Array)} value
-		 * @return {!proto.auth.ApiLoginRequest} returns this
-		 */
-		proto.auth.ApiLoginRequest.prototype.setApiId = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 1, value);
-		};
-
-
-		/**
-		 * optional bytes password = 2;
-		 * @return {!(string|Uint8Array)}
-		 */
-		proto.auth.ApiLoginRequest.prototype.getPassword = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-		};
-
-
-		/**
-		 * optional bytes password = 2;
-		 * This is a type-conversion wrapper around `getPassword()`
-		 * @return {string}
-		 */
-		proto.auth.ApiLoginRequest.prototype.getPassword_asB64 = function() {
-		  return /** @type {string} */ (jspb.Message.bytesAsB64(
-		      this.getPassword()));
-		};
-
-
-		/**
-		 * optional bytes password = 2;
-		 * Note that Uint8Array is not supported on all browsers.
-		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getPassword()`
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.ApiLoginRequest.prototype.getPassword_asU8 = function() {
-		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-		      this.getPassword()));
-		};
-
-
-		/**
-		 * @param {!(string|Uint8Array)} value
-		 * @return {!proto.auth.ApiLoginRequest} returns this
-		 */
-		proto.auth.ApiLoginRequest.prototype.setPassword = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 2, value);
-		};
-
-
-		/**
-		 * optional bytes public_key = 3;
-		 * @return {!(string|Uint8Array)}
-		 */
-		proto.auth.ApiLoginRequest.prototype.getPublicKey = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-		};
-
-
-		/**
-		 * optional bytes public_key = 3;
-		 * This is a type-conversion wrapper around `getPublicKey()`
-		 * @return {string}
-		 */
-		proto.auth.ApiLoginRequest.prototype.getPublicKey_asB64 = function() {
-		  return /** @type {string} */ (jspb.Message.bytesAsB64(
-		      this.getPublicKey()));
-		};
-
-
-		/**
-		 * optional bytes public_key = 3;
-		 * Note that Uint8Array is not supported on all browsers.
-		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getPublicKey()`
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.ApiLoginRequest.prototype.getPublicKey_asU8 = function() {
-		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-		      this.getPublicKey()));
-		};
-
-
-		/**
-		 * @param {!(string|Uint8Array)} value
-		 * @return {!proto.auth.ApiLoginRequest} returns this
-		 */
-		proto.auth.ApiLoginRequest.prototype.setPublicKey = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 3, value);
-		};
-
-
-
-		/**
-		 * List of repeated fields within this message type.
-		 * @private {!Array<number>}
-		 * @const
-		 */
-		proto.auth.ProcedureMap.repeatedFields_ = [2];
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.ProcedureMap.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.ProcedureMap.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.ProcedureMap} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.ProcedureMap.toObject = function(includeInstance, msg) {
-		  var f, obj = {
-		procedure: jspb.Message.getFieldWithDefault(msg, 1, ""),
-		rolesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.ProcedureMap}
-		 */
-		proto.auth.ProcedureMap.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.ProcedureMap;
-		  return proto.auth.ProcedureMap.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.ProcedureMap} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.ProcedureMap}
-		 */
-		proto.auth.ProcedureMap.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    case 1:
-		      var value = /** @type {string} */ (reader.readString());
-		      msg.setProcedure(value);
-		      break;
-		    case 2:
-		      var value = /** @type {string} */ (reader.readString());
-		      msg.addRoles(value);
-		      break;
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.ProcedureMap.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.ProcedureMap.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.ProcedureMap} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.ProcedureMap.serializeBinaryToWriter = function(message, writer) {
-		  var f = undefined;
-		  f = message.getProcedure();
-		  if (f.length > 0) {
-		    writer.writeString(
-		      1,
-		      f
-		    );
-		  }
-		  f = message.getRolesList();
-		  if (f.length > 0) {
-		    writer.writeRepeatedString(
-		      2,
-		      f
-		    );
-		  }
-		};
-
-
-		/**
-		 * optional string procedure = 1;
-		 * @return {string}
-		 */
-		proto.auth.ProcedureMap.prototype.getProcedure = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-		};
-
-
-		/**
-		 * @param {string} value
-		 * @return {!proto.auth.ProcedureMap} returns this
-		 */
-		proto.auth.ProcedureMap.prototype.setProcedure = function(value) {
-		  return jspb.Message.setProto3StringField(this, 1, value);
-		};
-
-
-		/**
-		 * repeated string roles = 2;
-		 * @return {!Array<string>}
-		 */
-		proto.auth.ProcedureMap.prototype.getRolesList = function() {
-		  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
-		};
-
-
-		/**
-		 * @param {!Array<string>} value
-		 * @return {!proto.auth.ProcedureMap} returns this
-		 */
-		proto.auth.ProcedureMap.prototype.setRolesList = function(value) {
-		  return jspb.Message.setField(this, 2, value || []);
-		};
-
-
-		/**
-		 * @param {string} value
-		 * @param {number=} opt_index
-		 * @return {!proto.auth.ProcedureMap} returns this
-		 */
-		proto.auth.ProcedureMap.prototype.addRoles = function(value, opt_index) {
-		  return jspb.Message.addToRepeatedField(this, 2, value, opt_index);
-		};
-
-
-		/**
-		 * Clears the list making it empty but non-null.
-		 * @return {!proto.auth.ProcedureMap} returns this
-		 */
-		proto.auth.ProcedureMap.prototype.clearRolesList = function() {
-		  return this.setRolesList([]);
-		};
-
-
-
-		/**
-		 * List of repeated fields within this message type.
-		 * @private {!Array<number>}
-		 * @const
-		 */
-		proto.auth.ApiLoginResponse.repeatedFields_ = [2];
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.ApiLoginResponse.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.ApiLoginResponse.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.ApiLoginResponse} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.ApiLoginResponse.toObject = function(includeInstance, msg) {
-		  var obj = {
-		accessKey: msg.getAccessKey_asB64(),
-		accessProceduresList: jspb.Message.toObjectList(msg.getAccessProceduresList(),
-		    proto.auth.ProcedureMap.toObject, includeInstance)
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.ApiLoginResponse}
-		 */
-		proto.auth.ApiLoginResponse.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.ApiLoginResponse;
-		  return proto.auth.ApiLoginResponse.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.ApiLoginResponse} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.ApiLoginResponse}
-		 */
-		proto.auth.ApiLoginResponse.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    case 1:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setAccessKey(value);
-		      break;
-		    case 2:
-		      var value = new proto.auth.ProcedureMap;
-		      reader.readMessage(value,proto.auth.ProcedureMap.deserializeBinaryFromReader);
-		      msg.addAccessProcedures(value);
-		      break;
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.ApiLoginResponse.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.ApiLoginResponse.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.ApiLoginResponse} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.ApiLoginResponse.serializeBinaryToWriter = function(message, writer) {
-		  var f = undefined;
-		  f = message.getAccessKey_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
-		      1,
-		      f
-		    );
-		  }
-		  f = message.getAccessProceduresList();
-		  if (f.length > 0) {
-		    writer.writeRepeatedMessage(
-		      2,
-		      f,
-		      proto.auth.ProcedureMap.serializeBinaryToWriter
-		    );
-		  }
-		};
-
-
-		/**
-		 * optional bytes access_key = 1;
-		 * @return {!(string|Uint8Array)}
-		 */
-		proto.auth.ApiLoginResponse.prototype.getAccessKey = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-		};
-
-
-		/**
-		 * optional bytes access_key = 1;
-		 * This is a type-conversion wrapper around `getAccessKey()`
-		 * @return {string}
-		 */
-		proto.auth.ApiLoginResponse.prototype.getAccessKey_asB64 = function() {
-		  return /** @type {string} */ (jspb.Message.bytesAsB64(
-		      this.getAccessKey()));
-		};
-
-
-		/**
-		 * optional bytes access_key = 1;
-		 * Note that Uint8Array is not supported on all browsers.
-		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getAccessKey()`
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.ApiLoginResponse.prototype.getAccessKey_asU8 = function() {
-		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-		      this.getAccessKey()));
-		};
-
-
-		/**
-		 * @param {!(string|Uint8Array)} value
-		 * @return {!proto.auth.ApiLoginResponse} returns this
-		 */
-		proto.auth.ApiLoginResponse.prototype.setAccessKey = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 1, value);
-		};
-
-
-		/**
-		 * repeated ProcedureMap access_procedures = 2;
-		 * @return {!Array<!proto.auth.ProcedureMap>}
-		 */
-		proto.auth.ApiLoginResponse.prototype.getAccessProceduresList = function() {
-		  return /** @type{!Array<!proto.auth.ProcedureMap>} */ (
-		    jspb.Message.getRepeatedWrapperField(this, proto.auth.ProcedureMap, 2));
-		};
-
-
-		/**
-		 * @param {!Array<!proto.auth.ProcedureMap>} value
-		 * @return {!proto.auth.ApiLoginResponse} returns this
-		*/
-		proto.auth.ApiLoginResponse.prototype.setAccessProceduresList = function(value) {
-		  return jspb.Message.setRepeatedWrapperField(this, 2, value);
-		};
-
-
-		/**
-		 * @param {!proto.auth.ProcedureMap=} opt_value
-		 * @param {number=} opt_index
-		 * @return {!proto.auth.ProcedureMap}
-		 */
-		proto.auth.ApiLoginResponse.prototype.addAccessProcedures = function(opt_value, opt_index) {
-		  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.auth.ProcedureMap, opt_index);
-		};
-
-
-		/**
-		 * Clears the list making it empty but non-null.
-		 * @return {!proto.auth.ApiLoginResponse} returns this
-		 */
-		proto.auth.ApiLoginResponse.prototype.clearAccessProceduresList = function() {
-		  return this.setAccessProceduresList([]);
-		};
-
-
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.UserKeyRequest.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.UserKeyRequest.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.UserKeyRequest} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserKeyRequest.toObject = function(includeInstance, msg) {
-		  var obj = {
-
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.UserKeyRequest}
-		 */
-		proto.auth.UserKeyRequest.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.UserKeyRequest;
-		  return proto.auth.UserKeyRequest.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.UserKeyRequest} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.UserKeyRequest}
-		 */
-		proto.auth.UserKeyRequest.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserKeyRequest.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.UserKeyRequest.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.UserKeyRequest} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserKeyRequest.serializeBinaryToWriter = function(message, writer) {
-		};
-
-
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.UserKeyResponse.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.UserKeyResponse.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.UserKeyResponse} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserKeyResponse.toObject = function(includeInstance, msg) {
-		  var obj = {
-		publicKey: msg.getPublicKey_asB64()
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.UserKeyResponse}
-		 */
-		proto.auth.UserKeyResponse.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.UserKeyResponse;
-		  return proto.auth.UserKeyResponse.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.UserKeyResponse} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.UserKeyResponse}
-		 */
-		proto.auth.UserKeyResponse.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    case 1:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setPublicKey(value);
-		      break;
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserKeyResponse.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.UserKeyResponse.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.UserKeyResponse} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserKeyResponse.serializeBinaryToWriter = function(message, writer) {
-		  var f = undefined;
-		  f = message.getPublicKey_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
-		      1,
-		      f
-		    );
-		  }
-		};
-
-
-		/**
-		 * optional bytes public_key = 1;
-		 * @return {!(string|Uint8Array)}
-		 */
-		proto.auth.UserKeyResponse.prototype.getPublicKey = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-		};
-
-
-		/**
-		 * optional bytes public_key = 1;
-		 * This is a type-conversion wrapper around `getPublicKey()`
-		 * @return {string}
-		 */
-		proto.auth.UserKeyResponse.prototype.getPublicKey_asB64 = function() {
-		  return /** @type {string} */ (jspb.Message.bytesAsB64(
-		      this.getPublicKey()));
-		};
-
-
-		/**
-		 * optional bytes public_key = 1;
-		 * Note that Uint8Array is not supported on all browsers.
-		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getPublicKey()`
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserKeyResponse.prototype.getPublicKey_asU8 = function() {
-		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-		      this.getPublicKey()));
-		};
-
-
-		/**
-		 * @param {!(string|Uint8Array)} value
-		 * @return {!proto.auth.UserKeyResponse} returns this
-		 */
-		proto.auth.UserKeyResponse.prototype.setPublicKey = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 1, value);
-		};
-
-
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.UserLoginRequest.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.UserLoginRequest.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.UserLoginRequest} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserLoginRequest.toObject = function(includeInstance, msg) {
-		  var obj = {
-		username: jspb.Message.getFieldWithDefault(msg, 1, ""),
-		password: msg.getPassword_asB64()
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.UserLoginRequest}
-		 */
-		proto.auth.UserLoginRequest.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.UserLoginRequest;
-		  return proto.auth.UserLoginRequest.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.UserLoginRequest} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.UserLoginRequest}
-		 */
-		proto.auth.UserLoginRequest.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    case 1:
-		      var value = /** @type {string} */ (reader.readString());
-		      msg.setUsername(value);
-		      break;
-		    case 2:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setPassword(value);
-		      break;
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserLoginRequest.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.UserLoginRequest.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.UserLoginRequest} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserLoginRequest.serializeBinaryToWriter = function(message, writer) {
-		  var f = undefined;
-		  f = message.getUsername();
-		  if (f.length > 0) {
-		    writer.writeString(
-		      1,
-		      f
-		    );
-		  }
-		  f = message.getPassword_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
-		      2,
-		      f
-		    );
-		  }
-		};
-
-
-		/**
-		 * optional string username = 1;
-		 * @return {string}
-		 */
-		proto.auth.UserLoginRequest.prototype.getUsername = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-		};
-
-
-		/**
-		 * @param {string} value
-		 * @return {!proto.auth.UserLoginRequest} returns this
-		 */
-		proto.auth.UserLoginRequest.prototype.setUsername = function(value) {
-		  return jspb.Message.setProto3StringField(this, 1, value);
-		};
-
-
-		/**
-		 * optional bytes password = 2;
-		 * @return {!(string|Uint8Array)}
-		 */
-		proto.auth.UserLoginRequest.prototype.getPassword = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-		};
-
-
-		/**
-		 * optional bytes password = 2;
-		 * This is a type-conversion wrapper around `getPassword()`
-		 * @return {string}
-		 */
-		proto.auth.UserLoginRequest.prototype.getPassword_asB64 = function() {
-		  return /** @type {string} */ (jspb.Message.bytesAsB64(
-		      this.getPassword()));
-		};
-
-
-		/**
-		 * optional bytes password = 2;
-		 * Note that Uint8Array is not supported on all browsers.
-		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getPassword()`
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserLoginRequest.prototype.getPassword_asU8 = function() {
-		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-		      this.getPassword()));
-		};
-
-
-		/**
-		 * @param {!(string|Uint8Array)} value
-		 * @return {!proto.auth.UserLoginRequest} returns this
-		 */
-		proto.auth.UserLoginRequest.prototype.setPassword = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 2, value);
-		};
-
-
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.AccessTokenMap.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.AccessTokenMap.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.AccessTokenMap} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.AccessTokenMap.toObject = function(includeInstance, msg) {
-		  var obj = {
-		apiId: msg.getApiId_asB64(),
-		accessToken: jspb.Message.getFieldWithDefault(msg, 2, ""),
-		refreshToken: jspb.Message.getFieldWithDefault(msg, 3, "")
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.AccessTokenMap}
-		 */
-		proto.auth.AccessTokenMap.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.AccessTokenMap;
-		  return proto.auth.AccessTokenMap.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.AccessTokenMap} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.AccessTokenMap}
-		 */
-		proto.auth.AccessTokenMap.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    case 1:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setApiId(value);
-		      break;
-		    case 2:
-		      var value = /** @type {string} */ (reader.readString());
-		      msg.setAccessToken(value);
-		      break;
-		    case 3:
-		      var value = /** @type {string} */ (reader.readString());
-		      msg.setRefreshToken(value);
-		      break;
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.AccessTokenMap.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.AccessTokenMap.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.AccessTokenMap} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.AccessTokenMap.serializeBinaryToWriter = function(message, writer) {
-		  var f = undefined;
-		  f = message.getApiId_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
-		      1,
-		      f
-		    );
-		  }
-		  f = message.getAccessToken();
-		  if (f.length > 0) {
-		    writer.writeString(
-		      2,
-		      f
-		    );
-		  }
-		  f = message.getRefreshToken();
-		  if (f.length > 0) {
-		    writer.writeString(
-		      3,
-		      f
-		    );
-		  }
-		};
-
-
-		/**
-		 * optional bytes api_id = 1;
-		 * @return {!(string|Uint8Array)}
-		 */
-		proto.auth.AccessTokenMap.prototype.getApiId = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-		};
-
-
-		/**
-		 * optional bytes api_id = 1;
-		 * This is a type-conversion wrapper around `getApiId()`
-		 * @return {string}
-		 */
-		proto.auth.AccessTokenMap.prototype.getApiId_asB64 = function() {
-		  return /** @type {string} */ (jspb.Message.bytesAsB64(
-		      this.getApiId()));
-		};
-
-
-		/**
-		 * optional bytes api_id = 1;
-		 * Note that Uint8Array is not supported on all browsers.
-		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getApiId()`
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.AccessTokenMap.prototype.getApiId_asU8 = function() {
-		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-		      this.getApiId()));
-		};
-
-
-		/**
-		 * @param {!(string|Uint8Array)} value
-		 * @return {!proto.auth.AccessTokenMap} returns this
-		 */
-		proto.auth.AccessTokenMap.prototype.setApiId = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 1, value);
-		};
-
-
-		/**
-		 * optional string access_token = 2;
-		 * @return {string}
-		 */
-		proto.auth.AccessTokenMap.prototype.getAccessToken = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-		};
-
-
-		/**
-		 * @param {string} value
-		 * @return {!proto.auth.AccessTokenMap} returns this
-		 */
-		proto.auth.AccessTokenMap.prototype.setAccessToken = function(value) {
-		  return jspb.Message.setProto3StringField(this, 2, value);
-		};
-
-
-		/**
-		 * optional string refresh_token = 3;
-		 * @return {string}
-		 */
-		proto.auth.AccessTokenMap.prototype.getRefreshToken = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-		};
-
-
-		/**
-		 * @param {string} value
-		 * @return {!proto.auth.AccessTokenMap} returns this
-		 */
-		proto.auth.AccessTokenMap.prototype.setRefreshToken = function(value) {
-		  return jspb.Message.setProto3StringField(this, 3, value);
-		};
-
-
-
-		/**
-		 * List of repeated fields within this message type.
-		 * @private {!Array<number>}
-		 * @const
-		 */
-		proto.auth.UserLoginResponse.repeatedFields_ = [3];
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.UserLoginResponse.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.UserLoginResponse.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.UserLoginResponse} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserLoginResponse.toObject = function(includeInstance, msg) {
-		  var obj = {
-		userId: msg.getUserId_asB64(),
-		authToken: jspb.Message.getFieldWithDefault(msg, 2, ""),
-		accessTokensList: jspb.Message.toObjectList(msg.getAccessTokensList(),
-		    proto.auth.AccessTokenMap.toObject, includeInstance)
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.UserLoginResponse}
-		 */
-		proto.auth.UserLoginResponse.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.UserLoginResponse;
-		  return proto.auth.UserLoginResponse.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.UserLoginResponse} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.UserLoginResponse}
-		 */
-		proto.auth.UserLoginResponse.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    case 1:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setUserId(value);
-		      break;
-		    case 2:
-		      var value = /** @type {string} */ (reader.readString());
-		      msg.setAuthToken(value);
-		      break;
-		    case 3:
-		      var value = new proto.auth.AccessTokenMap;
-		      reader.readMessage(value,proto.auth.AccessTokenMap.deserializeBinaryFromReader);
-		      msg.addAccessTokens(value);
-		      break;
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserLoginResponse.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.UserLoginResponse.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.UserLoginResponse} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserLoginResponse.serializeBinaryToWriter = function(message, writer) {
-		  var f = undefined;
-		  f = message.getUserId_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
-		      1,
-		      f
-		    );
-		  }
-		  f = message.getAuthToken();
-		  if (f.length > 0) {
-		    writer.writeString(
-		      2,
-		      f
-		    );
-		  }
-		  f = message.getAccessTokensList();
-		  if (f.length > 0) {
-		    writer.writeRepeatedMessage(
-		      3,
-		      f,
-		      proto.auth.AccessTokenMap.serializeBinaryToWriter
-		    );
-		  }
-		};
-
-
-		/**
-		 * optional bytes user_id = 1;
-		 * @return {!(string|Uint8Array)}
-		 */
-		proto.auth.UserLoginResponse.prototype.getUserId = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-		};
-
-
-		/**
-		 * optional bytes user_id = 1;
-		 * This is a type-conversion wrapper around `getUserId()`
-		 * @return {string}
-		 */
-		proto.auth.UserLoginResponse.prototype.getUserId_asB64 = function() {
-		  return /** @type {string} */ (jspb.Message.bytesAsB64(
-		      this.getUserId()));
-		};
-
-
-		/**
-		 * optional bytes user_id = 1;
-		 * Note that Uint8Array is not supported on all browsers.
-		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getUserId()`
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserLoginResponse.prototype.getUserId_asU8 = function() {
-		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-		      this.getUserId()));
-		};
-
-
-		/**
-		 * @param {!(string|Uint8Array)} value
-		 * @return {!proto.auth.UserLoginResponse} returns this
-		 */
-		proto.auth.UserLoginResponse.prototype.setUserId = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 1, value);
-		};
-
-
-		/**
-		 * optional string auth_token = 2;
-		 * @return {string}
-		 */
-		proto.auth.UserLoginResponse.prototype.getAuthToken = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-		};
-
-
-		/**
-		 * @param {string} value
-		 * @return {!proto.auth.UserLoginResponse} returns this
-		 */
-		proto.auth.UserLoginResponse.prototype.setAuthToken = function(value) {
-		  return jspb.Message.setProto3StringField(this, 2, value);
-		};
-
-
-		/**
-		 * repeated AccessTokenMap access_tokens = 3;
-		 * @return {!Array<!proto.auth.AccessTokenMap>}
-		 */
-		proto.auth.UserLoginResponse.prototype.getAccessTokensList = function() {
-		  return /** @type{!Array<!proto.auth.AccessTokenMap>} */ (
-		    jspb.Message.getRepeatedWrapperField(this, proto.auth.AccessTokenMap, 3));
-		};
-
-
-		/**
-		 * @param {!Array<!proto.auth.AccessTokenMap>} value
-		 * @return {!proto.auth.UserLoginResponse} returns this
-		*/
-		proto.auth.UserLoginResponse.prototype.setAccessTokensList = function(value) {
-		  return jspb.Message.setRepeatedWrapperField(this, 3, value);
-		};
-
-
-		/**
-		 * @param {!proto.auth.AccessTokenMap=} opt_value
-		 * @param {number=} opt_index
-		 * @return {!proto.auth.AccessTokenMap}
-		 */
-		proto.auth.UserLoginResponse.prototype.addAccessTokens = function(opt_value, opt_index) {
-		  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.auth.AccessTokenMap, opt_index);
-		};
-
-
-		/**
-		 * Clears the list making it empty but non-null.
-		 * @return {!proto.auth.UserLoginResponse} returns this
-		 */
-		proto.auth.UserLoginResponse.prototype.clearAccessTokensList = function() {
-		  return this.setAccessTokensList([]);
-		};
-
-
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.UserRefreshRequest.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.UserRefreshRequest.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.UserRefreshRequest} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserRefreshRequest.toObject = function(includeInstance, msg) {
-		  var obj = {
-		apiId: msg.getApiId_asB64(),
-		accessToken: jspb.Message.getFieldWithDefault(msg, 2, ""),
-		refreshToken: jspb.Message.getFieldWithDefault(msg, 3, "")
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.UserRefreshRequest}
-		 */
-		proto.auth.UserRefreshRequest.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.UserRefreshRequest;
-		  return proto.auth.UserRefreshRequest.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.UserRefreshRequest} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.UserRefreshRequest}
-		 */
-		proto.auth.UserRefreshRequest.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    case 1:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setApiId(value);
-		      break;
-		    case 2:
-		      var value = /** @type {string} */ (reader.readString());
-		      msg.setAccessToken(value);
-		      break;
-		    case 3:
-		      var value = /** @type {string} */ (reader.readString());
-		      msg.setRefreshToken(value);
-		      break;
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserRefreshRequest.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.UserRefreshRequest.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.UserRefreshRequest} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserRefreshRequest.serializeBinaryToWriter = function(message, writer) {
-		  var f = undefined;
-		  f = message.getApiId_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
-		      1,
-		      f
-		    );
-		  }
-		  f = message.getAccessToken();
-		  if (f.length > 0) {
-		    writer.writeString(
-		      2,
-		      f
-		    );
-		  }
-		  f = message.getRefreshToken();
-		  if (f.length > 0) {
-		    writer.writeString(
-		      3,
-		      f
-		    );
-		  }
-		};
-
-
-		/**
-		 * optional bytes api_id = 1;
-		 * @return {!(string|Uint8Array)}
-		 */
-		proto.auth.UserRefreshRequest.prototype.getApiId = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-		};
-
-
-		/**
-		 * optional bytes api_id = 1;
-		 * This is a type-conversion wrapper around `getApiId()`
-		 * @return {string}
-		 */
-		proto.auth.UserRefreshRequest.prototype.getApiId_asB64 = function() {
-		  return /** @type {string} */ (jspb.Message.bytesAsB64(
-		      this.getApiId()));
-		};
-
-
-		/**
-		 * optional bytes api_id = 1;
-		 * Note that Uint8Array is not supported on all browsers.
-		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getApiId()`
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserRefreshRequest.prototype.getApiId_asU8 = function() {
-		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-		      this.getApiId()));
-		};
-
-
-		/**
-		 * @param {!(string|Uint8Array)} value
-		 * @return {!proto.auth.UserRefreshRequest} returns this
-		 */
-		proto.auth.UserRefreshRequest.prototype.setApiId = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 1, value);
-		};
-
-
-		/**
-		 * optional string access_token = 2;
-		 * @return {string}
-		 */
-		proto.auth.UserRefreshRequest.prototype.getAccessToken = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-		};
-
-
-		/**
-		 * @param {string} value
-		 * @return {!proto.auth.UserRefreshRequest} returns this
-		 */
-		proto.auth.UserRefreshRequest.prototype.setAccessToken = function(value) {
-		  return jspb.Message.setProto3StringField(this, 2, value);
-		};
-
-
-		/**
-		 * optional string refresh_token = 3;
-		 * @return {string}
-		 */
-		proto.auth.UserRefreshRequest.prototype.getRefreshToken = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-		};
-
-
-		/**
-		 * @param {string} value
-		 * @return {!proto.auth.UserRefreshRequest} returns this
-		 */
-		proto.auth.UserRefreshRequest.prototype.setRefreshToken = function(value) {
-		  return jspb.Message.setProto3StringField(this, 3, value);
-		};
-
-
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.UserRefreshResponse.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.UserRefreshResponse.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.UserRefreshResponse} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserRefreshResponse.toObject = function(includeInstance, msg) {
-		  var obj = {
-		accessToken: jspb.Message.getFieldWithDefault(msg, 1, ""),
-		refreshToken: jspb.Message.getFieldWithDefault(msg, 2, "")
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.UserRefreshResponse}
-		 */
-		proto.auth.UserRefreshResponse.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.UserRefreshResponse;
-		  return proto.auth.UserRefreshResponse.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.UserRefreshResponse} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.UserRefreshResponse}
-		 */
-		proto.auth.UserRefreshResponse.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    case 1:
-		      var value = /** @type {string} */ (reader.readString());
-		      msg.setAccessToken(value);
-		      break;
-		    case 2:
-		      var value = /** @type {string} */ (reader.readString());
-		      msg.setRefreshToken(value);
-		      break;
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserRefreshResponse.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.UserRefreshResponse.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.UserRefreshResponse} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserRefreshResponse.serializeBinaryToWriter = function(message, writer) {
-		  var f = undefined;
-		  f = message.getAccessToken();
-		  if (f.length > 0) {
-		    writer.writeString(
-		      1,
-		      f
-		    );
-		  }
-		  f = message.getRefreshToken();
-		  if (f.length > 0) {
-		    writer.writeString(
-		      2,
-		      f
-		    );
-		  }
-		};
-
-
-		/**
-		 * optional string access_token = 1;
-		 * @return {string}
-		 */
-		proto.auth.UserRefreshResponse.prototype.getAccessToken = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-		};
-
-
-		/**
-		 * @param {string} value
-		 * @return {!proto.auth.UserRefreshResponse} returns this
-		 */
-		proto.auth.UserRefreshResponse.prototype.setAccessToken = function(value) {
-		  return jspb.Message.setProto3StringField(this, 1, value);
-		};
-
-
-		/**
-		 * optional string refresh_token = 2;
-		 * @return {string}
-		 */
-		proto.auth.UserRefreshResponse.prototype.getRefreshToken = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-		};
-
-
-		/**
-		 * @param {string} value
-		 * @return {!proto.auth.UserRefreshResponse} returns this
-		 */
-		proto.auth.UserRefreshResponse.prototype.setRefreshToken = function(value) {
-		  return jspb.Message.setProto3StringField(this, 2, value);
-		};
-
-
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.UserLogoutRequest.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.UserLogoutRequest.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.UserLogoutRequest} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserLogoutRequest.toObject = function(includeInstance, msg) {
-		  var obj = {
-		userId: msg.getUserId_asB64(),
-		authToken: jspb.Message.getFieldWithDefault(msg, 2, "")
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.UserLogoutRequest}
-		 */
-		proto.auth.UserLogoutRequest.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.UserLogoutRequest;
-		  return proto.auth.UserLogoutRequest.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.UserLogoutRequest} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.UserLogoutRequest}
-		 */
-		proto.auth.UserLogoutRequest.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    case 1:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setUserId(value);
-		      break;
-		    case 2:
-		      var value = /** @type {string} */ (reader.readString());
-		      msg.setAuthToken(value);
-		      break;
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserLogoutRequest.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.UserLogoutRequest.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.UserLogoutRequest} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserLogoutRequest.serializeBinaryToWriter = function(message, writer) {
-		  var f = undefined;
-		  f = message.getUserId_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
-		      1,
-		      f
-		    );
-		  }
-		  f = message.getAuthToken();
-		  if (f.length > 0) {
-		    writer.writeString(
-		      2,
-		      f
-		    );
-		  }
-		};
-
-
-		/**
-		 * optional bytes user_id = 1;
-		 * @return {!(string|Uint8Array)}
-		 */
-		proto.auth.UserLogoutRequest.prototype.getUserId = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-		};
-
-
-		/**
-		 * optional bytes user_id = 1;
-		 * This is a type-conversion wrapper around `getUserId()`
-		 * @return {string}
-		 */
-		proto.auth.UserLogoutRequest.prototype.getUserId_asB64 = function() {
-		  return /** @type {string} */ (jspb.Message.bytesAsB64(
-		      this.getUserId()));
-		};
-
-
-		/**
-		 * optional bytes user_id = 1;
-		 * Note that Uint8Array is not supported on all browsers.
-		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getUserId()`
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserLogoutRequest.prototype.getUserId_asU8 = function() {
-		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-		      this.getUserId()));
-		};
-
-
-		/**
-		 * @param {!(string|Uint8Array)} value
-		 * @return {!proto.auth.UserLogoutRequest} returns this
-		 */
-		proto.auth.UserLogoutRequest.prototype.setUserId = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 1, value);
-		};
-
-
-		/**
-		 * optional string auth_token = 2;
-		 * @return {string}
-		 */
-		proto.auth.UserLogoutRequest.prototype.getAuthToken = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-		};
-
-
-		/**
-		 * @param {string} value
-		 * @return {!proto.auth.UserLogoutRequest} returns this
-		 */
-		proto.auth.UserLogoutRequest.prototype.setAuthToken = function(value) {
-		  return jspb.Message.setProto3StringField(this, 2, value);
-		};
-
-
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
-		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.auth.UserLogoutResponse.prototype.toObject = function(opt_includeInstance) {
-		  return proto.auth.UserLogoutResponse.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.auth.UserLogoutResponse} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserLogoutResponse.toObject = function(includeInstance, msg) {
-		  var obj = {
-
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.auth.UserLogoutResponse}
-		 */
-		proto.auth.UserLogoutResponse.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.auth.UserLogoutResponse;
-		  return proto.auth.UserLogoutResponse.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.auth.UserLogoutResponse} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.auth.UserLogoutResponse}
-		 */
-		proto.auth.UserLogoutResponse.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.auth.UserLogoutResponse.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.auth.UserLogoutResponse.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.auth.UserLogoutResponse} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.auth.UserLogoutResponse.serializeBinaryToWriter = function(message, writer) {
-		};
-
-
-		goog.object.extend(exports$1, proto.auth); 
-	} (auth_pb));
-	return auth_pb;
-}
-
-/**
- * @fileoverview gRPC-Web generated client stub for auth
- * @enhanceable
- * @public
- */
-
-var auth_grpc_web_pb;
-var hasRequiredAuth_grpc_web_pb;
-
-function requireAuth_grpc_web_pb () {
-	if (hasRequiredAuth_grpc_web_pb) return auth_grpc_web_pb;
-	hasRequiredAuth_grpc_web_pb = 1;
-	// Code generated by protoc-gen-grpc-web. DO NOT EDIT.
-	// versions:
-	// 	protoc-gen-grpc-web v2.0.2
-	// 	protoc              v6.33.1
-	// source: auth/auth.proto
-
-
-	/* eslint-disable */
-	// @ts-nocheck
-
-
-
-	const grpc = {};
-	grpc.web = require$$0$1;
-
-	const proto = {};
-	proto.auth = requireAuth_pb();
-
-	/**
-	 * @param {string} hostname
-	 * @param {?Object} credentials
-	 * @param {?grpc.web.ClientOptions} options
-	 * @constructor
-	 * @struct
-	 * @final
-	 */
-	proto.auth.AuthServiceClient =
-	    function(hostname, credentials, options) {
-	  if (!options) options = {};
-	  options.format = 'text';
-
-	  /**
-	   * @private @const {!grpc.web.GrpcWebClientBase} The client
-	   */
-	  this.client_ = new grpc.web.GrpcWebClientBase(options);
-
-	  /**
-	   * @private @const {string} The hostname
-	   */
-	  this.hostname_ = hostname.replace(/\/+$/, '');
-
-	};
-
-
-	/**
-	 * @param {string} hostname
-	 * @param {?Object} credentials
-	 * @param {?grpc.web.ClientOptions} options
-	 * @constructor
-	 * @struct
-	 * @final
-	 */
-	proto.auth.AuthServicePromiseClient =
-	    function(hostname, credentials, options) {
-	  if (!options) options = {};
-	  options.format = 'text';
-
-	  /**
-	   * @private @const {!grpc.web.GrpcWebClientBase} The client
-	   */
-	  this.client_ = new grpc.web.GrpcWebClientBase(options);
-
-	  /**
-	   * @private @const {string} The hostname
-	   */
-	  this.hostname_ = hostname.replace(/\/+$/, '');
-
-	};
-
-
-	/**
-	 * @const
-	 * @type {!grpc.web.MethodDescriptor<
-	 *   !proto.auth.ApiKeyRequest,
-	 *   !proto.auth.ApiKeyResponse>}
-	 */
-	const methodDescriptor_AuthService_ApiLoginKey = new grpc.web.MethodDescriptor(
-	  '/auth.AuthService/ApiLoginKey',
-	  grpc.web.MethodType.UNARY,
-	  proto.auth.ApiKeyRequest,
-	  proto.auth.ApiKeyResponse,
-	  /**
-	   * @param {!proto.auth.ApiKeyRequest} request
-	   * @return {!Uint8Array}
-	   */
-	  function(request) {
-	    return request.serializeBinary();
-	  },
-	  proto.auth.ApiKeyResponse.deserializeBinary
-	);
-
-
-	/**
-	 * @param {!proto.auth.ApiKeyRequest} request The
-	 *     request proto
-	 * @param {?Object<string, string>} metadata User defined
-	 *     call metadata
-	 * @param {function(?grpc.web.RpcError, ?proto.auth.ApiKeyResponse)}
-	 *     callback The callback function(error, response)
-	 * @return {!grpc.web.ClientReadableStream<!proto.auth.ApiKeyResponse>|undefined}
-	 *     The XHR Node Readable Stream
-	 */
-	proto.auth.AuthServiceClient.prototype.apiLoginKey =
-	    function(request, metadata, callback) {
-	  return this.client_.rpcCall(this.hostname_ +
-	      '/auth.AuthService/ApiLoginKey',
-	      request,
-	      metadata || {},
-	      methodDescriptor_AuthService_ApiLoginKey,
-	      callback);
-	};
-
-
-	/**
-	 * @param {!proto.auth.ApiKeyRequest} request The
-	 *     request proto
-	 * @param {?Object<string, string>=} metadata User defined
-	 *     call metadata
-	 * @return {!Promise<!proto.auth.ApiKeyResponse>}
-	 *     Promise that resolves to the response
-	 */
-	proto.auth.AuthServicePromiseClient.prototype.apiLoginKey =
-	    function(request, metadata) {
-	  return this.client_.unaryCall(this.hostname_ +
-	      '/auth.AuthService/ApiLoginKey',
-	      request,
-	      metadata || {},
-	      methodDescriptor_AuthService_ApiLoginKey);
-	};
-
-
-	/**
-	 * @const
-	 * @type {!grpc.web.MethodDescriptor<
-	 *   !proto.auth.ApiLoginRequest,
-	 *   !proto.auth.ApiLoginResponse>}
-	 */
-	const methodDescriptor_AuthService_ApiLogin = new grpc.web.MethodDescriptor(
-	  '/auth.AuthService/ApiLogin',
-	  grpc.web.MethodType.UNARY,
-	  proto.auth.ApiLoginRequest,
-	  proto.auth.ApiLoginResponse,
-	  /**
-	   * @param {!proto.auth.ApiLoginRequest} request
-	   * @return {!Uint8Array}
-	   */
-	  function(request) {
-	    return request.serializeBinary();
-	  },
-	  proto.auth.ApiLoginResponse.deserializeBinary
-	);
-
-
-	/**
-	 * @param {!proto.auth.ApiLoginRequest} request The
-	 *     request proto
-	 * @param {?Object<string, string>} metadata User defined
-	 *     call metadata
-	 * @param {function(?grpc.web.RpcError, ?proto.auth.ApiLoginResponse)}
-	 *     callback The callback function(error, response)
-	 * @return {!grpc.web.ClientReadableStream<!proto.auth.ApiLoginResponse>|undefined}
-	 *     The XHR Node Readable Stream
-	 */
-	proto.auth.AuthServiceClient.prototype.apiLogin =
-	    function(request, metadata, callback) {
-	  return this.client_.rpcCall(this.hostname_ +
-	      '/auth.AuthService/ApiLogin',
-	      request,
-	      metadata || {},
-	      methodDescriptor_AuthService_ApiLogin,
-	      callback);
-	};
-
-
-	/**
-	 * @param {!proto.auth.ApiLoginRequest} request The
-	 *     request proto
-	 * @param {?Object<string, string>=} metadata User defined
-	 *     call metadata
-	 * @return {!Promise<!proto.auth.ApiLoginResponse>}
-	 *     Promise that resolves to the response
-	 */
-	proto.auth.AuthServicePromiseClient.prototype.apiLogin =
-	    function(request, metadata) {
-	  return this.client_.unaryCall(this.hostname_ +
-	      '/auth.AuthService/ApiLogin',
-	      request,
-	      metadata || {},
-	      methodDescriptor_AuthService_ApiLogin);
-	};
-
-
-	/**
-	 * @const
-	 * @type {!grpc.web.MethodDescriptor<
-	 *   !proto.auth.UserKeyRequest,
-	 *   !proto.auth.UserKeyResponse>}
-	 */
-	const methodDescriptor_AuthService_UserLoginKey = new grpc.web.MethodDescriptor(
-	  '/auth.AuthService/UserLoginKey',
-	  grpc.web.MethodType.UNARY,
-	  proto.auth.UserKeyRequest,
-	  proto.auth.UserKeyResponse,
-	  /**
-	   * @param {!proto.auth.UserKeyRequest} request
-	   * @return {!Uint8Array}
-	   */
-	  function(request) {
-	    return request.serializeBinary();
-	  },
-	  proto.auth.UserKeyResponse.deserializeBinary
-	);
-
-
-	/**
-	 * @param {!proto.auth.UserKeyRequest} request The
-	 *     request proto
-	 * @param {?Object<string, string>} metadata User defined
-	 *     call metadata
-	 * @param {function(?grpc.web.RpcError, ?proto.auth.UserKeyResponse)}
-	 *     callback The callback function(error, response)
-	 * @return {!grpc.web.ClientReadableStream<!proto.auth.UserKeyResponse>|undefined}
-	 *     The XHR Node Readable Stream
-	 */
-	proto.auth.AuthServiceClient.prototype.userLoginKey =
-	    function(request, metadata, callback) {
-	  return this.client_.rpcCall(this.hostname_ +
-	      '/auth.AuthService/UserLoginKey',
-	      request,
-	      metadata || {},
-	      methodDescriptor_AuthService_UserLoginKey,
-	      callback);
-	};
-
-
-	/**
-	 * @param {!proto.auth.UserKeyRequest} request The
-	 *     request proto
-	 * @param {?Object<string, string>=} metadata User defined
-	 *     call metadata
-	 * @return {!Promise<!proto.auth.UserKeyResponse>}
-	 *     Promise that resolves to the response
-	 */
-	proto.auth.AuthServicePromiseClient.prototype.userLoginKey =
-	    function(request, metadata) {
-	  return this.client_.unaryCall(this.hostname_ +
-	      '/auth.AuthService/UserLoginKey',
-	      request,
-	      metadata || {},
-	      methodDescriptor_AuthService_UserLoginKey);
-	};
-
-
-	/**
-	 * @const
-	 * @type {!grpc.web.MethodDescriptor<
-	 *   !proto.auth.UserLoginRequest,
-	 *   !proto.auth.UserLoginResponse>}
-	 */
-	const methodDescriptor_AuthService_UserLogin = new grpc.web.MethodDescriptor(
-	  '/auth.AuthService/UserLogin',
-	  grpc.web.MethodType.UNARY,
-	  proto.auth.UserLoginRequest,
-	  proto.auth.UserLoginResponse,
-	  /**
-	   * @param {!proto.auth.UserLoginRequest} request
-	   * @return {!Uint8Array}
-	   */
-	  function(request) {
-	    return request.serializeBinary();
-	  },
-	  proto.auth.UserLoginResponse.deserializeBinary
-	);
-
-
-	/**
-	 * @param {!proto.auth.UserLoginRequest} request The
-	 *     request proto
-	 * @param {?Object<string, string>} metadata User defined
-	 *     call metadata
-	 * @param {function(?grpc.web.RpcError, ?proto.auth.UserLoginResponse)}
-	 *     callback The callback function(error, response)
-	 * @return {!grpc.web.ClientReadableStream<!proto.auth.UserLoginResponse>|undefined}
-	 *     The XHR Node Readable Stream
-	 */
-	proto.auth.AuthServiceClient.prototype.userLogin =
-	    function(request, metadata, callback) {
-	  return this.client_.rpcCall(this.hostname_ +
-	      '/auth.AuthService/UserLogin',
-	      request,
-	      metadata || {},
-	      methodDescriptor_AuthService_UserLogin,
-	      callback);
-	};
-
-
-	/**
-	 * @param {!proto.auth.UserLoginRequest} request The
-	 *     request proto
-	 * @param {?Object<string, string>=} metadata User defined
-	 *     call metadata
-	 * @return {!Promise<!proto.auth.UserLoginResponse>}
-	 *     Promise that resolves to the response
-	 */
-	proto.auth.AuthServicePromiseClient.prototype.userLogin =
-	    function(request, metadata) {
-	  return this.client_.unaryCall(this.hostname_ +
-	      '/auth.AuthService/UserLogin',
-	      request,
-	      metadata || {},
-	      methodDescriptor_AuthService_UserLogin);
-	};
-
-
-	/**
-	 * @const
-	 * @type {!grpc.web.MethodDescriptor<
-	 *   !proto.auth.UserRefreshRequest,
-	 *   !proto.auth.UserRefreshResponse>}
-	 */
-	const methodDescriptor_AuthService_UserRefresh = new grpc.web.MethodDescriptor(
-	  '/auth.AuthService/UserRefresh',
-	  grpc.web.MethodType.UNARY,
-	  proto.auth.UserRefreshRequest,
-	  proto.auth.UserRefreshResponse,
-	  /**
-	   * @param {!proto.auth.UserRefreshRequest} request
-	   * @return {!Uint8Array}
-	   */
-	  function(request) {
-	    return request.serializeBinary();
-	  },
-	  proto.auth.UserRefreshResponse.deserializeBinary
-	);
-
-
-	/**
-	 * @param {!proto.auth.UserRefreshRequest} request The
-	 *     request proto
-	 * @param {?Object<string, string>} metadata User defined
-	 *     call metadata
-	 * @param {function(?grpc.web.RpcError, ?proto.auth.UserRefreshResponse)}
-	 *     callback The callback function(error, response)
-	 * @return {!grpc.web.ClientReadableStream<!proto.auth.UserRefreshResponse>|undefined}
-	 *     The XHR Node Readable Stream
-	 */
-	proto.auth.AuthServiceClient.prototype.userRefresh =
-	    function(request, metadata, callback) {
-	  return this.client_.rpcCall(this.hostname_ +
-	      '/auth.AuthService/UserRefresh',
-	      request,
-	      metadata || {},
-	      methodDescriptor_AuthService_UserRefresh,
-	      callback);
-	};
-
-
-	/**
-	 * @param {!proto.auth.UserRefreshRequest} request The
-	 *     request proto
-	 * @param {?Object<string, string>=} metadata User defined
-	 *     call metadata
-	 * @return {!Promise<!proto.auth.UserRefreshResponse>}
-	 *     Promise that resolves to the response
-	 */
-	proto.auth.AuthServicePromiseClient.prototype.userRefresh =
-	    function(request, metadata) {
-	  return this.client_.unaryCall(this.hostname_ +
-	      '/auth.AuthService/UserRefresh',
-	      request,
-	      metadata || {},
-	      methodDescriptor_AuthService_UserRefresh);
-	};
-
-
-	/**
-	 * @const
-	 * @type {!grpc.web.MethodDescriptor<
-	 *   !proto.auth.UserLogoutRequest,
-	 *   !proto.auth.UserLogoutResponse>}
-	 */
-	const methodDescriptor_AuthService_UserLogout = new grpc.web.MethodDescriptor(
-	  '/auth.AuthService/UserLogout',
-	  grpc.web.MethodType.UNARY,
-	  proto.auth.UserLogoutRequest,
-	  proto.auth.UserLogoutResponse,
-	  /**
-	   * @param {!proto.auth.UserLogoutRequest} request
-	   * @return {!Uint8Array}
-	   */
-	  function(request) {
-	    return request.serializeBinary();
-	  },
-	  proto.auth.UserLogoutResponse.deserializeBinary
-	);
-
-
-	/**
-	 * @param {!proto.auth.UserLogoutRequest} request The
-	 *     request proto
-	 * @param {?Object<string, string>} metadata User defined
-	 *     call metadata
-	 * @param {function(?grpc.web.RpcError, ?proto.auth.UserLogoutResponse)}
-	 *     callback The callback function(error, response)
-	 * @return {!grpc.web.ClientReadableStream<!proto.auth.UserLogoutResponse>|undefined}
-	 *     The XHR Node Readable Stream
-	 */
-	proto.auth.AuthServiceClient.prototype.userLogout =
-	    function(request, metadata, callback) {
-	  return this.client_.rpcCall(this.hostname_ +
-	      '/auth.AuthService/UserLogout',
-	      request,
-	      metadata || {},
-	      methodDescriptor_AuthService_UserLogout,
-	      callback);
-	};
-
-
-	/**
-	 * @param {!proto.auth.UserLogoutRequest} request The
-	 *     request proto
-	 * @param {?Object<string, string>=} metadata User defined
-	 *     call metadata
-	 * @return {!Promise<!proto.auth.UserLogoutResponse>}
-	 *     Promise that resolves to the response
-	 */
-	proto.auth.AuthServicePromiseClient.prototype.userLogout =
-	    function(request, metadata) {
-	  return this.client_.unaryCall(this.hostname_ +
-	      '/auth.AuthService/UserLogout',
-	      request,
-	      metadata || {},
-	      methodDescriptor_AuthService_UserLogout);
-	};
-
-
-	auth_grpc_web_pb = proto.auth;
-	return auth_grpc_web_pb;
-}
-
-var auth_grpc_web_pbExports = requireAuth_grpc_web_pb();
-var pb_auth = /*@__PURE__*/getDefaultExportFromCjs(auth_grpc_web_pbExports);
-
-/**
- * @typedef {(string|Uint8Array)} Uuid
- */
-
-/**
- * @typedef {Object} ServerConfig
- * @property {string} address
- * @property {?string} token
- */
-
-/**
- * @typedef {Object} UserKeyResponse
- * @property {string} public_key
- */
-
-/**
- * @typedef {Object} UserLoginRequest
- * @property {string} username
- * @property {string} password
- */
-
-/**
- * @typedef {Object} AccessTokenMap
- * @property {Uuid} api_id
- * @property {string} access_token
- * @property {string} refresh_token
- */
-
-/**
- * @param {*} r 
- * @returns {AccessTokenMap}
- */
-function get_access_token(r) {
-    return {
-        api_id: base64_to_uuid_hex(r.apiId),
-        access_token: r.accessToken,
-        refresh_token: r.refreshToken
-    };
-}
-
-/**
- * @typedef {Object} UserLoginResponse
- * @property {Uuid} user_id
- * @property {string} auth_token
- * @property {AccessTokenMap[]} access_tokens
- */
-
-/**
- * @param {*} r 
- * @returns {UserLoginResponse}
- */
-function get_login_response(r) {
-    return {
-        user_id: base64_to_uuid_hex(r.userId),
-        auth_token: r.authToken,
-        access_tokens: r.accessTokensList.map((v) => {return get_access_token(v)})
-    };
-}
-
-/**
- * @typedef {Object} UserRefreshRequest
- * @property {Uuid} api_id
- * @property {string} access_token
- * @property {string} refresh_token
- */
-
-/**
- * @typedef {Object} UserRefreshResponse
- * @property {string} access_token
- * @property {string} refresh_token
- */
-
-/**
- * @param {*} r 
- * @returns {UserRefreshResponse}
- */
-function get_refresh_response(r) {
-    return {
-        access_token: r.accessToken,
-        refresh_token: r.refreshToken
-    };
-}
-
-/**
- * @typedef {Object} UserLogoutRequest
- * @property {Uuid} user_id
- * @property {string} auth_token
- */
-
-/**
- * Import a PEM encoded RSA public key, to use for RSA-OAEP / RSASSA-PKCS1-v1_5 encryption
- * @param {string} pem 
- * @returns 
- */
-function importKey(pem) {
-    try {
-        const binaryDerString = window.atob(pem);
-        const binaryDer = string_to_array_buffer(binaryDerString);
-        return window.crypto.subtle.importKey(
-            "spki",
-            binaryDer,
-            {
-                name: "RSA-OAEP",
-                hash: "SHA-256"
-            },
-            true,
-            ["encrypt"]
-        );
-    } catch {
-        return null;
-    }
-}
-
-/**
- * Get the encoded message, encrypt it and display a representation of the ciphertext
- * @param {string} message 
- * @param {CryptoKey} encryptionKey 
- * @returns 
- */
-async function encryptMessage(message, encryptionKey)
-{
-    try {
-        const enc = new TextEncoder();
-        const encoded = enc.encode(message);
-        const buf = await window.crypto.subtle.encrypt(
-            {
-                name: "RSA-OAEP"
-            },
-            encryptionKey,
-            encoded
-        );
-        const chars = String.fromCharCode.apply(null, new Uint8Array(buf));
-        return btoa(chars);
-    } catch {
-        return null;
-    }
-}
-
-
-/**
- * Get user login key
- * @param {ServerConfig} server server configuration: address, token
- * @param {} request empty object
- * @return {Promise<UserKeyResponse>} user key: public_key
- */
-async function user_login_key(server, request) {
-    const client = new pb_auth.AuthServicePromiseClient(server.address, null, null);
-    const userKeyRequest = new pb_auth.UserKeyRequest();
-    return client.userLoginKey(userKeyRequest, metadata(server))
-        .then(response => response.toObject());
-}
-
-/**
- * User login
- * @param {ServerConfig} server server configuration: address, token
- * @param {UserLoginRequest} request user login request: username, password
- * @return {Promise<UserLoginResponse>} user login response: user_id, auth_token, access_tokens
- */
-async function user_login(server, request) {
-    const client = new pb_auth.AuthServicePromiseClient(server.address, null, null);
-    const userKeyRequest = new pb_auth.UserKeyRequest();
-    const userLoginRequest = new pb_auth.UserLoginRequest();
-    userLoginRequest.setUsername(request.username);
-    const key = await client.userLoginKey(userKeyRequest, metadata(server))
-        .then(response => response.toObject().publicKey);
-    const pubkey = await importKey(key);
-    const ciphertext = await encryptMessage(request.password, pubkey);
-    userLoginRequest.setPassword(ciphertext);
-    return client.userLogin(userLoginRequest, metadata(server))
-        .then(response => get_login_response(response.toObject()));
-}
-
-/**
- * Refresh user token
- * @param {ServerConfig} server server configuration: address, token
- * @param {UserRefreshRequest} request user refresh request: api_id, access_token, refresh_token
- * @return {Promise<UserRefreshResponse>} user refresh response: access_token, refresh_token
- */
-async function user_refresh(server, request) {
-    const client = new pb_auth.AuthServicePromiseClient(server.address, null, null);
-    const userRefreshRequest = new pb_auth.UserRefreshRequest();
-    userRefreshRequest.setApiId(uuid_hex_to_base64(request.api_id));
-    userRefreshRequest.setAccessToken(request.access_token);
-    userRefreshRequest.setRefreshToken(request.refresh_token);
-    return client.userRefresh(userRefreshRequest, metadata(server))
-        .then(response => get_refresh_response(response.toObject()));
-}
-
-/**
- * User logout
- * @param {ServerConfig} server server configuration: address, token
- * @param {UserLogoutRequest} request user logout request: user_id, auth_token
- * @return {Promise<{}>} user logout response
- */
-async function user_logout(server, request) {
-    const client = new pb_auth.AuthServicePromiseClient(server.address, null, null);
-    const userLogoutRequest = new pb_auth.UserLogoutRequest();
-    userLogoutRequest.setUserId(uuid_hex_to_base64(request.user_id));
-    userLogoutRequest.setAuthToken(request.auth_token);
-    return client.userLogout(userLogoutRequest, metadata(server))
         .then(response => response.toObject());
 }
 

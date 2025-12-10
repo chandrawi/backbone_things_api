@@ -21,10 +21,10 @@ class ApiSchema(_message.Message):
     address: str
     category: str
     description: str
-    password: str
+    password: bytes
     access_key: bytes
     procedures: _containers.RepeatedCompositeFieldContainer[ProcedureSchema]
-    def __init__(self, id: _Optional[bytes] = ..., name: _Optional[str] = ..., address: _Optional[str] = ..., category: _Optional[str] = ..., description: _Optional[str] = ..., password: _Optional[str] = ..., access_key: _Optional[bytes] = ..., procedures: _Optional[_Iterable[_Union[ProcedureSchema, _Mapping]]] = ...) -> None: ...
+    def __init__(self, id: _Optional[bytes] = ..., name: _Optional[str] = ..., address: _Optional[str] = ..., category: _Optional[str] = ..., description: _Optional[str] = ..., password: _Optional[bytes] = ..., access_key: _Optional[bytes] = ..., procedures: _Optional[_Iterable[_Union[ProcedureSchema, _Mapping]]] = ...) -> None: ...
 
 class ApiId(_message.Message):
     __slots__ = ("id",)
@@ -72,9 +72,9 @@ class ApiUpdate(_message.Message):
     address: str
     category: str
     description: str
-    password: str
+    password: bytes
     access_key: bytes
-    def __init__(self, id: _Optional[bytes] = ..., name: _Optional[str] = ..., address: _Optional[str] = ..., category: _Optional[str] = ..., description: _Optional[str] = ..., password: _Optional[str] = ..., access_key: _Optional[bytes] = ...) -> None: ...
+    def __init__(self, id: _Optional[bytes] = ..., name: _Optional[str] = ..., address: _Optional[str] = ..., category: _Optional[str] = ..., description: _Optional[str] = ..., password: _Optional[bytes] = ..., access_key: _Optional[bytes] = ...) -> None: ...
 
 class ProcedureSchema(_message.Message):
     __slots__ = ("id", "api_id", "name", "description", "roles")

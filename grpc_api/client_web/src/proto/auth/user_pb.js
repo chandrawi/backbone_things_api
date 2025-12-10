@@ -730,7 +730,7 @@ id: msg.getId_asB64(),
 name: jspb.Message.getFieldWithDefault(msg, 2, ""),
 email: jspb.Message.getFieldWithDefault(msg, 3, ""),
 phone: jspb.Message.getFieldWithDefault(msg, 4, ""),
-password: jspb.Message.getFieldWithDefault(msg, 5, ""),
+password: msg.getPassword_asB64(),
 rolesList: jspb.Message.toObjectList(msg.getRolesList(),
     proto.user.UserRoleSchema.toObject, includeInstance)
   };
@@ -786,7 +786,7 @@ proto.user.UserSchema.deserializeBinaryFromReader = function(msg, reader) {
       msg.setPhone(value);
       break;
     case 5:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setPassword(value);
       break;
     case 6:
@@ -851,9 +851,9 @@ proto.user.UserSchema.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getPassword();
+  f = message.getPassword_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       5,
       f
     );
@@ -966,20 +966,44 @@ proto.user.UserSchema.prototype.setPhone = function(value) {
 
 
 /**
- * optional string password = 5;
- * @return {string}
+ * optional bytes password = 5;
+ * @return {!(string|Uint8Array)}
  */
 proto.user.UserSchema.prototype.getPassword = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
- * @param {string} value
+ * optional bytes password = 5;
+ * This is a type-conversion wrapper around `getPassword()`
+ * @return {string}
+ */
+proto.user.UserSchema.prototype.getPassword_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getPassword()));
+};
+
+
+/**
+ * optional bytes password = 5;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getPassword()`
+ * @return {!Uint8Array}
+ */
+proto.user.UserSchema.prototype.getPassword_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getPassword()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
  * @return {!proto.user.UserSchema} returns this
  */
 proto.user.UserSchema.prototype.setPassword = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
+  return jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -2121,7 +2145,7 @@ id: msg.getId_asB64(),
 name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
 email: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
 phone: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-password: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
+password: msg.getPassword_asB64()
   };
 
   if (includeInstance) {
@@ -2175,7 +2199,7 @@ proto.user.UserUpdate.deserializeBinaryFromReader = function(msg, reader) {
       msg.setPhone(value);
       break;
     case 5:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setPassword(value);
       break;
     default:
@@ -2235,9 +2259,9 @@ proto.user.UserUpdate.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 5));
+  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 5));
   if (f != null) {
-    writer.writeString(
+    writer.writeBytes(
       5,
       f
     );
@@ -2396,16 +2420,40 @@ proto.user.UserUpdate.prototype.hasPhone = function() {
 
 
 /**
- * optional string password = 5;
- * @return {string}
+ * optional bytes password = 5;
+ * @return {!(string|Uint8Array)}
  */
 proto.user.UserUpdate.prototype.getPassword = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
- * @param {string} value
+ * optional bytes password = 5;
+ * This is a type-conversion wrapper around `getPassword()`
+ * @return {string}
+ */
+proto.user.UserUpdate.prototype.getPassword_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getPassword()));
+};
+
+
+/**
+ * optional bytes password = 5;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getPassword()`
+ * @return {!Uint8Array}
+ */
+proto.user.UserUpdate.prototype.getPassword_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getPassword()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
  * @return {!proto.user.UserUpdate} returns this
  */
 proto.user.UserUpdate.prototype.setPassword = function(value) {

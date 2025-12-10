@@ -1,21 +1,16 @@
 from ..proto.auth import auth_pb2, auth_pb2_grpc
 from uuid import UUID
 import grpc
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_OAEP
-from Crypto.Hash import SHA256
 from ._schema import AccessToken, UserLogin, UserRefresh
+from ..common import utility
 
 
 def user_login(auth, username: str, password: str):
     with grpc.insecure_channel(auth.address) as channel:
         stub = auth_pb2_grpc.AuthServiceStub(channel)
         request = auth_pb2.UserKeyRequest()
-        response = stub.UserLoginKey(request)
-        public_key = RSA.import_key(response.public_key)
-        sha = SHA256.new()
-        chipper_rsa = PKCS1_OAEP.new(public_key, sha)
-        encrypted = chipper_rsa.encrypt(bytes(password, "utf-8"))
+        response = stub.UserPasswordKey(request)
+        encrypted = utility.encrypt_message(password, response.public_key)
         request = auth_pb2.UserLoginRequest(
             username=username,
             password=encrypted

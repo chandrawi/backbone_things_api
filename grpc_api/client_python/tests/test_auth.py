@@ -9,7 +9,7 @@ import uuid
 import dotenv
 import pytest
 from bbthings_grpc import Auth, DataType, ProfileMode
-from bbthings_grpc.common.utility import hash_password, verify_password, generate_access_key
+from bbthings_grpc.common.utility import verify_password, generate_access_key
 import utility
 
 def test_auth():
@@ -28,10 +28,9 @@ def test_auth():
 
     # create new resource API
     password_api = "Ap1_P4s5w0rd"
-    password_hash = hash_password(password_api)
     access_key = generate_access_key()
-    api_id1 = auth.create_api(uuid.uuid4(), "Resource1", "localhost:9001", "RESOURCE", "", password_hash, access_key)
-    api_id2 = auth.create_api(uuid.uuid4(), "Resource_2", "localhost:9002", "RESOURCE", "", password_hash, access_key)
+    api_id1 = auth.create_api(uuid.uuid4(), "Resource1", "localhost:9001", "RESOURCE", "", password_api, access_key)
+    api_id2 = auth.create_api(uuid.uuid4(), "Resource_2", "localhost:9002", "RESOURCE", "", password_api, access_key)
 
     # create new procedure for newly created resource API
     proc_id1 = auth.create_procedure(uuid.uuid4(), api_id1, "ReadResourceData", "")
@@ -110,13 +109,11 @@ def test_auth():
 
     # create new user and add associated roles
     password_admin = "Adm1n_P4s5w0rd"
-    password_hash = hash_password(password_admin)
-    user_id1 = auth.create_user(uuid.uuid4(), "administrator", "admin@mail.co", "+6281234567890", password_hash)
+    user_id1 = auth.create_user(uuid.uuid4(), "administrator", "admin@mail.co", "+6281234567890", password_admin)
     auth.add_user_role(user_id1, role_id1)
     auth.add_user_role(user_id1, role_id3)
     password_user = "Us3r_P4s5w0rd"
-    password_hash = hash_password(password_user)
-    user_id2 = auth.create_user(uuid.uuid4(), "username", "user@mail.co", "+6281234567890", password_hash)
+    user_id2 = auth.create_user(uuid.uuid4(), "username", "user@mail.co", "+6281234567890", password_user)
     auth.add_user_role(user_id2, role_id2)
     auth.add_user_role(user_id2, role_id3)
 
@@ -135,8 +132,7 @@ def test_auth():
 
     # update user
     password_new = "N3w_P4s5w0rd"
-    password_hash = hash_password(password_new)
-    auth.update_user(user_id2, None, None, None, password_hash)
+    auth.update_user(user_id2, None, None, None, password_new)
 
     # get updated user
     old_password = user.password

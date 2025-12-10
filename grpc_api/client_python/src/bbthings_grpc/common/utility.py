@@ -1,6 +1,9 @@
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 import random
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
+from Crypto.Hash import SHA256
 
 
 ph = PasswordHasher()
@@ -22,6 +25,14 @@ def verify_password(password: str, password_hash: str):
         return True
     except VerifyMismatchError:
         return False
+
+def encrypt_message(message: str | bytes, public_key: bytes):
+    public_key = RSA.import_key(public_key)
+    sha = SHA256.new()
+    chipper_rsa = PKCS1_OAEP.new(public_key, sha)
+    if isinstance(message, str):
+        message = bytes(message, "utf-8")
+    return chipper_rsa.encrypt(message)
 
 def generate_access_key() -> bytes:
     # Generate 32 random bytes, each in range 0..254

@@ -36,9 +36,9 @@ class UserSchema(_message.Message):
     name: str
     email: str
     phone: str
-    password: str
+    password: bytes
     roles: _containers.RepeatedCompositeFieldContainer[UserRoleSchema]
-    def __init__(self, id: _Optional[bytes] = ..., name: _Optional[str] = ..., email: _Optional[str] = ..., phone: _Optional[str] = ..., password: _Optional[str] = ..., roles: _Optional[_Iterable[_Union[UserRoleSchema, _Mapping]]] = ...) -> None: ...
+    def __init__(self, id: _Optional[bytes] = ..., name: _Optional[str] = ..., email: _Optional[str] = ..., phone: _Optional[str] = ..., password: _Optional[bytes] = ..., roles: _Optional[_Iterable[_Union[UserRoleSchema, _Mapping]]] = ...) -> None: ...
 
 class UserId(_message.Message):
     __slots__ = ("id",)
@@ -91,8 +91,8 @@ class UserUpdate(_message.Message):
     name: str
     email: str
     phone: str
-    password: str
-    def __init__(self, id: _Optional[bytes] = ..., name: _Optional[str] = ..., email: _Optional[str] = ..., phone: _Optional[str] = ..., password: _Optional[str] = ...) -> None: ...
+    password: bytes
+    def __init__(self, id: _Optional[bytes] = ..., name: _Optional[str] = ..., email: _Optional[str] = ..., phone: _Optional[str] = ..., password: _Optional[bytes] = ...) -> None: ...
 
 class UserRole(_message.Message):
     __slots__ = ("user_id", "role_id")

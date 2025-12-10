@@ -80,8 +80,8 @@ proto.auth.AuthServicePromiseClient =
  *   !proto.auth.ApiKeyRequest,
  *   !proto.auth.ApiKeyResponse>}
  */
-const methodDescriptor_AuthService_ApiLoginKey = new grpc.web.MethodDescriptor(
-  '/auth.AuthService/ApiLoginKey',
+const methodDescriptor_AuthService_ApiPasswordKey = new grpc.web.MethodDescriptor(
+  '/auth.AuthService/ApiPasswordKey',
   grpc.web.MethodType.UNARY,
   proto.auth.ApiKeyRequest,
   proto.auth.ApiKeyResponse,
@@ -106,13 +106,13 @@ const methodDescriptor_AuthService_ApiLoginKey = new grpc.web.MethodDescriptor(
  * @return {!grpc.web.ClientReadableStream<!proto.auth.ApiKeyResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.auth.AuthServiceClient.prototype.apiLoginKey =
+proto.auth.AuthServiceClient.prototype.apiPasswordKey =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/auth.AuthService/ApiLoginKey',
+      '/auth.AuthService/ApiPasswordKey',
       request,
       metadata || {},
-      methodDescriptor_AuthService_ApiLoginKey,
+      methodDescriptor_AuthService_ApiPasswordKey,
       callback);
 };
 
@@ -125,13 +125,13 @@ proto.auth.AuthServiceClient.prototype.apiLoginKey =
  * @return {!Promise<!proto.auth.ApiKeyResponse>}
  *     Promise that resolves to the response
  */
-proto.auth.AuthServicePromiseClient.prototype.apiLoginKey =
+proto.auth.AuthServicePromiseClient.prototype.apiPasswordKey =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/auth.AuthService/ApiLoginKey',
+      '/auth.AuthService/ApiPasswordKey',
       request,
       metadata || {},
-      methodDescriptor_AuthService_ApiLoginKey);
+      methodDescriptor_AuthService_ApiPasswordKey);
 };
 
 
@@ -202,8 +202,8 @@ proto.auth.AuthServicePromiseClient.prototype.apiLogin =
  *   !proto.auth.UserKeyRequest,
  *   !proto.auth.UserKeyResponse>}
  */
-const methodDescriptor_AuthService_UserLoginKey = new grpc.web.MethodDescriptor(
-  '/auth.AuthService/UserLoginKey',
+const methodDescriptor_AuthService_UserPasswordKey = new grpc.web.MethodDescriptor(
+  '/auth.AuthService/UserPasswordKey',
   grpc.web.MethodType.UNARY,
   proto.auth.UserKeyRequest,
   proto.auth.UserKeyResponse,
@@ -228,13 +228,13 @@ const methodDescriptor_AuthService_UserLoginKey = new grpc.web.MethodDescriptor(
  * @return {!grpc.web.ClientReadableStream<!proto.auth.UserKeyResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.auth.AuthServiceClient.prototype.userLoginKey =
+proto.auth.AuthServiceClient.prototype.userPasswordKey =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/auth.AuthService/UserLoginKey',
+      '/auth.AuthService/UserPasswordKey',
       request,
       metadata || {},
-      methodDescriptor_AuthService_UserLoginKey,
+      methodDescriptor_AuthService_UserPasswordKey,
       callback);
 };
 
@@ -247,13 +247,13 @@ proto.auth.AuthServiceClient.prototype.userLoginKey =
  * @return {!Promise<!proto.auth.UserKeyResponse>}
  *     Promise that resolves to the response
  */
-proto.auth.AuthServicePromiseClient.prototype.userLoginKey =
+proto.auth.AuthServicePromiseClient.prototype.userPasswordKey =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/auth.AuthService/UserLoginKey',
+      '/auth.AuthService/UserPasswordKey',
       request,
       metadata || {},
-      methodDescriptor_AuthService_UserLoginKey);
+      methodDescriptor_AuthService_UserPasswordKey);
 };
 
 

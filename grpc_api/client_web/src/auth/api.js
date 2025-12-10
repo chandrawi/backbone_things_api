@@ -1,9 +1,11 @@
 import pb_api from "../proto/auth/api_grpc_web_pb.js";
+import pb_auth from "../proto/auth/auth_grpc_web_pb.js";
 import {
     metadata,
     base64_to_uuid_hex,
     uuid_hex_to_base64
 } from "../common/utility.js";
+import { importKey, encryptMessage } from "./auth.js"
 
 
 /**
@@ -263,6 +265,8 @@ export async function list_api_option(server, request) {
  * @returns {Promise<ApiId>} api id: id
  */
 export async function create_api(server, request) {
+    const client_auth = new pb_auth.AuthServicePromiseClient(server.address, null, null);
+    const apiKeyRequest = new pb_auth.ApiKeyRequest();
     const client = new pb_api.ApiServicePromiseClient(server.address, null, null);
     const apiSchema = new pb_api.ApiSchema();
     apiSchema.setId(uuid_hex_to_base64(request.id));
@@ -270,7 +274,11 @@ export async function create_api(server, request) {
     apiSchema.setAddress(request.address);
     apiSchema.setCategory(request.category);
     apiSchema.setDescription(request.description);
-    apiSchema.setPassword(request.password);
+    const key = await client_auth.apiPasswordKey(apiKeyRequest, metadata(server))
+        .then(response => response.toObject().publicKey);
+    const pubkey = await importKey(key);
+    const ciphertext = await encryptMessage(request.password, pubkey);
+    apiSchema.setPassword(ciphertext);
     apiSchema.setAccessKey(request.access_key);
     return client.createApi(apiSchema, metadata(server))
         .then(response => getApiId(response.toObject()));
@@ -283,6 +291,8 @@ export async function create_api(server, request) {
  * @returns {Promise<{}>} update response
  */
 export async function update_api(server, request) {
+    const client_auth = new pb_auth.AuthServicePromiseClient(server.address, null, null);
+    const apiKeyRequest = new pb_auth.ApiKeyRequest();
     const client = new pb_api.ApiServicePromiseClient(server.address, null, null);
     const apiUpdate = new pb_api.ApiUpdate();
     apiUpdate.setId(uuid_hex_to_base64(request.id));
@@ -290,7 +300,13 @@ export async function update_api(server, request) {
     apiUpdate.setAddress(request.address);
     apiUpdate.setCategory(request.category);
     apiUpdate.setDescription(request.description);
-    apiUpdate.setPassword(request.password);
+    if (request.password) {
+        const key = await client_auth.apiPasswordKey(apiKeyRequest, metadata(server))
+            .then(response => response.toObject().publicKey);
+        const pubkey = await importKey(key);
+        const ciphertext = await encryptMessage(request.password, pubkey);
+        apiUpdate.setPassword(ciphertext);
+    }
     apiUpdate.setAccessKey(request.access_key);
     return client.updateApi(apiUpdate, metadata(server))
         .then(response => response.toObject());

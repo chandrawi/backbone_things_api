@@ -101,7 +101,7 @@ function get_refresh_response(r) {
  * @param {string} pem 
  * @returns 
  */
-function importKey(pem) {
+export function importKey(pem) {
     try {
         const binaryDerString = window.atob(pem);
         const binaryDer = string_to_array_buffer(binaryDerString);
@@ -126,7 +126,7 @@ function importKey(pem) {
  * @param {CryptoKey} encryptionKey 
  * @returns 
  */
-async function encryptMessage(message, encryptionKey)
+export async function encryptMessage(message, encryptionKey)
 {
     try {
         const enc = new TextEncoder();
@@ -155,7 +155,7 @@ async function encryptMessage(message, encryptionKey)
 export async function user_login_key(server, request) {
     const client = new pb_auth.AuthServicePromiseClient(server.address, null, null);
     const userKeyRequest = new pb_auth.UserKeyRequest();
-    return client.userLoginKey(userKeyRequest, metadata(server))
+    return client.userPasswordKey(userKeyRequest, metadata(server))
         .then(response => response.toObject());
 }
 
@@ -170,7 +170,7 @@ export async function user_login(server, request) {
     const userKeyRequest = new pb_auth.UserKeyRequest();
     const userLoginRequest = new pb_auth.UserLoginRequest();
     userLoginRequest.setUsername(request.username);
-    const key = await client.userLoginKey(userKeyRequest, metadata(server))
+    const key = await client.userPasswordKey(userKeyRequest, metadata(server))
         .then(response => response.toObject().publicKey);
     const pubkey = await importKey(key);
     const ciphertext = await encryptMessage(request.password, pubkey);

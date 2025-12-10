@@ -1,9 +1,11 @@
 import pb_user from "../proto/auth/user_grpc_web_pb.js";
+import pb_auth from "../proto/auth/auth_grpc_web_pb.js";
 import {
     metadata,
     base64_to_uuid_hex,
     uuid_hex_to_base64
 } from "../common/utility.js";
+import { importKey, encryptMessage } from "./auth.js"
 
 
 /**
@@ -245,13 +247,19 @@ export async function list_user_option(server, request) {
  * @returns {Promise<UserId>} user id: id
  */
 export async function create_user(server, request) {
+    const client_auth = new pb_auth.AuthServicePromiseClient(server.address, null, null);
+    const userKeyRequest = new pb_auth.UserKeyRequest();
     const client = new pb_user.UserServicePromiseClient(server.address, null, null);
     const userSchema = new pb_user.UserSchema();
     userSchema.setId(uuid_hex_to_base64(request.id));
     userSchema.setName(request.name);
     userSchema.setEmail(request.email);
     userSchema.setPhone(request.phone);
-    userSchema.setPassword(request.password);
+    const key = await client_auth.userPasswordKey(userKeyRequest, metadata(server))
+        .then(response => response.toObject().publicKey);
+    const pubkey = await importKey(key);
+    const ciphertext = await encryptMessage(request.password, pubkey);
+    userSchema.setPassword(ciphertext);
     return client.createUser(userSchema, metadata(server))
         .then(response => get_user_id(response.toObject()));
 }
@@ -263,13 +271,21 @@ export async function create_user(server, request) {
  * @returns {Promise<{}>} update response
  */
 export async function update_user(server, request) {
+    const client_auth = new pb_auth.AuthServicePromiseClient(server.address, null, null);
+    const userKeyRequest = new pb_auth.UserKeyRequest();
     const client = new pb_user.UserServicePromiseClient(server.address, null, null);
     const userUpdate = new pb_user.UserUpdate();
     userUpdate.setId(uuid_hex_to_base64(request.id));
     userUpdate.setName(request.name);
     userUpdate.setEmail(request.email);
     userUpdate.setPhone(request.phone);
-    userUpdate.setPassword(request.password);
+    if (request.password) {
+        const key = await client_auth.userPasswordKey(userKeyRequest, metadata(server))
+            .then(response => response.toObject().publicKey);
+        const pubkey = await importKey(key);
+        const ciphertext = await encryptMessage(request.password, pubkey);
+        userUpdate.setPassword(ciphertext);
+    }
     return client.updateUser(userUpdate, metadata(server))
         .then(response => response.toObject());
 }

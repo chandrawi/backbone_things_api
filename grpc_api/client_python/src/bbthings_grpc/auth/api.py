@@ -1,8 +1,9 @@
-from ..proto.auth import api_pb2, api_pb2_grpc
+from ..proto.auth import api_pb2, api_pb2_grpc, auth_pb2, auth_pb2_grpc
 from typing import Optional, List
 from uuid import UUID
 import grpc
 from ._schema import ApiSchema, ProcedureSchema
+from ..common import utility
 
 
 def read_api(auth, id: UUID):
@@ -57,6 +58,10 @@ def list_api_option(auth, name: Optional[str], category: Optional[str]):
 
 def create_api(auth, id: UUID, name: str, address: str, category: str, description: str, password: str, access_key: bytes):
     with grpc.insecure_channel(auth.address) as channel:
+        stub = auth_pb2_grpc.AuthServiceStub(channel)
+        request = auth_pb2.ApiKeyRequest()
+        response = stub.ApiPasswordKey(request=request, metadata=auth.metadata)
+        encrypted = utility.encrypt_message(password, response.public_key)
         stub = api_pb2_grpc.ApiServiceStub(channel)
         request = api_pb2.ApiSchema(
             id=id.bytes,
@@ -64,7 +69,7 @@ def create_api(auth, id: UUID, name: str, address: str, category: str, descripti
             address=address,
             category=category,
             description=description,
-            password=password,
+            password=encrypted,
             access_key=access_key
         )
         response = stub.CreateApi(request=request, metadata=auth.metadata)
@@ -72,6 +77,12 @@ def create_api(auth, id: UUID, name: str, address: str, category: str, descripti
 
 def update_api(auth, id: UUID, name: Optional[str], address: Optional[str], category: Optional[str], description: Optional[str], password: Optional[str], access_key: Optional[bytes]):
     with grpc.insecure_channel(auth.address) as channel:
+        encrypted = None
+        if password != None:
+            stub = auth_pb2_grpc.AuthServiceStub(channel)
+            request = auth_pb2.ApiKeyRequest()
+            response = stub.ApiPasswordKey(request=request, metadata=auth.metadata)
+            encrypted = utility.encrypt_message(password, response.public_key)
         stub = api_pb2_grpc.ApiServiceStub(channel)
         request = api_pb2.ApiUpdate(
             id=id.bytes,
@@ -79,7 +90,7 @@ def update_api(auth, id: UUID, name: Optional[str], address: Optional[str], cate
             address=address,
             category=category,
             description=description,
-            password=password,
+            password=encrypted,
             access_key=access_key
         )
         stub.UpdateApi(request=request, metadata=auth.metadata)

@@ -6,7 +6,7 @@ describe("RMCS Auth test", function() {
 
     const api_id_1 = utility.uuid_v4_hex();
     const api_id_2 = utility.uuid_v4_hex();
-    const api_password_hash = "$argon2id$v=19$m=16,t=2,p=1$ZDFzM09STjM3VW9zYUFveQ$tvA0ovPByPcl5qRDwHvZOg";
+    const api_password = "Ap1_P4s5w0rd";
     const proc_id_1 = utility.uuid_v4_hex();
     const proc_id_2 = utility.uuid_v4_hex();
     const proc_id_3 = utility.uuid_v4_hex();
@@ -19,10 +19,9 @@ describe("RMCS Auth test", function() {
     const role_name = "admin";
     const admin_id = utility.uuid_v4_hex();
     const user_id = utility.uuid_v4_hex();
-    const admin_password_hash = "$argon2id$v=19$m=16,t=2,p=1$Wnd4RUJXalVVbWtxUXN0Zg$d7Ax5e/o6TRicbCh+koiPg";
+    const admin_password = "Adm1n_P4s5w0rd";
     const user_password = "Us3r_P4s5w0rd";
-    const user_password_hash = "$argon2id$v=19$m=16,t=2,p=1$aUhFQTQ3aTZxa3JSZXNNQg$ErDWQqiCtfxUM/uUHRf0dQ";
-    const new_password_hash = "$argon2id$v=19$m=16,t=2,p=1$MDVycGpVWFZhZ1FLY2dlMQ$tI+2UHr6GP9v8GAizMqfOw";
+    const new_password = "N3w_P4s5w0rd";
     let profile_role_id = {};
     let profile_user_id_1 = {};
     let profile_user_id_2 = {};
@@ -36,7 +35,7 @@ describe("RMCS Auth test", function() {
             address: "localhost:9001",
             category: "RESOURCE",
             description: "",
-            password: api_password_hash,
+            password: api_password,
             access_key: utility.random_base64(43)
         });
         expect(apiId.id).toEqual(api_id_1);
@@ -49,7 +48,7 @@ describe("RMCS Auth test", function() {
             address: "localhost:9002",
             category: "RESOURCE",
             description: "",
-            password: api_password_hash,
+            password: api_password,
             access_key: utility.random_base64(43)
         });
         expect(apiId.id).toEqual(api_id_2);
@@ -183,7 +182,7 @@ describe("RMCS Auth test", function() {
             name: "administrator",
             email: "admin@mail.co",
             phone: "+6281234567890",
-            password: admin_password_hash
+            password: admin_password
         });
         await auth.add_user_role(server, { user_id: admin_id, role_id: role_admin_id });
         await auth.add_user_role(server, { user_id: admin_id, role_id: role_user_2_id });
@@ -196,7 +195,7 @@ describe("RMCS Auth test", function() {
             name: "username",
             email: "user@mail.co",
             phone: "+6281234567890",
-            password: user_password_hash
+            password: user_password
         });
         await auth.add_user_role(server, { user_id: user_id, role_id: role_user_1_id });
         await auth.add_user_role(server, { user_id: user_id, role_id: role_user_2_id });
@@ -220,7 +219,7 @@ describe("RMCS Auth test", function() {
     });
 
     it("should update administrator user", async function() {
-        const userUpdate = await auth.update_user(server, { id: admin_id, password: new_password_hash });
+        const userUpdate = await auth.update_user(server, { id: admin_id, password: new_password });
         expect(userUpdate).toEqual({});
         const user = await auth.read_user_by_name(server, { name: "administrator" });
         expect(user.password).not.toEqual(admin_hash);

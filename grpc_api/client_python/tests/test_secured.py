@@ -9,7 +9,7 @@ import dotenv
 import pytest
 import string
 from bbthings_grpc import Auth, Resource, DataType
-from bbthings_grpc.common.utility import hash_password, generate_access_key
+from bbthings_grpc.common.utility import generate_access_key
 import utility
 
 ACCESSES = [
@@ -65,7 +65,7 @@ def test_secured():
         address="localhost",
         category="RESOURCE",
         description="",
-        password=hash_password(api_password),
+        password=api_password,
         access_key=generate_access_key()
     )
     proc_map = []
@@ -112,7 +112,7 @@ def test_secured():
             name=name,
             email="",
             phone="",
-            password=hash_password(password)
+            password=password
         )
         role_filter = list(filter(lambda x: x[1] == role, role_map))
         if len(role_filter) == 0: continue

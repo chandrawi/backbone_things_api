@@ -1,8 +1,9 @@
-from ..proto.auth import user_pb2, user_pb2_grpc
+from ..proto.auth import user_pb2, user_pb2_grpc, auth_pb2, auth_pb2_grpc
 from typing import Optional, List
 from uuid import UUID
 import grpc
 from ._schema import UserSchema
+from ..common import utility
 
 
 def read_user(auth, id: UUID):
@@ -74,26 +75,36 @@ def list_user_option(auth, api_id: Optional[UUID], role_id: Optional[UUID], name
 
 def create_user(auth, id: UUID, name: str, email: str, phone: str, password: str):
     with grpc.insecure_channel(auth.address) as channel:
+        stub = auth_pb2_grpc.AuthServiceStub(channel)
+        request = auth_pb2.UserKeyRequest()
+        response = stub.UserPasswordKey(request=request, metadata=auth.metadata)
+        encrypted = utility.encrypt_message(password, response.public_key)
         stub = user_pb2_grpc.UserServiceStub(channel)
         request = user_pb2.UserSchema(
             id=id.bytes,
             name=name,
             email=email,
             phone=phone,
-            password=password
+            password=encrypted
         )
         response = stub.CreateUser(request=request, metadata=auth.metadata)
         return UUID(bytes=response.id)
 
 def update_user(auth, id: UUID, name: Optional[str], email: Optional[str], phone: Optional[str], password: Optional[str]):
     with grpc.insecure_channel(auth.address) as channel:
+        encrypted = None
+        if password != None:
+            stub = auth_pb2_grpc.AuthServiceStub(channel)
+            request = auth_pb2.UserKeyRequest()
+            response = stub.UserPasswordKey(request=request, metadata=auth.metadata)
+            encrypted = utility.encrypt_message(password, response.public_key)
         stub = user_pb2_grpc.UserServiceStub(channel)
         request = user_pb2.UserUpdate(
             id=id.bytes,
             name=name,
             email=email,
             phone=phone,
-            password=password
+            password=encrypted
         )
         stub.UpdateUser(request=request, metadata=auth.metadata)
 
