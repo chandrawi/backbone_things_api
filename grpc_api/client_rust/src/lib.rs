@@ -26,4 +26,12 @@ pub mod utility {
     pub use bbthings_grpc_server::common::utility::{
         encrypt_message, hex_to_bytes
     };
+
+    pub async fn channel(address: &str) -> tonic::transport::Channel {
+        tonic::transport::Channel::from_shared(address.to_owned())
+            .expect("Invalid address")
+            .connect()
+            .await
+            .expect(&format!("Error making channel to {}", address))
+    }
 }

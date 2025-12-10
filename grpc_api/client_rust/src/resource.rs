@@ -1,3 +1,4 @@
+pub mod config;
 pub mod model;
 pub mod device;
 pub mod group;
@@ -16,10 +17,16 @@ use bbthings_database::{
     DataSchema, DataSetSchema, BufferSchema, BufferSetSchema, SliceSchema, SliceSetSchema,
     DataValue, DataType
 };
+use bbthings_grpc_server::proto::resource::config::{ProcedureAcces, RoleAcces};
+use crate::auth::auth;
 
 #[derive(Debug, Clone)]
 pub struct Resource {
     channel: Channel,
+    channel_auth: Option<Channel>,
+    api_id: Uuid,
+    user_id: Option<Uuid>,
+    auth_token: String,
     access_token: String,
     refresh_token: String
 }
@@ -27,33 +34,75 @@ pub struct Resource {
 impl Resource {
 
     pub async fn new(address: &str) -> Self {
-        Resource::new_with_token(address, &String::new(), &String::new()).await
+        let channel = crate::utility::channel(address).await;
+        let api_id = config::api_id(&channel).await.expect(config::API_ID_ERR);
+        Self::new_with_channel(channel, Some(api_id), None, None, None)
     }
 
-    pub async fn new_with_token(address: &str, access_token: &str, refresh_token: &str) -> Self {
-        let channel = Channel::from_shared(address.to_owned())
-            .expect("Invalid address")
-            .connect()
-            .await
-            .expect(&format!("Error making channel to {}", address));
-        Resource {
-            channel,
-            access_token: String::from(access_token),
-            refresh_token: String::from(refresh_token)
-        }
+    pub async fn new_with_token(address: &str, api_id: Uuid, auth_token: &str, access_token: &str, refresh_token: &str) -> Self {
+        let channel = crate::utility::channel(address).await;
+        Self::new_with_channel(channel, Some(api_id), Some(auth_token), Some(access_token), Some(refresh_token))
     }
 
-    pub fn new_with_channel(channel: Channel, access_token: Option<&str>, refresh_token: Option<&str>) -> Self {
-        Resource {
+    pub fn new_with_channel(channel: Channel, api_id: Option<Uuid>, auth_token: Option<&str>, access_token: Option<&str>, refresh_token: Option<&str>) -> Self {
+        Self {
             channel,
+            channel_auth: None,
+            api_id: api_id.unwrap_or(Uuid::nil()),
+            user_id: None,
+            auth_token: auth_token.map(|at| String::from(at)).unwrap_or(String::new()),
             access_token: access_token.map(|at| String::from(at)).unwrap_or(String::new()),
             refresh_token: refresh_token.map(|rt| String::from(rt)).unwrap_or(String::new())
         }
     }
 
-    pub fn set_token(&mut self, access_token: &str, refresh_token: &str) {
-        self.access_token = String::from(access_token);
-        self.refresh_token = String::from(refresh_token);
+    pub async fn login(&mut self, auth_address: &str, username: &str, password: &str) -> Result<(), Status>
+    {
+        let channel = crate::utility::channel(auth_address).await;
+        let login = auth::user_login(&channel, username, password).await?;
+        self.channel_auth = Some(channel);
+        self.auth_token = login.auth_token;
+        for map in login.access_tokens {
+            if map.api_id == self.api_id.as_bytes().to_vec() {
+                self.access_token = map.access_token;
+                self.refresh_token = map.refresh_token;
+            }
+        }
+        self.user_id = Uuid::from_slice(&login.user_id).ok();
+        Ok(())
+    }
+
+    pub async fn refresh(&mut self) -> Result<(), Status>
+    {
+        if let Some(channel) = self.channel_auth.clone() {
+            let refresh = auth::user_refresh(&channel, self.api_id, &self.access_token, &self.refresh_token).await?;
+            self.access_token = refresh.access_token;
+            self.refresh_token = refresh.refresh_token;
+        }
+        Ok(())
+    }
+
+    pub async fn logout(&self) -> Result<(), Status>
+    {
+        if let (Some(channel), Some(id)) = (self.channel_auth.clone(), self.user_id) {
+            auth::user_logout(&channel, id, &self.auth_token).await?;
+        }
+        Ok(())
+    }
+
+    pub async fn api_id(&self) -> Result<Uuid, Status>
+    {
+        config::api_id(&self.channel).await
+    }
+
+    pub async fn procedure_access(&self) -> Result<Vec<ProcedureAcces>, Status>
+    {
+        config::procedure_access(&self).await
+    }
+
+    pub async fn role_access(&self) -> Result<Vec<RoleAcces>, Status>
+    {
+        config::role_access(&self).await
     }
 
     pub async fn read_model(&self, id: Uuid)

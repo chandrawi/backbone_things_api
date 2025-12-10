@@ -18,54 +18,61 @@ use bbthings_grpc_server::proto::auth::auth::{UserLoginResponse, UserRefreshResp
 #[derive(Debug, Clone)]
 pub struct Auth {
     channel: Channel,
+    user_id: Option<Uuid>,
     auth_token: String
 }
 
 impl Auth {
 
     pub async fn new(address: &str) -> Self {
-        Auth::new_with_token(address, &String::new()).await
+        Self::new_with_token(address, &String::new()).await
     }
 
     pub async fn new_with_token(address: &str, auth_token: &str) -> Self {
-        let channel = Channel::from_shared(address.to_owned())
-            .expect("Invalid address")
-            .connect()
-            .await
-            .expect(&format!("Error making channel to {}", address));
-        Auth {
-            channel,
-            auth_token: String::from(auth_token)
-        }
+        let channel = crate::utility::channel(address).await;
+        Self::new_with_channel(channel, Some(auth_token))
     }
 
     pub fn new_with_channel(channel: Channel, auth_token: Option<&str>) -> Self {
-        Auth {
+        Self {
             channel,
+            user_id: None,
             auth_token: auth_token.map(|at| String::from(at)).unwrap_or(String::new())
         }
     }
 
-    pub fn set_token(&mut self, auth_token: &str) {
-        self.auth_token = String::from(auth_token);
+    pub async fn login(&mut self, username: &str, password: &str) -> Result<(), Status>
+    {
+        let login = auth::user_login(&self.channel, username, password).await?;
+        self.auth_token = login.auth_token;
+        self.user_id = Uuid::from_slice(&login.user_id).ok();
+        Ok(())
+    }
+
+    pub async fn logout(&self) -> Result<(), Status>
+    {
+        if let Some(id) = self.user_id {
+            auth::user_logout(&self.channel, id, &self.auth_token).await?;
+        }
+        Ok(())
     }
 
     pub async fn user_login(&self, username: &str, password: &str)
         -> Result<UserLoginResponse, Status>
     {
-        auth::user_login(&self, username, password).await
+        auth::user_login(&self.channel, username, password).await
     }
 
     pub async fn user_refresh(&self, api_id: Uuid, access_token: &str, refresh_token: &str)
         -> Result<UserRefreshResponse, Status>
     {
-        auth::user_refresh(&self, api_id, access_token, refresh_token).await
+        auth::user_refresh(&self.channel, api_id, access_token, refresh_token).await
     }
 
     pub async fn user_logout(&self, user_id: Uuid, auth_token: &str)
         -> Result<UserLogoutResponse, Status>
     {
-        auth::user_logout(&self, user_id, auth_token).await
+        auth::user_logout(&self.channel, user_id, auth_token).await
     }
 
     pub async fn read_api(&self, id: Uuid)
