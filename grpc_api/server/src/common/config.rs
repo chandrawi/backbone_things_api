@@ -2,6 +2,7 @@ use std::sync::OnceLock;
 use uuid::Uuid;
 use rsa::RsaPrivateKey;
 use crate::common::utility::{generate_transport_keys, export_public_key};
+use crate::common::validator::AccessSchema;
 use bbthings_database::{UserSchema, UserRoleSchema};
 use bbthings_database::utility::generate_access_key;
 
@@ -11,6 +12,9 @@ pub static ROOT_DATA: OnceLock<RootData> = OnceLock::new();
 
 pub static API_KEY: OnceLock<TransportKey> = OnceLock::new();
 pub static USER_KEY: OnceLock<TransportKey> = OnceLock::new();
+
+pub static API_ID: OnceLock<Uuid> = OnceLock::new();
+pub static ACCESS_MAP: OnceLock<Vec<AccessSchema>> = OnceLock::new();
 
 const DEF_ROOT_PW: &str = "r0ot_P4s5w0rd";
 const DEF_ACC_DUR: i32 = 300;

@@ -29,6 +29,11 @@ pub mod auth {
 }
 
 
+pub mod config {
+    pub const DESCRIPTOR_SET: &[u8] =
+        tonic::include_file_descriptor_set!("config_descriptor");
+}
+
 pub mod model {
     pub const DESCRIPTOR_SET: &[u8] =
         tonic::include_file_descriptor_set!("model_descriptor");

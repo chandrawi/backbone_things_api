@@ -1,4 +1,5 @@
 use bbthings_database::Resource;
+use bbthings_grpc_server::proto::resource::config::config_service_server::ConfigServiceServer;
 use bbthings_grpc_server::proto::resource::model::model_service_server::ModelServiceServer;
 use bbthings_grpc_server::proto::resource::device::device_service_server::DeviceServiceServer;
 use bbthings_grpc_server::proto::resource::group::group_service_server::GroupServiceServer;
@@ -8,6 +9,7 @@ use bbthings_grpc_server::proto::resource::buffer::buffer_service_server::Buffer
 use bbthings_grpc_server::proto::resource::slice::slice_service_server::SliceServiceServer;
 use bbthings_grpc_server::proto::descriptor;
 use bbthings_grpc_server::auth::auth::api_login;
+use bbthings_grpc_server::resource::config::ConfigServer;
 use bbthings_grpc_server::resource::model::ModelServer;
 use bbthings_grpc_server::resource::device::DeviceServer;
 use bbthings_grpc_server::resource::group::GroupServer;
@@ -15,7 +17,7 @@ use bbthings_grpc_server::resource::set::SetServer;
 use bbthings_grpc_server::resource::data::DataServer;
 use bbthings_grpc_server::resource::buffer::BufferServer;
 use bbthings_grpc_server::resource::slice::SliceServer;
-use bbthings_grpc_server::common::config::{ROOT_DATA, RootData};
+use bbthings_grpc_server::common::config::{API_ID, ACCESS_MAP, ROOT_DATA, RootData};
 use bbthings_grpc_server::common::validator::AccessSchema;
 use bbthings_grpc_server::common::interceptor::interceptor;
 use bbthings_grpc_server::common::utility;
@@ -72,6 +74,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         None => std::env::var("API_PASSWORD").unwrap()
     };
 
+    let api_id = Uuid::try_parse(&api_id).unwrap();
+    API_ID.set(api_id).unwrap();
+
     let root_pw = std::env::var("ROOT_PASSWORD");
     let root_ad = std::env::var("ROOT_ACCESS_DURATION");
     let root_rd = std::env::var("ROOT_REFRESH_DURATION");
@@ -97,6 +102,7 @@ async fn resource_server(db_url: String, address: String) -> Result<(), Box<dyn 
     let addr = address.parse()?;
 
     let resource_db = Resource::new_with_url(&db_url).await;
+    let config_server = ConfigServer{};
     let model_server = ModelServer::new(resource_db.clone());
     let device_server = DeviceServer::new(resource_db.clone());
     let group_server = GroupServer::new(resource_db.clone());
@@ -105,6 +111,7 @@ async fn resource_server(db_url: String, address: String) -> Result<(), Box<dyn 
     let buffer_server = BufferServer::new(resource_db.clone());
     let slice_server = SliceServer::new(resource_db.clone());
 
+    let config_service = ConfigServiceServer::new(config_server);
     let model_service = ModelServiceServer::new(model_server);
     let device_service = DeviceServiceServer::new(device_server);
     let group_service = GroupServiceServer::new(group_server);
@@ -114,6 +121,7 @@ async fn resource_server(db_url: String, address: String) -> Result<(), Box<dyn 
     let slice_service = SliceServiceServer::new(slice_server);
 
     let reflection_service = tonic_reflection::server::Builder::configure()
+        .register_encoded_file_descriptor_set(descriptor::config::DESCRIPTOR_SET)
         .register_encoded_file_descriptor_set(descriptor::model::DESCRIPTOR_SET)
         .register_encoded_file_descriptor_set(descriptor::device::DESCRIPTOR_SET)
         .register_encoded_file_descriptor_set(descriptor::group::DESCRIPTOR_SET)
@@ -132,6 +140,7 @@ async fn resource_server(db_url: String, address: String) -> Result<(), Box<dyn 
             .expose_headers([HeaderName::from_static("grpc-status"), HeaderName::from_static("grpc-message")])
         )
         .layer(GrpcWebLayer::new())
+        .add_service(config_service)
         .add_service(model_service)
         .add_service(device_service)
         .add_service(group_service)
@@ -146,10 +155,9 @@ async fn resource_server(db_url: String, address: String) -> Result<(), Box<dyn 
     Ok(())
 }
 
-async fn resource_server_secured(db_url: String, address: String, auth_address: String, api_id: String, password: String) -> Result<(), Box<dyn std::error::Error>> 
+async fn resource_server_secured(db_url: String, address: String, auth_address: String, api_id: Uuid, password: String) -> Result<(), Box<dyn std::error::Error>> 
 {
     let addr = address.parse()?;
-    let api_id = Uuid::try_parse(&api_id).unwrap();
 
     let response = api_login(&auth_address, api_id, &password).await
         .expect("Failed to get api definition from Auth server");
@@ -158,8 +166,10 @@ async fn resource_server_secured(db_url: String, address: String, auth_address: 
         .into_iter()
         .map(|s| s.into())
         .collect();
+    ACCESS_MAP.set(accesses.clone()).unwrap();
 
     let resource_db = Resource::new_with_url(&db_url).await;
+    let config_server = ConfigServer{};
     let model_server = ModelServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
     let device_server = DeviceServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
     let group_server = GroupServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
@@ -168,6 +178,7 @@ async fn resource_server_secured(db_url: String, address: String, auth_address: 
     let buffer_server = BufferServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
     let slice_server = SliceServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
 
+    let config_service = ConfigServiceServer::new(config_server);
     let model_service = ModelServiceServer::with_interceptor(model_server, interceptor);
     let device_service = DeviceServiceServer::with_interceptor(device_server, interceptor);
     let group_service = GroupServiceServer::with_interceptor(group_server, interceptor);
@@ -177,6 +188,7 @@ async fn resource_server_secured(db_url: String, address: String, auth_address: 
     let slice_service = SliceServiceServer::with_interceptor(slice_server, interceptor);
 
     let reflection_service = tonic_reflection::server::Builder::configure()
+        .register_encoded_file_descriptor_set(descriptor::config::DESCRIPTOR_SET)
         .register_encoded_file_descriptor_set(descriptor::model::DESCRIPTOR_SET)
         .register_encoded_file_descriptor_set(descriptor::device::DESCRIPTOR_SET)
         .register_encoded_file_descriptor_set(descriptor::group::DESCRIPTOR_SET)
@@ -195,6 +207,7 @@ async fn resource_server_secured(db_url: String, address: String, auth_address: 
             .expose_headers([HeaderName::from_static("grpc-status"), HeaderName::from_static("grpc-message")])
         )
         .layer(GrpcWebLayer::new())
+        .add_service(config_service)
         .add_service(model_service)
         .add_service(device_service)
         .add_service(group_service)

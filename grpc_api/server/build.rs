@@ -25,6 +25,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let proto_files = [
+        ("../proto/bbthings_grpc/proto/resource/config.proto", "config_descriptor.bin"),
         ("../proto/bbthings_grpc/proto/resource/model.proto", "model_descriptor.bin"),
         ("../proto/bbthings_grpc/proto/resource/device.proto", "device_descriptor.bin"),
         ("../proto/bbthings_grpc/proto/resource/group.proto", "group_descriptor.bin"),

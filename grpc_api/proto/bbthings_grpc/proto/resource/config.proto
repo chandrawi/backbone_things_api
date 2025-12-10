@@ -1,0 +1,38 @@
+syntax = "proto3";
+package config;
+
+service ConfigService {
+    rpc ApiId(ApiIdRequest) returns (ApiIdResponse);
+
+    rpc ProcedureAccess(AccessRequest) returns (ProcedureAccesResponse);
+
+    rpc RoleAccess(AccessRequest) returns (RoleAccesResponse);
+}
+
+message ApiIdRequest {
+}
+
+message AccessRequest {
+}
+
+message ApiIdResponse {
+    bytes api_id = 1;
+}
+
+message ProcedureAcces {
+    string procedure = 1;
+    repeated string roles = 2;
+}
+
+message RoleAcces {
+    string role = 1;
+    repeated string procedures = 2;
+}
+
+message ProcedureAccesResponse {
+    repeated ProcedureAcces access = 1;
+}
+
+message RoleAccesResponse {
+    repeated RoleAcces access = 1;
+}

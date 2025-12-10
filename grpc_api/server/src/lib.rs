@@ -9,6 +9,7 @@ pub mod auth {
 }
 pub mod resource {
     pub mod _schema;
+    pub mod config;
     pub mod model;
     pub mod device;
     pub mod group;
@@ -37,6 +38,7 @@ pub mod proto {
         pub mod auth;
     }
     pub mod resource {
+        pub mod config;
         pub mod model;
         pub mod device;
         pub mod group;
