@@ -524,9 +524,11 @@ impl Auth {
     {
         let qs = token::select_token_last_access_id();
         let access_id = qs.fetch_max_order(&self.pool, 0).await + 1;
+        let number = if number < 1 { 1 } else { number };
         let access_ids: Vec<i32> = (0..number).map(|i| access_id + i as i32).collect();
         let refresh_tokens: Vec<String> = (0..number).map(|_| utility::generate_token_string()).collect();
-        let auth_tokens: Vec<String> = (0..number).map(|_| utility::generate_token_string()).collect();
+        let auth_token = utility::generate_token_string();
+        let auth_tokens: Vec<String> = (0..number).map(|_| auth_token.clone()).collect();
         let qs = token::insert_token(user_id, access_ids.clone(), refresh_tokens.iter().map(|rt| rt.as_str()).collect(), auth_tokens.iter().map(|rt| rt.as_str()).collect(), expired, ip);
         qs.execute(&self.pool).await?;
         Ok((0..number).map(|i| (access_ids[i], refresh_tokens[i].clone(), auth_tokens[i].clone())).collect())

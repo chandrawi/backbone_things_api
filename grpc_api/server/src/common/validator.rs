@@ -108,9 +108,9 @@ pub(crate) trait AuthValidator {
         let result = self.auth_db().list_auth_token(token).await;
         let user_id = match result {
             Ok(value) => match value.into_iter().next() {
-                Some(v) => {
-                    if v.expired < Utc::now() { return Err(Status::unauthenticated(TOKEN_EXPIRED)) }
-                    v.user_id
+                Some(token) => {
+                    if token.expired < Utc::now() { return Err(Status::unauthenticated(TOKEN_EXPIRED)) }
+                    token.user_id
                 },
                 None => return Err(Status::unauthenticated(USER_UNREGISTERED))
             },

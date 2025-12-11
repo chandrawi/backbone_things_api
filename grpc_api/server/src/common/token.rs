@@ -1,4 +1,4 @@
-use std::time::{SystemTime, UNIX_EPOCH};
+use chrono::Utc;
 use serde::{Serialize, Deserialize};
 use jsonwebtoken::{encode, decode, DecodingKey, EncodingKey, Header, Algorithm, Validation};
 
@@ -6,15 +6,14 @@ use jsonwebtoken::{encode, decode, DecodingKey, EncodingKey, Header, Algorithm, 
 pub struct TokenClaims {
     pub jti: i32,
     pub sub: String,
-    pub iat: u64,
-    pub exp: u64,
+    pub iat: i64,
+    pub exp: i64,
 }
 
 pub(crate) fn generate_token(jti: i32, sub: &str, duration: i32, key: &[u8]) -> Option<String>
 {
-    let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-    let iat = now.as_secs();
-    let exp = iat + duration as u64;
+    let iat = Utc::now().timestamp();
+    let exp = iat + duration as i64;
     let claims = TokenClaims {
         jti,
         sub: sub.to_owned(),

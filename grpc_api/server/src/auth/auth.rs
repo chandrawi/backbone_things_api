@@ -12,13 +12,14 @@ use crate::proto::auth::auth::{
 };
 use crate::proto::auth::auth::auth_service_client::AuthServiceClient;
 use crate::common::{token, utility, utility::handle_error};
-use crate::common::config::{ROOT_ID, ROOT_NAME, ROOT_DATA, API_KEY, USER_KEY, TransportKey};
+use crate::common::config::{ROOT_NAME, ROOT_DATA, API_KEY, USER_KEY, TransportKey};
 
 const TOKEN_NOT_FOUND: &str = "requested token not found";
 const PASSWORD_MISMATCH: &str = "password does not match";
 const GENERATE_TOKEN_ERR: &str = "error generate token";
 const TOKEN_MISMATCH: &str = "token is not match";
 const TOKEN_UNVERIFIED: &str = "token unverified";
+const REFRESH_EXPIRED: &str = "refresh token is expired";
 
 pub struct AuthServer {
     pub auth_db: Auth
@@ -128,25 +129,29 @@ impl AuthService for AuthServer {
                 let duration = user.roles.iter().map(|e| e.refresh_duration).min().unwrap_or_default();
                 let expire = Utc::now() + Duration::seconds(duration as i64);
                 // insert new tokens as a number of user role and get generated access id, refresh token, and auth token
-                let mut iter_tokens = self.auth_db
+                let token_sets = self.auth_db
                     .create_auth_token(user.id, expire, &remote_ip, user.roles.len())
                     .await
-                    .map_err(|e| handle_error(e))?
-                    .into_iter();
-                let mut auth_token = String::new();
+                    .map_err(|e| handle_error(e))?;
+                // get auth_token from token set. note that auth_token is the same on every set
+                let auth_token = match token_sets.get(0) {
+                    Some(value) => value.2.clone(),
+                    None => String::new()
+                };
                 // generate access tokens using data from user role and generated access id
-                let tokens: Vec<AccessTokenMap> = user.roles.iter().map(|e| {
-                    let generate = iter_tokens.next().unwrap_or_default();
-                    auth_token = generate.2;
-                    AccessTokenMap {
-                        api_id: e.api_id.as_bytes().to_vec(),
-                        access_token: token::generate_token(generate.0, &e.role, e.access_duration, &e.access_key)
-                            .unwrap_or(String::new()),
-                        refresh_token: generate.1
-                    }
-                })
-                .filter(|e| e.access_token != String::new())
-                .collect();
+                let mut iter_tokens = token_sets.into_iter();
+                let tokens: Vec<AccessTokenMap> = user.roles.iter()
+                    .map(|e| {
+                        let generate = iter_tokens.next().unwrap_or_default();
+                        AccessTokenMap {
+                            api_id: e.api_id.as_bytes().to_vec(),
+                            access_token: token::generate_token(generate.0, &e.role, e.access_duration, &e.access_key)
+                                .unwrap_or(String::new()),
+                            refresh_token: generate.1
+                        }
+                    })
+                    .filter(|e| e.access_token != String::new())
+                    .collect();
                 if user.roles.len() != tokens.len() {
                     return Err(Status::internal(GENERATE_TOKEN_ERR));
                 }
@@ -169,23 +174,28 @@ impl AuthService for AuthServer {
         let (access_key, token_claims) = match result {
             Ok(api) => {
                 // verify access token and get token claims
-                let token_claims = token::decode_token(&request.access_token, &api.access_key, false)
-                    .ok_or_else(|| Status::internal(TOKEN_UNVERIFIED))?;
+                let mut decoded = token::decode_token(&request.access_token, &api.access_key, false);
+                if decoded.is_none() {
+                    let root = ROOT_DATA.get().map(|x| x.to_owned()).unwrap_or_default();
+                    decoded = token::decode_token(&request.access_token, &root.access_key, false);
+                }
+                let token_claims = match decoded {
+                    Some(value) => value,
+                    None => return Err(Status::unauthenticated(TOKEN_UNVERIFIED))
+                };
                 (api.access_key, token_claims)
             },
             Err(e) => {
-                if request.api_id != ROOT_ID.as_bytes().to_vec() {
-                    return Err(handle_error(e));
-                }
-                let root = ROOT_DATA.get().map(|x| x.to_owned()).unwrap_or_default();
-                let token_claims = token::decode_token(&request.access_token, &root.access_key, false)
-                    .ok_or_else(|| Status::internal(TOKEN_UNVERIFIED))?;
-                (root.access_key, token_claims)
+                return Err(handle_error(e));
             }
         };
         let result = self.auth_db.read_access_token(token_claims.jti).await;
         let (refresh_token, access_token) = match result {
             Ok(token) => {
+                // check if current time exceed expired time (created token time plus refresh duration)
+                if token.expired < Utc::now() {
+                    return Err(Status::unauthenticated(REFRESH_EXPIRED));
+                }
                 // check if remote ip match with stored login ip
                 let ip_match = if token.ip == Vec::<u8>::new() {
                     true

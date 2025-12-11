@@ -49,10 +49,11 @@ impl Auth {
         Ok(())
     }
 
-    pub async fn logout(&self) -> Result<(), Status>
+    pub async fn logout(&mut self) -> Result<(), Status>
     {
         if let Some(id) = self.user_id {
             auth::user_logout(&self.channel, id, &self.auth_token).await?;
+            self.auth_token = String::new();
         }
         Ok(())
     }

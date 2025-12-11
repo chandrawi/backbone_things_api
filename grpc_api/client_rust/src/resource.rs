@@ -18,6 +18,7 @@ use bbthings_database::{
     DataValue, DataType
 };
 use bbthings_grpc_server::proto::resource::config::{ProcedureAcces, RoleAcces};
+use bbthings_grpc_server::common::config::ROOT_ID;
 use crate::auth::auth;
 
 #[derive(Debug, Clone)]
@@ -63,7 +64,7 @@ impl Resource {
         self.channel_auth = Some(channel);
         self.auth_token = login.auth_token;
         for map in login.access_tokens {
-            if map.api_id == self.api_id.as_bytes().to_vec() {
+            if map.api_id == self.api_id.as_bytes().to_vec() || map.api_id == ROOT_ID.as_bytes().to_vec() {
                 self.access_token = map.access_token;
                 self.refresh_token = map.refresh_token;
             }
@@ -82,10 +83,13 @@ impl Resource {
         Ok(())
     }
 
-    pub async fn logout(&self) -> Result<(), Status>
+    pub async fn logout(&mut self) -> Result<(), Status>
     {
         if let (Some(channel), Some(id)) = (self.channel_auth.clone(), self.user_id) {
             auth::user_logout(&channel, id, &self.auth_token).await?;
+            self.auth_token = String::new();
+            self.access_token = String::new();
+            self.refresh_token = String::new();
         }
         Ok(())
     }
