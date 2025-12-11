@@ -1,3 +1,107 @@
+import pb_auth from "../proto/auth/auth_grpc_web_pb.js";
+import {
+    base64_to_uuid_hex,
+    importKey,
+    encryptMessage
+} from "../common/utility.js";
+
+
+/**
+ * @typedef {(string|Uint8Array)} Uuid
+ */
+
+/**
+ * @typedef {Object} AccessTokenMap
+ * @property {Uuid} api_id
+ * @property {string} access_token
+ * @property {string} refresh_token
+ */
+
+/**
+ * @param {*} r 
+ * @returns {AccessTokenMap}
+ */
+function get_access_token(r) {
+    return {
+        api_id: base64_to_uuid_hex(r.apiId),
+        access_token: r.accessToken,
+        refresh_token: r.refreshToken
+    };
+}
+
+/**
+ * @typedef {Object} UserLoginResponse
+ * @property {Uuid} user_id
+ * @property {string} auth_token
+ * @property {AccessTokenMap[]} access_tokens
+ */
+
+/**
+ * @param {*} r 
+ * @returns {UserLoginResponse}
+ */
+function get_login_response(r) {
+    return {
+        user_id: base64_to_uuid_hex(r.userId),
+        auth_token: r.authToken,
+        access_tokens: r.accessTokensList.map((v) => {return get_access_token(v)})
+    };
+}
+
+/**
+ * Authorization/Authentication server configuration.
+ * @param {String} address - Resource server address
+ * @param {?Uuid} user_id - ID of the user connected to the server
+ * @param {?String} auth_token - User identification token. Used for logout
+ */
+export class AuthConfig {
+
+    constructor(address, auth_token) {
+        this.address = address;
+        this.auth_token = auth_token;
+    }
+
+    /**
+     * Login user to Authorization/Authentication server for accesing resource
+     * @param {String} username
+     * @param {String} password
+     */
+    async login(username, password) {
+        // login user to auth server
+        const client = new pb_auth.AuthServicePromiseClient(this.address, null, null);
+        const userKeyRequest = new pb_auth.UserKeyRequest();
+        const key = await client.userPasswordKey(userKeyRequest)
+            .then(response => response.toObject().publicKey);
+        const userLoginRequest = new pb_auth.UserLoginRequest();
+        userLoginRequest.setUsername(username);
+        const pubkey = await importKey(key);
+        const ciphertext = await encryptMessage(password, pubkey);
+        userLoginRequest.setPassword(ciphertext);
+        const login = await client.userLogin(userLoginRequest)
+            .then(response => get_login_response(response.toObject()));
+        this.auth_token = login.auth_token;
+        this.user_id = login.user_id;
+        console.log(login);
+    }
+
+    /**
+     * Logout user from Authorization/Authentication server
+     */
+    async logout() {
+        if (this.address && this.user_id) {
+            const client = new pb_auth.AuthServicePromiseClient(this.address, null, null);
+            const userLogoutRequest = new pb_auth.UserLogoutRequest();
+            userLogoutRequest.setUserId(uuid_hex_to_base64(this.user_id));
+            userLogoutRequest.setAuthToken(this.auth_token);
+            await client.userLogout(userLogoutRequest)
+                .then(response => response.toObject());
+            this.auth_token = null;
+        }
+    }
+
+}
+
+
 export {
     read_api,
     read_api_by_name,

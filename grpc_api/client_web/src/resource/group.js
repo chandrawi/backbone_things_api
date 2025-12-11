@@ -13,7 +13,7 @@ import {
 /**
  * @typedef {Object} ServerConfig
  * @property {string} address
- * @property {?string} token
+ * @property {?string} access_token
  */
 
 /**
@@ -174,447 +174,447 @@ function get_group_gateway_schema_vec(r) {
 
 /**
  * Read a group model by uuid
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupId} request group model uuid: id
  * @returns {Promise<GroupModelSchema>} group model schema: id, name, category, description, model_ids
  */
-export async function read_group_model(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function read_group_model(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupId = new pb_group.GroupId();
     groupId.setId(uuid_hex_to_base64(request.id));
-    return client.readGroupModel(groupId, metadata(server))
+    return client.readGroupModel(groupId, metadata(config.access_token))
         .then(response => get_group_model_schema(response.toObject().result));
 }
 
 /**
  * Read groups of model by uuid list
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupIds} request group uuid list: ids
  * @returns {Promise<GroupModelSchema[]>} group model schema: id, name, category, description, model_ids
  */
-export async function list_group_model_by_ids(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function list_group_model_by_ids(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupIds = new pb_group.GroupIds();
     groupIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
-    return client.listGroupModelByIds(groupIds, metadata(server))
+    return client.listGroupModelByIds(groupIds, metadata(config.access_token))
         .then(response => get_group_model_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read groups of model by name
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupName} request group model name: name
  * @returns {Promise<GroupModelSchema[]>} group model schema: id, name, category, description, model_ids
  */
-export async function list_group_model_by_name(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function list_group_model_by_name(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupName = new pb_group.GroupName();
     groupName.setName(request.name);
-    return client.listGroupModelByName(groupName, metadata(server))
+    return client.listGroupModelByName(groupName, metadata(config.access_token))
         .then(response => get_group_model_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read groups of model by category
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupCategory} request group model category: category
  * @returns {Promise<GroupModelSchema[]>} group model schema: id, name, category, description, model_ids
  */
-export async function list_group_model_by_category(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function list_group_model_by_category(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupCategory = new pb_group.GroupCategory();
     groupCategory.setCategory(request.category);
-    return client.listGroupModelByCategory(groupCategory, metadata(server))
+    return client.listGroupModelByCategory(groupCategory, metadata(config.access_token))
         .then(response => get_group_model_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read groups of model with select option
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupOption} request group model option: name, category
  * @returns {Promise<GroupModelSchema[]>} group model schema: id, name, category, description, model_ids
  */
-export async function list_group_model_option(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function list_group_model_option(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupOption = new pb_group.GroupOption();
     groupOption.setName(request.name);
     groupOption.setCategory(request.category);
-    return client.listGroupModelOption(groupOption, metadata(server))
+    return client.listGroupModelOption(groupOption, metadata(config.access_token))
         .then(response => get_group_model_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Create a group model
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupModelSchema} request group model schema: id, name, category, description
  * @returns {Promise<GroupId>} group model uuid: id
  */
-export async function create_group_model(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function create_group_model(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupSchema = new pb_group.GroupModelSchema();
     groupSchema.setId(uuid_hex_to_base64(request.id));
     groupSchema.setName(request.name);
     groupSchema.setCategory(request.category);
     groupSchema.setDescription(request.description);
-    return client.createGroupModel(groupSchema, metadata(server))
+    return client.createGroupModel(groupSchema, metadata(config.access_token))
         .then(response => get_group_id(response.toObject()));
 }
 
 /**
  * Update a group model
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupUpdate} request group model update: id, name, category, description
  * @returns {Promise<{}>} update response
  */
-export async function update_group_model(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function update_group_model(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupUpdate = new pb_group.GroupUpdate();
     groupUpdate.setId(uuid_hex_to_base64(request.id));
     groupUpdate.setName(request.name);
     groupUpdate.setCategory(request.category);
     groupUpdate.setDescription(request.description);
-    return client.updateGroupModel(groupUpdate, metadata(server))
+    return client.updateGroupModel(groupUpdate, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Delete a group model
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupId} request group model uuid: id
  * @returns {Promise<{}>} delete response
  */
-export async function delete_group_model(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function delete_group_model(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupId = new pb_group.GroupId();
     groupId.setId(uuid_hex_to_base64(request.id));
-    return client.deleteGroupModel(groupId, metadata(server))
+    return client.deleteGroupModel(groupId, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Add a member to a group model
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupModel} request group model member: id, model_id
  * @returns {Promise<{}>} change response
  */
-export async function add_group_model_member(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function add_group_model_member(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupModel = new pb_group.GroupModel();
     groupModel.setId(uuid_hex_to_base64(request.id));
     groupModel.setModelId(uuid_hex_to_base64(request.model_id));
-    return client.addGroupModelMember(groupModel, metadata(server))
+    return client.addGroupModelMember(groupModel, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Remove a member to a group model
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupModel} request group model member: id, model_id
  * @returns {Promise<{}>} change response
  */
-export async function remove_group_model_member(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function remove_group_model_member(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupModel = new pb_group.GroupModel();
     groupModel.setId(uuid_hex_to_base64(request.id));
     groupModel.setModelId(uuid_hex_to_base64(request.model_id));
-    return client.removeGroupModelMember(groupModel, metadata(server))
+    return client.removeGroupModelMember(groupModel, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Read a group device by uuid
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupId} request group device uuid: id
  * @returns {Promise<GroupDeviceSchema>} group device schema: id, name, category, description, device_ids
  */
-export async function read_group_device(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function read_group_device(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupId = new pb_group.GroupId();
     groupId.setId(uuid_hex_to_base64(request.id));
-    return client.readGroupDevice(groupId, metadata(server))
+    return client.readGroupDevice(groupId, metadata(config.access_token))
         .then(response => get_group_device_schema(response.toObject().result));
 }
 
 /**
  * Read groups of device by uuid list
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupIds} request group uuid list: ids
  * @returns {Promise<GroupDeviceSchema[]>} group device schema: id, name, category, description, device_ids
  */
-export async function list_group_device_by_ids(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function list_group_device_by_ids(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupIds = new pb_group.GroupIds();
     groupIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
-    return client.listGroupDeviceByIds(groupIds, metadata(server))
+    return client.listGroupDeviceByIds(groupIds, metadata(config.access_token))
         .then(response => get_group_device_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read groups of device by name
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupName} request group device name: name
  * @returns {Promise<GroupDeviceSchema[]>} group device schema: id, name, category, description, device_ids
  */
-export async function list_group_device_by_name(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function list_group_device_by_name(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupName = new pb_group.GroupName();
     groupName.setName(request.name);
-    return client.listGroupDeviceByName(groupName, metadata(server))
+    return client.listGroupDeviceByName(groupName, metadata(config.access_token))
         .then(response => get_group_device_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read groups of device by category
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupCategory} request group device category: category
  * @returns {Promise<GroupDeviceSchema[]>} group device schema: id, name, category, description, device_ids
  */
-export async function list_group_device_by_category(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function list_group_device_by_category(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupCategory = new pb_group.GroupCategory();
     groupCategory.setCategory(request.category);
-    return client.listGroupDeviceByCategory(groupCategory, metadata(server))
+    return client.listGroupDeviceByCategory(groupCategory, metadata(config.access_token))
         .then(response => get_group_device_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read groups of device with select options
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupOption} request group device option: name, category
  * @returns {Promise<GroupDeviceSchema[]>} group device schema: id, name, category, description, device_ids
  */
-export async function list_group_device_option(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function list_group_device_option(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupOption = new pb_group.GroupOption();
     groupOption.setName(request.name);
     groupOption.setCategory(request.category);
-    return client.listGroupDeviceOption(groupOption, metadata(server))
+    return client.listGroupDeviceOption(groupOption, metadata(config.access_token))
         .then(response => get_group_device_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Create a group device
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupDeviceSchema} request group device schema: id, name, category, description
  * @returns {Promise<GroupId>} group device uuid: id
  */
-export async function create_group_device(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function create_group_device(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupSchema = new pb_group.GroupDeviceSchema();
     groupSchema.setId(uuid_hex_to_base64(request.id));
     groupSchema.setName(request.name);
     groupSchema.setCategory(request.category);
     groupSchema.setDescription(request.description);
-    return client.createGroupDevice(groupSchema, metadata(server))
+    return client.createGroupDevice(groupSchema, metadata(config.access_token))
         .then(response => get_group_id(response.toObject()));
 }
 
 /**
  * Update a group device
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupUpdate} request group device update: id, name, category, description
  * @returns {Promise<{}>} update response
  */
-export async function update_group_device(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function update_group_device(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupUpdate = new pb_group.GroupUpdate();
     groupUpdate.setId(uuid_hex_to_base64(request.id));
     groupUpdate.setName(request.name);
     groupUpdate.setCategory(request.category);
     groupUpdate.setDescription(request.description);
-    return client.updateGroupDevice(groupUpdate, metadata(server))
+    return client.updateGroupDevice(groupUpdate, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Delete a group device
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupId} request group device uuid: id
  * @returns {Promise<{}>} delete response
  */
-export async function delete_group_device(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function delete_group_device(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupId = new pb_group.GroupId();
     groupId.setId(uuid_hex_to_base64(request.id));
-    return client.deleteGroupDevice(groupId, metadata(server))
+    return client.deleteGroupDevice(groupId, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Add a member to a group device
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupDevice} request group device member: id, device_id
  * @returns {Promise<{}>} change response
  */
-export async function add_group_device_member(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function add_group_device_member(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupDevice = new pb_group.GroupDevice();
     groupDevice.setId(uuid_hex_to_base64(request.id));
     groupDevice.setDeviceId(uuid_hex_to_base64(request.device_id));
-    return client.addGroupDeviceMember(groupDevice, metadata(server))
+    return client.addGroupDeviceMember(groupDevice, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Remove a member to a group device
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupDevice} request group device member: id, device_id
  * @returns {Promise<{}>} change response
  */
-export async function remove_group_device_member(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function remove_group_device_member(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupDevice = new pb_group.GroupDevice();
     groupDevice.setId(uuid_hex_to_base64(request.id));
     groupDevice.setDeviceId(uuid_hex_to_base64(request.device_id));
-    return client.removeGroupDeviceMember(groupDevice, metadata(server))
+    return client.removeGroupDeviceMember(groupDevice, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Read a group gateway by uuid
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupId} request group gateway uuid: id
  * @returns {Promise<GroupGatewaySchema>} group gateway schema: id, name, category, description, gateway_ids
  */
-export async function read_group_gateway(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function read_group_gateway(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupId = new pb_group.GroupId();
     groupId.setId(uuid_hex_to_base64(request.id));
-    return client.readGroupGateway(groupId, metadata(server))
+    return client.readGroupGateway(groupId, metadata(config.access_token))
         .then(response => get_group_gateway_schema(response.toObject().result));
 }
 
 /**
  * Read groups of gateway by uuid list
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupIds} request group uuid list: ids
  * @returns {Promise<GroupGatewaySchema[]>} group gateway schema: id, name, category, description, gateway_ids
  */
-export async function list_group_gateway_by_ids(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function list_group_gateway_by_ids(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupIds = new pb_group.GroupIds();
     groupIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
-    return client.listGroupGatewayByIds(groupIds, metadata(server))
+    return client.listGroupGatewayByIds(groupIds, metadata(config.access_token))
         .then(response => get_group_gateway_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read groups of gateway by name
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupName} request group gateway name: name
  * @returns {Promise<GroupGatewaySchema[]>} group gateway schema: id, name, category, description, gateway_ids
  */
-export async function list_group_gateway_by_name(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function list_group_gateway_by_name(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupName = new pb_group.GroupName();
     groupName.setName(request.name);
-    return client.listGroupGatewayByName(groupName, metadata(server))
+    return client.listGroupGatewayByName(groupName, metadata(config.access_token))
         .then(response => get_group_gateway_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read groups of gateway by category
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupCategory} request group gateway category: category
  * @returns {Promise<GroupGatewaySchema[]>} group gateway schema: id, name, category, description, gateway_ids
  */
-export async function list_group_gateway_by_category(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function list_group_gateway_by_category(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupCategory = new pb_group.GroupCategory();
     groupCategory.setCategory(request.category);
-    return client.listGroupGatewayByCategory(groupCategory, metadata(server))
+    return client.listGroupGatewayByCategory(groupCategory, metadata(config.access_token))
         .then(response => get_group_gateway_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read groups of gateway with select options
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupOption} request group gateway option: name, category
  * @returns {Promise<GroupGatewaySchema[]>} group gateway schema: id, name, category, description, gateway_ids
  */
-export async function list_group_gateway_option(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function list_group_gateway_option(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupOption = new pb_group.GroupOption();
     groupOption.setName(request.name);
     groupOption.setCategory(request.category);
-    return client.listGroupGatewayOption(groupOption, metadata(server))
+    return client.listGroupGatewayOption(groupOption, metadata(config.access_token))
         .then(response => get_group_gateway_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Create a group gateway
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupGatewaySchema} request group gateway schema: id, name, category, description
  * @returns {Promise<GroupId>} group gateway uuid: id
  */
-export async function create_group_gateway(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function create_group_gateway(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupSchema = new pb_group.GroupDeviceSchema();
     groupSchema.setId(uuid_hex_to_base64(request.id));
     groupSchema.setName(request.name);
     groupSchema.setCategory(request.category);
     groupSchema.setDescription(request.description);
-    return client.createGroupGateway(groupSchema, metadata(server))
+    return client.createGroupGateway(groupSchema, metadata(config.access_token))
         .then(response => get_group_id(response.toObject()));
 }
 
 /**
  * Update a group gateway
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupUpdate} request group gateway update: id, name, category, description
  * @returns {Promise<{}>} update response
  */
-export async function update_group_gateway(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function update_group_gateway(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupUpdate = new pb_group.GroupUpdate();
     groupUpdate.setId(uuid_hex_to_base64(request.id));
     groupUpdate.setName(request.name);
     groupUpdate.setCategory(request.category);
     groupUpdate.setDescription(request.description);
-    return client.updateGroupGateway(groupUpdate, metadata(server))
+    return client.updateGroupGateway(groupUpdate, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Delete a group gateway
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupId} request group gateway uuid: id
  * @returns {Promise<{}>} delete response
  */
-export async function delete_group_gateway(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function delete_group_gateway(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupId = new pb_group.GroupId();
     groupId.setId(uuid_hex_to_base64(request.id));
-    return client.deleteGroupGateway(groupId, metadata(server))
+    return client.deleteGroupGateway(groupId, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Add a member to a group gateway
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupGateway} request group gateway member: id, gateway_id
  * @returns {Promise<{}>} change response
  */
-export async function add_group_gateway_member(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function add_group_gateway_member(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupDevice = new pb_group.GroupDevice();
     groupDevice.setId(uuid_hex_to_base64(request.id));
     groupDevice.setDeviceId(uuid_hex_to_base64(request.gateway_id));
-    return client.addGroupGatewayMember(groupDevice, metadata(server))
+    return client.addGroupGatewayMember(groupDevice, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Remove a member to a group gateway
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupGateway} request group gateway member: id, gateway_id
  * @returns {Promise<{}>} change response
  */
-export async function remove_group_gateway_member(server, request) {
-    const client = new pb_group.GroupServicePromiseClient(server.address, null, null);
+export async function remove_group_gateway_member(config, request) {
+    const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupDevice = new pb_group.GroupDevice();
     groupDevice.setId(uuid_hex_to_base64(request.id));
     groupDevice.setDeviceId(uuid_hex_to_base64(request.gateway_id));
-    return client.removeGroupGatewayMember(groupDevice, metadata(server))
+    return client.removeGroupGatewayMember(groupDevice, metadata(config.access_token))
         .then(response => response.toObject());
 }

@@ -1,3 +1,169 @@
+import pb_config from "../proto/resource/config_grpc_web_pb.js";
+import pb_auth from "../proto/auth/auth_grpc_web_pb.js";
+import {
+    base64_to_uuid_hex,
+    importKey,
+    encryptMessage
+} from "../common/utility.js";
+
+
+/**
+ * @typedef {(string|Uint8Array)} Uuid
+ */
+
+/**
+ * @typedef {Object} AccessTokenMap
+ * @property {Uuid} api_id
+ * @property {string} access_token
+ * @property {string} refresh_token
+ */
+
+/**
+ * @param {*} r 
+ * @returns {AccessTokenMap}
+ */
+function get_access_token(r) {
+    return {
+        api_id: base64_to_uuid_hex(r.apiId),
+        access_token: r.accessToken,
+        refresh_token: r.refreshToken
+    };
+}
+
+/**
+ * @typedef {Object} UserLoginResponse
+ * @property {Uuid} user_id
+ * @property {string} auth_token
+ * @property {AccessTokenMap[]} access_tokens
+ */
+
+/**
+ * @param {*} r 
+ * @returns {UserLoginResponse}
+ */
+function get_login_response(r) {
+    return {
+        user_id: base64_to_uuid_hex(r.userId),
+        auth_token: r.authToken,
+        access_tokens: r.accessTokensList.map((v) => {return get_access_token(v)})
+    };
+}
+
+/**
+ * @typedef {Object} UserRefreshResponse
+ * @property {string} access_token
+ * @property {string} refresh_token
+ */
+
+/**
+ * @param {*} r 
+ * @returns {UserRefreshResponse}
+ */
+function get_refresh_response(r) {
+    return {
+        access_token: r.accessToken,
+        refresh_token: r.refreshToken
+    };
+}
+
+/**
+ * Resource server configuration.
+ * @param {String} address - Resource server address
+ * @param {?String} auth_address - Authorization/Authentication server address
+ * @param {?Uuid} api_id - Connected Resource API ID
+ * @param {?Uuid} user_id - ID of the user connected to the server
+ * @param {?String} auth_token - User identification token. Used for logout
+ * @param {?String} access_token - Token containing user credential. Used for accessing resource
+ * @param {?String} refresh_token - Token for refresh access_token expired time
+ */
+export class ResourceConfig {
+
+    constructor(address, api_id, auth_token, access_token, refresh_token) {
+        this.address = address;
+        this.api_id = api_id;
+        this.auth_token = auth_token;
+        this.access_token = access_token;
+        this.refresh_token = refresh_token;
+    }
+
+    /**
+     * Login user to Authorization/Authentication server for accesing resource
+     * @param {String} auth_address - Authorization/Authentication server address
+     * @param {String} username
+     * @param {String} password
+     */
+    async login(auth_address, username, password) {
+        this.auth_address = auth_address;
+        // get resource api address from resource server
+        const client = new pb_config.ConfigServicePromiseClient(this.address, null, null);
+        const apiIdRequest = new pb_config.ApiIdRequest();
+        const api_id = await client.ApiId(apiIdRequest)
+            .then(response => base64_to_uuid_hex(response.toObject().api_id));
+        this.api_id = api_id;
+        // login user to auth server
+        const client_auth = new pb_auth.AuthServicePromiseClient(auth_address, null, null);
+        const userKeyRequest = new pb_auth.UserKeyRequest();
+        const key = await client_auth.userPasswordKey(userKeyRequest)
+            .then(response => response.toObject().publicKey);
+        const userLoginRequest = new pb_auth.UserLoginRequest();
+        userLoginRequest.setUsername(username);
+        const pubkey = await importKey(key);
+        const ciphertext = await encryptMessage(password, pubkey);
+        userLoginRequest.setPassword(ciphertext);
+        const login = await client_auth.userLogin(userLoginRequest)
+            .then(response => get_login_response(response.toObject()));
+        this.auth_token = login.auth_token;
+        for (const map of login.access_tokens) {
+            if (map.api_id == self._api_id || map.api_id == 'ffffffff-ffff-ffff-ffff-ffffffffffff') {
+                this.access_token = map.access_token;
+                this.refresh_token = map.refresh_token;
+            }
+        }
+        this.user_id = login.user_id;
+    }
+
+    /**
+     * Refresh access token
+     */
+    async refresh() {
+        if (this.auth_address) {
+            const client = new pb_auth.AuthServicePromiseClient(this.auth_address, null, null);
+            const userRefreshRequest = new pb_auth.UserRefreshRequest();
+            userRefreshRequest.setApiId(uuid_hex_to_base64(this.api_id));
+            userRefreshRequest.setAccessToken(this.access_token);
+            userRefreshRequest.setRefreshToken(this.refresh_token);
+            const refresh = await client.userRefresh(userRefreshRequest)
+                .then(response => get_refresh_response(response.toObject()));
+            this.access_token = refresh.access_token;
+            this.refresh_token = refresh.refresh_token;
+        }
+    }
+
+    /**
+     * Logout user from Authorization/Authentication server
+     */
+    async logout() {
+        if (this.auth_address && this.user_id) {
+            const client = new pb_auth.AuthServicePromiseClient(this.auth_address, null, null);
+            const userLogoutRequest = new pb_auth.UserLogoutRequest();
+            userLogoutRequest.setUserId(uuid_hex_to_base64(this.user_id));
+            userLogoutRequest.setAuthToken(this.auth_token);
+            await client.userLogout(userLogoutRequest)
+                .then(response => response.toObject());
+            this.auth_token = null;
+            this.access_token = null;
+            this.refresh_token = null;
+        }
+    }
+
+}
+
+
+export {
+    api_id,
+    procedure_access,
+    role_access
+} from './config.js'
 export {
     read_model,
     list_model_by_ids,

@@ -1,11 +1,11 @@
 /**
  * Construct request metadata
- * @param {{address:string,token:string}} server 
+ * @param {{address:string,token:string}} token 
  * @returns {Object.<string,string>}
  */
-export function metadata(server) {
-    if (server.token) {
-        return { "Authorization": "Bearer " + server.token };
+export function metadata(token) {
+    if (token) {
+        return { "Authorization": "Bearer " + token };
     }
     return {};
 }
@@ -128,4 +128,53 @@ export function bytes_to_base64(bytes) {
     return btoa(Array.from(bytes).map((v) => {
         return String.fromCharCode(v);
     }).join(""));
+}
+
+/**
+ * Import a PEM encoded RSA public key, to use for RSA-OAEP / RSASSA-PKCS1-v1_5 encryption
+ * @param {string} pem 
+ * @returns 
+ */
+export function importKey(pem) {
+    try {
+        const binaryDerString = window.atob(pem);
+        const binaryDer = string_to_array_buffer(binaryDerString);
+        return window.crypto.subtle.importKey(
+            "spki",
+            binaryDer,
+            {
+                name: "RSA-OAEP",
+                hash: "SHA-256"
+            },
+            true,
+            ["encrypt"]
+        );
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Get the encoded message, encrypt it and display a representation of the ciphertext
+ * @param {string} message 
+ * @param {CryptoKey} encryptionKey 
+ * @returns 
+ */
+export async function encryptMessage(message, encryptionKey)
+{
+    try {
+        const enc = new TextEncoder();
+        const encoded = enc.encode(message);
+        const buf = await window.crypto.subtle.encrypt(
+            {
+                name: "RSA-OAEP"
+            },
+            encryptionKey,
+            encoded
+        );
+        const chars = String.fromCharCode.apply(null, new Uint8Array(buf));
+        return btoa(chars);
+    } catch {
+        return null;
+    }
 }

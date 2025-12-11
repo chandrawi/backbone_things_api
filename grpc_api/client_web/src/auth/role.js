@@ -13,7 +13,7 @@ import {
 /**
  * @typedef {Object} ServerConfig
  * @property {string} address
- * @property {?string} token
+ * @property {?string} auth_token
  */
 
 /**
@@ -117,97 +117,97 @@ function get_role_schema_vec(r) {
 
 /**
  * Read a role by uuid
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleId} request role uuid: id
  * @returns {Promise<RoleSchema>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
  */
-export async function read_role(server, request) {
-    const client = new pb_role.RoleServicePromiseClient(server.address, null, null);
+export async function read_role(config, request) {
+    const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleId = new pb_role.RoleId();
     roleId.setId(uuid_hex_to_base64(request.id));
-    return client.readRole(roleId, metadata(server))
+    return client.readRole(roleId, metadata(config.auth_token))
         .then(response => get_role_schema(response.toObject().result));
 }
 
 /**
  * Read a role by name
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleName} request role name: api_id, name
  * @returns {Promise<RoleSchema>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
  */
-export async function read_role_by_name(server, request) {
-    const client = new pb_role.RoleServicePromiseClient(server.address, null, null);
+export async function read_role_by_name(config, request) {
+    const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleName = new pb_role.RoleName();
     roleName.setApiId(uuid_hex_to_base64(request.api_id));
     roleName.setName(request.name);
-    return client.readRoleByName(roleName, metadata(server))
+    return client.readRoleByName(roleName, metadata(config.auth_token))
         .then(response => get_role_schema(response.toObject().result));
 }
 
 /**
  * Read roles by uuid list
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleIds} request role uuid list: ids
  * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
  */
-export async function list_role_by_ids(server, request) {
-    const client = new pb_role.RoleServicePromiseClient(server.address, null, null);
+export async function list_role_by_ids(config, request) {
+    const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleIds = new pb_role.RoleIds();
     roleIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
-    return client.listRoleByIds(roleIds, metadata(server))
+    return client.listRoleByIds(roleIds, metadata(config.auth_token))
         .then(response => get_role_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read roles by api uuid
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ApiId} request api uuid: id
  * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
  */
-export async function list_role_by_api(server, request) {
-    const client = new pb_role.RoleServicePromiseClient(server.address, null, null);
+export async function list_role_by_api(config, request) {
+    const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const apiId = new pb_role.ApiId();
     apiId.setApiId(uuid_hex_to_base64(request.id));
-    return client.listRoleByApi(apiId, metadata(server))
+    return client.listRoleByApi(apiId, metadata(config.auth_token))
         .then(response => get_role_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read roles by user uuid
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserId} request user uuid: id
  * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
  */
-export async function list_role_by_user(server, request) {
-    const client = new pb_role.RoleServicePromiseClient(server.address, null, null);
+export async function list_role_by_user(config, request) {
+    const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const userId = new pb_role.UserId();
     userId.setUserId(uuid_hex_to_base64(request.id));
-    return client.listRoleByUser(userId, metadata(server))
+    return client.listRoleByUser(userId, metadata(config.auth_token))
         .then(response => get_role_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read roles by name
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleName} request role name: name
  * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
  */
-export async function list_role_by_name(server, request) {
-    const client = new pb_role.RoleServicePromiseClient(server.address, null, null);
+export async function list_role_by_name(config, request) {
+    const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleName = new pb_role.RoleName();
     roleName.setName(request.name);
-    return client.listRoleByName(roleName, metadata(server))
+    return client.listRoleByName(roleName, metadata(config.auth_token))
         .then(response => get_role_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read roles with options
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleOption} request role option: api_id, user_id, name
  * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
  */
-export async function list_role_option(server, request) {
-    const client = new pb_role.RoleServicePromiseClient(server.address, null, null);
+export async function list_role_option(config, request) {
+    const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleOption = new pb_role.RoleOption();
     if (request.api_id) {
         roleOption.setApiId(uuid_hex_to_base64(request.api_id))
@@ -216,18 +216,18 @@ export async function list_role_option(server, request) {
         roleOption.setUserId(uuid_hex_to_base64(request.user_id))
     }
     roleOption.setName(request.name);
-    return client.listRoleOption(roleOption, metadata(server))
+    return client.listRoleOption(roleOption, metadata(config.auth_token))
         .then(response => get_role_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Create a role
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleSchema} request role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key
  * @returns {Promise<RoleId>} role id: id
  */
-export async function create_role(server, request) {
-    const client = new pb_role.RoleServicePromiseClient(server.address, null, null);
+export async function create_role(config, request) {
+    const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleSchema = new pb_role.RoleSchema();
     roleSchema.setId(uuid_hex_to_base64(request.id));
     roleSchema.setApiId(uuid_hex_to_base64(request.api_id));
@@ -237,18 +237,18 @@ export async function create_role(server, request) {
     roleSchema.setAccessDuration(request.access_duration);
     roleSchema.setRefreshDuration(request.refresh_duration);
     roleSchema.setAccessKey(request.access_key);
-    return client.createRole(roleSchema, metadata(server))
+    return client.createRole(roleSchema, metadata(config.auth_token))
         .then(response => get_role_id(response.toObject()));
 }
 
 /**
  * Update a role
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleUpdate} request role update: id, name, multi, ip_lock, access_duration, refresh_duration
  * @returns {Promise<{}>} update response
  */
-export async function update_role(server, request) {
-    const client = new pb_role.RoleServicePromiseClient(server.address, null, null);
+export async function update_role(config, request) {
+    const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleUpdate = new pb_role.RoleUpdate();
     roleUpdate.setId(uuid_hex_to_base64(request.id));
     roleUpdate.setName(request.name);
@@ -256,50 +256,50 @@ export async function update_role(server, request) {
     roleUpdate.setIpLock(request.ip_lock);
     roleUpdate.setAccessDuration(request.access_duration);
     roleUpdate.setRefreshDuration(request.refresh_duration);
-    return client.updateRole(roleUpdate, metadata(server))
+    return client.updateRole(roleUpdate, metadata(config.auth_token))
         .then(response => response.toObject());
 }
 
 /**
  * Delete a role
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleId} request role uuid: id
  * @returns {Promise<{}>} delete response
  */
-export async function delete_role(server, request) {
-    const client = new pb_role.RoleServicePromiseClient(server.address, null, null);
+export async function delete_role(config, request) {
+    const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleId = new pb_role.RoleId();
     roleId.setId(uuid_hex_to_base64(request.id));
-    return client.deleteRole(roleId, metadata(server))
+    return client.deleteRole(roleId, metadata(config.auth_token))
         .then(response => response.toObject());
 }
 
 /**
  * Add a role access
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleAccess} request role access: id, procedure_id
  * @returns {Promise<{}>} change response
  */
-export async function add_role_access(server, request) {
-    const client = new pb_role.RoleServicePromiseClient(server.address, null, null);
+export async function add_role_access(config, request) {
+    const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleAccess = new pb_role.RoleAccess();
     roleAccess.setId(uuid_hex_to_base64(request.id));
     roleAccess.setProcedureId(uuid_hex_to_base64(request.procedure_id));
-    return client.addRoleAccess(roleAccess, metadata(server))
+    return client.addRoleAccess(roleAccess, metadata(config.auth_token))
         .then(response => response.toObject());
 }
 
 /**
  * Remove a role access
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleAccess} request role access: id, procedure_id
  * @returns {Promise<{}>} change response
  */
-export async function remove_role_access(server, request) {
-    const client = new pb_role.RoleServicePromiseClient(server.address, null, null);
+export async function remove_role_access(config, request) {
+    const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleAccess = new pb_role.RoleAccess();
     roleAccess.setId(uuid_hex_to_base64(request.id));
     roleAccess.setProcedureId(uuid_hex_to_base64(request.procedure_id));
-    return client.removeRoleAccess(roleAccess, metadata(server))
+    return client.removeRoleAccess(roleAccess, metadata(config.auth_token))
         .then(response => response.toObject());
 }

@@ -3,6 +3,8 @@ export * as resource from './resource/index.js';
 export * as utility from './common/utility.js';
 export {DataType} from './common/type_value.js';
 export {Tag} from './common/tag.js';
+export {AuthConfig} from './auth';
+export {ResourceConfig} from './resource';
 
 
 export {
@@ -93,6 +95,11 @@ export {
 } from './auth/auth.js';
 
 
+export {
+    api_id,
+    procedure_access,
+    role_access
+} from './resource/config.js'
 export {
     read_model,
     list_model_by_ids,

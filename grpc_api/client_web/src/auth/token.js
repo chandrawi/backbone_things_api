@@ -15,7 +15,7 @@ import {
 /**
  * @typedef {Object} ServerConfig
  * @property {string} address
- * @property {?string} token
+ * @property {?string} auth_token
  */
 
 /**
@@ -159,158 +159,158 @@ function get_token_update_response(r) {
 
 /**
  * Read an access token by access id
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {AccessId} request access id: access_id
  * @returns {Promise<TokenSchema>} token schema: access_id, user_id, refresh_token, auth_token, created, expired, ip
  */
-export async function read_access_token(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function read_access_token(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const accessId = new pb_token.AccessId();
     accessId.setAccessId(request.access_id);
-    return client.readAccessToken(accessId, metadata(server))
+    return client.readAccessToken(accessId, metadata(config.auth_token))
         .then(response => get_token_schema(response.toObject().result));
 }
 
 /**
  * Read tokens by auth token
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {AuthToken} request auth token: auth_token
  * @returns {Promise<TokenSchema[]>} token schema: access_id, user_id, refresh_token, auth_token, created, expired, ip
  */
-export async function list_auth_token(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function list_auth_token(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const authToken = new pb_token.AuthToken();
     authToken.setAuthToken(request.auth_token);
-    return client.listAuthToken(authToken, metadata(server))
+    return client.listAuthToken(authToken, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read tokens by user id
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserId} request user id: id
  * @returns {Promise<TokenSchema[]>} token schema: access_id, user_id, refresh_token, auth_token, created, expired, ip
  */
-export async function list_token_by_user(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function list_token_by_user(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const userId = new pb_token.UserId();
     userId.setUserId(uuid_hex_to_base64(request.id));
-    return client.listTokenByUser(userId, metadata(server))
+    return client.listTokenByUser(userId, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read tokens by earlier created time
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {TokenEarlier} request token earlier: earlier, user_id
  * @returns {Promise<TokenSchema[]>} token schema: access_id, user_id, refresh_token, auth_token, created, expired, ip
  */
-export async function list_token_by_created_earlier(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function list_token_by_created_earlier(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const tokenTime = new pb_token.TokenTime();
     tokenTime.setTimestamp(request.earlier.valueOf() * 1000);
     if (request.user_id) {
         tokenTime.setUserId(uuid_hex_to_base64(request.user_id));
     }
-    return client.listTokenByCreatedEarlier(tokenTime, metadata(server))
+    return client.listTokenByCreatedEarlier(tokenTime, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read tokens by later created time
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {TokenLater} request token later: later, user_id
  * @returns {Promise<TokenSchema[]>} token schema: access_id, user_id, refresh_token, auth_token, created, expired, ip
  */
-export async function list_token_by_created_later(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function list_token_by_created_later(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const tokenTime = new pb_token.TokenTime();
     tokenTime.setTimestamp(request.later.valueOf() * 1000);
     if (request.user_id) {
         tokenTime.setUserId(uuid_hex_to_base64(request.user_id));
     }
-    return client.listTokenByCreatedLater(tokenTime, metadata(server))
+    return client.listTokenByCreatedLater(tokenTime, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read tokens by created time range
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {TokenRange} request token range: begin, end, user_id
  * @returns {Promise<TokenSchema[]>} token schema: access_id, user_id, refresh_token, auth_token, created, expired, ip
  */
-export async function list_token_by_created_range(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function list_token_by_created_range(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const tokenRange = new pb_token.TokenRangeSingle();
     tokenRange.setBegin(request.begin.valueOf() * 1000);
     tokenRange.setEnd(request.end.valueOf() * 1000);
     if (request.user_id) {
         tokenRange.setUserId(uuid_hex_to_base64(request.user_id));
     }
-    return client.listTokenByCreatedRange(tokenRange, metadata(server))
+    return client.listTokenByCreatedRange(tokenRange, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read tokens by earlier expired time
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {TokenEarlier} request token earlier: earlier, user_id
  * @returns {Promise<TokenSchema[]>} token schema: access_id, user_id, refresh_token, auth_token, created, expired, ip
  */
-export async function list_token_by_expired_earlier(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function list_token_by_expired_earlier(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const tokenTime = new pb_token.TokenTime();
     tokenTime.setTimestamp(request.earlier.valueOf() * 1000);
     if (request.user_id) {
         tokenTime.setUserId(uuid_hex_to_base64(request.user_id));
     }
-    return client.listTokenByExpiredEarlier(tokenTime, metadata(server))
+    return client.listTokenByExpiredEarlier(tokenTime, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read tokens by later expired time
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {TokenLater} request token later: later, user_id
  * @returns {Promise<TokenSchema[]>} token schema: access_id, user_id, refresh_token, auth_token, created, expired, ip
  */
-export async function list_token_by_expired_later(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function list_token_by_expired_later(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const tokenTime = new pb_token.TokenTime();
     tokenTime.setTimestamp(request.later.valueOf() * 1000);
     if (request.user_id) {
         tokenTime.setUserId(uuid_hex_to_base64(request.user_id));
     }
-    return client.listTokenByExpiredLater(tokenTime, metadata(server))
+    return client.listTokenByExpiredLater(tokenTime, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read tokens by expired time range
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {TokenRange} request token range: begin, end, user_id
  * @returns {Promise<TokenSchema[]>} token schema: access_id, user_id, refresh_token, auth_token, created, expired, ip
  */
-export async function list_token_by_expired_range(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function list_token_by_expired_range(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const tokenRange = new pb_token.TokenRangeSingle();
     tokenRange.setBegin(request.begin.valueOf() * 1000);
     tokenRange.setEnd(request.end.valueOf() * 1000);
     if (request.user_id) {
         tokenRange.setUserId(uuid_hex_to_base64(request.user_id));
     }
-    return client.listTokenByExpiredRange(tokenRange, metadata(server))
+    return client.listTokenByExpiredRange(tokenRange, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read tokens by created and expired time range
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {TokenRanges} request token ranges: begin, end, user_id
  * @returns {Promise<TokenSchema[]>} token schema: access_id, user_id, refresh_token, auth_token, created, expired, ip
  */
-export async function list_token_by_range(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function list_token_by_range(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const tokenRanges = new pb_token.TokenRangeDouble();
     tokenRanges.setBegin1(request.created_begin.valueOf() * 1000);
     tokenRanges.setEnd1(request.created_end.valueOf() * 1000);
@@ -319,52 +319,52 @@ export async function list_token_by_range(server, request) {
     if (request.user_id) {
         tokenRanges.setUserId(uuid_hex_to_base64(request.user_id));
     }
-    return client.listTokenByRange(tokenRanges, metadata(server))
+    return client.listTokenByRange(tokenRanges, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Create an access token
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {TokenSchema} request token schema: user_id, auth_token, expired, expired, ip
  * @returns {Promise<TokenCreateResponse>} create response: access_id, refresh_token, auth_token
  */
-export async function create_access_token(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function create_access_token(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const tokenSchema = new pb_token.TokenSchema();
     tokenSchema.setUserId(uuid_hex_to_base64(request.user_id));
     tokenSchema.setAuthToken(request.auth_token);
     tokenSchema.setExpired(request.expired.valueOf() * 1000);
     tokenSchema.setIp(bytes_to_base64(request.ip));
-    return client.createAccessToken(tokenSchema, metadata(server))
+    return client.createAccessToken(tokenSchema, metadata(config.auth_token))
         .then(response => get_token_create_response(response.toObject()));
 }
 
 /**
  * Create tokens with shared auth token
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {AuthTokenCreate} request token schema: user_id, expired, ip, number
  * @returns {Promise<TokenCreateResponse[]>} create response: access_id, refresh_token, auth_token
  */
-export async function create_auth_token(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function create_auth_token(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const authTokenCreate = new pb_token.AuthTokenCreate();
     authTokenCreate.setUserId(uuid_hex_to_base64(request.user_id));
     authTokenCreate.setExpired(request.expired.valueOf() * 1000);
     authTokenCreate.setIp(bytes_to_base64(request.ip));
     authTokenCreate.setNumber(request.number);
-    return client.createAuthToken(authTokenCreate, metadata(server))
+    return client.createAuthToken(authTokenCreate, metadata(config.auth_token))
         .then(response => get_token_create_response_vec(response.toObject().tokensList));
 }
 
 /**
  * Update an access token
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {TokenUpdate} request token update: access_id, expired, ip
  * @returns {Promise<TokenUpdateResponse>} update response: refresh_token, auth_token
  */
-export async function update_access_token(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function update_access_token(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const tokenUpdate = new pb_token.TokenUpdate();
     tokenUpdate.setAccessId(request.access_id);
     if (request.expired instanceof Date) {
@@ -373,18 +373,18 @@ export async function update_access_token(server, request) {
     if (request.ip) {
         tokenUpdate.setIp(bytes_to_base64(request.ip));
     }
-    return client.updateAccessToken(tokenUpdate, metadata(server))
+    return client.updateAccessToken(tokenUpdate, metadata(config.auth_token))
         .then(response => get_token_update_response(response.toObject()));
 }
 
 /**
  * Update all tokens with shared auth token
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {TokenUpdate} request token update: auth_token, expired, ip
  * @returns {Promise<TokenUpdateResponse>} update response: refresh_token, auth_token
  */
-export async function update_auth_token(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function update_auth_token(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const tokenUpdate = new pb_token.TokenUpdate();
     tokenUpdate.setAuthToken(request.auth_token);
     if (request.expired instanceof Date) {
@@ -393,48 +393,48 @@ export async function update_auth_token(server, request) {
     if (request.ip) {
         tokenUpdate.setIp(bytes_to_base64(request.ip));
     }
-    return client.updateAuthToken(tokenUpdate, metadata(server))
+    return client.updateAuthToken(tokenUpdate, metadata(config.auth_token))
         .then(response => get_token_update_response(response.toObject()));
 }
 
 /**
  * Delete an access token by access id
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {AccessId} request access id: access_id
  * @returns {Promise<{}>} delete response
  */
-export async function delete_access_token(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function delete_access_token(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const accessId = new pb_token.AccessId();
     accessId.setAccessId(request.access_id);
-    return client.deleteAccessToken(accessId, metadata(server))
+    return client.deleteAccessToken(accessId, metadata(config.auth_token))
         .then(response => response.toObject());
 }
 
 /**
  * Delete tokens by auth token
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {AuthToken} request auth token: auth_token
  * @returns {Promise<{}>} delete response
  */
-export async function delete_auth_token(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function delete_auth_token(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const authToken = new pb_token.AuthToken();
     authToken.setAuthToken(request.auth_token);
-    return client.deleteAuthToken(authToken, metadata(server))
+    return client.deleteAuthToken(authToken, metadata(config.auth_token))
         .then(response => response.toObject());
 }
 
 /**
  * Delete tokens by user id
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserId} request user id: id
  * @returns {Promise<{}>} delete response
  */
-export async function delete_token_by_user(server, request) {
-    const client = new pb_token.TokenServicePromiseClient(server.address, null, null);
+export async function delete_token_by_user(config, request) {
+    const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const userId = new pb_token.UserId();
     userId.setUserId(uuid_hex_to_base64(request.id));
-    return client.deleteTokenByUser(userId, metadata(server))
+    return client.deleteTokenByUser(userId, metadata(config.auth_token))
         .then(response => response.toObject());
 }

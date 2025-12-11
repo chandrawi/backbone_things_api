@@ -14,7 +14,7 @@ import {
 /**
  * @typedef {Object} ServerConfig
  * @property {string} address
- * @property {?string} token
+ * @property {?string} access_token
  */
 
 /**
@@ -195,118 +195,118 @@ function get_tag_schema(r) {
 
 /**
  * Read a model by uuid
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelId} request model uuid: id
  * @returns {Promise<ModelSchema>} model schema: id, category, name, description, data_type, configs
  */
-export async function read_model(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function read_model(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelId = new pb_model.ModelId();
     modelId.setId(uuid_hex_to_base64(request.id));
-    return client.readModel(modelId, metadata(server))
+    return client.readModel(modelId, metadata(config.access_token))
         .then(response => get_model_schema(response.toObject().result));
 }
 
 /**
  * Read models by uuid list
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelIds} request model uuid list: ids
  * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
  */
-export async function list_model_by_ids(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function list_model_by_ids(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelIds = new pb_model.ModelIds();
     modelIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
-    return client.listModelByIds(modelIds, metadata(server))
+    return client.listModelByIds(modelIds, metadata(config.access_token))
         .then(response => get_model_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read models by name
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelName} request model name: name
  * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
  */
-export async function list_model_by_name(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function list_model_by_name(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelName = new pb_model.ModelName();
     modelName.setName(request.name);
-    return client.listModelByName(modelName, metadata(server))
+    return client.listModelByName(modelName, metadata(config.access_token))
         .then(response => get_model_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read models by category
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelCategory} request model category: category
  * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
  */
-export async function list_model_by_category(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function list_model_by_category(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelCategory = new pb_model.ModelCategory();
     modelCategory.setCategory(request.category);
-    return client.listModelByCategory(modelCategory, metadata(server))
+    return client.listModelByCategory(modelCategory, metadata(config.access_token))
         .then(response => get_model_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read models with select options
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelOption} request model select option: type_id, name, category
  * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
  */
-export async function list_model_option(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function list_model_option(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelOption = new pb_model.ModelOption();
     if (request.type_id) {
         modelOption.setTypeId(uuid_hex_to_base64(request.type_id));
     }
     modelOption.setName(request.name);
     modelOption.setCategory(request.category);
-    return client.listModelOption(modelOption, metadata(server))
+    return client.listModelOption(modelOption, metadata(config.access_token))
         .then(response => get_model_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Read models by type
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeId} request type uuid: id
  * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
  */
-export async function list_model_by_type(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function list_model_by_type(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const typeId = new pb_model.TypeId();
     typeId.setId(uuid_hex_to_base64(request.id));
-    return client.listModelByType(modelNameCategory, metadata(server))
+    return client.listModelByType(modelNameCategory, metadata(config.access_token))
         .then(response => get_model_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Create a model
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelSchema} request model schema: id, data_type, category, name, description
  * @returns {Promise<ModelId>} model id: id
  */
-export async function create_model(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function create_model(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelSchema = new pb_model.ModelSchema();
     modelSchema.setId(uuid_hex_to_base64(request.id));
     modelSchema.setDataTypeList(request.data_type.map((v) => {return set_data_type(v)}));
     modelSchema.setCategory(request.category);
     modelSchema.setName(request.name);
     modelSchema.setDescription(request.description);
-    return client.createModel(modelSchema, metadata(server))
+    return client.createModel(modelSchema, metadata(config.access_token))
         .then(response => get_model_id(response.toObject()));
 }
 
 /**
  * Update a model
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelUpdate} request model update: id, data_type, category, name, description
  * @returns {Promise<{}>} update response
  */
-export async function update_model(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function update_model(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelUpdate = new pb_model.ModelUpdate();
     modelUpdate.setId(uuid_hex_to_base64(request.id));
     if (request.data_type) {
@@ -318,60 +318,60 @@ export async function update_model(server, request) {
     modelUpdate.setCategory(request.category);
     modelUpdate.setName(request.name);
     modelUpdate.setDescription(request.description);
-    return client.updateModel(modelUpdate, metadata(server))
+    return client.updateModel(modelUpdate, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Delete a model
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelId} request model uuid: id
  * @returns {Promise<{}>} delete response
  */
-export async function delete_model(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function delete_model(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelId = new pb_model.ModelId();
     modelId.setId(uuid_hex_to_base64(request.id));
-    return client.deleteModel(modelId, metadata(server))
+    return client.deleteModel(modelId, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Read a model configuration by uuid
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelConfigId} request model config uuid: id
  * @returns {Promise<ModelConfigSchema>} model config schema: model_id, index, name, value, category
  */
-export async function read_model_config(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function read_model_config(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const configId = new pb_model.ConfigId();
     configId.setId(request.id);
-    return client.readModelConfig(configId, metadata(server))
+    return client.readModelConfig(configId, metadata(config.access_token))
         .then(response => get_model_config_schema(response.toObject().result));
 }
 
 /**
  * Read model configurations by model uuid
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelId} request model uuid: id
  * @returns {Promise<ModelConfigSchema[]>} model config schema: model_id, index, name, value, category
  */
-export async function list_model_config_by_model(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function list_model_config_by_model(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelId = new pb_model.ModelId();
     modelId.setId(uuid_hex_to_base64(request.id));
-    return client.listModelConfig(modelId, metadata(server))
+    return client.listModelConfig(modelId, metadata(config.access_token))
         .then(response => get_model_config_schema_vec(response.toObject().resultsList));
 }
 
 /**
  * Create a model configuration
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelConfigSchema} request model config schema: model_id, index, name, value, category
  * @returns {Promise<ModelConfigId>} model config uuid: id
  */
-export async function create_model_config(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function create_model_config(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const configSchema = new pb_model.ConfigSchema();
     configSchema.setModelId(uuid_hex_to_base64(request.model_id));
     configSchema.setIndex(request.index);
@@ -380,18 +380,18 @@ export async function create_model_config(server, request) {
     configSchema.setConfigBytes(value.bytes);
     configSchema.setConfigType(value.type);
     configSchema.setCategory(request.category);
-    return client.createModelConfig(configSchema, metadata(server))
+    return client.createModelConfig(configSchema, metadata(config.access_token))
         .then(response => get_model_config_id(response.toObject()));
 }
 
 /**
  * Update a model configuration
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelConfigUpdate} request model config update: id, name, value, category
  * @returns {Promise<{}>} update response 
  */
-export async function update_model_config(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function update_model_config(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const configUpdate = new pb_model.ConfigUpdate();
     configUpdate.setId(request.id);
     configUpdate.setName(request.name);
@@ -399,98 +399,98 @@ export async function update_model_config(server, request) {
     configUpdate.setConfigBytes(value.bytes);
     configUpdate.setConfigType(value.type);
     configUpdate.setCategory(request.category);
-    return client.updateModelConfig(configUpdate, metadata(server))
+    return client.updateModelConfig(configUpdate, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Delete a model configuration
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelConfigId} request model config uuid: id
  * @returns {Promise<{}>} delete response 
  */
-export async function delete_model_config(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function delete_model_config(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const configId = new pb_model.ConfigId();
     configId.setId(request.id);
-    return client.deleteModelConfig(configId, metadata(server))
+    return client.deleteModelConfig(configId, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Read a tag by model uuid and tag number
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TagId} request tag id: model_id, tag
  * @returns {Promise<TagSchema>} tag schema: model_id, tag, name, members
  */
-export async function read_tag(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function read_tag(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const tagId = new pb_model.TagId();
     tagId.setModelId(uuid_hex_to_base64(request.model_id));
     tagId.setTag(request.tag);
-    return client.readTag(tagId, metadata(server))
+    return client.readTag(tagId, metadata(config.access_token))
         .then(response => get_tag_schema(response.toObject().result));
 }
 
 /**
  * Read Tags by model uuid
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelId} request model uuid: id
  * @returns {Promise<TagSchema[]>} tag schema: model_id, tag, name, members
  */
-export async function list_tag_by_model(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function list_tag_by_model(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelId = new pb_model.ModelId();
     modelId.setId(uuid_hex_to_base64(request.id));
-    return client.listTagByModel(modelId, metadata(server))
+    return client.listTagByModel(modelId, metadata(config.access_token))
         .then(response => get_tag_schema(response.toObject().resultsList));
 }
 
 /**
  * Create a tag
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TagSchema} request tag schema: model_id, tag, name, members
  * @returns {Promise<{}>} create response
  */
-export async function create_tag(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function create_tag(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const tagSchema = new pb_model.TagSchema();
     tagSchema.setModelId(uuid_hex_to_base64(request.model_id));
     tagSchema.setTag(request.tag);
     tagSchema.setName(request.name);
     tagSchema.setMembersList(request.members);
-    return client.createTag(tagSchema, metadata(server))
+    return client.createTag(tagSchema, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Update a tag
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TagUpdate} request tag update: model_id, tag, name, members
  * @returns {Promise<{}>} update response 
  */
-export async function update_tag(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function update_tag(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const tagUpdate = new pb_model.TagUpdate();
     tagUpdate.setModelId(uuid_hex_to_base64(request.model_id));
     tagUpdate.setTag(request.tag);
     tagUpdate.setName(request.name);
     tagUpdate.setMembersList(request.members);
-    return client.updateTag(tagUpdate, metadata(server))
+    return client.updateTag(tagUpdate, metadata(config.access_token))
         .then(response => response.toObject());
 }
 
 /**
  * Delete a tag
- * @param {ServerConfig} server server configuration: address, token
+ * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TagId} request tag id: model_id, tag
  * @returns {Promise<{}>} delete response 
  */
-export async function delete_tag(server, request) {
-    const client = new pb_model.ModelServicePromiseClient(server.address, null, null);
+export async function delete_tag(config, request) {
+    const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const tagId = new pb_model.TagId();
     tagId.setModelId(uuid_hex_to_base64(request.model_id));
     tagId.setTag(request.tag);
-    return client.deleteTag(tagId, metadata(server))
+    return client.deleteTag(tagId, metadata(config.access_token))
         .then(response => response.toObject());
 }
