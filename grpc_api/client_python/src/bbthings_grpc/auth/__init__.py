@@ -18,19 +18,32 @@ from ._schema import (
 
 class Auth:
 
-    def __init__(self, address: str, auth_token: Optional[str] = None):
+    def __init__(self, address: str, auth_token: Optional[str]=None):
         self.address = address
+        self._auth_token = auth_token
         self.metadata = [] if auth_token == None \
             else [("authorization", "Bearer " + auth_token)]
+        self._user_id = None
+
+    def login(self, username: str, password: str):
+        login = _auth.user_login(self.address, username, password)
+        self._auth_token = login.auth_token
+        self._user_id = login.user_id
+        self.metadata = [("authorization", "Bearer " + self._auth_token)]
+
+    def logout(self):
+        if self._user_id != None:
+            _auth.user_logout(self.address, self._user_id, self._auth_token)
+            self._auth_token = None
 
     def user_login(self, username: str, password: str) -> UserLogin:
-        return _auth.user_login(self, username, password)
+        return _auth.user_login(self.address, username, password)
 
     def user_refresh(self, api_id: UUID, access_token: str, refresh_token: str) -> UserRefresh:
-        return _auth.user_refresh(self, api_id, access_token, refresh_token)
+        return _auth.user_refresh(self.address, api_id, access_token, refresh_token)
 
     def user_logout(self, user_id: UUID, auth_token: str):
-        return _auth.user_logout(self, user_id, auth_token)
+        return _auth.user_logout(self.address, user_id, auth_token)
 
     def read_api(self, id: UUID) -> ApiSchema:
         return _api.read_api(self, id)

@@ -6,6 +6,24 @@ from ..common.type_value import DataType, unpack_data, unpack_data_array
 
 
 @dataclass
+class ProcedureAcces:
+    procedure: str
+    roles: List[str]
+
+    def from_response(r):
+        return ProcedureAcces(r.procedure, r.roles)
+
+
+@dataclass
+class RoleAcces:
+    role: str
+    procedures: List[str]
+
+    def from_response(r):
+        return RoleAcces(r.role, r.procedures)
+
+
+@dataclass
 class ModelConfigSchema:
     id: int
     model_id: UUID
