@@ -30,16 +30,6 @@ import {
  */
 
 /**
- * @param {*} r 
- * @returns {ApiId}
- */
-function getApiId(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} ApiName
  * @property {string} name
  */
@@ -112,16 +102,6 @@ function get_api_schema_vec(r) {
  * @typedef {Object} ProcedureIds
  * @property {Uuid[]} ids
  */
-
-/**
- * @param {*} r 
- * @returns {ProcedureId}
- */
-function get_procedure_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
 
 /**
  * @typedef {Object} ProcedureName
@@ -263,7 +243,7 @@ export async function list_api_option(config, request) {
  * Create an api
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ApiSchema} request api schema: id, name, address, category, description, password, access_key
- * @returns {Promise<ApiId>} api id: id
+ * @returns {Promise<Uuid>} api id
  */
 export async function create_api(config, request) {
     const client_auth = new pb_auth.AuthServicePromiseClient(config.address, null, null);
@@ -282,14 +262,14 @@ export async function create_api(config, request) {
     apiSchema.setPassword(ciphertext);
     apiSchema.setAccessKey(request.access_key);
     return client.createApi(apiSchema, metadata(config.auth_token))
-        .then(response => getApiId(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update an api
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ApiUpdate} request api update: id, name, address, category, description, password, access_key
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_api(config, request) {
     const client_auth = new pb_auth.AuthServicePromiseClient(config.address, null, null);
@@ -310,21 +290,21 @@ export async function update_api(config, request) {
     }
     apiUpdate.setAccessKey(request.access_key);
     return client.updateApi(apiUpdate, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete an api
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ApiId} request api uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_api(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const apiId = new pb_api.ApiId();
     apiId.setId(uuid_hex_to_base64(request.id));
     return client.deleteApi(apiId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -419,7 +399,7 @@ export async function list_procedure_option(config, request) {
  * Create a procedure
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProcedureSchema} request procedure schema: id, api_id, name, description
- * @returns {Promise<ProcedureId>} procedure id: id
+ * @returns {Promise<Uuid>} procedure id
  */
 export async function create_procedure(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
@@ -429,14 +409,14 @@ export async function create_procedure(config, request) {
     procedureSchema.setName(request.name);
     procedureSchema.setDescription(request.description);
     return client.createProcedure(procedureSchema, metadata(config.auth_token))
-        .then(response => get_procedure_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a procedure
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProcedureUpdate} request procedure update: id, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_procedure(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
@@ -445,19 +425,19 @@ export async function update_procedure(config, request) {
     procedureUpdate.setName(request.name);
     procedureUpdate.setDescription(request.description);
     return client.updateProcedure(procedureUpdate, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a procedure
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProcedureId} request procedure uuid: id
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function delete_procedure(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const procedureId = new pb_api.ProcedureId();
     procedureId.setId(uuid_hex_to_base64(request.id));
     return client.deleteProcedure(procedureId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }

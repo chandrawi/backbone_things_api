@@ -28,16 +28,6 @@ import {
  */
 
 /**
- * @param {*} r 
- * @returns {DeviceId}
- */
-function get_device_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} SerialNumber
  * @property {string} serial_number
  */
@@ -61,16 +51,6 @@ function get_device_id(r) {
  * @typedef {Object} TypeOption
  * @property {?string} name
  */
-
-/**
- * @param {*} r 
- * @returns {TypeId}
- */
-function get_type_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
 
 /**
  * @typedef {Object} TypeSchema
@@ -179,16 +159,6 @@ function get_device_schema_vec(r) {
  */
 
 /**
- * @param {*} r 
- * @returns {GatewayId}
- */
-function get_gateway_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} GatewayName
  * @property {string} name
  */
@@ -267,16 +237,6 @@ function get_gateway_schema_vec(r) {
  * @typedef {Object} ConfigId
  * @property {number} id
  */
-
-/**
- * @param {*} r 
- * @returns {ConfigId}
- */
-function get_config_id(r) {
-    return {
-        id: r.id
-    };
-}
 
 /**
  * @typedef {Object} DeviceConfigSchema
@@ -457,7 +417,7 @@ export async function list_device_option(config, request) {
  * Create a device
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DeviceCreate} request device schema: id, gateway_id, serial_number, name, description, type_id
- * @returns {Promise<DeviceId>} device uuid: id
+ * @returns {Promise<Uuid>} device uuid
  */
 export async function create_device(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -471,14 +431,14 @@ export async function create_device(config, request) {
     deviceSchema.setDescription(request.description);
     deviceSchema.setDeviceType(typeSchema);
     return client.createDevice(deviceSchema, metadata(config.access_token))
-        .then(response => get_device_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a device
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DeviceUpdate} request device update: id, gateway_id, serial_number, name, description, type_id
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_device(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -492,21 +452,21 @@ export async function update_device(config, request) {
     deviceUpdate.setDescription(request.description);
     deviceUpdate.setTypeId(request.type_id);
     return client.updateDevice(deviceUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a device
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DeviceId} request device uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_device(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const deviceId = new pb_device.DeviceId();
     deviceId.setId(uuid_hex_to_base64(request.id));
     return client.deleteDevice(deviceId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -600,7 +560,7 @@ export async function list_gateway_option(config, request) {
  * Create a gateway
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GatewayCreate} request gateway schema: id, serial_number, name, description, type_id
- * @returns {Promise<GatewayId>} gateway uuid: id
+ * @returns {Promise<Uuid>} gateway uuid
  */
 export async function create_gateway(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -613,14 +573,14 @@ export async function create_gateway(config, request) {
     gatewaySchema.setDescription(request.description);
     gatewaySchema.setGatewayType(typeSchema);
     return client.createGateway(gatewaySchema, metadata(config.access_token))
-        .then(response => get_gateway_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a gateway
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GatewayUpdate} request gateway update: id, serial_number, name, description, type_id
- * @returns {Promise<{}>} update response 
+ * @returns {Promise<null>} update response 
  */
 export async function update_gateway(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -631,21 +591,21 @@ export async function update_gateway(config, request) {
     gatewayUpdate.setDescription(request.description);
     gatewayUpdate.setTypeId(request.type_id);
     return client.updateGateway(gatewayUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a gateway
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GatewayId} request gateway uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_gateway(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const gatewayId = new pb_device.GatewayId();
     gatewayId.setId(uuid_hex_to_base64(request.id));
     return client.deleteGateway(gatewayId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -680,7 +640,7 @@ export async function list_device_config_by_device(config, request) {
  * Create a device configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DeviceConfigSchema} request device config schema: device_id, name, value, category
- * @returns {Promise<ConfigId>} device config uuid: id
+ * @returns {Promise<number>} device config id
  */
 export async function create_device_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -692,14 +652,14 @@ export async function create_device_config(config, request) {
     configSchema.setConfigType(value.type);
     configSchema.setCategory(request.category);
     return client.createDeviceConfig(configSchema, metadata(config.access_token))
-        .then(response => get_config_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a device configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ConfigUpdate} request device config update: id, name, value, category
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_device_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -711,21 +671,21 @@ export async function update_device_config(config, request) {
     configUpdate.setConfigType(value.type);
     configUpdate.setCategory(request.category);
     return client.updateDeviceConfig(configUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a device configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ConfigId} request device config uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_device_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const configId = new pb_device.ConfigId();
     configId.setId(request.id);
     return client.deleteDeviceConfig(configId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -760,7 +720,7 @@ export async function list_gateway_config_by_gateway(config, request) {
  * Create a gateway configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GatewayConfigSchema} request gateway config schema: gateway_id, name, value, category
- * @returns {Promise<ConfigId>} gateway config id: id
+ * @returns {Promise<number>} gateway config id
  */
 export async function create_gateway_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -772,14 +732,14 @@ export async function create_gateway_config(config, request) {
     configSchema.setConfigType(value.type);
     configSchema.setCategory(request.category);
     return client.createGatewayConfig(configSchema, metadata(config.access_token))
-        .then(response => get_config_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a gateway configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ConfigUpdate} request gateway config update: id, name, value, category
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_gateway_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -791,21 +751,21 @@ export async function update_gateway_config(config, request) {
     configUpdate.setConfigType(value.type);
     configUpdate.setCategory(request.category);
     return client.updateGatewayConfig(configUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a gateway configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ConfigId} request gateway config uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_gateway_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const configId = new pb_device.ConfigId();
     configId.setId(request.id);
     return client.deleteGatewayConfig(configId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -868,7 +828,7 @@ export async function list_type_option(config, request) {
  * Create a device type
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeSchema} request type schema: id, name, description
- * @returns {Promise<TypeId>} type uuid: id
+ * @returns {Promise<Uuid>} type uuid
  */
 export async function create_type(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -877,14 +837,14 @@ export async function create_type(config, request) {
     typeSchema.setName(request.name);
     typeSchema.setDescription(request.description);
     return client.createType(typeSchema, metadata(config.access_token))
-        .then(response => get_type_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a device type
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeUpdate} request type update: id, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_type(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -893,28 +853,28 @@ export async function update_type(config, request) {
     typeUpdate.setName(request.name);
     typeUpdate.setDescription(request.description);
     return client.updateType(typeUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a device type
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeId} request type id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_type(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const typeId = new pb_device.TypeId();
     typeId.setId(uuid_hex_to_base64(request.id));
     return client.deleteType(typeId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add model to a device type
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeModel} request type id: id, model_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function add_type_model(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -922,14 +882,14 @@ export async function add_type_model(config, request) {
     typeModel.setId(uuid_hex_to_base64(request.id));
     typeModel.setModelId(uuid_hex_to_base64(request.model_id));
     return client.addTypeModel(typeModel, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove model from a device type
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeModel} request type id: id, model_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function remove_type_model(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -937,5 +897,5 @@ export async function remove_type_model(config, request) {
     typeModel.setId(uuid_hex_to_base64(request.id));
     typeModel.setModelId(uuid_hex_to_base64(request.model_id));
     return client.removeTypeModel(typeModel, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }

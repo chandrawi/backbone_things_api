@@ -3310,7 +3310,7 @@ function base64_to_uuid_hex(str) {
  * @param {string} uuid 
  * @returns {string}
  */
-function uuid_hex_to_base64$1(uuid) {
+function uuid_hex_to_base64(uuid) {
     if (typeof uuid == "string") {
         uuid = uuid.replace(/-/g, '');
         if (/^[0-9a-fA-F]{32}$/.test(uuid)) {
@@ -3466,7 +3466,7 @@ var utility = /*#__PURE__*/Object.freeze({
 	random_base64: random_base64,
 	random_binary: random_binary,
 	string_to_array_buffer: string_to_array_buffer,
-	uuid_hex_to_base64: uuid_hex_to_base64$1,
+	uuid_hex_to_base64: uuid_hex_to_base64,
 	uuid_v4_hex: uuid_v4_hex
 });
 
@@ -9340,16 +9340,6 @@ var pb_api = /*@__PURE__*/getDefaultExportFromCjs(api_grpc_web_pbExports);
  */
 
 /**
- * @param {*} r 
- * @returns {ApiId}
- */
-function getApiId(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} ApiName
  * @property {string} name
  */
@@ -9424,16 +9414,6 @@ function get_api_schema_vec(r) {
  */
 
 /**
- * @param {*} r 
- * @returns {ProcedureId}
- */
-function get_procedure_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} ProcedureName
  * @property {Uuid} api_id
  * @property {string} name
@@ -9493,7 +9473,7 @@ function get_procedure_schema_vec(r) {
 async function read_api(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const apiId = new pb_api.ApiId();
-    apiId.setId(uuid_hex_to_base64$1(request.id));
+    apiId.setId(uuid_hex_to_base64(request.id));
     return client.readApi(apiId, metadata(config.auth_token))
         .then(response => response.toObject().result);
 }
@@ -9521,7 +9501,7 @@ async function read_api_by_name(config, request) {
 async function list_api_by_ids(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const apiIds = new pb_api.ApiIds();
-    apiIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    apiIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listApiByIds(apiIds, metadata(config.auth_token))
         .then(response => get_api_schema_vec(response.toObject().resultsList));
 }
@@ -9573,14 +9553,14 @@ async function list_api_option(config, request) {
  * Create an api
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ApiSchema} request api schema: id, name, address, category, description, password, access_key
- * @returns {Promise<ApiId>} api id: id
+ * @returns {Promise<Uuid>} api id
  */
 async function create_api(config, request) {
     const client_auth = new pb_auth.AuthServicePromiseClient(config.address, null, null);
     const apiKeyRequest = new pb_auth.ApiKeyRequest();
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const apiSchema = new pb_api.ApiSchema();
-    apiSchema.setId(uuid_hex_to_base64$1(request.id));
+    apiSchema.setId(uuid_hex_to_base64(request.id));
     apiSchema.setName(request.name);
     apiSchema.setAddress(request.address);
     apiSchema.setCategory(request.category);
@@ -9592,21 +9572,21 @@ async function create_api(config, request) {
     apiSchema.setPassword(ciphertext);
     apiSchema.setAccessKey(request.access_key);
     return client.createApi(apiSchema, metadata(config.auth_token))
-        .then(response => getApiId(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update an api
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ApiUpdate} request api update: id, name, address, category, description, password, access_key
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_api(config, request) {
     const client_auth = new pb_auth.AuthServicePromiseClient(config.address, null, null);
     const apiKeyRequest = new pb_auth.ApiKeyRequest();
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const apiUpdate = new pb_api.ApiUpdate();
-    apiUpdate.setId(uuid_hex_to_base64$1(request.id));
+    apiUpdate.setId(uuid_hex_to_base64(request.id));
     apiUpdate.setName(request.name);
     apiUpdate.setAddress(request.address);
     apiUpdate.setCategory(request.category);
@@ -9620,21 +9600,21 @@ async function update_api(config, request) {
     }
     apiUpdate.setAccessKey(request.access_key);
     return client.updateApi(apiUpdate, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete an api
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ApiId} request api uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_api(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const apiId = new pb_api.ApiId();
-    apiId.setId(uuid_hex_to_base64$1(request.id));
+    apiId.setId(uuid_hex_to_base64(request.id));
     return client.deleteApi(apiId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -9646,7 +9626,7 @@ async function delete_api(config, request) {
 async function read_procedure(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const procedureId = new pb_api.ProcedureId();
-    procedureId.setId(uuid_hex_to_base64$1(request.id));
+    procedureId.setId(uuid_hex_to_base64(request.id));
     return client.readProcedure(procedureId, metadata(config.auth_token))
         .then(response => response.toObject().result);
 }
@@ -9660,7 +9640,7 @@ async function read_procedure(config, request) {
 async function read_procedure_by_name(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const procedureName = new pb_api.ProcedureName();
-    procedureName.setApiId(uuid_hex_to_base64$1(request.api_id));
+    procedureName.setApiId(uuid_hex_to_base64(request.api_id));
     procedureName.setName(request.name);
     return client.readProcedureByName(procedureName, metadata(config.auth_token))
         .then(response => get_procedure_schema(response.toObject().result));
@@ -9675,7 +9655,7 @@ async function read_procedure_by_name(config, request) {
 async function list_procedure_by_ids(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const procedureIds = new pb_api.ProcedureIds();
-    procedureIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    procedureIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listProcedureByIds(procedureIds, metadata(config.auth_token))
         .then(response => get_procedure_schema_vec(response.toObject().resultsList));
 }
@@ -9689,7 +9669,7 @@ async function list_procedure_by_ids(config, request) {
 async function list_procedure_by_api(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const apiId = new pb_api.ApiId();
-    apiId.setId(uuid_hex_to_base64$1(request.id));
+    apiId.setId(uuid_hex_to_base64(request.id));
     return client.listProcedureByApi(apiId, metadata(config.auth_token))
         .then(response => get_procedure_schema_vec(response.toObject().resultsList));
 }
@@ -9718,7 +9698,7 @@ async function list_procedure_option(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const procedureOption = new pb_api.ProcedureOption();
     if (request.api_id) {
-        procedureOption.setApiId(uuid_hex_to_base64$1(request.api_id));
+        procedureOption.setApiId(uuid_hex_to_base64(request.api_id));
     }
     procedureOption.setName(request.name);
     return client.listProcedureOption(procedureOption, metadata(config.auth_token))
@@ -9729,47 +9709,47 @@ async function list_procedure_option(config, request) {
  * Create a procedure
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProcedureSchema} request procedure schema: id, api_id, name, description
- * @returns {Promise<ProcedureId>} procedure id: id
+ * @returns {Promise<Uuid>} procedure id
  */
 async function create_procedure(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const procedureSchema = new pb_api.ProcedureSchema();
-    procedureSchema.setId(uuid_hex_to_base64$1(request.id));
-    procedureSchema.setApiId(uuid_hex_to_base64$1(request.api_id));
+    procedureSchema.setId(uuid_hex_to_base64(request.id));
+    procedureSchema.setApiId(uuid_hex_to_base64(request.api_id));
     procedureSchema.setName(request.name);
     procedureSchema.setDescription(request.description);
     return client.createProcedure(procedureSchema, metadata(config.auth_token))
-        .then(response => get_procedure_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a procedure
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProcedureUpdate} request procedure update: id, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_procedure(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const procedureUpdate = new pb_api.ProcedureUpdate();
-    procedureUpdate.setId(uuid_hex_to_base64$1(request.id));
+    procedureUpdate.setId(uuid_hex_to_base64(request.id));
     procedureUpdate.setName(request.name);
     procedureUpdate.setDescription(request.description);
     return client.updateProcedure(procedureUpdate, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a procedure
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProcedureId} request procedure uuid: id
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function delete_procedure(config, request) {
     const client = new pb_api.ApiServicePromiseClient(config.address, null, null);
     const procedureId = new pb_api.ProcedureId();
-    procedureId.setId(uuid_hex_to_base64$1(request.id));
+    procedureId.setId(uuid_hex_to_base64(request.id));
     return client.deleteProcedure(procedureId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 var role_pb = {};
@@ -13713,16 +13693,6 @@ var pb_role = /*@__PURE__*/getDefaultExportFromCjs(role_grpc_web_pbExports);
  */
 
 /**
- * @param {*} r 
- * @returns {RoleId}
- */
-function get_role_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} RoleName
  * @property {Uuid} api_id
  * @property {string} name
@@ -13810,7 +13780,7 @@ function get_role_schema_vec(r) {
 async function read_role(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleId = new pb_role.RoleId();
-    roleId.setId(uuid_hex_to_base64$1(request.id));
+    roleId.setId(uuid_hex_to_base64(request.id));
     return client.readRole(roleId, metadata(config.auth_token))
         .then(response => get_role_schema(response.toObject().result));
 }
@@ -13824,7 +13794,7 @@ async function read_role(config, request) {
 async function read_role_by_name(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleName = new pb_role.RoleName();
-    roleName.setApiId(uuid_hex_to_base64$1(request.api_id));
+    roleName.setApiId(uuid_hex_to_base64(request.api_id));
     roleName.setName(request.name);
     return client.readRoleByName(roleName, metadata(config.auth_token))
         .then(response => get_role_schema(response.toObject().result));
@@ -13839,7 +13809,7 @@ async function read_role_by_name(config, request) {
 async function list_role_by_ids(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleIds = new pb_role.RoleIds();
-    roleIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    roleIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listRoleByIds(roleIds, metadata(config.auth_token))
         .then(response => get_role_schema_vec(response.toObject().resultsList));
 }
@@ -13853,7 +13823,7 @@ async function list_role_by_ids(config, request) {
 async function list_role_by_api(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const apiId = new pb_role.ApiId();
-    apiId.setApiId(uuid_hex_to_base64$1(request.id));
+    apiId.setApiId(uuid_hex_to_base64(request.id));
     return client.listRoleByApi(apiId, metadata(config.auth_token))
         .then(response => get_role_schema_vec(response.toObject().resultsList));
 }
@@ -13867,7 +13837,7 @@ async function list_role_by_api(config, request) {
 async function list_role_by_user(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const userId = new pb_role.UserId();
-    userId.setUserId(uuid_hex_to_base64$1(request.id));
+    userId.setUserId(uuid_hex_to_base64(request.id));
     return client.listRoleByUser(userId, metadata(config.auth_token))
         .then(response => get_role_schema_vec(response.toObject().resultsList));
 }
@@ -13896,10 +13866,10 @@ async function list_role_option(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleOption = new pb_role.RoleOption();
     if (request.api_id) {
-        roleOption.setApiId(uuid_hex_to_base64$1(request.api_id));
+        roleOption.setApiId(uuid_hex_to_base64(request.api_id));
     }
     if (request.user_id) {
-        roleOption.setUserId(uuid_hex_to_base64$1(request.user_id));
+        roleOption.setUserId(uuid_hex_to_base64(request.user_id));
     }
     roleOption.setName(request.name);
     return client.listRoleOption(roleOption, metadata(config.auth_token))
@@ -13909,85 +13879,84 @@ async function list_role_option(config, request) {
 /**
  * Create a role
  * @param {ServerConfig} config Auth server config: address, auth_token
- * @param {RoleSchema} request role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key
- * @returns {Promise<RoleId>} role id: id
+ * @param {RoleSchema} request role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration
+ * @returns {Promise<Uuid>} role id: id
  */
 async function create_role(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleSchema = new pb_role.RoleSchema();
-    roleSchema.setId(uuid_hex_to_base64$1(request.id));
-    roleSchema.setApiId(uuid_hex_to_base64$1(request.api_id));
+    roleSchema.setId(uuid_hex_to_base64(request.id));
+    roleSchema.setApiId(uuid_hex_to_base64(request.api_id));
     roleSchema.setName(request.name);
     roleSchema.setMulti(request.multi);
     roleSchema.setIpLock(request.ip_lock);
     roleSchema.setAccessDuration(request.access_duration);
     roleSchema.setRefreshDuration(request.refresh_duration);
-    roleSchema.setAccessKey(request.access_key);
     return client.createRole(roleSchema, metadata(config.auth_token))
-        .then(response => get_role_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a role
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleUpdate} request role update: id, name, multi, ip_lock, access_duration, refresh_duration
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_role(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleUpdate = new pb_role.RoleUpdate();
-    roleUpdate.setId(uuid_hex_to_base64$1(request.id));
+    roleUpdate.setId(uuid_hex_to_base64(request.id));
     roleUpdate.setName(request.name);
     roleUpdate.setMulti(request.multi);
     roleUpdate.setIpLock(request.ip_lock);
     roleUpdate.setAccessDuration(request.access_duration);
     roleUpdate.setRefreshDuration(request.refresh_duration);
     return client.updateRole(roleUpdate, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a role
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleId} request role uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_role(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleId = new pb_role.RoleId();
-    roleId.setId(uuid_hex_to_base64$1(request.id));
+    roleId.setId(uuid_hex_to_base64(request.id));
     return client.deleteRole(roleId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add a role access
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleAccess} request role access: id, procedure_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function add_role_access(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleAccess = new pb_role.RoleAccess();
-    roleAccess.setId(uuid_hex_to_base64$1(request.id));
-    roleAccess.setProcedureId(uuid_hex_to_base64$1(request.procedure_id));
+    roleAccess.setId(uuid_hex_to_base64(request.id));
+    roleAccess.setProcedureId(uuid_hex_to_base64(request.procedure_id));
     return client.addRoleAccess(roleAccess, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove a role access
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleAccess} request role access: id, procedure_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function remove_role_access(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleAccess = new pb_role.RoleAccess();
-    roleAccess.setId(uuid_hex_to_base64$1(request.id));
-    roleAccess.setProcedureId(uuid_hex_to_base64$1(request.procedure_id));
+    roleAccess.setId(uuid_hex_to_base64(request.id));
+    roleAccess.setProcedureId(uuid_hex_to_base64(request.procedure_id));
     return client.removeRoleAccess(roleAccess, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 var user_pb = {};
@@ -18104,16 +18073,6 @@ var pb_user = /*@__PURE__*/getDefaultExportFromCjs(user_grpc_web_pbExports);
  */
 
 /**
- * @param {*} r 
- * @returns {UserId}
- */
-function get_user_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} UserName
  * @property {string} name
  */
@@ -18215,7 +18174,7 @@ function get_user_schema_vec(r) {
 async function read_user(config, request) {
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
     const userId = new pb_user.UserId();
-    userId.setId(uuid_hex_to_base64$1(request.id));
+    userId.setId(uuid_hex_to_base64(request.id));
     return client.readUser(userId, metadata(config.auth_token))
         .then(response => get_user_schema(response.toObject().result));
 }
@@ -18243,7 +18202,7 @@ async function read_user_by_name(config, request) {
 async function list_user_by_ids(config, request) {
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
     const userIds = new pb_user.UserIds();
-    userIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    userIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listUserByIds(userIds, metadata(config.auth_token))
         .then(response => get_user_schema_vec(response.toObject().resultsList));
 }
@@ -18257,7 +18216,7 @@ async function list_user_by_ids(config, request) {
 async function list_user_by_api(config, request) {
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
     const apiId = new pb_user.ApiId();
-    apiId.setId(uuid_hex_to_base64$1(request.id));
+    apiId.setId(uuid_hex_to_base64(request.id));
     return client.listUserByApi(apiId, metadata(config.auth_token))
         .then(response => get_user_schema_vec(response.toObject().resultsList));
 }
@@ -18271,7 +18230,7 @@ async function list_user_by_api(config, request) {
 async function list_user_by_role(config, request) {
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
     const roleId = new pb_user.RoleId();
-    roleId.setId(uuid_hex_to_base64$1(request.id));
+    roleId.setId(uuid_hex_to_base64(request.id));
     return client.listUserByRole(roleId, metadata(config.auth_token))
         .then(response => get_user_schema_vec(response.toObject().resultsList));
 }
@@ -18300,10 +18259,10 @@ async function list_user_option(config, request) {
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
     const userOption = new pb_user.UserOption();
     if (request.api_id) {
-        userOption.setApiId(uuid_hex_to_base64$1(request.api_id));
+        userOption.setApiId(uuid_hex_to_base64(request.api_id));
     }
     if (request.role_id) {
-        userOption.setApiId(uuid_hex_to_base64$1(request.role_id));
+        userOption.setApiId(uuid_hex_to_base64(request.role_id));
     }
     userOption.setName(request.name);
     return client.listUserOption(userOption, metadata(config.auth_token))
@@ -18314,14 +18273,14 @@ async function list_user_option(config, request) {
  * Create an user
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserSchema} request user schema: id, name, email, phone, password
- * @returns {Promise<UserId>} user id: id
+ * @returns {Promise<Uuid>} user id: id
  */
 async function create_user(config, request) {
     const client_auth = new pb_auth.AuthServicePromiseClient(config.address, null, null);
     const userKeyRequest = new pb_auth.UserKeyRequest();
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
     const userSchema = new pb_user.UserSchema();
-    userSchema.setId(uuid_hex_to_base64$1(request.id));
+    userSchema.setId(uuid_hex_to_base64(request.id));
     userSchema.setName(request.name);
     userSchema.setEmail(request.email);
     userSchema.setPhone(request.phone);
@@ -18331,21 +18290,21 @@ async function create_user(config, request) {
     const ciphertext = await encryptMessage(request.password, pubkey);
     userSchema.setPassword(ciphertext);
     return client.createUser(userSchema, metadata(config.auth_token))
-        .then(response => get_user_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update an user
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserUpdate} request user update: id, name, email, phone, password
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_user(config, request) {
     const client_auth = new pb_auth.AuthServicePromiseClient(config.address, null, null);
     const userKeyRequest = new pb_auth.UserKeyRequest();
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
     const userUpdate = new pb_user.UserUpdate();
-    userUpdate.setId(uuid_hex_to_base64$1(request.id));
+    userUpdate.setId(uuid_hex_to_base64(request.id));
     userUpdate.setName(request.name);
     userUpdate.setEmail(request.email);
     userUpdate.setPhone(request.phone);
@@ -18357,51 +18316,51 @@ async function update_user(config, request) {
         userUpdate.setPassword(ciphertext);
     }
     return client.updateUser(userUpdate, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete an user
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserId} request user uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_user(config, request) {
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
     const userId = new pb_user.UserId();
-    userId.setId(uuid_hex_to_base64$1(request.id));
+    userId.setId(uuid_hex_to_base64(request.id));
     return client.deleteUser(userId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add a role to user
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserRole} request user role: user_id, role_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function add_user_role(config, request) {
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
     const userRole = new pb_user.UserRole();
-    userRole.setUserId(uuid_hex_to_base64$1(request.user_id));
-    userRole.setRoleId(uuid_hex_to_base64$1(request.role_id));
+    userRole.setUserId(uuid_hex_to_base64(request.user_id));
+    userRole.setRoleId(uuid_hex_to_base64(request.role_id));
     return client.addUserRole(userRole, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove a role from user
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserRole} request user role: user_id, role_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function remove_user_role(config, request) {
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
     const userRole = new pb_user.UserRole();
-    userRole.setUserId(uuid_hex_to_base64$1(request.user_id));
-    userRole.setRoleId(uuid_hex_to_base64$1(request.role_id));
+    userRole.setUserId(uuid_hex_to_base64(request.user_id));
+    userRole.setRoleId(uuid_hex_to_base64(request.role_id));
     return client.removeUserRole(userRole, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -22523,16 +22482,6 @@ var pb_profile = /*@__PURE__*/getDefaultExportFromCjs(profile_grpc_web_pbExports
  */
 
 /**
- * @param {*} r 
- * @returns {ProfileId}
- */
-function get_profile_id(r) {
-    return {
-        id: r.id
-    };
-}
-
-/**
  * @typedef {Object} RoleProfileSchema
  * @property {number} id
  * @property {Uuid} role_id
@@ -22674,7 +22623,7 @@ async function read_role_profile(config, request) {
 async function list_role_profile_by_role(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
     const roleId = new pb_profile.RoleId();
-    roleId.setId(uuid_hex_to_base64$1(request.id));
+    roleId.setId(uuid_hex_to_base64(request.id));
     return client.listRoleProfile(roleId, metadata(config.auth_token))
         .then(response => get_role_profile_schema_vec(response.toObject().resultsList));
 }
@@ -22683,24 +22632,24 @@ async function list_role_profile_by_role(config, request) {
  * Create a role profile
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleProfileSchema} request role profile schema: role_id, name, value_type, mode
- * @returns {Promise<ProfileId>} profile id: id
+ * @returns {Promise<number>} profile id
  */
 async function create_role_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
     const roleProfileSchema = new pb_profile.RoleProfileSchema();
-    roleProfileSchema.setRoleId(uuid_hex_to_base64$1(request.role_id));
+    roleProfileSchema.setRoleId(uuid_hex_to_base64(request.role_id));
     roleProfileSchema.setName(request.name);
     roleProfileSchema.setValueType(set_data_type(request.value_type));
     roleProfileSchema.setMode(set_profile_mode(request.mode));
     return client.createRoleProfile(roleProfileSchema, metadata(config.auth_token))
-        .then(response => get_profile_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a role profile
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleProfileUpdate} request role update: id, name, value_type, mode
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_role_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -22712,21 +22661,21 @@ async function update_role_profile(config, request) {
     }
     roleProfileUpdate.setMode(set_profile_mode(request.mode));
     return client.updateRoleProfile(roleProfileUpdate, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a role profile
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProfileId} request profile id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_role_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
     const profileId = new pb_profile.ProfileId();
     profileId.setId(request.id);
     return client.deleteRoleProfile(profileId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -22752,7 +22701,7 @@ async function read_user_profile(config, request) {
 async function list_user_profile_by_user(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
     const userId = new pb_profile.UserId();
-    userId.setId(uuid_hex_to_base64$1(request.id));
+    userId.setId(uuid_hex_to_base64(request.id));
     return client.listUserProfile(userId, metadata(config.auth_token))
         .then(response => get_user_profile_schema_vec(response.toObject().resultsList));
 }
@@ -22761,26 +22710,26 @@ async function list_user_profile_by_user(config, request) {
  * Create a user profile
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserProfileSchema} request user profile schema: user_id, name, value, order
- * @returns {Promise<ProfileId>} profile id: id
+ * @returns {Promise<number>} profile id
  */
 async function create_user_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
     const userProfileSchema = new pb_profile.UserProfileSchema();
-    userProfileSchema.setUserId(uuid_hex_to_base64$1(request.user_id));
+    userProfileSchema.setUserId(uuid_hex_to_base64(request.user_id));
     userProfileSchema.setName(request.name);
     const value = set_data_value(request.value);
     userProfileSchema.setValueBytes(value.bytes);
     userProfileSchema.setValueType(value.type);
     userProfileSchema.setOrder(request.order);
     return client.createUserProfile(userProfileSchema, metadata(config.auth_token))
-        .then(response => get_profile_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a user profile
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserProfileUpdate} request user update: id, name, value
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_user_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -22791,38 +22740,38 @@ async function update_user_profile(config, request) {
     userProfileUpdate.setValueBytes(value.bytes);
     userProfileUpdate.setValueType(value.type);
     return client.updateUserProfile(userProfileUpdate, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a user profile
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProfileId} request profile id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_user_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
     const profileId = new pb_profile.ProfileId();
     profileId.setId(request.id);
     return client.deleteUserProfile(profileId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Swap a user profile order
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserProfileSwap} request user profile swap: user_id, name, order_1, order_2
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function swap_user_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
     const userProfileSwap = new pb_profile.UserProfileSwap();
-    userProfileSwap.setUserId(uuid_hex_to_base64$1(request.user_id));
+    userProfileSwap.setUserId(uuid_hex_to_base64(request.user_id));
     userProfileSwap.setName(request.name);
     userProfileSwap.setOrder1(request.order_1);
     userProfileSwap.setOrder2(request.order_2);
     return client.swapUserProfile(userProfileSwap, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 var token_pb = {};
@@ -27472,7 +27421,6 @@ function get_token_create_response_vec(r) {
 /**
  * @typedef {Object} TokenUpdateResponse
  * @property {string} refresh_token
- * @property {string} auth_token
  */
 
 /**
@@ -27481,8 +27429,7 @@ function get_token_create_response_vec(r) {
  */
 function get_token_update_response(r) {
     return {
-        refresh_token: r.refreshToken,
-        auth_token: r.authToken,
+        refresh_token: r.refreshToken
     };
 }
 
@@ -27524,7 +27471,7 @@ async function list_auth_token(config, request) {
 async function list_token_by_user(config, request) {
     const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const userId = new pb_token.UserId();
-    userId.setUserId(uuid_hex_to_base64$1(request.id));
+    userId.setUserId(uuid_hex_to_base64(request.id));
     return client.listTokenByUser(userId, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
 }
@@ -27540,7 +27487,7 @@ async function list_token_by_created_earlier(config, request) {
     const tokenTime = new pb_token.TokenTime();
     tokenTime.setTimestamp(request.earlier.valueOf() * 1000);
     if (request.user_id) {
-        tokenTime.setUserId(uuid_hex_to_base64$1(request.user_id));
+        tokenTime.setUserId(uuid_hex_to_base64(request.user_id));
     }
     return client.listTokenByCreatedEarlier(tokenTime, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
@@ -27557,7 +27504,7 @@ async function list_token_by_created_later(config, request) {
     const tokenTime = new pb_token.TokenTime();
     tokenTime.setTimestamp(request.later.valueOf() * 1000);
     if (request.user_id) {
-        tokenTime.setUserId(uuid_hex_to_base64$1(request.user_id));
+        tokenTime.setUserId(uuid_hex_to_base64(request.user_id));
     }
     return client.listTokenByCreatedLater(tokenTime, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
@@ -27575,7 +27522,7 @@ async function list_token_by_created_range(config, request) {
     tokenRange.setBegin(request.begin.valueOf() * 1000);
     tokenRange.setEnd(request.end.valueOf() * 1000);
     if (request.user_id) {
-        tokenRange.setUserId(uuid_hex_to_base64$1(request.user_id));
+        tokenRange.setUserId(uuid_hex_to_base64(request.user_id));
     }
     return client.listTokenByCreatedRange(tokenRange, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
@@ -27592,7 +27539,7 @@ async function list_token_by_expired_earlier(config, request) {
     const tokenTime = new pb_token.TokenTime();
     tokenTime.setTimestamp(request.earlier.valueOf() * 1000);
     if (request.user_id) {
-        tokenTime.setUserId(uuid_hex_to_base64$1(request.user_id));
+        tokenTime.setUserId(uuid_hex_to_base64(request.user_id));
     }
     return client.listTokenByExpiredEarlier(tokenTime, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
@@ -27609,7 +27556,7 @@ async function list_token_by_expired_later(config, request) {
     const tokenTime = new pb_token.TokenTime();
     tokenTime.setTimestamp(request.later.valueOf() * 1000);
     if (request.user_id) {
-        tokenTime.setUserId(uuid_hex_to_base64$1(request.user_id));
+        tokenTime.setUserId(uuid_hex_to_base64(request.user_id));
     }
     return client.listTokenByExpiredLater(tokenTime, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
@@ -27627,7 +27574,7 @@ async function list_token_by_expired_range(config, request) {
     tokenRange.setBegin(request.begin.valueOf() * 1000);
     tokenRange.setEnd(request.end.valueOf() * 1000);
     if (request.user_id) {
-        tokenRange.setUserId(uuid_hex_to_base64$1(request.user_id));
+        tokenRange.setUserId(uuid_hex_to_base64(request.user_id));
     }
     return client.listTokenByExpiredRange(tokenRange, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
@@ -27647,7 +27594,7 @@ async function list_token_by_range(config, request) {
     tokenRanges.setBegin2(request.expired_begin.valueOf() * 1000);
     tokenRanges.setEnd2(request.expired_end.valueOf() * 1000);
     if (request.user_id) {
-        tokenRanges.setUserId(uuid_hex_to_base64$1(request.user_id));
+        tokenRanges.setUserId(uuid_hex_to_base64(request.user_id));
     }
     return client.listTokenByRange(tokenRanges, metadata(config.auth_token))
         .then(response => get_token_schema_vec(response.toObject().resultsList));
@@ -27662,7 +27609,7 @@ async function list_token_by_range(config, request) {
 async function create_access_token(config, request) {
     const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const tokenSchema = new pb_token.TokenSchema();
-    tokenSchema.setUserId(uuid_hex_to_base64$1(request.user_id));
+    tokenSchema.setUserId(uuid_hex_to_base64(request.user_id));
     tokenSchema.setAuthToken(request.auth_token);
     tokenSchema.setExpired(request.expired.valueOf() * 1000);
     tokenSchema.setIp(bytes_to_base64(request.ip));
@@ -27679,7 +27626,7 @@ async function create_access_token(config, request) {
 async function create_auth_token(config, request) {
     const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const authTokenCreate = new pb_token.AuthTokenCreate();
-    authTokenCreate.setUserId(uuid_hex_to_base64$1(request.user_id));
+    authTokenCreate.setUserId(uuid_hex_to_base64(request.user_id));
     authTokenCreate.setExpired(request.expired.valueOf() * 1000);
     authTokenCreate.setIp(bytes_to_base64(request.ip));
     authTokenCreate.setNumber(request.number);
@@ -27731,42 +27678,42 @@ async function update_auth_token(config, request) {
  * Delete an access token by access id
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {AccessId} request access id: access_id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_access_token(config, request) {
     const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const accessId = new pb_token.AccessId();
     accessId.setAccessId(request.access_id);
     return client.deleteAccessToken(accessId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete tokens by auth token
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {AuthToken} request auth token: auth_token
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_auth_token(config, request) {
     const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const authToken = new pb_token.AuthToken();
     authToken.setAuthToken(request.auth_token);
     return client.deleteAuthToken(authToken, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete tokens by user id
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserId} request user id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_token_by_user(config, request) {
     const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const userId = new pb_token.UserId();
-    userId.setUserId(uuid_hex_to_base64$1(request.id));
+    userId.setUserId(uuid_hex_to_base64(request.id));
     return client.deleteTokenByUser(userId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -27801,7 +27748,7 @@ async function delete_token_by_user(config, request) {
  * @param {*} r 
  * @returns {AccessTokenMap}
  */
-function get_access_token$2(r) {
+function get_access_token(r) {
     return {
         api_id: base64_to_uuid_hex(r.apiId),
         access_token: r.accessToken,
@@ -27820,11 +27767,11 @@ function get_access_token$2(r) {
  * @param {*} r 
  * @returns {UserLoginResponse}
  */
-function get_login_response$2(r) {
+function get_login_response(r) {
     return {
         user_id: base64_to_uuid_hex(r.userId),
         auth_token: r.authToken,
-        access_tokens: r.accessTokensList.map((v) => {return get_access_token$2(v)})
+        access_tokens: r.accessTokensList.map((v) => {return get_access_token(v)})
     };
 }
 
@@ -27845,7 +27792,7 @@ function get_login_response$2(r) {
  * @param {*} r 
  * @returns {UserRefreshResponse}
  */
-function get_refresh_response$1(r) {
+function get_refresh_response(r) {
     return {
         access_token: r.accessToken,
         refresh_token: r.refreshToken
@@ -27889,7 +27836,7 @@ async function user_login(config, request) {
     const ciphertext = await encryptMessage(request.password, pubkey);
     userLoginRequest.setPassword(ciphertext);
     return client.userLogin(userLoginRequest)
-        .then(response => get_login_response$2(response.toObject()));
+        .then(response => get_login_response(response.toObject()));
 }
 
 /**
@@ -27901,69 +27848,31 @@ async function user_login(config, request) {
 async function user_refresh(config, request) {
     const client = new pb_auth.AuthServicePromiseClient(config.address, null, null);
     const userRefreshRequest = new pb_auth.UserRefreshRequest();
-    userRefreshRequest.setApiId(uuid_hex_to_base64$1(request.api_id));
+    userRefreshRequest.setApiId(uuid_hex_to_base64(request.api_id));
     userRefreshRequest.setAccessToken(request.access_token);
     userRefreshRequest.setRefreshToken(request.refresh_token);
     return client.userRefresh(userRefreshRequest)
-        .then(response => get_refresh_response$1(response.toObject()));
+        .then(response => get_refresh_response(response.toObject()));
 }
 
 /**
  * User logout
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserLogoutRequest} request user logout request: user_id, auth_token
- * @return {Promise<{}>} user logout response
+ * @return {Promise<null>} user logout response
  */
 async function user_logout(config, request) {
     const client = new pb_auth.AuthServicePromiseClient(config.address, null, null);
     const userLogoutRequest = new pb_auth.UserLogoutRequest();
-    userLogoutRequest.setUserId(uuid_hex_to_base64$1(request.user_id));
+    userLogoutRequest.setUserId(uuid_hex_to_base64(request.user_id));
     userLogoutRequest.setAuthToken(request.auth_token);
     return client.userLogout(userLogoutRequest)
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * @typedef {(string|Uint8Array)} Uuid
  */
-
-/**
- * @typedef {Object} AccessTokenMap
- * @property {Uuid} api_id
- * @property {string} access_token
- * @property {string} refresh_token
- */
-
-/**
- * @param {*} r 
- * @returns {AccessTokenMap}
- */
-function get_access_token$1(r) {
-    return {
-        api_id: base64_to_uuid_hex(r.apiId),
-        access_token: r.accessToken,
-        refresh_token: r.refreshToken
-    };
-}
-
-/**
- * @typedef {Object} UserLoginResponse
- * @property {Uuid} user_id
- * @property {string} auth_token
- * @property {AccessTokenMap[]} access_tokens
- */
-
-/**
- * @param {*} r 
- * @returns {UserLoginResponse}
- */
-function get_login_response$1(r) {
-    return {
-        user_id: base64_to_uuid_hex(r.userId),
-        auth_token: r.authToken,
-        access_tokens: r.accessTokensList.map((v) => {return get_access_token$1(v)})
-    };
-}
 
 /**
  * Authorization/Authentication server configuration.
@@ -27995,10 +27904,9 @@ class AuthConfig {
         const ciphertext = await encryptMessage(password, pubkey);
         userLoginRequest.setPassword(ciphertext);
         const login = await client.userLogin(userLoginRequest)
-            .then(response => get_login_response$1(response.toObject()));
-        this.auth_token = login.auth_token;
-        this.user_id = login.user_id;
-        console.log(login);
+            .then(response => response.toObject());
+        this.auth_token = login.authToken;
+        this.user_id = base64_to_uuid_hex(login.userId);
     }
 
     /**
@@ -28012,7 +27920,7 @@ class AuthConfig {
             userLogoutRequest.setAuthToken(this.auth_token);
             await client.userLogout(userLogoutRequest)
                 .then(response => response.toObject());
-            this.auth_token = null;
+            this.auth_token = undefined;
         }
     }
 
@@ -29680,8 +29588,8 @@ function get_role_acces_vec(r) {
 async function api_id(config, request) {
     const client = new pb_config.ConfigServicePromiseClient(config.address, null, null);
     const apiIdRequest = new pb_config.ApiIdRequest();
-    return client.ApiId(apiIdRequest, metadata(config.access_token))
-        .then(response => base64_to_uuid_hex(response.toObject().api_id));
+    return client.apiId(apiIdRequest, metadata(config.access_token))
+        .then(response => base64_to_uuid_hex(response.toObject().apiId));
 }
 
 /**
@@ -29693,7 +29601,7 @@ async function api_id(config, request) {
 async function procedure_access(config, request) {
     const client = new pb_config.ConfigServicePromiseClient(config.address, null, null);
     const accessRequest = new pb_config.AccessRequest();
-    return client.ProcedureAcces(accessRequest, metadata(config.access_token))
+    return client.procedureAcces(accessRequest, metadata(config.access_token))
         .then(response => get_procedure_acces_vec(response.toObject().access));
 }
 
@@ -29706,7 +29614,7 @@ async function procedure_access(config, request) {
 async function role_access(config, request) {
     const client = new pb_config.ConfigServicePromiseClient(config.address, null, null);
     const accessRequest = new pb_config.AccessRequest();
-    return client.RoleAcces(accessRequest, metadata(config.access_token))
+    return client.roleAcces(accessRequest, metadata(config.access_token))
         .then(response => get_role_acces_vec(response.toObject().access));
 }
 
@@ -36684,16 +36592,6 @@ var pb_model = /*@__PURE__*/getDefaultExportFromCjs(model_grpc_web_pbExports);
  */
 
 /**
- * @param {*} r 
- * @returns {ModelId}
- */
-function get_model_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} ModelName
  * @property {string} name
  */
@@ -36761,16 +36659,6 @@ function get_model_schema_vec(r) {
  * @typedef {Object} ModelConfigId
  * @property {number} id
  */
-
-/**
- * @param {*} r 
- * @returns {ModelConfigId}
- */
-function get_model_config_id(r) {
-    return {
-        id: r.id
-    };
-}
 
 /**
  * @typedef {Object} ModelConfigSchema
@@ -36858,7 +36746,7 @@ function get_tag_schema(r) {
 async function read_model(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelId = new pb_model.ModelId();
-    modelId.setId(uuid_hex_to_base64$1(request.id));
+    modelId.setId(uuid_hex_to_base64(request.id));
     return client.readModel(modelId, metadata(config.access_token))
         .then(response => get_model_schema(response.toObject().result));
 }
@@ -36872,7 +36760,7 @@ async function read_model(config, request) {
 async function list_model_by_ids(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelIds = new pb_model.ModelIds();
-    modelIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    modelIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listModelByIds(modelIds, metadata(config.access_token))
         .then(response => get_model_schema_vec(response.toObject().resultsList));
 }
@@ -36915,7 +36803,7 @@ async function list_model_option(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelOption = new pb_model.ModelOption();
     if (request.type_id) {
-        modelOption.setTypeId(uuid_hex_to_base64$1(request.type_id));
+        modelOption.setTypeId(uuid_hex_to_base64(request.type_id));
     }
     modelOption.setName(request.name);
     modelOption.setCategory(request.category);
@@ -36932,7 +36820,7 @@ async function list_model_option(config, request) {
 async function list_model_by_type(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const typeId = new pb_model.TypeId();
-    typeId.setId(uuid_hex_to_base64$1(request.id));
+    typeId.setId(uuid_hex_to_base64(request.id));
     return client.listModelByType(modelNameCategory, metadata(config.access_token))
         .then(response => get_model_schema_vec(response.toObject().resultsList));
 }
@@ -36941,30 +36829,30 @@ async function list_model_by_type(config, request) {
  * Create a model
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelSchema} request model schema: id, data_type, category, name, description
- * @returns {Promise<ModelId>} model id: id
+ * @returns {Promise<Uuid>} model uuid
  */
 async function create_model(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelSchema = new pb_model.ModelSchema();
-    modelSchema.setId(uuid_hex_to_base64$1(request.id));
+    modelSchema.setId(uuid_hex_to_base64(request.id));
     modelSchema.setDataTypeList(request.data_type.map((v) => {return set_data_type(v)}));
     modelSchema.setCategory(request.category);
     modelSchema.setName(request.name);
     modelSchema.setDescription(request.description);
     return client.createModel(modelSchema, metadata(config.access_token))
-        .then(response => get_model_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a model
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelUpdate} request model update: id, data_type, category, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_model(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelUpdate = new pb_model.ModelUpdate();
-    modelUpdate.setId(uuid_hex_to_base64$1(request.id));
+    modelUpdate.setId(uuid_hex_to_base64(request.id));
     if (request.data_type) {
         modelUpdate.setDataTypeList(request.data_type.map((v) => {return set_data_type(v)}));
         modelUpdate.setDataTypeFlag(true);
@@ -36975,21 +36863,21 @@ async function update_model(config, request) {
     modelUpdate.setName(request.name);
     modelUpdate.setDescription(request.description);
     return client.updateModel(modelUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a model
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelId} request model uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_model(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelId = new pb_model.ModelId();
-    modelId.setId(uuid_hex_to_base64$1(request.id));
+    modelId.setId(uuid_hex_to_base64(request.id));
     return client.deleteModel(modelId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -37015,7 +36903,7 @@ async function read_model_config(config, request) {
 async function list_model_config_by_model(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelId = new pb_model.ModelId();
-    modelId.setId(uuid_hex_to_base64$1(request.id));
+    modelId.setId(uuid_hex_to_base64(request.id));
     return client.listModelConfig(modelId, metadata(config.access_token))
         .then(response => get_model_config_schema_vec(response.toObject().resultsList));
 }
@@ -37024,12 +36912,12 @@ async function list_model_config_by_model(config, request) {
  * Create a model configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelConfigSchema} request model config schema: model_id, index, name, value, category
- * @returns {Promise<ModelConfigId>} model config uuid: id
+ * @returns {Promise<number>} model config id
  */
 async function create_model_config(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const configSchema = new pb_model.ConfigSchema();
-    configSchema.setModelId(uuid_hex_to_base64$1(request.model_id));
+    configSchema.setModelId(uuid_hex_to_base64(request.model_id));
     configSchema.setIndex(request.index);
     configSchema.setName(request.name);
     const value = set_data_value(request.value);
@@ -37037,14 +36925,14 @@ async function create_model_config(config, request) {
     configSchema.setConfigType(value.type);
     configSchema.setCategory(request.category);
     return client.createModelConfig(configSchema, metadata(config.access_token))
-        .then(response => get_model_config_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a model configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelConfigUpdate} request model config update: id, name, value, category
- * @returns {Promise<{}>} update response 
+ * @returns {Promise<null>} update response 
  */
 async function update_model_config(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -37056,21 +36944,21 @@ async function update_model_config(config, request) {
     configUpdate.setConfigType(value.type);
     configUpdate.setCategory(request.category);
     return client.updateModelConfig(configUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a model configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelConfigId} request model config uuid: id
- * @returns {Promise<{}>} delete response 
+ * @returns {Promise<null>} delete response 
  */
 async function delete_model_config(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const configId = new pb_model.ConfigId();
     configId.setId(request.id);
     return client.deleteModelConfig(configId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -37082,7 +36970,7 @@ async function delete_model_config(config, request) {
 async function read_tag(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const tagId = new pb_model.TagId();
-    tagId.setModelId(uuid_hex_to_base64$1(request.model_id));
+    tagId.setModelId(uuid_hex_to_base64(request.model_id));
     tagId.setTag(request.tag);
     return client.readTag(tagId, metadata(config.access_token))
         .then(response => get_tag_schema(response.toObject().result));
@@ -37097,7 +36985,7 @@ async function read_tag(config, request) {
 async function list_tag_by_model(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelId = new pb_model.ModelId();
-    modelId.setId(uuid_hex_to_base64$1(request.id));
+    modelId.setId(uuid_hex_to_base64(request.id));
     return client.listTagByModel(modelId, metadata(config.access_token))
         .then(response => get_tag_schema(response.toObject().resultsList));
 }
@@ -37106,49 +36994,49 @@ async function list_tag_by_model(config, request) {
  * Create a tag
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TagSchema} request tag schema: model_id, tag, name, members
- * @returns {Promise<{}>} create response
+ * @returns {Promise<null>} create response
  */
 async function create_tag(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const tagSchema = new pb_model.TagSchema();
-    tagSchema.setModelId(uuid_hex_to_base64$1(request.model_id));
+    tagSchema.setModelId(uuid_hex_to_base64(request.model_id));
     tagSchema.setTag(request.tag);
     tagSchema.setName(request.name);
     tagSchema.setMembersList(request.members);
     return client.createTag(tagSchema, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Update a tag
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TagUpdate} request tag update: model_id, tag, name, members
- * @returns {Promise<{}>} update response 
+ * @returns {Promise<null>} update response 
  */
 async function update_tag(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const tagUpdate = new pb_model.TagUpdate();
-    tagUpdate.setModelId(uuid_hex_to_base64$1(request.model_id));
+    tagUpdate.setModelId(uuid_hex_to_base64(request.model_id));
     tagUpdate.setTag(request.tag);
     tagUpdate.setName(request.name);
     tagUpdate.setMembersList(request.members);
     return client.updateTag(tagUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a tag
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TagId} request tag id: model_id, tag
- * @returns {Promise<{}>} delete response 
+ * @returns {Promise<null>} delete response 
  */
 async function delete_tag(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const tagId = new pb_model.TagId();
-    tagId.setModelId(uuid_hex_to_base64$1(request.model_id));
+    tagId.setModelId(uuid_hex_to_base64(request.model_id));
     tagId.setTag(request.tag);
     return client.deleteTag(tagId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 var device_pb = {};
@@ -48023,16 +47911,6 @@ var pb_device = /*@__PURE__*/getDefaultExportFromCjs(device_grpc_web_pbExports);
  */
 
 /**
- * @param {*} r 
- * @returns {DeviceId}
- */
-function get_device_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} SerialNumber
  * @property {string} serial_number
  */
@@ -48056,16 +47934,6 @@ function get_device_id(r) {
  * @typedef {Object} TypeOption
  * @property {?string} name
  */
-
-/**
- * @param {*} r 
- * @returns {TypeId}
- */
-function get_type_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
 
 /**
  * @typedef {Object} TypeSchema
@@ -48174,16 +48042,6 @@ function get_device_schema_vec(r) {
  */
 
 /**
- * @param {*} r 
- * @returns {GatewayId}
- */
-function get_gateway_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} GatewayName
  * @property {string} name
  */
@@ -48262,16 +48120,6 @@ function get_gateway_schema_vec(r) {
  * @typedef {Object} ConfigId
  * @property {number} id
  */
-
-/**
- * @param {*} r 
- * @returns {ConfigId}
- */
-function get_config_id(r) {
-    return {
-        id: r.id
-    };
-}
 
 /**
  * @typedef {Object} DeviceConfigSchema
@@ -48353,7 +48201,7 @@ function get_gateway_config_schema_vec(r) {
 async function read_device(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const deviceId = new pb_device.DeviceId();
-    deviceId.setId(uuid_hex_to_base64$1(request.id));
+    deviceId.setId(uuid_hex_to_base64(request.id));
     return client.readDevice(deviceId, metadata(config.access_token))
         .then(response => get_device_schema(response.toObject().result));
 }
@@ -48381,7 +48229,7 @@ async function read_device_by_sn(config, request) {
 async function list_device_by_ids(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const deviceIds = new pb_device.DeviceIds();
-    deviceIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    deviceIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listDeviceByIds(deviceIds, metadata(config.access_token))
         .then(response => get_device_schema_vec(response.toObject().resultsList));
 }
@@ -48395,7 +48243,7 @@ async function list_device_by_ids(config, request) {
 async function list_device_by_gateway(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const gatewayId = new pb_device.GatewayId();
-    gatewayId.setId(uuid_hex_to_base64$1(request.id));
+    gatewayId.setId(uuid_hex_to_base64(request.id));
     return client.listDeviceByGateway(gatewayId, metadata(config.access_token))
         .then(response => get_device_schema_vec(response.toObject().resultsList));
 }
@@ -48409,7 +48257,7 @@ async function list_device_by_gateway(config, request) {
 async function list_device_by_type(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const typeId = new pb_device.TypeId();
-    typeId.setId(uuid_hex_to_base64$1(request.id));
+    typeId.setId(uuid_hex_to_base64(request.id));
     return client.listDeviceByType(typeId, metadata(config.access_token))
         .then(response => get_device_schema_vec(response.toObject().resultsList));
 }
@@ -48438,10 +48286,10 @@ async function list_device_option(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const deviceOption = new pb_device.DeviceOption();
     if (request.gateway_id) {
-        deviceOption.setGatewayId(uuid_hex_to_base64$1(request.gateway_id));
+        deviceOption.setGatewayId(uuid_hex_to_base64(request.gateway_id));
     }
     if (request.type_id) {
-        deviceOption.setTypeId(uuid_hex_to_base64$1(request.type_id));
+        deviceOption.setTypeId(uuid_hex_to_base64(request.type_id));
     }
     deviceOption.setName(request.name);
     return client.listDeviceOption(deviceOption, metadata(config.access_token))
@@ -48452,56 +48300,56 @@ async function list_device_option(config, request) {
  * Create a device
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DeviceCreate} request device schema: id, gateway_id, serial_number, name, description, type_id
- * @returns {Promise<DeviceId>} device uuid: id
+ * @returns {Promise<Uuid>} device uuid
  */
 async function create_device(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const typeSchema = new pb_device.TypeSchema();
-    typeSchema.setId(uuid_hex_to_base64$1(request.type_id));
+    typeSchema.setId(uuid_hex_to_base64(request.type_id));
     const deviceSchema = new pb_device.DeviceSchema();
-    deviceSchema.setId(uuid_hex_to_base64$1(request.id));
-    deviceSchema.setGatewayId(uuid_hex_to_base64$1(request.gateway_id));
+    deviceSchema.setId(uuid_hex_to_base64(request.id));
+    deviceSchema.setGatewayId(uuid_hex_to_base64(request.gateway_id));
     deviceSchema.setSerialNumber(request.serial_number);
     deviceSchema.setName(request.name);
     deviceSchema.setDescription(request.description);
     deviceSchema.setDeviceType(typeSchema);
     return client.createDevice(deviceSchema, metadata(config.access_token))
-        .then(response => get_device_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a device
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DeviceUpdate} request device update: id, gateway_id, serial_number, name, description, type_id
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_device(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const deviceUpdate = new pb_device.DeviceUpdate();
-    deviceUpdate.setId(uuid_hex_to_base64$1(request.id));
+    deviceUpdate.setId(uuid_hex_to_base64(request.id));
     if (request.gateway_id) {
-        deviceUpdate.setGatewayId(uuid_hex_to_base64$1(request.gateway_id));
+        deviceUpdate.setGatewayId(uuid_hex_to_base64(request.gateway_id));
     }
     deviceUpdate.setSerialNumber(request.serial_number);
     deviceUpdate.setName(request.name);
     deviceUpdate.setDescription(request.description);
     deviceUpdate.setTypeId(request.type_id);
     return client.updateDevice(deviceUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a device
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DeviceId} request device uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_device(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const deviceId = new pb_device.DeviceId();
-    deviceId.setId(uuid_hex_to_base64$1(request.id));
+    deviceId.setId(uuid_hex_to_base64(request.id));
     return client.deleteDevice(deviceId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -48513,7 +48361,7 @@ async function delete_device(config, request) {
 async function read_gateway(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const gatewayId = new pb_device.GatewayId();
-    gatewayId.setId(uuid_hex_to_base64$1(request.id));
+    gatewayId.setId(uuid_hex_to_base64(request.id));
     return client.readGateway(gatewayId, metadata(config.access_token))
         .then(response => get_gateway_schema(response.toObject().result));
 }
@@ -48541,7 +48389,7 @@ async function read_gateway_by_sn(config, request) {
 async function list_gateway_by_ids(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const gatewayIds = new pb_device.GatewayIds();
-    gatewayIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    gatewayIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listGatewayByIds(gatewayIds, metadata(config.access_token))
         .then(response => get_gateway_schema_vec(response.toObject().resultsList));
 }
@@ -48555,7 +48403,7 @@ async function list_gateway_by_ids(config, request) {
 async function list_gateway_by_type(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const typeId = new pb_device.TypeId();
-    typeId.setId(uuid_hex_to_base64$1(request.id));
+    typeId.setId(uuid_hex_to_base64(request.id));
     return client.listGatewayByType(typeId, metadata(config.access_token))
         .then(response => get_gateway_schema_vec(response.toObject().resultsList));
 }
@@ -48584,7 +48432,7 @@ async function list_gateway_option(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const gatewayOption = new pb_device.GatewayOption();
     if (request.type_id) {
-        gatewayOption.setTypeId(uuid_hex_to_base64$1(request.type_id));
+        gatewayOption.setTypeId(uuid_hex_to_base64(request.type_id));
     }
     gatewayOption.setName(request.name);
     return client.listGatewayOption(gatewayOption, metadata(config.access_token))
@@ -48595,52 +48443,52 @@ async function list_gateway_option(config, request) {
  * Create a gateway
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GatewayCreate} request gateway schema: id, serial_number, name, description, type_id
- * @returns {Promise<GatewayId>} gateway uuid: id
+ * @returns {Promise<Uuid>} gateway uuid
  */
 async function create_gateway(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const typeSchema = new pb_device.TypeSchema();
-    typeSchema.setId(uuid_hex_to_base64$1(request.type_id));
+    typeSchema.setId(uuid_hex_to_base64(request.type_id));
     const gatewaySchema = new pb_device.GatewaySchema();
-    gatewaySchema.setId(uuid_hex_to_base64$1(request.id));
+    gatewaySchema.setId(uuid_hex_to_base64(request.id));
     gatewaySchema.setSerialNumber(request.serial_number);
     gatewaySchema.setName(request.name);
     gatewaySchema.setDescription(request.description);
     gatewaySchema.setGatewayType(typeSchema);
     return client.createGateway(gatewaySchema, metadata(config.access_token))
-        .then(response => get_gateway_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a gateway
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GatewayUpdate} request gateway update: id, serial_number, name, description, type_id
- * @returns {Promise<{}>} update response 
+ * @returns {Promise<null>} update response 
  */
 async function update_gateway(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const gatewayUpdate = new pb_device.GatewayUpdate();
-    gatewayUpdate.setId(uuid_hex_to_base64$1(request.id));
+    gatewayUpdate.setId(uuid_hex_to_base64(request.id));
     gatewayUpdate.setSerialNumber(request.serial_number);
     gatewayUpdate.setName(request.name);
     gatewayUpdate.setDescription(request.description);
     gatewayUpdate.setTypeId(request.type_id);
     return client.updateGateway(gatewayUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a gateway
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GatewayId} request gateway uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_gateway(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const gatewayId = new pb_device.GatewayId();
-    gatewayId.setId(uuid_hex_to_base64$1(request.id));
+    gatewayId.setId(uuid_hex_to_base64(request.id));
     return client.deleteGateway(gatewayId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -48666,7 +48514,7 @@ async function read_device_config(config, request) {
 async function list_device_config_by_device(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const deviceId = new pb_device.DeviceId();
-    deviceId.setId(uuid_hex_to_base64$1(request.id));
+    deviceId.setId(uuid_hex_to_base64(request.id));
     return client.listDeviceConfig(deviceId, metadata(config.access_token))
         .then(response => get_device_config_schema_vec(response.toObject().resultsList));
 }
@@ -48675,26 +48523,26 @@ async function list_device_config_by_device(config, request) {
  * Create a device configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DeviceConfigSchema} request device config schema: device_id, name, value, category
- * @returns {Promise<ConfigId>} device config uuid: id
+ * @returns {Promise<number>} device config id
  */
 async function create_device_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const configSchema = new pb_device.ConfigSchema();
-    configSchema.setDeviceId(uuid_hex_to_base64$1(request.device_id));
+    configSchema.setDeviceId(uuid_hex_to_base64(request.device_id));
     configSchema.setName(request.name);
     const value = set_data_value(request.value);
     configSchema.setConfigBytes(value.bytes);
     configSchema.setConfigType(value.type);
     configSchema.setCategory(request.category);
     return client.createDeviceConfig(configSchema, metadata(config.access_token))
-        .then(response => get_config_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a device configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ConfigUpdate} request device config update: id, name, value, category
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_device_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -48706,21 +48554,21 @@ async function update_device_config(config, request) {
     configUpdate.setConfigType(value.type);
     configUpdate.setCategory(request.category);
     return client.updateDeviceConfig(configUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a device configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ConfigId} request device config uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_device_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const configId = new pb_device.ConfigId();
     configId.setId(request.id);
     return client.deleteDeviceConfig(configId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -48746,7 +48594,7 @@ async function read_gateway_config(config, request) {
 async function list_gateway_config_by_gateway(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const gatewayId = new pb_device.GatewayId();
-    gatewayId.setId(uuid_hex_to_base64$1(request.id));
+    gatewayId.setId(uuid_hex_to_base64(request.id));
     return client.listGatewayConfig(gatewayId, metadata(config.access_token))
         .then(response => get_gateway_config_schema_vec(response.toObject().resultsList));
 }
@@ -48755,26 +48603,26 @@ async function list_gateway_config_by_gateway(config, request) {
  * Create a gateway configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GatewayConfigSchema} request gateway config schema: gateway_id, name, value, category
- * @returns {Promise<ConfigId>} gateway config id: id
+ * @returns {Promise<number>} gateway config id
  */
 async function create_gateway_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const configSchema = new pb_device.ConfigSchema();
-    configSchema.setDeviceId(uuid_hex_to_base64$1(request.gateway_id));
+    configSchema.setDeviceId(uuid_hex_to_base64(request.gateway_id));
     configSchema.setName(request.name);
     const value = set_data_value(request.value);
     configSchema.setConfigBytes(value.bytes);
     configSchema.setConfigType(value.type);
     configSchema.setCategory(request.category);
     return client.createGatewayConfig(configSchema, metadata(config.access_token))
-        .then(response => get_config_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a gateway configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ConfigUpdate} request gateway config update: id, name, value, category
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_gateway_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -48786,21 +48634,21 @@ async function update_gateway_config(config, request) {
     configUpdate.setConfigType(value.type);
     configUpdate.setCategory(request.category);
     return client.updateGatewayConfig(configUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a gateway configuration
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ConfigId} request gateway config uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_gateway_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const configId = new pb_device.ConfigId();
     configId.setId(request.id);
     return client.deleteGatewayConfig(configId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -48812,7 +48660,7 @@ async function delete_gateway_config(config, request) {
 async function read_type(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const typeId = new pb_device.TypeId();
-    typeId.setId(uuid_hex_to_base64$1(request.id));
+    typeId.setId(uuid_hex_to_base64(request.id));
     return client.readType(typeId, metadata(config.access_token))
         .then(response => get_type_schema(response.toObject().result));
 }
@@ -48826,7 +48674,7 @@ async function read_type(config, request) {
 async function list_type_by_ids(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const typeIds = new pb_device.TypeIds();
-    typeIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    typeIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listTypeByIds(typeIds, metadata(config.access_token))
         .then(response => get_type_schema_vec(response.toObject().resultsList));
 }
@@ -48863,76 +48711,76 @@ async function list_type_option(config, request) {
  * Create a device type
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeSchema} request type schema: id, name, description
- * @returns {Promise<TypeId>} type uuid: id
+ * @returns {Promise<Uuid>} type uuid
  */
 async function create_type(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const typeSchema = new pb_device.TypeSchema();
-    typeSchema.setId(uuid_hex_to_base64$1(request.id));
+    typeSchema.setId(uuid_hex_to_base64(request.id));
     typeSchema.setName(request.name);
     typeSchema.setDescription(request.description);
     return client.createType(typeSchema, metadata(config.access_token))
-        .then(response => get_type_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a device type
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeUpdate} request type update: id, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_type(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const typeUpdate = new pb_device.TypeUpdate();
-    typeUpdate.setId(uuid_hex_to_base64$1(request.id));
+    typeUpdate.setId(uuid_hex_to_base64(request.id));
     typeUpdate.setName(request.name);
     typeUpdate.setDescription(request.description);
     return client.updateType(typeUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a device type
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeId} request type id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_type(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const typeId = new pb_device.TypeId();
-    typeId.setId(uuid_hex_to_base64$1(request.id));
+    typeId.setId(uuid_hex_to_base64(request.id));
     return client.deleteType(typeId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add model to a device type
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeModel} request type id: id, model_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function add_type_model(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const typeModel = new pb_device.TypeModel();
-    typeModel.setId(uuid_hex_to_base64$1(request.id));
-    typeModel.setModelId(uuid_hex_to_base64$1(request.model_id));
+    typeModel.setId(uuid_hex_to_base64(request.id));
+    typeModel.setModelId(uuid_hex_to_base64(request.model_id));
     return client.addTypeModel(typeModel, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove model from a device type
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeModel} request type id: id, model_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function remove_type_model(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
     const typeModel = new pb_device.TypeModel();
-    typeModel.setId(uuid_hex_to_base64$1(request.id));
-    typeModel.setModelId(uuid_hex_to_base64$1(request.model_id));
+    typeModel.setId(uuid_hex_to_base64(request.id));
+    typeModel.setModelId(uuid_hex_to_base64(request.model_id));
     return client.removeTypeModel(typeModel, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 var group_pb = {};
@@ -54291,16 +54139,6 @@ var pb_group = /*@__PURE__*/getDefaultExportFromCjs(group_grpc_web_pbExports);
  */
 
 /**
- * @param {*} r 
- * @returns {GroupId}
- */
-function get_group_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} GroupName
  * @property {string} name
  */
@@ -54445,7 +54283,7 @@ function get_group_gateway_schema_vec(r) {
 async function read_group_model(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupId = new pb_group.GroupId();
-    groupId.setId(uuid_hex_to_base64$1(request.id));
+    groupId.setId(uuid_hex_to_base64(request.id));
     return client.readGroupModel(groupId, metadata(config.access_token))
         .then(response => get_group_model_schema(response.toObject().result));
 }
@@ -54459,7 +54297,7 @@ async function read_group_model(config, request) {
 async function list_group_model_by_ids(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupIds = new pb_group.GroupIds();
-    groupIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    groupIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listGroupModelByIds(groupIds, metadata(config.access_token))
         .then(response => get_group_model_schema_vec(response.toObject().resultsList));
 }
@@ -54511,78 +54349,78 @@ async function list_group_model_option(config, request) {
  * Create a group model
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupModelSchema} request group model schema: id, name, category, description
- * @returns {Promise<GroupId>} group model uuid: id
+ * @returns {Promise<Uuid>} group model uuid
  */
 async function create_group_model(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupSchema = new pb_group.GroupModelSchema();
-    groupSchema.setId(uuid_hex_to_base64$1(request.id));
+    groupSchema.setId(uuid_hex_to_base64(request.id));
     groupSchema.setName(request.name);
     groupSchema.setCategory(request.category);
     groupSchema.setDescription(request.description);
     return client.createGroupModel(groupSchema, metadata(config.access_token))
-        .then(response => get_group_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a group model
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupUpdate} request group model update: id, name, category, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_group_model(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupUpdate = new pb_group.GroupUpdate();
-    groupUpdate.setId(uuid_hex_to_base64$1(request.id));
+    groupUpdate.setId(uuid_hex_to_base64(request.id));
     groupUpdate.setName(request.name);
     groupUpdate.setCategory(request.category);
     groupUpdate.setDescription(request.description);
     return client.updateGroupModel(groupUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a group model
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupId} request group model uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_group_model(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupId = new pb_group.GroupId();
-    groupId.setId(uuid_hex_to_base64$1(request.id));
+    groupId.setId(uuid_hex_to_base64(request.id));
     return client.deleteGroupModel(groupId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add a member to a group model
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupModel} request group model member: id, model_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function add_group_model_member(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupModel = new pb_group.GroupModel();
-    groupModel.setId(uuid_hex_to_base64$1(request.id));
-    groupModel.setModelId(uuid_hex_to_base64$1(request.model_id));
+    groupModel.setId(uuid_hex_to_base64(request.id));
+    groupModel.setModelId(uuid_hex_to_base64(request.model_id));
     return client.addGroupModelMember(groupModel, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove a member to a group model
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupModel} request group model member: id, model_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function remove_group_model_member(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupModel = new pb_group.GroupModel();
-    groupModel.setId(uuid_hex_to_base64$1(request.id));
-    groupModel.setModelId(uuid_hex_to_base64$1(request.model_id));
+    groupModel.setId(uuid_hex_to_base64(request.id));
+    groupModel.setModelId(uuid_hex_to_base64(request.model_id));
     return client.removeGroupModelMember(groupModel, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -54594,7 +54432,7 @@ async function remove_group_model_member(config, request) {
 async function read_group_device(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupId = new pb_group.GroupId();
-    groupId.setId(uuid_hex_to_base64$1(request.id));
+    groupId.setId(uuid_hex_to_base64(request.id));
     return client.readGroupDevice(groupId, metadata(config.access_token))
         .then(response => get_group_device_schema(response.toObject().result));
 }
@@ -54608,7 +54446,7 @@ async function read_group_device(config, request) {
 async function list_group_device_by_ids(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupIds = new pb_group.GroupIds();
-    groupIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    groupIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listGroupDeviceByIds(groupIds, metadata(config.access_token))
         .then(response => get_group_device_schema_vec(response.toObject().resultsList));
 }
@@ -54660,78 +54498,78 @@ async function list_group_device_option(config, request) {
  * Create a group device
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupDeviceSchema} request group device schema: id, name, category, description
- * @returns {Promise<GroupId>} group device uuid: id
+ * @returns {Promise<Uuid>} group device uuid
  */
 async function create_group_device(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupSchema = new pb_group.GroupDeviceSchema();
-    groupSchema.setId(uuid_hex_to_base64$1(request.id));
+    groupSchema.setId(uuid_hex_to_base64(request.id));
     groupSchema.setName(request.name);
     groupSchema.setCategory(request.category);
     groupSchema.setDescription(request.description);
     return client.createGroupDevice(groupSchema, metadata(config.access_token))
-        .then(response => get_group_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a group device
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupUpdate} request group device update: id, name, category, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_group_device(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupUpdate = new pb_group.GroupUpdate();
-    groupUpdate.setId(uuid_hex_to_base64$1(request.id));
+    groupUpdate.setId(uuid_hex_to_base64(request.id));
     groupUpdate.setName(request.name);
     groupUpdate.setCategory(request.category);
     groupUpdate.setDescription(request.description);
     return client.updateGroupDevice(groupUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a group device
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupId} request group device uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_group_device(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupId = new pb_group.GroupId();
-    groupId.setId(uuid_hex_to_base64$1(request.id));
+    groupId.setId(uuid_hex_to_base64(request.id));
     return client.deleteGroupDevice(groupId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add a member to a group device
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupDevice} request group device member: id, device_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function add_group_device_member(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupDevice = new pb_group.GroupDevice();
-    groupDevice.setId(uuid_hex_to_base64$1(request.id));
-    groupDevice.setDeviceId(uuid_hex_to_base64$1(request.device_id));
+    groupDevice.setId(uuid_hex_to_base64(request.id));
+    groupDevice.setDeviceId(uuid_hex_to_base64(request.device_id));
     return client.addGroupDeviceMember(groupDevice, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove a member to a group device
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupDevice} request group device member: id, device_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function remove_group_device_member(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupDevice = new pb_group.GroupDevice();
-    groupDevice.setId(uuid_hex_to_base64$1(request.id));
-    groupDevice.setDeviceId(uuid_hex_to_base64$1(request.device_id));
+    groupDevice.setId(uuid_hex_to_base64(request.id));
+    groupDevice.setDeviceId(uuid_hex_to_base64(request.device_id));
     return client.removeGroupDeviceMember(groupDevice, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -54743,7 +54581,7 @@ async function remove_group_device_member(config, request) {
 async function read_group_gateway(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupId = new pb_group.GroupId();
-    groupId.setId(uuid_hex_to_base64$1(request.id));
+    groupId.setId(uuid_hex_to_base64(request.id));
     return client.readGroupGateway(groupId, metadata(config.access_token))
         .then(response => get_group_gateway_schema(response.toObject().result));
 }
@@ -54757,7 +54595,7 @@ async function read_group_gateway(config, request) {
 async function list_group_gateway_by_ids(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupIds = new pb_group.GroupIds();
-    groupIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    groupIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listGroupGatewayByIds(groupIds, metadata(config.access_token))
         .then(response => get_group_gateway_schema_vec(response.toObject().resultsList));
 }
@@ -54809,78 +54647,78 @@ async function list_group_gateway_option(config, request) {
  * Create a group gateway
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupGatewaySchema} request group gateway schema: id, name, category, description
- * @returns {Promise<GroupId>} group gateway uuid: id
+ * @returns {Promise<Uuid>} group gateway uuid
  */
 async function create_group_gateway(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupSchema = new pb_group.GroupDeviceSchema();
-    groupSchema.setId(uuid_hex_to_base64$1(request.id));
+    groupSchema.setId(uuid_hex_to_base64(request.id));
     groupSchema.setName(request.name);
     groupSchema.setCategory(request.category);
     groupSchema.setDescription(request.description);
     return client.createGroupGateway(groupSchema, metadata(config.access_token))
-        .then(response => get_group_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a group gateway
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupUpdate} request group gateway update: id, name, category, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_group_gateway(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupUpdate = new pb_group.GroupUpdate();
-    groupUpdate.setId(uuid_hex_to_base64$1(request.id));
+    groupUpdate.setId(uuid_hex_to_base64(request.id));
     groupUpdate.setName(request.name);
     groupUpdate.setCategory(request.category);
     groupUpdate.setDescription(request.description);
     return client.updateGroupGateway(groupUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a group gateway
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupId} request group gateway uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_group_gateway(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupId = new pb_group.GroupId();
-    groupId.setId(uuid_hex_to_base64$1(request.id));
+    groupId.setId(uuid_hex_to_base64(request.id));
     return client.deleteGroupGateway(groupId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add a member to a group gateway
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupGateway} request group gateway member: id, gateway_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function add_group_gateway_member(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupDevice = new pb_group.GroupDevice();
-    groupDevice.setId(uuid_hex_to_base64$1(request.id));
-    groupDevice.setDeviceId(uuid_hex_to_base64$1(request.gateway_id));
+    groupDevice.setId(uuid_hex_to_base64(request.id));
+    groupDevice.setDeviceId(uuid_hex_to_base64(request.gateway_id));
     return client.addGroupGatewayMember(groupDevice, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove a member to a group gateway
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {GroupGateway} request group gateway member: id, gateway_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function remove_group_gateway_member(config, request) {
     const client = new pb_group.GroupServicePromiseClient(config.address, null, null);
     const groupDevice = new pb_group.GroupDevice();
-    groupDevice.setId(uuid_hex_to_base64$1(request.id));
-    groupDevice.setDeviceId(uuid_hex_to_base64$1(request.gateway_id));
+    groupDevice.setId(uuid_hex_to_base64(request.id));
+    groupDevice.setDeviceId(uuid_hex_to_base64(request.gateway_id));
     return client.removeGroupGatewayMember(groupDevice, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 var set_pb = {};
@@ -62263,16 +62101,6 @@ var pb_set = /*@__PURE__*/getDefaultExportFromCjs(set_grpc_web_pbExports);
  */
 
 /**
- * @param {*} r 
- * @returns {SetId}
- */
-function get_set_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
 * @typedef {Object} SetName
 * @property {string} name
 */
@@ -62368,16 +62196,6 @@ function get_set_member(r) {
  */
 
 /**
- * @param {*} r 
- * @returns {SetTemplateId}
- */
-function get_set_template_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
 * @typedef {Object} SetTemplateName
 * @property {string} name
 */
@@ -62468,7 +62286,7 @@ function get_set_template_member(r) {
 async function read_set(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const setId = new pb_set.SetId();
-    setId.setId(uuid_hex_to_base64$1(request.id));
+    setId.setId(uuid_hex_to_base64(request.id));
     return client.readSet(setId, metadata(config.access_token))
         .then(response => get_set_schema(response.toObject().result));
 }
@@ -62482,7 +62300,7 @@ async function read_set(config, request) {
 async function list_set_by_ids(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const setIds = new pb_set.SetIds();
-    setIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    setIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listSetByIds(setIds, metadata(config.access_token))
         .then(response => get_set_schema_vec(response.toObject().resultsList));
 }
@@ -62496,7 +62314,7 @@ async function list_set_by_ids(config, request) {
 async function list_set_by_template(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const templateId = new pb_set.SetTemplateId();
-    templateId.setId(uuid_hex_to_base64$1(request.id));
+    templateId.setId(uuid_hex_to_base64(request.id));
     return client.listSetByTemplate(templateId, metadata(config.access_token))
         .then(response => get_set_schema_vec(response.toObject().resultsList));
 }
@@ -62525,7 +62343,7 @@ async function list_set_option(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const setOption = new pb_set.SetOption();
     if (request.template_id) {
-        setOption.setTemplateId(uuid_hex_to_base64$1(request.template_id));
+        setOption.setTemplateId(uuid_hex_to_base64(request.template_id));
     }
     setOption.setName(request.name);
     return client.listSetOption(setOption, metadata(config.access_token))
@@ -62536,99 +62354,99 @@ async function list_set_option(config, request) {
  * Create a set
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetSchema} request set schema: id, template_id, name, description, members
- * @returns {Promise<SetId>} set uuid: id
+ * @returns {Promise<Uuid>} set uuid
  */
 async function create_set(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const setSchema = new pb_set.SetSchema();
-    setSchema.setId(uuid_hex_to_base64$1(request.id));
-    setSchema.setTemplateId(uuid_hex_to_base64$1(request.template_id));
+    setSchema.setId(uuid_hex_to_base64(request.id));
+    setSchema.setTemplateId(uuid_hex_to_base64(request.template_id));
     setSchema.setName(request.name);
     setSchema.setDescription(request.description);
     return client.createSet(setSchema, metadata(config.access_token))
-        .then(response => get_set_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a set
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetUpdate} request set update: id, template_id, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_set(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const setUpdate = new pb_set.SetUpdate();
-    setUpdate.setId(uuid_hex_to_base64$1(request.id));
-    setUpdate.setTemplateId(uuid_hex_to_base64$1(request.template_id));
+    setUpdate.setId(uuid_hex_to_base64(request.id));
+    setUpdate.setTemplateId(uuid_hex_to_base64(request.template_id));
     setUpdate.setName(request.name);
     setUpdate.setDescription(request.description);
     return client.updateSet(setUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a set
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetId} request set uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_set(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const setId = new pb_set.SetId();
-    setId.setId(uuid_hex_to_base64$1(request.id));
+    setId.setId(uuid_hex_to_base64(request.id));
     return client.deleteSet(setId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add a member to a set
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetMemberRequest} request set member request: id, device_id, model_id, data_index
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function add_set_member(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const setMember = new pb_set.SetMemberRequest();
-    setMember.setId(uuid_hex_to_base64$1(request.id));
-    setMember.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    setMember.setModelId(uuid_hex_to_base64$1(request.model_id));
+    setMember.setId(uuid_hex_to_base64(request.id));
+    setMember.setDeviceId(uuid_hex_to_base64(request.device_id));
+    setMember.setModelId(uuid_hex_to_base64(request.model_id));
     setMember.setDataIndex(bytes_to_base64(request.data_index));
     return client.addSetMember(setMember, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove a member from a set
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetMemberRequest} request set member request: id, device_id, model_id, data_index
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function remove_set_member(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const setMember = new pb_set.SetMemberRequest();
-    setMember.setId(uuid_hex_to_base64$1(request.id));
-    setMember.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    setMember.setModelId(uuid_hex_to_base64$1(request.model_id));
+    setMember.setId(uuid_hex_to_base64(request.id));
+    setMember.setDeviceId(uuid_hex_to_base64(request.device_id));
+    setMember.setModelId(uuid_hex_to_base64(request.model_id));
     return client.removeSetMember(setMember, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Swap a set member index position 
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetMemberSwap} request set member request: id, device_id_1, model_id_1, device_id_2, model_id_2
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function swap_set_member(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const setMember = new pb_set.SetMemberSwap();
-    setMember.setId(uuid_hex_to_base64$1(request.id));
-    setMember.setDeviceId1(uuid_hex_to_base64$1(request.device_id_1));
-    setMember.setModelId1(uuid_hex_to_base64$1(request.model_id_1));
-    setMember.setDeviceId2(uuid_hex_to_base64$1(request.device_id_2));
-    setMember.setModelId2(uuid_hex_to_base64$1(request.model_id_2));
+    setMember.setId(uuid_hex_to_base64(request.id));
+    setMember.setDeviceId1(uuid_hex_to_base64(request.device_id_1));
+    setMember.setModelId1(uuid_hex_to_base64(request.model_id_1));
+    setMember.setDeviceId2(uuid_hex_to_base64(request.device_id_2));
+    setMember.setModelId2(uuid_hex_to_base64(request.model_id_2));
     return client.swapSetMember(setMember, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -62640,7 +62458,7 @@ async function swap_set_member(config, request) {
 async function read_set_template(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const templateId = new pb_set.SetTemplateId();
-    templateId.setId(uuid_hex_to_base64$1(request.id));
+    templateId.setId(uuid_hex_to_base64(request.id));
     return client.readSetTemplate(templateId, metadata(config.access_token))
         .then(response => get_set_template_schema(response.toObject().result));
 }
@@ -62654,7 +62472,7 @@ async function read_set_template(config, request) {
 async function list_set_template_by_ids(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const templateIds = new pb_set.SetTemplateIds();
-    templateIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64$1(id)));
+    templateIds.setIdsList(request.ids.map((id) => uuid_hex_to_base64(id)));
     return client.listSetTemplateByIds(templateIds, metadata(config.access_token))
         .then(response => get_set_template_schema_vec(response.toObject().resultsList));
 }
@@ -62691,94 +62509,94 @@ async function list_set_template_option(config, request) {
  * Create a set template
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetTemplateSchema} request set template schema: id, name, description, members
- * @returns {Promise<SetTemplateId>} set template uuid: id
+ * @returns {Promise<Uuid>} set template uuid
  */
 async function create_set_template(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const templateSchema = new pb_set.SetTemplateSchema();
-    templateSchema.setId(uuid_hex_to_base64$1(request.id));
+    templateSchema.setId(uuid_hex_to_base64(request.id));
     templateSchema.setName(request.name);
     templateSchema.setDescription(request.description);
     return client.createSetTemplate(templateSchema, metadata(config.access_token))
-        .then(response => get_set_template_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a set template
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetTemplateUpdate} request set template update: id, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_set_template(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const templateUpdate = new pb_set.SetTemplateUpdate();
-    templateUpdate.setId(uuid_hex_to_base64$1(request.id));
+    templateUpdate.setId(uuid_hex_to_base64(request.id));
     templateUpdate.setName(request.name);
     templateUpdate.setDescription(request.description);
     return client.updateSetTemplate(templateUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a set template
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetTemplateId} request set template uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_set_template(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const templateId = new pb_set.SetTemplateId();
-    templateId.setId(uuid_hex_to_base64$1(request.id));
+    templateId.setId(uuid_hex_to_base64(request.id));
     return client.deleteSetTemplate(templateId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add a member to a set template
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetTemplateMemberRequest} request set member request: id, type_id, model_id, data_index
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function add_set_template_member(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const templateMember = new pb_set.SetTemplateMemberRequest();
-    templateMember.setId(uuid_hex_to_base64$1(request.id));
-    templateMember.setTypeId(uuid_hex_to_base64$1(request.type_id));
-    templateMember.setModelId(uuid_hex_to_base64$1(request.model_id));
+    templateMember.setId(uuid_hex_to_base64(request.id));
+    templateMember.setTypeId(uuid_hex_to_base64(request.type_id));
+    templateMember.setModelId(uuid_hex_to_base64(request.model_id));
     templateMember.setDataIndex(bytes_to_base64(request.data_index));
     return client.addSetTemplateMember(templateMember, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove a member from a set template
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetTemplateMemberRequest} request set member request: id, template_index
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function remove_set_template_member(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const templateMember = new pb_set.SetTemplateMemberRequest();
-    templateMember.setId(uuid_hex_to_base64$1(request.id));
+    templateMember.setId(uuid_hex_to_base64(request.id));
     templateMember.setTemplateIndex(template_index);
     return client.removeSetTemplateMember(templateMember, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Swap a set template member index position 
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetTemplateMemberSwap} request set template member swap: id, template_index_1, template_index_2
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 async function swap_set_template_member(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const templateMember = new pb_set.SetTemplateMemberSwap();
-    templateMember.setId(uuid_hex_to_base64$1(request.id));
-    templateMember.setTemplateIndex1(uuid_hex_to_base64$1(request.template_index_1));
-    templateMember.setTemplateIndex2(uuid_hex_to_base64$1(request.template_index_2));
+    templateMember.setId(uuid_hex_to_base64(request.id));
+    templateMember.setTemplateIndex1(uuid_hex_to_base64(request.template_index_1));
+    templateMember.setTemplateIndex2(uuid_hex_to_base64(request.template_index_2));
     return client.swapSetTemplateMember(templateMember, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 var slice_pb = {};
@@ -69884,16 +69702,6 @@ var pb_slice = /*@__PURE__*/getDefaultExportFromCjs(slice_grpc_web_pbExports);
  */
 
 /**
- * @param {*} r 
- * @returns {SliceId}
- */
-function get_slice_id(r) {
-    return {
-        id: r.id    
-    };
-}
-
-/**
  * @typedef {Object} SliceIds
  * @property {number[]} ids
  */
@@ -70095,8 +69903,8 @@ async function list_slice_by_ids(config, request) {
 async function list_slice_by_time(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceTime = new pb_slice.SliceTime();
-    sliceTime.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    sliceTime.setModelId(uuid_hex_to_base64$1(request.model_id));
+    sliceTime.setDeviceId(uuid_hex_to_base64(request.device_id));
+    sliceTime.setModelId(uuid_hex_to_base64(request.model_id));
     sliceTime.setTimestamp(request.timestamp.valueOf() * 1000);
     return client.listSliceByTime(sliceTime, metadata(config.access_token))
         .then(response => get_slice_schema_vec(response.toObject().resultsList));
@@ -70111,8 +69919,8 @@ async function list_slice_by_time(config, request) {
 async function list_slice_by_range(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceRange = new pb_slice.SliceRange();
-    sliceRange.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    sliceRange.setModelId(uuid_hex_to_base64$1(request.model_id));
+    sliceRange.setDeviceId(uuid_hex_to_base64(request.device_id));
+    sliceRange.setModelId(uuid_hex_to_base64(request.model_id));
     sliceRange.setBegin(request.begin.valueOf() * 1000);
     sliceRange.setEnd(request.end.valueOf() * 1000);
     return client.listSliceByRange(sliceRange, metadata(config.access_token))
@@ -70160,10 +69968,10 @@ async function list_slice_option(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceOption = new pb_slice.SliceOption();
     if (request.device_id) {
-        sliceOption.setDeviceId(uuid_hex_to_base64$1(request.device_id));
+        sliceOption.setDeviceId(uuid_hex_to_base64(request.device_id));
     }
     if (request.model_id) {
-        sliceOption.setModelId(uuid_hex_to_base64$1(request.model_id));
+        sliceOption.setModelId(uuid_hex_to_base64(request.model_id));
     }
     sliceOption.setName(request.name);
     if (request.begin instanceof Date) {
@@ -70185,8 +69993,8 @@ async function list_slice_option(config, request) {
 async function list_slice_group_by_time(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceGroupTime = new pb_slice.SliceGroupTime();
-    sliceGroupTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    sliceGroupTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    sliceGroupTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    sliceGroupTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     sliceGroupTime.setTimestamp(request.timestamp.valueOf() * 1000);
     return client.listSliceGroupByTime(sliceGroupTime, metadata(config.access_token))
         .then(response => get_slice_schema_vec(response.toObject().resultsList));
@@ -70201,8 +70009,8 @@ async function list_slice_group_by_time(config, request) {
 async function list_slice_group_by_range(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceGroupRange = new pb_slice.SliceGroupRange();
-    sliceGroupRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    sliceGroupRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    sliceGroupRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    sliceGroupRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     sliceGroupRange.setBegin(request.begin.valueOf() * 1000);
     sliceGroupRange.setEnd(request.end.valueOf() * 1000);
     return client.listSliceGroupByRange(sliceGroupRange, metadata(config.access_token))
@@ -70219,10 +70027,10 @@ async function list_slice_group_option(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceGroupOption = new pb_slice.SliceGroupOption();
     if (request.device_ids) {
-        sliceGroupOption.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
+        sliceGroupOption.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
     }
     if (request.model_ids) {
-        sliceGroupOption.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+        sliceGroupOption.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     }
     sliceGroupOption.setName(request.name);
     if (request.begin instanceof Date) {
@@ -70239,26 +70047,26 @@ async function list_slice_group_option(config, request) {
  * Create a data slice
  * @param {ServerConfig} config Resource server config Resource server config: address, access_token
  * @param {SliceSchema} request data slice schema: device_id, model_id, timestamp_begin, timestamp_end, name, description
- * @returns {Promise<SliceId>} data slice id: id
+ * @returns {Promise<number>} data slice id
  */
 async function create_slice(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceSchema = new pb_slice.SliceSchema();
-    sliceSchema.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    sliceSchema.setModelId(uuid_hex_to_base64$1(request.model_id));
+    sliceSchema.setDeviceId(uuid_hex_to_base64(request.device_id));
+    sliceSchema.setModelId(uuid_hex_to_base64(request.model_id));
     sliceSchema.setTimestampBegin(request.timestamp_begin.valueOf() * 1000);
     sliceSchema.setTimestampEnd(request.timestamp_end.valueOf() * 1000);
     sliceSchema.setName(request.name);
     sliceSchema.setDescription(request.description);
     return client.createSlice(sliceSchema, metadata(config.access_token))
-        .then(response => get_slice_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a data slice
  * @param {ServerConfig} config Resource server config Resource server config: address, access_token
  * @param {SliceUpdate} request data slice update: id, timestamp_begin, timestamp_end, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_slice(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
@@ -70273,21 +70081,21 @@ async function update_slice(config, request) {
     sliceUpdate.setName(request.name);
     sliceUpdate.setDescription(request.description);
     return client.updateSlice(sliceUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a data slice
  * @param {ServerConfig} config Resource server config Resource server config: address, access_token
  * @param {SliceId} request data slice id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_slice(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceId = new pb_slice.SliceId();
     sliceId.setId(request.id);
     return client.deleteSlice(sliceId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -70327,7 +70135,7 @@ async function list_slice_set_by_ids(config, request) {
 async function list_slice_set_by_time(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceTime = new pb_slice.SliceSetTime();
-    sliceTime.setSetId(uuid_hex_to_base64$1(request.set_id));
+    sliceTime.setSetId(uuid_hex_to_base64(request.set_id));
     sliceTime.setTimestamp(request.timestamp.valueOf() * 1000);
     return client.listSliceSetByTime(sliceTime, metadata(config.access_token))
         .then(response => get_slice_set_schema_vec(response.toObject().resultsList));
@@ -70342,7 +70150,7 @@ async function list_slice_set_by_time(config, request) {
 async function list_slice_set_by_range(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceRange = new pb_slice.SliceSetRange();
-    sliceRange.setSetId(uuid_hex_to_base64$1(request.set_id));
+    sliceRange.setSetId(uuid_hex_to_base64(request.set_id));
     sliceRange.setBegin(request.begin.valueOf() * 1000);
     sliceRange.setEnd(request.end.valueOf() * 1000);
     return client.listSliceSetByRange(sliceRange, metadata(config.access_token))
@@ -70390,7 +70198,7 @@ async function list_slice_set_option(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceOption = new pb_slice.SliceSetOption();
     if (request.set_id) {
-        sliceOption.setSetId(uuid_hex_to_base64$1(request.set_id));
+        sliceOption.setSetId(uuid_hex_to_base64(request.set_id));
     }
     sliceOption.setName(request.name);
     if (request.begin instanceof Date) {
@@ -70407,25 +70215,25 @@ async function list_slice_set_option(config, request) {
  * Create a data set slice
  * @param {ServerConfig} config Resource server config Resource server config: address, access_token
  * @param {SliceSetSchema} request data set slice schema: set_id, timestamp_begin, timestamp_end, name, description
- * @returns {Promise<SliceId>} data set slice id: id
+ * @returns {Promise<number>} data set slice id
  */
 async function create_slice_set(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceSchema = new pb_slice.SliceSetSchema();
-    sliceSchema.setSetId(uuid_hex_to_base64$1(request.set_id));
+    sliceSchema.setSetId(uuid_hex_to_base64(request.set_id));
     sliceSchema.setTimestampBegin(request.timestamp_begin.valueOf() * 1000);
     sliceSchema.setTimestampEnd(request.timestamp_end.valueOf() * 1000);
     sliceSchema.setName(request.name);
     sliceSchema.setDescription(request.description);
     return client.createSliceSet(sliceSchema, metadata(config.access_token))
-        .then(response => get_slice_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a data set slice
  * @param {ServerConfig} config Resource server config Resource server config: address, access_token
  * @param {SliceUpdate} request data set slice update: id, timestamp_begin, timestamp_end, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_slice_set(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
@@ -70440,21 +70248,21 @@ async function update_slice_set(config, request) {
     sliceUpdate.setName(request.name);
     sliceUpdate.setDescription(request.description);
     return client.updateSliceSet(sliceUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a data set slice
  * @param {ServerConfig} config Resource server config Resource server config: address, access_token
  * @param {SliceId} request data set slice id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_slice_set(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceId = new pb_slice.SliceId();
     sliceId.setId(request.id);
     return client.deleteSliceSet(sliceId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -79825,8 +79633,8 @@ function get_data_set_schema_vec(r) {
 async function read_data(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataTime = new pb_data.DataTime();
-    dataTime.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataTime.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataTime.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataTime.setModelId(uuid_hex_to_base64(request.model_id));
     dataTime.setTimestamp(request.timestamp.valueOf() * 1000);
     dataTime.setTag(request.tag);
     return client.readData(dataTime, metadata(config.access_token))
@@ -79842,8 +79650,8 @@ async function read_data(config, request) {
 async function list_data_by_time(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataTime = new pb_data.DataTime();
-    dataTime.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataTime.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataTime.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataTime.setModelId(uuid_hex_to_base64(request.model_id));
     dataTime.setTimestamp(request.timestamp.valueOf() * 1000);
     dataTime.setTag(request.tag);
     return client.listDataByTime(dataTime, metadata(config.access_token))
@@ -79859,8 +79667,8 @@ async function list_data_by_time(config, request) {
 async function list_data_by_earlier(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataEarlier = new pb_data.DataEarlier();
-    dataEarlier.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataEarlier.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataEarlier.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataEarlier.setModelId(uuid_hex_to_base64(request.model_id));
     dataEarlier.setEarlier(request.earlier.valueOf() * 1000);
     dataEarlier.setTag(request.tag);
     return client.listDataByEarlier(dataEarlier, metadata(config.access_token))
@@ -79876,8 +79684,8 @@ async function list_data_by_earlier(config, request) {
 async function list_data_by_later(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataLater = new pb_data.DataLater();
-    dataLater.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataLater.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataLater.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataLater.setModelId(uuid_hex_to_base64(request.model_id));
     dataLater.setLater(request.later.valueOf() * 1000);
     dataLater.setTag(request.tag);
     return client.listDataByLater(dataLater, metadata(config.access_token))
@@ -79893,8 +79701,8 @@ async function list_data_by_later(config, request) {
 async function list_data_by_range(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataRange = new pb_data.DataRange();
-    dataRange.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataRange.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataRange.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataRange.setModelId(uuid_hex_to_base64(request.model_id));
     dataRange.setBegin(request.begin.valueOf() * 1000);
     dataRange.setEnd(request.end.valueOf() * 1000);
     dataRange.setTag(request.tag);
@@ -79911,8 +79719,8 @@ async function list_data_by_range(config, request) {
 async function list_data_by_number_before(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataNumber = new pb_data.DataNumber();
-    dataNumber.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataNumber.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataNumber.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataNumber.setModelId(uuid_hex_to_base64(request.model_id));
     dataNumber.setTimestamp(request.timestamp.valueOf() * 1000);
     dataNumber.setNumber(request.number);
     dataNumber.setTag(request.tag);
@@ -79929,8 +79737,8 @@ async function list_data_by_number_before(config, request) {
 async function list_data_by_number_after(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataNumber = new pb_data.DataNumber();
-    dataNumber.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataNumber.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataNumber.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataNumber.setModelId(uuid_hex_to_base64(request.model_id));
     dataNumber.setTimestamp(request.timestamp.valueOf() * 1000);
     dataNumber.setNumber(request.number);
     dataNumber.setTag(request.tag);
@@ -79947,8 +79755,8 @@ async function list_data_by_number_after(config, request) {
 async function list_data_group_by_time(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataIdsTime = new pb_data.DataGroupTime();
-    dataIdsTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataIdsTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataIdsTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataIdsTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataIdsTime.setTimestamp(request.timestamp.valueOf() * 1000);
     dataIdsTime.setTag(request.tag);
     return client.listDataGroupByTime(dataIdsTime, metadata(config.access_token))
@@ -79964,8 +79772,8 @@ async function list_data_group_by_time(config, request) {
 async function list_data_group_by_earlier(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataGroupEarlier = new pb_data.DataGroupEarlier();
-    dataGroupEarlier.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataGroupEarlier.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataGroupEarlier.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataGroupEarlier.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataGroupEarlier.setEarlier(request.earlier.valueOf() * 1000);
     dataGroupEarlier.setTag(request.tag);
     return client.listDataGroupByEarlier(dataGroupEarlier, metadata(config.access_token))
@@ -79981,8 +79789,8 @@ async function list_data_group_by_earlier(config, request) {
 async function list_data_group_by_later(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataGroupLater = new pb_data.DataGroupLater();
-    dataGroupLater.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataGroupLater.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataGroupLater.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataGroupLater.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataGroupLater.setLater(request.later.valueOf() * 1000);
     dataGroupLater.setTag(request.tag);
     return client.listDataGroupByLater(dataGroupLater, metadata(config.access_token))
@@ -79998,8 +79806,8 @@ async function list_data_group_by_later(config, request) {
 async function list_data_group_by_range(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataIdsRange = new pb_data.DataGroupRange();
-    dataIdsRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataIdsRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataIdsRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataIdsRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataIdsRange.setBegin(request.begin.valueOf() * 1000);
     dataIdsRange.setEnd(request.end.valueOf() * 1000);
     dataIdsRange.setTag(request.tag);
@@ -80016,8 +79824,8 @@ async function list_data_group_by_range(config, request) {
 async function list_data_group_by_number_before(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataIdsNumber = new pb_data.DataGroupNumber();
-    dataIdsNumber.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataIdsNumber.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataIdsNumber.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataIdsNumber.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataIdsNumber.setTimestamp(request.timestamp.valueOf() * 1000);
     dataIdsNumber.setNumber(request.number);
     dataIdsNumber.setTag(request.tag);
@@ -80034,8 +79842,8 @@ async function list_data_group_by_number_before(config, request) {
 async function list_data_group_by_number_after(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataIdsNumber = new pb_data.DataGroupNumber();
-    dataIdsNumber.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataIdsNumber.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataIdsNumber.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataIdsNumber.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataIdsNumber.setTimestamp(request.timestamp.valueOf() * 1000);
     dataIdsNumber.setNumber(request.number);
     dataIdsNumber.setTag(request.tag);
@@ -80052,7 +79860,7 @@ async function list_data_group_by_number_after(config, request) {
 async function read_data_set(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataSetTime = new pb_data.DataSetTime();
-    dataSetTime.setSetId(uuid_hex_to_base64$1(request.set_id));
+    dataSetTime.setSetId(uuid_hex_to_base64(request.set_id));
     dataSetTime.setTimestamp(request.timestamp.valueOf() * 1000);
     dataSetTime.setTag(request.tag);
     return client.readDataSet(dataSetTime, metadata(config.access_token))
@@ -80068,7 +79876,7 @@ async function read_data_set(config, request) {
 async function list_data_set_by_time(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const datasetTime = new pb_data.DataSetTime();
-    datasetTime.setSetId(uuid_hex_to_base64$1(request.set_id));
+    datasetTime.setSetId(uuid_hex_to_base64(request.set_id));
     datasetTime.setTimestamp(request.timestamp.valueOf() * 1000);
     datasetTime.setTag(request.tag);
     return client.listDataSetByTime(datasetTime, metadata(config.access_token))
@@ -80084,7 +79892,7 @@ async function list_data_set_by_time(config, request) {
 async function list_data_set_by_earlier(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataSetEarlier = new pb_data.DataSetLater();
-    dataSetEarlier.setSetId(uuid_hex_to_base64$1(request.set_id));
+    dataSetEarlier.setSetId(uuid_hex_to_base64(request.set_id));
     dataSetEarlier.setEarlier(request.earlier.valueOf() * 1000);
     dataSetEarlier.setTag(request.tag);
     return client.listDataSetByEarlier(dataSetLater, metadata(config.access_token))
@@ -80100,7 +79908,7 @@ async function list_data_set_by_earlier(config, request) {
 async function list_data_set_by_later(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataSetLater = new pb_data.DataSetLater();
-    dataSetLater.setSetId(uuid_hex_to_base64$1(request.set_id));
+    dataSetLater.setSetId(uuid_hex_to_base64(request.set_id));
     dataSetLater.setLater(request.later.valueOf() * 1000);
     dataSetLater.setTag(request.tag);
     return client.listDataSetByLater(dataSetLater, metadata(config.access_token))
@@ -80116,7 +79924,7 @@ async function list_data_set_by_later(config, request) {
 async function list_data_set_by_range(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const datasetRange = new pb_data.DataSetRange();
-    datasetRange.setSetId(uuid_hex_to_base64$1(request.set_id));
+    datasetRange.setSetId(uuid_hex_to_base64(request.set_id));
     datasetRange.setBegin(request.begin.valueOf() * 1000);
     datasetRange.setEnd(request.end.valueOf() * 1000);
     datasetRange.setTag(request.tag);
@@ -80128,13 +79936,13 @@ async function list_data_set_by_range(config, request) {
  * Create a data
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DataSchema} request data schema: device_id, model_id, timestamp, data, tag
- * @returns {Promise<{}>} create response
+ * @returns {Promise<null>} create response
  */
 async function create_data(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataSchema = new pb_data.DataSchema();
-    dataSchema.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataSchema.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataSchema.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataSchema.setModelId(uuid_hex_to_base64(request.model_id));
     dataSchema.setTimestamp(request.timestamp.valueOf() * 1000);
     const value = set_data_values(request.data);
     dataSchema.setDataBytes(value.bytes);
@@ -80143,14 +79951,14 @@ async function create_data(config, request) {
         dataSchema.addDataType(type);
     }
     return client.createData(dataSchema, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Create multiple data
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DataMultipleSchema} request data multiple schema: device_ids, model_ids, timestamps, data, tags
- * @returns {Promise<{}>} create response
+ * @returns {Promise<null>} create response
  */
 async function create_data_multiple(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
@@ -80163,8 +79971,8 @@ async function create_data_multiple(config, request) {
     }
     for (let i=0; i<number; i++) {
         const dataSchema = new pb_data.DataSchema();
-        dataSchema.setDeviceId(uuid_hex_to_base64$1(request.device_ids[i]));
-        dataSchema.setModelId(uuid_hex_to_base64$1(request.model_ids[i]));
+        dataSchema.setDeviceId(uuid_hex_to_base64(request.device_ids[i]));
+        dataSchema.setModelId(uuid_hex_to_base64(request.model_ids[i]));
         dataSchema.setTimestamp(request.timestamps[i].valueOf() * 1000);
         const value = set_data_values(request.data[i]);
         dataSchema.setDataBytes(value.bytes);
@@ -80175,24 +79983,24 @@ async function create_data_multiple(config, request) {
         dataMultiSchema.addSchemas(dataSchema);
     }
     return client.createDataMultiple(dataMultiSchema, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a data
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DataTime} request data time: device_id, model_id, timestamp, tag
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_data(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataTime = new pb_data.DataTime();
-    dataTime.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataTime.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataTime.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataTime.setModelId(uuid_hex_to_base64(request.model_id));
     dataTime.setTimestamp(request.timestamp.valueOf() * 1000);
     dataTime.setTag(request.tag);
     return client.deleteData(dataTime, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -80204,8 +80012,8 @@ async function delete_data(config, request) {
 async function read_data_timestamp(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataTime = new pb_data.DataTime();
-    dataTime.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataTime.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataTime.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataTime.setModelId(uuid_hex_to_base64(request.model_id));
     dataTime.setTimestamp(request.timestamp.valueOf() * 1000);
     dataTime.setTag(request.tag);
     return client.readDataTimestamp(dataTime, metadata(config.access_token))
@@ -80221,8 +80029,8 @@ async function read_data_timestamp(config, request) {
 async function list_data_timestamp_by_earlier(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataEarlier = new pb_data.DataEarlier();
-    dataEarlier.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataEarlier.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataEarlier.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataEarlier.setModelId(uuid_hex_to_base64(request.model_id));
     dataEarlier.setEarlier(request.earlier.valueOf() * 1000);
     dataEarlier.setTag(request.tag);
     return client.listDataTimestampByEarlier(dataEarlier, metadata(config.access_token))
@@ -80238,8 +80046,8 @@ async function list_data_timestamp_by_earlier(config, request) {
 async function list_data_timestamp_by_later(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataLater = new pb_data.DataLater();
-    dataLater.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataLater.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataLater.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataLater.setModelId(uuid_hex_to_base64(request.model_id));
     dataLater.setLater(request.later.valueOf() * 1000);
     dataLater.setTag(request.tag);
     return client.listDataTimestampByLater(dataLater, metadata(config.access_token))
@@ -80255,8 +80063,8 @@ async function list_data_timestamp_by_later(config, request) {
 async function list_data_timestamp_by_range(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataRange = new pb_data.DataRange();
-    dataRange.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataRange.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataRange.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataRange.setModelId(uuid_hex_to_base64(request.model_id));
     dataRange.setBegin(request.begin.valueOf() * 1000);
     dataRange.setEnd(request.end.valueOf() * 1000);
     dataRange.setTag(request.tag);
@@ -80273,8 +80081,8 @@ async function list_data_timestamp_by_range(config, request) {
 async function read_data_group_timestamp(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataGroupTime = new pb_data.DataGroupTime();
-    dataGroupTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataGroupTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataGroupTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataGroupTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataGroupTime.setTimestamp(request.timestamp.valueOf() * 1000);
     dataGroupTime.setTag(request.tag);
     return client.readDataGroupTimestamp(dataGroupTime, metadata(config.access_token))
@@ -80290,8 +80098,8 @@ async function read_data_group_timestamp(config, request) {
 async function list_data_group_timestamp_by_earlier(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataGroupEarlier = new pb_data.DataGroupEarlier();
-    dataGroupEarlier.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataGroupEarlier.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataGroupEarlier.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataGroupEarlier.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataGroupEarlier.setEarlier(request.earlier.valueOf() * 1000);
     dataGroupEarlier.setTag(request.tag);
     return client.listDataGroupTimestampByEarlier(dataGroupEarlier, metadata(config.access_token))
@@ -80307,8 +80115,8 @@ async function list_data_group_timestamp_by_earlier(config, request) {
 async function list_data_group_timestamp_by_later(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataGroupLater = new pb_data.DataGroupLater();
-    dataGroupLater.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataGroupLater.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataGroupLater.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataGroupLater.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataGroupLater.setLater(request.later.valueOf() * 1000);
     dataGroupLater.setTag(request.tag);
     return client.listDataGroupTimestampByLater(dataGroupLater, metadata(config.access_token))
@@ -80324,8 +80132,8 @@ async function list_data_group_timestamp_by_later(config, request) {
 async function list_data_group_timestamp_by_range(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataIdsRange = new pb_data.DataGroupRange();
-    dataIdsRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataIdsRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataIdsRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataIdsRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataIdsRange.setBegin(request.begin.valueOf() * 1000);
     dataIdsRange.setEnd(request.end.valueOf() * 1000);
     dataIdsRange.setTag(request.tag);
@@ -80342,8 +80150,8 @@ async function list_data_group_timestamp_by_range(config, request) {
 async function count_data(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataTime = new pb_data.DataTime();
-    dataTime.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataTime.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataTime.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataTime.setModelId(uuid_hex_to_base64(request.model_id));
     return client.countData(dataTime, metadata(config.access_token))
         .then(response => response.toObject().count);
 }
@@ -80357,8 +80165,8 @@ async function count_data(config, request) {
 async function count_data_by_earlier(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataEarlier = new pb_data.DataEarlier();
-    dataEarlier.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataEarlier.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataEarlier.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataEarlier.setModelId(uuid_hex_to_base64(request.model_id));
     dataEarlier.setEarlier(request.earlier.valueOf() * 1000);
     dataEarlier.setTag(request.tag);
     return client.countDataByEarlier(dataEarlier, metadata(config.access_token))
@@ -80374,8 +80182,8 @@ async function count_data_by_earlier(config, request) {
 async function count_data_by_later(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataLater = new pb_data.DataLater();
-    dataLater.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataLater.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataLater.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataLater.setModelId(uuid_hex_to_base64(request.model_id));
     dataLater.setLater(request.later.valueOf() * 1000);
     dataLater.setTag(request.tag);
     return client.countDataByLater(dataLater, metadata(config.access_token))
@@ -80391,8 +80199,8 @@ async function count_data_by_later(config, request) {
 async function count_data_by_range(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataRange = new pb_data.DataRange();
-    dataRange.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    dataRange.setModelId(uuid_hex_to_base64$1(request.model_id));
+    dataRange.setDeviceId(uuid_hex_to_base64(request.device_id));
+    dataRange.setModelId(uuid_hex_to_base64(request.model_id));
     dataRange.setBegin(request.begin.valueOf() * 1000);
     dataRange.setEnd(request.end.valueOf() * 1000);
     dataRange.setTag(request.tag);
@@ -80409,8 +80217,8 @@ async function count_data_by_range(config, request) {
 async function count_data_group(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataIdsTime = new pb_data.DataGroupTime();
-    dataIdsTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataIdsTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataIdsTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataIdsTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataIdsTime.setTag(request.tag);
     return client.countDataGroup(dataIdsTime, metadata(config.access_token))
         .then(response => response.toObject().count);
@@ -80425,8 +80233,8 @@ async function count_data_group(config, request) {
 async function count_data_group_by_earlier(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataGroupEarlier = new pb_data.DataGroupEarlier();
-    dataGroupEarlier.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataGroupEarlier.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataGroupEarlier.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataGroupEarlier.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataGroupEarlier.setEarlier(request.earlier.valueOf() * 1000);
     dataGroupEarlier.setTag(request.tag);
     return client.countDataGroupByEarlier(dataGroupEarlier, metadata(config.access_token))
@@ -80442,8 +80250,8 @@ async function count_data_group_by_earlier(config, request) {
 async function count_data_group_by_later(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataGroupLater = new pb_data.DataGroupLater();
-    dataGroupLater.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataGroupLater.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataGroupLater.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataGroupLater.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataGroupLater.setLater(request.later.valueOf() * 1000);
     dataGroupLater.setTag(request.tag);
     return client.countDataGroupByLater(dataGroupLater, metadata(config.access_token))
@@ -80459,8 +80267,8 @@ async function count_data_group_by_later(config, request) {
 async function count_data_group_by_range(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
     const dataIdsRange = new pb_data.DataGroupRange();
-    dataIdsRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    dataIdsRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    dataIdsRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    dataIdsRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     dataIdsRange.setBegin(request.begin.valueOf() * 1000);
     dataIdsRange.setEnd(request.end.valueOf() * 1000);
     dataIdsRange.setTag(request.tag);
@@ -93773,29 +93581,9 @@ var pb_buffer = /*@__PURE__*/getDefaultExportFromCjs(buffer_grpc_web_pbExports);
  */
 
 /**
- * @param {*} r 
- * @returns {BufferId}
- */
-function get_buffer_id(r) {
-    return {
-        id: r.id
-    };
-}
-
-/**
  * @typedef {Object} BufferIds
  * @property {number[]} ids
  */
-
-/**
- * @param {*} r 
- * @returns {BufferIds}
- */
-function get_buffer_ids(r) {
-    return {
-        ids: r.idsList
-    };
-}
 
 /**
  * @typedef {Object} BufferTime
@@ -94049,8 +93837,8 @@ async function read_buffer(config, request) {
 async function read_buffer_by_time(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferTime = new pb_buffer.BufferTime();
-    bufferTime.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferTime.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferTime.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferTime.setModelId(uuid_hex_to_base64(request.model_id));
     bufferTime.setTimestamp(request.timestamp.valueOf() * 1000);
     bufferTime.setTag(request.tag);
     return client.readBufferByTime(bufferTime, metadata(config.access_token))
@@ -94080,8 +93868,8 @@ async function list_buffer_by_ids(config, request) {
 async function list_buffer_by_time(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferTime = new pb_buffer.BufferTime();
-    bufferTime.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferTime.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferTime.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferTime.setModelId(uuid_hex_to_base64(request.model_id));
     bufferTime.setTimestamp(request.timestamp.valueOf() * 1000);
     bufferTime.setTag(request.tag);
     return client.listBufferByTime(bufferTime, metadata(config.access_token))
@@ -94097,8 +93885,8 @@ async function list_buffer_by_time(config, request) {
 async function list_buffer_by_earlier(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferEarlier = new pb_buffer.BufferEarlier();
-    bufferEarlier.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferEarlier.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferEarlier.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferEarlier.setModelId(uuid_hex_to_base64(request.model_id));
     bufferEarlier.setEarlier(request.earlier.valueOf() * 1000);
     bufferEarlier.setTag(request.tag);
     return client.listBufferByEarlier(bufferEarlier, metadata(config.access_token))
@@ -94114,8 +93902,8 @@ async function list_buffer_by_earlier(config, request) {
 async function list_buffer_by_later(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferLater = new pb_buffer.BufferLater();
-    bufferLater.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferLater.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferLater.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferLater.setModelId(uuid_hex_to_base64(request.model_id));
     bufferLater.setLater(request.later.valueOf() * 1000);
     bufferLater.setTag(request.tag);
     return client.listBufferByLater(bufferLater, metadata(config.access_token))
@@ -94131,8 +93919,8 @@ async function list_buffer_by_later(config, request) {
 async function list_buffer_by_range(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferRange = new pb_buffer.BufferRange();
-    bufferRange.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferRange.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferRange.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferRange.setModelId(uuid_hex_to_base64(request.model_id));
     bufferRange.setBegin(request.begin.valueOf() * 1000);
     bufferRange.setEnd(request.end.valueOf() * 1000);
     bufferRange.setTag(request.tag);
@@ -94149,8 +93937,8 @@ async function list_buffer_by_range(config, request) {
 async function list_buffer_by_number_before(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferNumber = new pb_buffer.BufferNumber();
-    bufferNumber.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferNumber.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferNumber.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferNumber.setModelId(uuid_hex_to_base64(request.model_id));
     bufferNumber.setTimestamp(request.timestamp.valueOf() * 1000);
     bufferNumber.setNumber(request.number);
     bufferNumber.setTag(request.tag);
@@ -94167,8 +93955,8 @@ async function list_buffer_by_number_before(config, request) {
 async function list_buffer_by_number_after(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferNumber = new pb_buffer.BufferNumber();
-    bufferNumber.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferNumber.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferNumber.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferNumber.setModelId(uuid_hex_to_base64(request.model_id));
     bufferNumber.setTimestamp(request.timestamp.valueOf() * 1000);
     bufferNumber.setNumber(request.number);
     bufferNumber.setTag(request.tag);
@@ -94186,10 +93974,10 @@ async function read_buffer_first(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferSelector = new pb_buffer.BufferSelector();
     if (request.device_id) {
-        bufferSelector.setDeviceId(uuid_hex_to_base64$1(request.device_id));
+        bufferSelector.setDeviceId(uuid_hex_to_base64(request.device_id));
     }
     if (request.model_id) {
-        bufferSelector.setModelId(uuid_hex_to_base64$1(request.model_id));
+        bufferSelector.setModelId(uuid_hex_to_base64(request.model_id));
     }
     bufferSelector.setTag(request.tag);
     return client.readBufferFirst(bufferSelector, metadata(config.access_token))
@@ -94206,10 +93994,10 @@ async function read_buffer_last(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferSelector = new pb_buffer.BufferSelector();
     if (request.device_id) {
-        bufferSelector.setDeviceId(uuid_hex_to_base64$1(request.device_id));
+        bufferSelector.setDeviceId(uuid_hex_to_base64(request.device_id));
     }
     if (request.model_id) {
-        bufferSelector.setModelId(uuid_hex_to_base64$1(request.model_id));
+        bufferSelector.setModelId(uuid_hex_to_base64(request.model_id));
     }
     bufferSelector.setTag(request.tag);
     return client.readBufferLast(bufferSelector, metadata(config.access_token))
@@ -94226,10 +94014,10 @@ async function list_buffer_first(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersSelector = new pb_buffer.BuffersSelector();
     if (request.device_id) {
-        buffersSelector.setDeviceId(uuid_hex_to_base64$1(request.device_id));
+        buffersSelector.setDeviceId(uuid_hex_to_base64(request.device_id));
     }
     if (request.model_id) {
-        buffersSelector.setModelId(uuid_hex_to_base64$1(request.model_id));
+        buffersSelector.setModelId(uuid_hex_to_base64(request.model_id));
     }
     buffersSelector.setTag(request.tag);
     buffersSelector.setNumber(request.number);
@@ -94247,10 +94035,10 @@ async function list_buffer_first_offset(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersSelector = new pb_buffer.BuffersSelector();
     if (request.device_id) {
-        buffersSelector.setDeviceId(uuid_hex_to_base64$1(request.device_id));
+        buffersSelector.setDeviceId(uuid_hex_to_base64(request.device_id));
     }
     if (request.model_id) {
-        buffersSelector.setModelId(uuid_hex_to_base64$1(request.model_id));
+        buffersSelector.setModelId(uuid_hex_to_base64(request.model_id));
     }
     buffersSelector.setTag(request.tag);
     buffersSelector.setNumber(request.number);
@@ -94269,10 +94057,10 @@ async function list_buffer_last(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersSelector = new pb_buffer.BuffersSelector();
     if (request.device_id) {
-        buffersSelector.setDeviceId(uuid_hex_to_base64$1(request.device_id));
+        buffersSelector.setDeviceId(uuid_hex_to_base64(request.device_id));
     }
     if (request.model_id) {
-        buffersSelector.setModelId(uuid_hex_to_base64$1(request.model_id));
+        buffersSelector.setModelId(uuid_hex_to_base64(request.model_id));
     }
     buffersSelector.setTag(request.tag);
     buffersSelector.setNumber(request.number);
@@ -94290,10 +94078,10 @@ async function list_buffer_last_offset(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersSelector = new pb_buffer.BuffersSelector();
     if (request.device_id) {
-        buffersSelector.setDeviceId(uuid_hex_to_base64$1(request.device_id));
+        buffersSelector.setDeviceId(uuid_hex_to_base64(request.device_id));
     }
     if (request.model_id) {
-        buffersSelector.setModelId(uuid_hex_to_base64$1(request.model_id));
+        buffersSelector.setModelId(uuid_hex_to_base64(request.model_id));
     }
     buffersSelector.setTag(request.tag);
     buffersSelector.setNumber(request.number);
@@ -94311,8 +94099,8 @@ async function list_buffer_last_offset(config, request) {
 async function list_buffer_group_by_time(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupTime = new pb_buffer.BufferGroupTime();
-    bufferGroupTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupTime.setTimestamp(request.timestamp.valueOf() * 1000);
     bufferGroupTime.setTag(request.tag);
     return client.listBufferGroupByTime(bufferGroupTime, metadata(config.access_token))
@@ -94328,8 +94116,8 @@ async function list_buffer_group_by_time(config, request) {
 async function list_buffer_group_by_earlier(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupEarlier = new pb_buffer.BufferGroupEarlier();
-    bufferGroupEarlier.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupEarlier.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupEarlier.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupEarlier.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupEarlier.setEarlier(request.earlier.valueOf() * 1000);
     bufferGroupEarlier.setTag(request.tag);
     return client.listBufferGroupByEarlier(bufferGroupEarlier, metadata(config.access_token))
@@ -94345,8 +94133,8 @@ async function list_buffer_group_by_earlier(config, request) {
 async function list_buffer_group_by_later(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupLater = new pb_buffer.BufferGroupLater();
-    bufferGroupLater.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupLater.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupLater.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupLater.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupLater.setLater(request.later.valueOf() * 1000);
     bufferGroupLater.setTag(request.tag);
     return client.listBufferGroupByLater(bufferGroupLater, metadata(config.access_token))
@@ -94362,8 +94150,8 @@ async function list_buffer_group_by_later(config, request) {
 async function list_buffer_group_by_range(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupRange = new pb_buffer.BufferGroupRange();
-    bufferGroupRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupRange.setBegin(request.begin.valueOf() * 1000);
     bufferGroupRange.setEnd(request.end.valueOf() * 1000);
     bufferGroupRange.setTag(request.tag);
@@ -94380,8 +94168,8 @@ async function list_buffer_group_by_range(config, request) {
 async function list_buffer_group_by_number_before(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupNumber = new pb_buffer.BufferGroupNumber();
-    bufferGroupNumber.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupNumber.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupNumber.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupNumber.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupNumber.setTimestamp(request.timestamp.valueOf() * 1000);
     bufferGroupNumber.setNumber(request.number);
     bufferGroupNumber.setTag(request.tag);
@@ -94398,8 +94186,8 @@ async function list_buffer_group_by_number_before(config, request) {
 async function list_buffer_group_by_number_after(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupNumber = new pb_buffer.BufferGroupNumber();
-    bufferGroupNumber.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupNumber.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupNumber.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupNumber.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupNumber.setTimestamp(request.timestamp.valueOf() * 1000);
     bufferGroupNumber.setNumber(request.number);
     bufferGroupNumber.setTag(request.tag);
@@ -94417,10 +94205,10 @@ async function read_buffer_group_first(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupSelector = new pb_buffer.BufferGroupSelector();
     if (request.device_ids) {
-        bufferGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
+        bufferGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
     }
     if (request.model_ids) {
-        bufferGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+        bufferGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     }
     bufferGroupSelector.setTag(request.tag);
     return client.readBufferGroupFirst(bufferGroupSelector, metadata(config.access_token))
@@ -94437,10 +94225,10 @@ async function read_buffer_group_last(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupSelector = new pb_buffer.BufferGroupSelector();
     if (request.device_ids) {
-        bufferGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
+        bufferGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
     }
     if (request.model_ids) {
-        bufferGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+        bufferGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     }
     bufferGroupSelector.setTag(request.tag);
     return client.readBufferGroupLast(bufferGroupSelector, metadata(config.access_token))
@@ -94457,10 +94245,10 @@ async function list_buffer_group_first(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
     if (request.device_ids) {
-        buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
+        buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
     }
     if (request.model_ids) {
-        buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+        buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
@@ -94478,10 +94266,10 @@ async function list_buffer_group_first_offset(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
     if (request.device_ids) {
-        buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
+        buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
     }
     if (request.model_ids) {
-        buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+        buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
@@ -94500,10 +94288,10 @@ async function list_buffer_group_last(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
     if (request.device_ids) {
-        buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
+        buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
     }
     if (request.model_ids) {
-        buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+        buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
@@ -94521,10 +94309,10 @@ async function list_buffer_group_last_offset(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
     if (request.device_ids) {
-        buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
+        buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
     }
     if (request.model_ids) {
-        buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+        buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
@@ -94542,7 +94330,7 @@ async function list_buffer_group_last_offset(config, request) {
 async function read_buffer_set(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferSetTime = new pb_buffer.BufferSetTime();
-    bufferSetTime.setSetId(uuid_hex_to_base64$1(request.set_id));
+    bufferSetTime.setSetId(uuid_hex_to_base64(request.set_id));
     bufferSetTime.setTimestamp(request.timestamp.valueOf() * 1000);
     bufferSetTime.setTag(request.tag);
     return client.readBufferSet(bufferSetTime, metadata(config.access_token))
@@ -94558,7 +94346,7 @@ async function read_buffer_set(config, request) {
 async function list_buffer_set_by_time(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferSetTime = new pb_buffer.BufferSetTime();
-    bufferSetTime.setSetId(uuid_hex_to_base64$1(request.set_id));
+    bufferSetTime.setSetId(uuid_hex_to_base64(request.set_id));
     bufferSetTime.setTimestamp(request.timestamp.valueOf() * 1000);
     bufferSetTime.setTag(request.tag);
     return client.listBufferSetByTime(bufferSetTime, metadata(config.access_token))
@@ -94574,7 +94362,7 @@ async function list_buffer_set_by_time(config, request) {
 async function list_buffer_set_by_earlier(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferSetEarlier = new pb_buffer.BufferSetEarlier();
-    bufferSetEarlier.setSetId(uuid_hex_to_base64$1(request.set_id));
+    bufferSetEarlier.setSetId(uuid_hex_to_base64(request.set_id));
     bufferSetEarlier.setEarlier(request.earlier.valueOf() * 1000);
     bufferSetEarlier.setTag(request.tag);
     return client.listBufferSetByEarlier(bufferSetEarlier, metadata(config.access_token))
@@ -94590,7 +94378,7 @@ async function list_buffer_set_by_earlier(config, request) {
 async function list_buffer_set_by_later(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferSetLater = new pb_buffer.BufferSetLater();
-    bufferSetLater.setSetId(uuid_hex_to_base64$1(request.set_id));
+    bufferSetLater.setSetId(uuid_hex_to_base64(request.set_id));
     bufferSetLater.setLater(request.later.valueOf() * 1000);
     bufferSetLater.setTag(request.tag);
     return client.listBufferSetByLater(bufferSetLater, metadata(config.access_token))
@@ -94606,7 +94394,7 @@ async function list_buffer_set_by_later(config, request) {
 async function list_buffer_set_by_range(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferSetRange = new pb_buffer.BufferSetRange();
-    bufferSetRange.setSetId(uuid_hex_to_base64$1(request.set_id));
+    bufferSetRange.setSetId(uuid_hex_to_base64(request.set_id));
     bufferSetRange.setBegin(request.begin.valueOf() * 1000);
     bufferSetRange.setEnd(request.end.valueOf() * 1000);
     bufferSetRange.setTag(request.tag);
@@ -94618,13 +94406,13 @@ async function list_buffer_set_by_range(config, request) {
  * Create a data buffer
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {BufferSchema} request data buffer schema: device_id, model_id, timestamp, data, tag
- * @returns {Promise<BufferId>} data buffer id: id
+ * @returns {Promise<number>} data buffer id
  */
 async function create_buffer(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferSchema = new pb_buffer.BufferSchema();
-    bufferSchema.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferSchema.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferSchema.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferSchema.setModelId(uuid_hex_to_base64(request.model_id));
     bufferSchema.setTimestamp(request.timestamp.valueOf() * 1000);
     const value = set_data_values(request.data);
     bufferSchema.setDataBytes(value.bytes);
@@ -94633,14 +94421,14 @@ async function create_buffer(config, request) {
     }
     bufferSchema.setTag(request.tag ?? Tag.DEFAULT);
     return client.createBuffer(bufferSchema, metadata(config.access_token))
-        .then(response => get_buffer_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Create multiple data buffer
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {BufferMultipleSchema} request data buffer schema: device_ids, model_ids, timestamps, data, tags
- * @returns {Promise<BufferIds>} data buffer id: ids
+ * @returns {Promise<number[]>} data buffer id
  */
 async function create_buffer_multiple(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
@@ -94653,8 +94441,8 @@ async function create_buffer_multiple(config, request) {
     }
     for (let i=0; i<number; i++) {
         const bufferSchema = new pb_buffer.BufferSchema();
-        bufferSchema.setDeviceId(uuid_hex_to_base64$1(request.device_ids[i]));
-        bufferSchema.setModelId(uuid_hex_to_base64$1(request.model_ids[i]));
+        bufferSchema.setDeviceId(uuid_hex_to_base64(request.device_ids[i]));
+        bufferSchema.setModelId(uuid_hex_to_base64(request.model_ids[i]));
         bufferSchema.setTimestamp(request.timestamps[i].valueOf() * 1000);
         const value = set_data_values(request.data[i]);
         bufferSchema.setDataBytes(value.bytes);
@@ -94665,14 +94453,14 @@ async function create_buffer_multiple(config, request) {
         bufferMultiSchema.addSchemas(bufferSchema);
     }
     return client.createBufferMultiple(bufferMultiSchema, metadata(config.access_token))
-        .then(response => get_buffer_ids(response.toObject()));
+        .then(response => response.toObject().idsList);
 }
 
 /**
  * Update a data buffer
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {BufferUpdate} request data buffer update: id, data, tag
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_buffer(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
@@ -94687,20 +94475,20 @@ async function update_buffer(config, request) {
     }
     bufferUpdate.setTag(request.tag);
     return client.updateBuffer(bufferUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Update a data buffer by time
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {BufferUpdateTime} request data buffer update: device_id, model_id, timestamp, data, tag
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 async function update_buffer_by_time(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferUpdateTime = new pb_buffer.BufferUpdateTime();
-    bufferUpdateTime.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferUpdateTime.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferUpdateTime.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferUpdateTime.setModelId(uuid_hex_to_base64(request.model_id));
     bufferUpdateTime.setTimestamp(request.timestamp.valueOf() * 1000);
     if (typeof request.data == "object" && 'length' in request.data) {
         const value = set_data_values(request.data);
@@ -94711,38 +94499,38 @@ async function update_buffer_by_time(config, request) {
     }
     BufferUpdateTime.setTag(request.tag);
     return client.updateBufferByTime(BufferUpdateTime, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a data buffer
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {BufferId} request data buffer id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_buffer(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferId = new pb_buffer.BufferId();
     bufferId.setId(request.id);
     return client.deleteBuffer(bufferId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a data buffer by time
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {BufferTime} request data buffer time: device_id, model_id, timestamp, tag
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 async function delete_buffer_by_time(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferTime = new pb_buffer.BufferTime();
-    bufferTime.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferTime.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferTime.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferTime.setModelId(uuid_hex_to_base64(request.model_id));
     bufferTime.setTimestamp(request.timestamp.valueOf() * 1000);
     bufferTime.setTag(request.tag);
     return client.deleteBufferByTime(bufferTime, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -94754,8 +94542,8 @@ async function delete_buffer_by_time(config, request) {
 async function read_buffer_timestamp(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferTime = new pb_buffer.BufferTime();
-    bufferTime.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferTime.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferTime.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferTime.setModelId(uuid_hex_to_base64(request.model_id));
     bufferTime.setTag(request.tag);
     return client.readBufferTimestamp(bufferTime, metadata(config.access_token))
         .then(response => new Date(response.toObject().timestamp / 1000));
@@ -94770,8 +94558,8 @@ async function read_buffer_timestamp(config, request) {
 async function list_buffer_timestamp_by_earlier(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferEarlier = new pb_buffer.BufferEarlier();
-    bufferEarlier.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferEarlier.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferEarlier.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferEarlier.setModelId(uuid_hex_to_base64(request.model_id));
     bufferEarlier.setEarlier(request.earlier.valueOf() * 1000);
     bufferEarlier.setTag(request.tag);
     return client.listBufferTimestampByEarlier(bufferEarlier, metadata(config.access_token))
@@ -94787,8 +94575,8 @@ async function list_buffer_timestamp_by_earlier(config, request) {
 async function list_buffer_timestamp_by_later(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferLater = new pb_buffer.BufferLater();
-    bufferLater.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferLater.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferLater.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferLater.setModelId(uuid_hex_to_base64(request.model_id));
     bufferLater.setLater(request.later.valueOf() * 1000);
     bufferLater.setTag(request.tag);
     return client.listBufferTimestampByLater(bufferLater, metadata(config.access_token))
@@ -94804,8 +94592,8 @@ async function list_buffer_timestamp_by_later(config, request) {
 async function list_buffer_timestamp_by_range(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferRange = new pb_buffer.BufferRange();
-    bufferRange.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferRange.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferRange.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferRange.setModelId(uuid_hex_to_base64(request.model_id));
     bufferRange.setBegin(request.begin.valueOf() * 1000);
     bufferRange.setEnd(request.end.valueOf() * 1000);
     bufferRange.setTag(request.tag);
@@ -94823,10 +94611,10 @@ async function list_buffer_timestamp_first(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersSelector = new pb_buffer.BufferSelector();
     if (request.device_id) {
-        buffersSelector.setDeviceId(uuid_hex_to_base64$1(request.device_id));
+        buffersSelector.setDeviceId(uuid_hex_to_base64(request.device_id));
     }
     if (request.model_id) {
-        buffersSelector.setModelId(uuid_hex_to_base64$1(request.model_id));
+        buffersSelector.setModelId(uuid_hex_to_base64(request.model_id));
     }
     buffersSelector.setNumber(request.number);
     buffersSelector.setTag(request.tag);
@@ -94844,10 +94632,10 @@ async function list_buffer_timestamp_last(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersSelector = new pb_buffer.BufferSelector();
     if (request.device_id) {
-        buffersSelector.setDeviceId(uuid_hex_to_base64$1(request.device_id));
+        buffersSelector.setDeviceId(uuid_hex_to_base64(request.device_id));
     }
     if (request.model_id) {
-        buffersSelector.setModelId(uuid_hex_to_base64$1(request.model_id));
+        buffersSelector.setModelId(uuid_hex_to_base64(request.model_id));
     }
     buffersSelector.setNumber(request.number);
     buffersSelector.setTag(request.tag);
@@ -94864,8 +94652,8 @@ async function list_buffer_timestamp_last(config, request) {
 async function read_buffer_group_timestamp(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupTime = new pb_buffer.BufferGroupTime();
-    bufferGroupTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupTime.setTag(request.tag);
     return client.readBufferGroupTimestamp(bufferGroupTime, metadata(config.access_token))
         .then(response => new Date(response.toObject().timestamp / 1000));
@@ -94880,8 +94668,8 @@ async function read_buffer_group_timestamp(config, request) {
 async function list_buffer_group_timestamp_by_earlier(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupEarlier = new pb_buffer.BufferGroupEarlier();
-    bufferGroupEarlier.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupEarlier.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupEarlier.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupEarlier.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupEarlier.setEarlier(request.earlier.valueOf() * 1000);
     bufferGroupEarlier.setTag(request.tag);
     return client.listBufferGroupTimestampByEarlier(bufferGroupEarlier, metadata(config.access_token))
@@ -94897,8 +94685,8 @@ async function list_buffer_group_timestamp_by_earlier(config, request) {
 async function list_buffer_group_timestamp_by_later(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupLater = new pb_buffer.BufferGroupLater();
-    bufferGroupLater.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupLater.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupLater.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupLater.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupLater.setLater(request.later.valueOf() * 1000);
     bufferGroupLater.setTag(request.tag);
     return client.listBufferGroupTimestampByLater(bufferGroupLater, metadata(config.access_token))
@@ -94914,8 +94702,8 @@ async function list_buffer_group_timestamp_by_later(config, request) {
 async function list_buffer_group_timestamp_by_range(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupRange = new pb_buffer.BufferGroupRange();
-    bufferGroupRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupRange.setBegin(request.begin.valueOf() * 1000);
     bufferGroupRange.setEnd(request.end.valueOf() * 1000);
     bufferGroupRange.setTag(request.tag);
@@ -94933,10 +94721,10 @@ async function list_buffer_group_timestamp_first(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
     if (request.device_ids) {
-        buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
+        buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
     }
     if (request.model_ids) {
-        buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+        buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
@@ -94954,10 +94742,10 @@ async function list_buffer_group_timestamp_last(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
     if (request.device_ids) {
-        buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
+        buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
     }
     if (request.model_ids) {
-        buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+        buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
@@ -94974,8 +94762,8 @@ async function list_buffer_group_timestamp_last(config, request) {
 async function count_buffer(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferTime = new pb_buffer.BufferTime();
-    bufferTime.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferTime.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferTime.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferTime.setModelId(uuid_hex_to_base64(request.model_id));
     bufferTime.setTag(request.tag);
     return client.countBuffer(bufferTime, metadata(config.access_token))
         .then(response => response.toObject().count);
@@ -94990,8 +94778,8 @@ async function count_buffer(config, request) {
 async function count_buffer_by_earlier(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferEarlier = new pb_buffer.BufferEarlier();
-    bufferEarlier.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferEarlier.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferEarlier.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferEarlier.setModelId(uuid_hex_to_base64(request.model_id));
     bufferEarlier.setEarlier(request.earlier.valueOf() * 1000);
     bufferEarlier.setTag(request.tag);
     return client.countBufferByEarlier(bufferEarlier, metadata(config.access_token))
@@ -95007,8 +94795,8 @@ async function count_buffer_by_earlier(config, request) {
 async function count_buffer_by_later(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferLater = new pb_buffer.BufferLater();
-    bufferLater.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferLater.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferLater.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferLater.setModelId(uuid_hex_to_base64(request.model_id));
     bufferLater.setLater(request.later.valueOf() * 1000);
     bufferLater.setTag(request.tag);
     return client.countBufferByLater(bufferLater, metadata(config.access_token))
@@ -95024,8 +94812,8 @@ async function count_buffer_by_later(config, request) {
 async function count_buffer_by_range(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferRange = new pb_buffer.BufferRange();
-    bufferRange.setDeviceId(uuid_hex_to_base64$1(request.device_id));
-    bufferRange.setModelId(uuid_hex_to_base64$1(request.model_id));
+    bufferRange.setDeviceId(uuid_hex_to_base64(request.device_id));
+    bufferRange.setModelId(uuid_hex_to_base64(request.model_id));
     bufferRange.setBegin(request.begin.valueOf() * 1000);
     bufferRange.setEnd(request.end.valueOf() * 1000);
     bufferRange.setTag(request.tag);
@@ -95042,8 +94830,8 @@ async function count_buffer_by_range(config, request) {
 async function count_buffer_group(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupTime = new pb_buffer.BufferGroupTime();
-    bufferGroupTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupTime.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupTime.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupTime.setTag(request.tag);
     return client.countBufferGroup(bufferGroupTime, metadata(config.access_token))
         .then(response => response.toObject().count);
@@ -95058,8 +94846,8 @@ async function count_buffer_group(config, request) {
 async function count_buffer_group_by_earlier(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupEarlier = new pb_buffer.BufferGroupEarlier();
-    bufferGroupEarlier.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupEarlier.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupEarlier.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupEarlier.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupEarlier.setEarlier(request.earlier.valueOf() * 1000);
     bufferGroupEarlier.setTag(request.tag);
     return client.countBufferGroupByEarlier(bufferGroupEarlier, metadata(config.access_token))
@@ -95075,8 +94863,8 @@ async function count_buffer_group_by_earlier(config, request) {
 async function count_buffer_group_by_later(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupLater = new pb_buffer.BufferGroupLater();
-    bufferGroupLater.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupLater.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupLater.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupLater.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupLater.setLater(request.later.valueOf() * 1000);
     bufferGroupLater.setTag(request.tag);
     return client.countBufferGroupByLater(bufferGroupLater, metadata(config.access_token))
@@ -95092,8 +94880,8 @@ async function count_buffer_group_by_later(config, request) {
 async function count_buffer_group_by_range(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupRange = new pb_buffer.BufferGroupRange();
-    bufferGroupRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64$1(id)));
-    bufferGroupRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64$1(id)));
+    bufferGroupRange.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+    bufferGroupRange.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
     bufferGroupRange.setBegin(request.begin.valueOf() * 1000);
     bufferGroupRange.setEnd(request.end.valueOf() * 1000);
     bufferGroupRange.setTag(request.tag);
@@ -95104,61 +94892,6 @@ async function count_buffer_group_by_range(config, request) {
 /**
  * @typedef {(string|Uint8Array)} Uuid
  */
-
-/**
- * @typedef {Object} AccessTokenMap
- * @property {Uuid} api_id
- * @property {string} access_token
- * @property {string} refresh_token
- */
-
-/**
- * @param {*} r 
- * @returns {AccessTokenMap}
- */
-function get_access_token(r) {
-    return {
-        api_id: base64_to_uuid_hex(r.apiId),
-        access_token: r.accessToken,
-        refresh_token: r.refreshToken
-    };
-}
-
-/**
- * @typedef {Object} UserLoginResponse
- * @property {Uuid} user_id
- * @property {string} auth_token
- * @property {AccessTokenMap[]} access_tokens
- */
-
-/**
- * @param {*} r 
- * @returns {UserLoginResponse}
- */
-function get_login_response(r) {
-    return {
-        user_id: base64_to_uuid_hex(r.userId),
-        auth_token: r.authToken,
-        access_tokens: r.accessTokensList.map((v) => {return get_access_token(v)})
-    };
-}
-
-/**
- * @typedef {Object} UserRefreshResponse
- * @property {string} access_token
- * @property {string} refresh_token
- */
-
-/**
- * @param {*} r 
- * @returns {UserRefreshResponse}
- */
-function get_refresh_response(r) {
-    return {
-        access_token: r.accessToken,
-        refresh_token: r.refreshToken
-    };
-}
 
 /**
  * Resource server configuration.
@@ -95191,8 +94924,8 @@ class ResourceConfig {
         // get resource api address from resource server
         const client = new pb_config.ConfigServicePromiseClient(this.address, null, null);
         const apiIdRequest = new pb_config.ApiIdRequest();
-        const api_id = await client.ApiId(apiIdRequest)
-            .then(response => base64_to_uuid_hex(response.toObject().api_id));
+        const api_id = await client.apiId(apiIdRequest)
+            .then(response => base64_to_uuid_hex(response.toObject().apiId));
         this.api_id = api_id;
         // login user to auth server
         const client_auth = new pb_auth.AuthServicePromiseClient(auth_address, null, null);
@@ -95205,15 +94938,15 @@ class ResourceConfig {
         const ciphertext = await encryptMessage(password, pubkey);
         userLoginRequest.setPassword(ciphertext);
         const login = await client_auth.userLogin(userLoginRequest)
-            .then(response => get_login_response(response.toObject()));
-        this.auth_token = login.auth_token;
-        for (const map of login.access_tokens) {
+            .then(response => response.toObject());
+        this.auth_token = login.authToken;
+        for (const map of login.accessTokensList) {
             if (map.api_id == self._api_id || map.api_id == 'ffffffff-ffff-ffff-ffff-ffffffffffff') {
-                this.access_token = map.access_token;
-                this.refresh_token = map.refresh_token;
+                this.access_token = map.accessToken;
+                this.refresh_token = map.refreshToken;
             }
         }
-        this.user_id = login.user_id;
+        this.user_id = base64_to_uuid_hex(login.userId);
     }
 
     /**
@@ -95227,9 +94960,9 @@ class ResourceConfig {
             userRefreshRequest.setAccessToken(this.access_token);
             userRefreshRequest.setRefreshToken(this.refresh_token);
             const refresh = await client.userRefresh(userRefreshRequest)
-                .then(response => get_refresh_response(response.toObject()));
-            this.access_token = refresh.access_token;
-            this.refresh_token = refresh.refresh_token;
+                .then(response => response.toObject());
+            this.access_token = refresh.accessToken;
+            this.refresh_token = refresh.refreshToken;
         }
     }
 
@@ -95244,9 +94977,9 @@ class ResourceConfig {
             userLogoutRequest.setAuthToken(this.auth_token);
             await client.userLogout(userLogoutRequest)
                 .then(response => response.toObject());
-            this.auth_token = null;
-            this.access_token = null;
-            this.refresh_token = null;
+            this.auth_token = undefined;
+            this.access_token = undefined;
+            this.refresh_token = undefined;
         }
     }
 

@@ -40,16 +40,6 @@ import {
  */
 
 /**
- * @param {*} r 
- * @returns {SetId}
- */
-function get_set_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
 * @typedef {Object} SetName
 * @property {string} name
 */
@@ -143,16 +133,6 @@ export function get_set_member(r) {
  * @typedef {Object} SetTemplateName
  * @property {string} name
  */
-
-/**
- * @param {*} r 
- * @returns {SetTemplateId}
- */
-function get_set_template_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
 
 /**
 * @typedef {Object} SetTemplateName
@@ -313,7 +293,7 @@ export async function list_set_option(config, request) {
  * Create a set
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetSchema} request set schema: id, template_id, name, description, members
- * @returns {Promise<SetId>} set uuid: id
+ * @returns {Promise<Uuid>} set uuid
  */
 export async function create_set(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
@@ -323,14 +303,14 @@ export async function create_set(config, request) {
     setSchema.setName(request.name);
     setSchema.setDescription(request.description);
     return client.createSet(setSchema, metadata(config.access_token))
-        .then(response => get_set_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a set
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetUpdate} request set update: id, template_id, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_set(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
@@ -340,28 +320,28 @@ export async function update_set(config, request) {
     setUpdate.setName(request.name);
     setUpdate.setDescription(request.description);
     return client.updateSet(setUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a set
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetId} request set uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_set(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const setId = new pb_set.SetId();
     setId.setId(uuid_hex_to_base64(request.id));
     return client.deleteSet(setId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add a member to a set
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetMemberRequest} request set member request: id, device_id, model_id, data_index
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function add_set_member(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
@@ -371,14 +351,14 @@ export async function add_set_member(config, request) {
     setMember.setModelId(uuid_hex_to_base64(request.model_id));
     setMember.setDataIndex(bytes_to_base64(request.data_index));
     return client.addSetMember(setMember, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove a member from a set
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetMemberRequest} request set member request: id, device_id, model_id, data_index
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function remove_set_member(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
@@ -387,14 +367,14 @@ export async function remove_set_member(config, request) {
     setMember.setDeviceId(uuid_hex_to_base64(request.device_id));
     setMember.setModelId(uuid_hex_to_base64(request.model_id));
     return client.removeSetMember(setMember, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Swap a set member index position 
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetMemberSwap} request set member request: id, device_id_1, model_id_1, device_id_2, model_id_2
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function swap_set_member(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
@@ -405,7 +385,7 @@ export async function swap_set_member(config, request) {
     setMember.setDeviceId2(uuid_hex_to_base64(request.device_id_2));
     setMember.setModelId2(uuid_hex_to_base64(request.model_id_2));
     return client.swapSetMember(setMember, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -468,7 +448,7 @@ export async function list_set_template_option(config, request) {
  * Create a set template
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetTemplateSchema} request set template schema: id, name, description, members
- * @returns {Promise<SetTemplateId>} set template uuid: id
+ * @returns {Promise<Uuid>} set template uuid
  */
 export async function create_set_template(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
@@ -477,14 +457,14 @@ export async function create_set_template(config, request) {
     templateSchema.setName(request.name);
     templateSchema.setDescription(request.description);
     return client.createSetTemplate(templateSchema, metadata(config.access_token))
-        .then(response => get_set_template_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a set template
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetTemplateUpdate} request set template update: id, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_set_template(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
@@ -493,28 +473,28 @@ export async function update_set_template(config, request) {
     templateUpdate.setName(request.name);
     templateUpdate.setDescription(request.description);
     return client.updateSetTemplate(templateUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a set template
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetTemplateId} request set template uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_set_template(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
     const templateId = new pb_set.SetTemplateId();
     templateId.setId(uuid_hex_to_base64(request.id));
     return client.deleteSetTemplate(templateId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add a member to a set template
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetTemplateMemberRequest} request set member request: id, type_id, model_id, data_index
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function add_set_template_member(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
@@ -524,14 +504,14 @@ export async function add_set_template_member(config, request) {
     templateMember.setModelId(uuid_hex_to_base64(request.model_id));
     templateMember.setDataIndex(bytes_to_base64(request.data_index));
     return client.addSetTemplateMember(templateMember, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove a member from a set template
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetTemplateMemberRequest} request set member request: id, template_index
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function remove_set_template_member(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
@@ -539,14 +519,14 @@ export async function remove_set_template_member(config, request) {
     templateMember.setId(uuid_hex_to_base64(request.id));
     templateMember.setTemplateIndex(template_index);
     return client.removeSetTemplateMember(templateMember, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Swap a set template member index position 
  * @param {ServerConfig} config Resource server config Resource server config Resource server config: address, access_token
  * @param {SetTemplateMemberSwap} request set template member swap: id, template_index_1, template_index_2
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function swap_set_template_member(config, request) {
     const client = new pb_set.SetServicePromiseClient(config.address, null, null);
@@ -555,5 +535,5 @@ export async function swap_set_template_member(config, request) {
     templateMember.setTemplateIndex1(uuid_hex_to_base64(request.template_index_1));
     templateMember.setTemplateIndex2(uuid_hex_to_base64(request.template_index_2));
     return client.swapSetTemplateMember(templateMember, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }

@@ -142,7 +142,6 @@ function get_token_create_response_vec(r) {
 /**
  * @typedef {Object} TokenUpdateResponse
  * @property {string} refresh_token
- * @property {string} auth_token
  */
 
 /**
@@ -151,8 +150,7 @@ function get_token_create_response_vec(r) {
  */
 function get_token_update_response(r) {
     return {
-        refresh_token: r.refreshToken,
-        auth_token: r.authToken,
+        refresh_token: r.refreshToken
     };
 }
 
@@ -401,40 +399,40 @@ export async function update_auth_token(config, request) {
  * Delete an access token by access id
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {AccessId} request access id: access_id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_access_token(config, request) {
     const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const accessId = new pb_token.AccessId();
     accessId.setAccessId(request.access_id);
     return client.deleteAccessToken(accessId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete tokens by auth token
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {AuthToken} request auth token: auth_token
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_auth_token(config, request) {
     const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const authToken = new pb_token.AuthToken();
     authToken.setAuthToken(request.auth_token);
     return client.deleteAuthToken(authToken, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete tokens by user id
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserId} request user id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_token_by_user(config, request) {
     const client = new pb_token.TokenServicePromiseClient(config.address, null, null);
     const userId = new pb_token.UserId();
     userId.setUserId(uuid_hex_to_base64(request.id));
     return client.deleteTokenByUser(userId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }

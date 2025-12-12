@@ -1,6 +1,7 @@
 import pb_auth from "../proto/auth/auth_grpc_web_pb.js";
 import {
     base64_to_uuid_hex,
+    uuid_hex_to_base64,
     importKey,
     encryptMessage
 } from "../common/utility.js";
@@ -9,44 +10,6 @@ import {
 /**
  * @typedef {(string|Uint8Array)} Uuid
  */
-
-/**
- * @typedef {Object} AccessTokenMap
- * @property {Uuid} api_id
- * @property {string} access_token
- * @property {string} refresh_token
- */
-
-/**
- * @param {*} r 
- * @returns {AccessTokenMap}
- */
-function get_access_token(r) {
-    return {
-        api_id: base64_to_uuid_hex(r.apiId),
-        access_token: r.accessToken,
-        refresh_token: r.refreshToken
-    };
-}
-
-/**
- * @typedef {Object} UserLoginResponse
- * @property {Uuid} user_id
- * @property {string} auth_token
- * @property {AccessTokenMap[]} access_tokens
- */
-
-/**
- * @param {*} r 
- * @returns {UserLoginResponse}
- */
-function get_login_response(r) {
-    return {
-        user_id: base64_to_uuid_hex(r.userId),
-        auth_token: r.authToken,
-        access_tokens: r.accessTokensList.map((v) => {return get_access_token(v)})
-    };
-}
 
 /**
  * Authorization/Authentication server configuration.
@@ -78,10 +41,9 @@ export class AuthConfig {
         const ciphertext = await encryptMessage(password, pubkey);
         userLoginRequest.setPassword(ciphertext);
         const login = await client.userLogin(userLoginRequest)
-            .then(response => get_login_response(response.toObject()));
-        this.auth_token = login.auth_token;
-        this.user_id = login.user_id;
-        console.log(login);
+            .then(response => response.toObject());
+        this.auth_token = login.authToken;
+        this.user_id = base64_to_uuid_hex(login.userId);
     }
 
     /**
@@ -95,7 +57,7 @@ export class AuthConfig {
             userLogoutRequest.setAuthToken(this.auth_token);
             await client.userLogout(userLogoutRequest)
                 .then(response => response.toObject());
-            this.auth_token = null;
+            this.auth_token = undefined;
         }
     }
 

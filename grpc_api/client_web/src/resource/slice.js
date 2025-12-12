@@ -22,16 +22,6 @@ import {
  */
 
 /**
- * @param {*} r 
- * @returns {SliceId}
- */
-function get_slice_id(r) {
-    return {
-        id: r.id    
-    };
-}
-
-/**
  * @typedef {Object} SliceIds
  * @property {number[]} ids
  */
@@ -377,7 +367,7 @@ export async function list_slice_group_option(config, request) {
  * Create a data slice
  * @param {ServerConfig} config Resource server config Resource server config: address, access_token
  * @param {SliceSchema} request data slice schema: device_id, model_id, timestamp_begin, timestamp_end, name, description
- * @returns {Promise<SliceId>} data slice id: id
+ * @returns {Promise<number>} data slice id
  */
 export async function create_slice(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
@@ -389,14 +379,14 @@ export async function create_slice(config, request) {
     sliceSchema.setName(request.name);
     sliceSchema.setDescription(request.description);
     return client.createSlice(sliceSchema, metadata(config.access_token))
-        .then(response => get_slice_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a data slice
  * @param {ServerConfig} config Resource server config Resource server config: address, access_token
  * @param {SliceUpdate} request data slice update: id, timestamp_begin, timestamp_end, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_slice(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
@@ -411,21 +401,21 @@ export async function update_slice(config, request) {
     sliceUpdate.setName(request.name);
     sliceUpdate.setDescription(request.description);
     return client.updateSlice(sliceUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a data slice
  * @param {ServerConfig} config Resource server config Resource server config: address, access_token
  * @param {SliceId} request data slice id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_slice(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceId = new pb_slice.SliceId();
     sliceId.setId(request.id);
     return client.deleteSlice(sliceId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -545,7 +535,7 @@ export async function list_slice_set_option(config, request) {
  * Create a data set slice
  * @param {ServerConfig} config Resource server config Resource server config: address, access_token
  * @param {SliceSetSchema} request data set slice schema: set_id, timestamp_begin, timestamp_end, name, description
- * @returns {Promise<SliceId>} data set slice id: id
+ * @returns {Promise<number>} data set slice id
  */
 export async function create_slice_set(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
@@ -556,14 +546,14 @@ export async function create_slice_set(config, request) {
     sliceSchema.setName(request.name);
     sliceSchema.setDescription(request.description);
     return client.createSliceSet(sliceSchema, metadata(config.access_token))
-        .then(response => get_slice_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a data set slice
  * @param {ServerConfig} config Resource server config Resource server config: address, access_token
  * @param {SliceUpdate} request data set slice update: id, timestamp_begin, timestamp_end, name, description
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_slice_set(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
@@ -578,19 +568,19 @@ export async function update_slice_set(config, request) {
     sliceUpdate.setName(request.name);
     sliceUpdate.setDescription(request.description);
     return client.updateSliceSet(sliceUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a data set slice
  * @param {ServerConfig} config Resource server config Resource server config: address, access_token
  * @param {SliceId} request data set slice id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_slice_set(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceId = new pb_slice.SliceId();
     sliceId.setId(request.id);
     return client.deleteSliceSet(sliceId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }

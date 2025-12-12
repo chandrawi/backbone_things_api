@@ -2,6 +2,7 @@ import pb_config from "../proto/resource/config_grpc_web_pb.js";
 import pb_auth from "../proto/auth/auth_grpc_web_pb.js";
 import {
     base64_to_uuid_hex,
+    uuid_hex_to_base64,
     importKey,
     encryptMessage
 } from "../common/utility.js";
@@ -10,61 +11,6 @@ import {
 /**
  * @typedef {(string|Uint8Array)} Uuid
  */
-
-/**
- * @typedef {Object} AccessTokenMap
- * @property {Uuid} api_id
- * @property {string} access_token
- * @property {string} refresh_token
- */
-
-/**
- * @param {*} r 
- * @returns {AccessTokenMap}
- */
-function get_access_token(r) {
-    return {
-        api_id: base64_to_uuid_hex(r.apiId),
-        access_token: r.accessToken,
-        refresh_token: r.refreshToken
-    };
-}
-
-/**
- * @typedef {Object} UserLoginResponse
- * @property {Uuid} user_id
- * @property {string} auth_token
- * @property {AccessTokenMap[]} access_tokens
- */
-
-/**
- * @param {*} r 
- * @returns {UserLoginResponse}
- */
-function get_login_response(r) {
-    return {
-        user_id: base64_to_uuid_hex(r.userId),
-        auth_token: r.authToken,
-        access_tokens: r.accessTokensList.map((v) => {return get_access_token(v)})
-    };
-}
-
-/**
- * @typedef {Object} UserRefreshResponse
- * @property {string} access_token
- * @property {string} refresh_token
- */
-
-/**
- * @param {*} r 
- * @returns {UserRefreshResponse}
- */
-function get_refresh_response(r) {
-    return {
-        access_token: r.accessToken,
-        refresh_token: r.refreshToken
-    };
-}
 
 /**
  * Resource server configuration.
@@ -97,8 +43,8 @@ export class ResourceConfig {
         // get resource api address from resource server
         const client = new pb_config.ConfigServicePromiseClient(this.address, null, null);
         const apiIdRequest = new pb_config.ApiIdRequest();
-        const api_id = await client.ApiId(apiIdRequest)
-            .then(response => base64_to_uuid_hex(response.toObject().api_id));
+        const api_id = await client.apiId(apiIdRequest)
+            .then(response => base64_to_uuid_hex(response.toObject().apiId));
         this.api_id = api_id;
         // login user to auth server
         const client_auth = new pb_auth.AuthServicePromiseClient(auth_address, null, null);
@@ -111,15 +57,15 @@ export class ResourceConfig {
         const ciphertext = await encryptMessage(password, pubkey);
         userLoginRequest.setPassword(ciphertext);
         const login = await client_auth.userLogin(userLoginRequest)
-            .then(response => get_login_response(response.toObject()));
-        this.auth_token = login.auth_token;
-        for (const map of login.access_tokens) {
+            .then(response => response.toObject());
+        this.auth_token = login.authToken;
+        for (const map of login.accessTokensList) {
             if (map.api_id == self._api_id || map.api_id == 'ffffffff-ffff-ffff-ffff-ffffffffffff') {
-                this.access_token = map.access_token;
-                this.refresh_token = map.refresh_token;
+                this.access_token = map.accessToken;
+                this.refresh_token = map.refreshToken;
             }
         }
-        this.user_id = login.user_id;
+        this.user_id = base64_to_uuid_hex(login.userId);
     }
 
     /**
@@ -133,9 +79,9 @@ export class ResourceConfig {
             userRefreshRequest.setAccessToken(this.access_token);
             userRefreshRequest.setRefreshToken(this.refresh_token);
             const refresh = await client.userRefresh(userRefreshRequest)
-                .then(response => get_refresh_response(response.toObject()));
-            this.access_token = refresh.access_token;
-            this.refresh_token = refresh.refresh_token;
+                .then(response => response.toObject());
+            this.access_token = refresh.accessToken;
+            this.refresh_token = refresh.refreshToken;
         }
     }
 
@@ -150,9 +96,9 @@ export class ResourceConfig {
             userLogoutRequest.setAuthToken(this.auth_token);
             await client.userLogout(userLogoutRequest)
                 .then(response => response.toObject());
-            this.auth_token = null;
-            this.access_token = null;
-            this.refresh_token = null;
+            this.auth_token = undefined;
+            this.access_token = undefined;
+            this.refresh_token = undefined;
         }
     }
 

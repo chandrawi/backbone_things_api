@@ -24,29 +24,9 @@ import {
  */
 
 /**
- * @param {*} r 
- * @returns {BufferId}
- */
-function get_buffer_id(r) {
-    return {
-        id: r.id
-    };
-}
-
-/**
  * @typedef {Object} BufferIds
  * @property {number[]} ids
  */
-
-/**
- * @param {*} r 
- * @returns {BufferIds}
- */
-function get_buffer_ids(r) {
-    return {
-        ids: r.idsList
-    };
-}
 
 /**
  * @typedef {Object} BufferTime
@@ -869,7 +849,7 @@ export async function list_buffer_set_by_range(config, request) {
  * Create a data buffer
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {BufferSchema} request data buffer schema: device_id, model_id, timestamp, data, tag
- * @returns {Promise<BufferId>} data buffer id: id
+ * @returns {Promise<number>} data buffer id
  */
 export async function create_buffer(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
@@ -884,14 +864,14 @@ export async function create_buffer(config, request) {
     }
     bufferSchema.setTag(request.tag ?? Tag.DEFAULT);
     return client.createBuffer(bufferSchema, metadata(config.access_token))
-        .then(response => get_buffer_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Create multiple data buffer
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {BufferMultipleSchema} request data buffer schema: device_ids, model_ids, timestamps, data, tags
- * @returns {Promise<BufferIds>} data buffer id: ids
+ * @returns {Promise<number[]>} data buffer id
  */
 export async function create_buffer_multiple(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
@@ -916,14 +896,14 @@ export async function create_buffer_multiple(config, request) {
         bufferMultiSchema.addSchemas(bufferSchema);
     }
     return client.createBufferMultiple(bufferMultiSchema, metadata(config.access_token))
-        .then(response => get_buffer_ids(response.toObject()));
+        .then(response => response.toObject().idsList);
 }
 
 /**
  * Update a data buffer
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {BufferUpdate} request data buffer update: id, data, tag
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_buffer(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
@@ -938,14 +918,14 @@ export async function update_buffer(config, request) {
     }
     bufferUpdate.setTag(request.tag);
     return client.updateBuffer(bufferUpdate, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Update a data buffer by time
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {BufferUpdateTime} request data buffer update: device_id, model_id, timestamp, data, tag
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_buffer_by_time(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
@@ -962,28 +942,28 @@ export async function update_buffer_by_time(config, request) {
     }
     BufferUpdateTime.setTag(request.tag);
     return client.updateBufferByTime(BufferUpdateTime, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a data buffer
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {BufferId} request data buffer id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_buffer(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferId = new pb_buffer.BufferId();
     bufferId.setId(request.id);
     return client.deleteBuffer(bufferId, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a data buffer by time
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {BufferTime} request data buffer time: device_id, model_id, timestamp, tag
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_buffer_by_time(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
@@ -993,7 +973,7 @@ export async function delete_buffer_by_time(config, request) {
     bufferTime.setTimestamp(request.timestamp.valueOf() * 1000);
     bufferTime.setTag(request.tag);
     return client.deleteBufferByTime(bufferTime, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**

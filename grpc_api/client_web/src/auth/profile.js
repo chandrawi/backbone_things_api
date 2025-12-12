@@ -33,16 +33,6 @@ import {
  */
 
 /**
- * @param {*} r 
- * @returns {ProfileId}
- */
-function get_profile_id(r) {
-    return {
-        id: r.id
-    };
-}
-
-/**
  * @typedef {Object} RoleProfileSchema
  * @property {number} id
  * @property {Uuid} role_id
@@ -193,7 +183,7 @@ export async function list_role_profile_by_role(config, request) {
  * Create a role profile
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleProfileSchema} request role profile schema: role_id, name, value_type, mode
- * @returns {Promise<ProfileId>} profile id: id
+ * @returns {Promise<number>} profile id
  */
 export async function create_role_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -203,14 +193,14 @@ export async function create_role_profile(config, request) {
     roleProfileSchema.setValueType(set_data_type(request.value_type));
     roleProfileSchema.setMode(set_profile_mode(request.mode));
     return client.createRoleProfile(roleProfileSchema, metadata(config.auth_token))
-        .then(response => get_profile_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a role profile
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleProfileUpdate} request role update: id, name, value_type, mode
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_role_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -222,21 +212,21 @@ export async function update_role_profile(config, request) {
     }
     roleProfileUpdate.setMode(set_profile_mode(request.mode));
     return client.updateRoleProfile(roleProfileUpdate, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a role profile
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProfileId} request profile id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_role_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
     const profileId = new pb_profile.ProfileId();
     profileId.setId(request.id);
     return client.deleteRoleProfile(profileId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
@@ -271,7 +261,7 @@ export async function list_user_profile_by_user(config, request) {
  * Create a user profile
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserProfileSchema} request user profile schema: user_id, name, value, order
- * @returns {Promise<ProfileId>} profile id: id
+ * @returns {Promise<number>} profile id
  */
 export async function create_user_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -283,14 +273,14 @@ export async function create_user_profile(config, request) {
     userProfileSchema.setValueType(value.type);
     userProfileSchema.setOrder(request.order);
     return client.createUserProfile(userProfileSchema, metadata(config.auth_token))
-        .then(response => get_profile_id(response.toObject()));
+        .then(response => response.toObject().id);
 }
 
 /**
  * Update a user profile
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserProfileUpdate} request user update: id, name, value
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_user_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -301,28 +291,28 @@ export async function update_user_profile(config, request) {
     userProfileUpdate.setValueBytes(value.bytes);
     userProfileUpdate.setValueType(value.type);
     return client.updateUserProfile(userProfileUpdate, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a user profile
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProfileId} request profile id: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_user_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
     const profileId = new pb_profile.ProfileId();
     profileId.setId(request.id);
     return client.deleteUserProfile(profileId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Swap a user profile order
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserProfileSwap} request user profile swap: user_id, name, order_1, order_2
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function swap_user_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -332,5 +322,5 @@ export async function swap_user_profile(config, request) {
     userProfileSwap.setOrder1(request.order_1);
     userProfileSwap.setOrder2(request.order_2);
     return client.swapUserProfile(userProfileSwap, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }

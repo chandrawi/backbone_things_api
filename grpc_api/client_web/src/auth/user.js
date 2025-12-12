@@ -35,16 +35,6 @@ import {
  */
 
 /**
- * @param {*} r 
- * @returns {UserId}
- */
-function get_user_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} UserName
  * @property {string} name
  */
@@ -245,7 +235,7 @@ export async function list_user_option(config, request) {
  * Create an user
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserSchema} request user schema: id, name, email, phone, password
- * @returns {Promise<UserId>} user id: id
+ * @returns {Promise<Uuid>} user id: id
  */
 export async function create_user(config, request) {
     const client_auth = new pb_auth.AuthServicePromiseClient(config.address, null, null);
@@ -262,14 +252,14 @@ export async function create_user(config, request) {
     const ciphertext = await encryptMessage(request.password, pubkey);
     userSchema.setPassword(ciphertext);
     return client.createUser(userSchema, metadata(config.auth_token))
-        .then(response => get_user_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update an user
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserUpdate} request user update: id, name, email, phone, password
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_user(config, request) {
     const client_auth = new pb_auth.AuthServicePromiseClient(config.address, null, null);
@@ -288,28 +278,28 @@ export async function update_user(config, request) {
         userUpdate.setPassword(ciphertext);
     }
     return client.updateUser(userUpdate, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete an user
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserId} request user uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_user(config, request) {
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
     const userId = new pb_user.UserId();
     userId.setId(uuid_hex_to_base64(request.id));
     return client.deleteUser(userId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add a role to user
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserRole} request user role: user_id, role_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function add_user_role(config, request) {
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
@@ -317,14 +307,14 @@ export async function add_user_role(config, request) {
     userRole.setUserId(uuid_hex_to_base64(request.user_id));
     userRole.setRoleId(uuid_hex_to_base64(request.role_id));
     return client.addUserRole(userRole, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove a role from user
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserRole} request user role: user_id, role_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function remove_user_role(config, request) {
     const client = new pb_user.UserServicePromiseClient(config.address, null, null);
@@ -332,5 +322,5 @@ export async function remove_user_role(config, request) {
     userRole.setUserId(uuid_hex_to_base64(request.user_id));
     userRole.setRoleId(uuid_hex_to_base64(request.role_id));
     return client.removeUserRole(userRole, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }

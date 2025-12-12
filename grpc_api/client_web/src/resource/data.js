@@ -506,7 +506,7 @@ export async function list_data_set_by_range(config, request) {
  * Create a data
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DataSchema} request data schema: device_id, model_id, timestamp, data, tag
- * @returns {Promise<{}>} create response
+ * @returns {Promise<null>} create response
  */
 export async function create_data(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
@@ -521,14 +521,14 @@ export async function create_data(config, request) {
         dataSchema.addDataType(type);
     }
     return client.createData(dataSchema, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Create multiple data
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DataMultipleSchema} request data multiple schema: device_ids, model_ids, timestamps, data, tags
- * @returns {Promise<{}>} create response
+ * @returns {Promise<null>} create response
  */
 export async function create_data_multiple(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
@@ -553,14 +553,14 @@ export async function create_data_multiple(config, request) {
         dataMultiSchema.addSchemas(dataSchema);
     }
     return client.createDataMultiple(dataMultiSchema, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a data
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {DataTime} request data time: device_id, model_id, timestamp, tag
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_data(config, request) {
     const client = new pb_data.DataServicePromiseClient(config.address, null, null);
@@ -570,7 +570,7 @@ export async function delete_data(config, request) {
     dataTime.setTimestamp(request.timestamp.valueOf() * 1000);
     dataTime.setTag(request.tag);
     return client.deleteData(dataTime, metadata(config.access_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**

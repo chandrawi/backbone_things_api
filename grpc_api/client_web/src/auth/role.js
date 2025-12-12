@@ -27,16 +27,6 @@ import {
  */
 
 /**
- * @param {*} r 
- * @returns {RoleId}
- */
-function get_role_id(r) {
-    return {
-        id: base64_to_uuid_hex(r.id)
-    };
-}
-
-/**
  * @typedef {Object} RoleName
  * @property {Uuid} api_id
  * @property {string} name
@@ -223,8 +213,8 @@ export async function list_role_option(config, request) {
 /**
  * Create a role
  * @param {ServerConfig} config Auth server config: address, auth_token
- * @param {RoleSchema} request role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key
- * @returns {Promise<RoleId>} role id: id
+ * @param {RoleSchema} request role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration
+ * @returns {Promise<Uuid>} role id: id
  */
 export async function create_role(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -236,16 +226,15 @@ export async function create_role(config, request) {
     roleSchema.setIpLock(request.ip_lock);
     roleSchema.setAccessDuration(request.access_duration);
     roleSchema.setRefreshDuration(request.refresh_duration);
-    roleSchema.setAccessKey(request.access_key);
     return client.createRole(roleSchema, metadata(config.auth_token))
-        .then(response => get_role_id(response.toObject()));
+        .then(response => base64_to_uuid_hex(response.toObject().id));
 }
 
 /**
  * Update a role
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleUpdate} request role update: id, name, multi, ip_lock, access_duration, refresh_duration
- * @returns {Promise<{}>} update response
+ * @returns {Promise<null>} update response
  */
 export async function update_role(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -257,28 +246,28 @@ export async function update_role(config, request) {
     roleUpdate.setAccessDuration(request.access_duration);
     roleUpdate.setRefreshDuration(request.refresh_duration);
     return client.updateRole(roleUpdate, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Delete a role
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleId} request role uuid: id
- * @returns {Promise<{}>} delete response
+ * @returns {Promise<null>} delete response
  */
 export async function delete_role(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
     const roleId = new pb_role.RoleId();
     roleId.setId(uuid_hex_to_base64(request.id));
     return client.deleteRole(roleId, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Add a role access
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleAccess} request role access: id, procedure_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function add_role_access(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -286,14 +275,14 @@ export async function add_role_access(config, request) {
     roleAccess.setId(uuid_hex_to_base64(request.id));
     roleAccess.setProcedureId(uuid_hex_to_base64(request.procedure_id));
     return client.addRoleAccess(roleAccess, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }
 
 /**
  * Remove a role access
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleAccess} request role access: id, procedure_id
- * @returns {Promise<{}>} change response
+ * @returns {Promise<null>} change response
  */
 export async function remove_role_access(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -301,5 +290,5 @@ export async function remove_role_access(config, request) {
     roleAccess.setId(uuid_hex_to_base64(request.id));
     roleAccess.setProcedureId(uuid_hex_to_base64(request.procedure_id));
     return client.removeRoleAccess(roleAccess, metadata(config.auth_token))
-        .then(response => response.toObject());
+        .then(response => null);
 }

@@ -152,7 +152,7 @@ export async function user_refresh(config, request) {
  * User logout
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserLogoutRequest} request user logout request: user_id, auth_token
- * @return {Promise<{}>} user logout response
+ * @return {Promise<null>} user logout response
  */
 export async function user_logout(config, request) {
     const client = new pb_auth.AuthServicePromiseClient(config.address, null, null);
@@ -160,5 +160,5 @@ export async function user_logout(config, request) {
     userLogoutRequest.setUserId(uuid_hex_to_base64(request.user_id));
     userLogoutRequest.setAuthToken(request.auth_token);
     return client.userLogout(userLogoutRequest)
-        .then(response => response.toObject());
+        .then(response => null);
 }

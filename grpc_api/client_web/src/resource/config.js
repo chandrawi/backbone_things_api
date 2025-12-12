@@ -80,8 +80,8 @@ function get_role_acces_vec(r) {
 export async function api_id(config, request) {
     const client = new pb_config.ConfigServicePromiseClient(config.address, null, null);
     const apiIdRequest = new pb_config.ApiIdRequest();
-    return client.ApiId(apiIdRequest, metadata(config.access_token))
-        .then(response => base64_to_uuid_hex(response.toObject().api_id));
+    return client.apiId(apiIdRequest, metadata(config.access_token))
+        .then(response => base64_to_uuid_hex(response.toObject().apiId));
 }
 
 /**
@@ -93,7 +93,7 @@ export async function api_id(config, request) {
 export async function procedure_access(config, request) {
     const client = new pb_config.ConfigServicePromiseClient(config.address, null, null);
     const accessRequest = new pb_config.AccessRequest();
-    return client.ProcedureAcces(accessRequest, metadata(config.access_token))
+    return client.procedureAcces(accessRequest, metadata(config.access_token))
         .then(response => get_procedure_acces_vec(response.toObject().access));
 }
 
@@ -106,6 +106,6 @@ export async function procedure_access(config, request) {
 export async function role_access(config, request) {
     const client = new pb_config.ConfigServicePromiseClient(config.address, null, null);
     const accessRequest = new pb_config.AccessRequest();
-    return client.RoleAcces(accessRequest, metadata(config.access_token))
+    return client.roleAcces(accessRequest, metadata(config.access_token))
         .then(response => get_role_acces_vec(response.toObject().access));
 }
