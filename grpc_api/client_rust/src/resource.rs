@@ -25,8 +25,8 @@ use crate::auth::auth;
 pub struct Resource {
     channel: Channel,
     channel_auth: Option<Channel>,
-    api_id: Uuid,
-    user_id: Option<Uuid>,
+    pub api_id: Option<Uuid>,
+    pub user_id: Option<Uuid>,
     auth_token: String,
     access_token: String,
     refresh_token: String
@@ -36,8 +36,7 @@ impl Resource {
 
     pub async fn new(address: &str) -> Self {
         let channel = crate::utility::channel(address).await;
-        let api_id = config::api_id(&channel).await.expect(config::API_ID_ERR);
-        Self::new_with_channel(channel, Some(api_id), None, None, None)
+        Self::new_with_channel(channel, None, None, None, None)
     }
 
     pub async fn new_with_token(address: &str, api_id: Uuid, auth_token: &str, access_token: &str, refresh_token: &str) -> Self {
@@ -49,7 +48,7 @@ impl Resource {
         Self {
             channel,
             channel_auth: None,
-            api_id: api_id.unwrap_or(Uuid::nil()),
+            api_id: api_id,
             user_id: None,
             auth_token: auth_token.map(|at| String::from(at)).unwrap_or(String::new()),
             access_token: access_token.map(|at| String::from(at)).unwrap_or(String::new()),
@@ -59,12 +58,13 @@ impl Resource {
 
     pub async fn login(&mut self, auth_address: &str, username: &str, password: &str) -> Result<(), Status>
     {
+        self.api_id = Some(config::api_id(&self.channel).await?);
         let channel = crate::utility::channel(auth_address).await;
         let login = auth::user_login(&channel, username, password).await?;
         self.channel_auth = Some(channel);
         self.auth_token = login.auth_token;
         for map in login.access_tokens {
-            if map.api_id == self.api_id.as_bytes().to_vec() || map.api_id == ROOT_ID.as_bytes().to_vec() {
+            if Some(map.api_id.clone()) == self.api_id.map(|a| a.as_bytes().to_vec()) || map.api_id == ROOT_ID.as_bytes().to_vec() {
                 self.access_token = map.access_token;
                 self.refresh_token = map.refresh_token;
             }
@@ -75,8 +75,8 @@ impl Resource {
 
     pub async fn refresh(&mut self) -> Result<(), Status>
     {
-        if let Some(channel) = self.channel_auth.clone() {
-            let refresh = auth::user_refresh(&channel, self.api_id, &self.access_token, &self.refresh_token).await?;
+        if let (Some(channel), Some(api_id)) = (self.channel_auth.clone(), self.api_id) {
+            let refresh = auth::user_refresh(&channel, api_id, &self.access_token, &self.refresh_token).await?;
             self.access_token = refresh.access_token;
             self.refresh_token = refresh.refresh_token;
         }
@@ -87,6 +87,7 @@ impl Resource {
     {
         if let (Some(channel), Some(id)) = (self.channel_auth.clone(), self.user_id) {
             auth::user_logout(&channel, id, &self.auth_token).await?;
+            self.user_id = None;
             self.auth_token = String::new();
             self.access_token = String::new();
             self.refresh_token = String::new();

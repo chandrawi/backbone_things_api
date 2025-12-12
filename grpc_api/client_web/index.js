@@ -27920,6 +27920,7 @@ class AuthConfig {
             userLogoutRequest.setAuthToken(this.auth_token);
             await client.userLogout(userLogoutRequest)
                 .then(response => response.toObject());
+            this.user_id = undefined;
             this.auth_token = undefined;
         }
     }
@@ -94977,6 +94978,7 @@ class ResourceConfig {
             userLogoutRequest.setAuthToken(this.auth_token);
             await client.userLogout(userLogoutRequest)
                 .then(response => response.toObject());
+            this.user_id = undefined;
             this.auth_token = undefined;
             this.access_token = undefined;
             this.refresh_token = undefined;

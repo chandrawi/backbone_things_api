@@ -27,44 +27,45 @@ class Resource:
 
     def __init__(self, address: str, api_id: Optional[UUID]=None, auth_token: Optional[str]=None, access_token: Optional[str]=None, refresh_token: Optional[str]=None):
         self.address = address
-        self.auth_address=None
-        self._auth_token = auth_token
-        self._access_token = access_token
-        self._refresh_token = refresh_token
+        self.auth_address = None
+        self.auth_token = auth_token
+        self.access_token = access_token
+        self.refresh_token = refresh_token
         self.metadata = [] if access_token == None \
             else [("authorization", "Bearer " + access_token)]
         self._api_id = api_id
-        if api_id == None:
-            self._api_id = _config.api_id(address)
-        self._user_id=None
+        self.user_id=None
 
     def login(self, auth_address: str, username: str, password: str):
+        self._api_id = _config.api_id(self.address)
         login = _auth.user_login(auth_address, username, password)
         self.auth_address = auth_address
-        self._auth_token = login.auth_token
+        self.auth_token = login.auth_token
         for map in login.access_tokens:
             if map.api_id == self._api_id or map.api_id == ROOT_ID:
-                self._access_token = map.access_token
-                self._refresh_token = map.refresh_token
+                self.access_token = map.access_token
+                self.refresh_token = map.refresh_token
                 self.metadata = [("authorization", "Bearer " + map.access_token)]
-        self._user_id = login.user_id
+        self.user_id = login.user_id
 
     def refresh(self):
         if self.auth_address != None:
-            refresh = _auth.user_refresh(self.auth_address, self._api_id, self._access_token, self._refresh_token)
-            self._access_token = refresh.access_token
-            self._refresh_token = refresh.refresh_token
+            refresh = _auth.user_refresh(self.auth_address, self._api_id, self.access_token, self.refresh_token)
+            self.access_token = refresh.access_token
+            self.refresh_token = refresh.refresh_token
             self.metadata = [("authorization", "Bearer " + refresh.access_token)]
 
     def logout(self):
-        if self.auth_address != None and self._user_id != None:
-            _auth.user_logout(self.auth_address, self._user_id, self._auth_token)
-            self._auth_token = None
-            self._access_token = None
-            self._refresh_token = None
+        if self.auth_address != None and self.user_id != None:
+            _auth.user_logout(self.auth_address, self.user_id, self.auth_token)
+            self.user_id = None
+            self.auth_token = None
+            self.access_token = None
+            self.refresh_token = None
+            self.metadata = []
 
     def api_id(self) -> UUID:
-        return _config.api_id(self.channel)
+        return _config.api_id(self.address)
 
     def procedure_access(self) -> List[ProcedureAcces]:
         return _config.procedure_access(self)

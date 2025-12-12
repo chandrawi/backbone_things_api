@@ -12,6 +12,7 @@ from bbthings_grpc import Resource, DataType, SetMember, Tag
 from uuid import UUID
 import utility
 
+
 def test_resource():
     dotenv.load_dotenv()
     address = os.getenv('SERVER_ADDRESS_RESOURCE')

@@ -9,7 +9,7 @@ use crate::proto::auth::auth::ProcedureMap;
 const EXT_NOT_FOUND: &str = "Extension not found";
 const TOKEN_EXPIRED: &str = "Token is broken or expired";
 const PROC_NOT_FOUND: &str = "Procedure access not found";
-const USER_UNREGISTERED: &str = "User is not logged in or not registered";
+const USER_UNREGISTERED: &str = "User is not logged in or is not registered";
 const ACCESS_RIGHT_ERR: &str = "doesn't has access rights";
 
 #[derive(Debug, Clone)]
@@ -35,9 +35,8 @@ pub(crate) trait AccessValidator {
         procedures.into_iter().map(|&s| AccessSchema {
             procedure: s.to_owned(),
             roles: accesses.iter()
-                .filter(|&a| a.procedure == s)
+                .find(|&a| a.procedure == s)
                 .map(|a| a.roles.clone())
-                .next()
                 .unwrap_or_default()
         })
         .collect()
@@ -68,13 +67,11 @@ pub(crate) trait AccessValidator {
         // check if the role in token claims has accsess rights to the procedure
         let access = self.accesses()
             .into_iter()
-            .filter(|a| a.procedure == procedure)
-            .next()
+            .find(|a| a.procedure == procedure)
             .ok_or(Status::internal(PROC_NOT_FOUND))?;
         let role = access.roles
             .into_iter()
-            .filter(|r| *r == claims.sub)
-            .next();
+            .find(|r| *r == claims.sub);
         match role {
             Some(_) => Ok(()),
             None => Err(Status::unauthenticated(

@@ -20,21 +20,23 @@ class Auth:
 
     def __init__(self, address: str, auth_token: Optional[str]=None):
         self.address = address
-        self._auth_token = auth_token
+        self.auth_token = auth_token
         self.metadata = [] if auth_token == None \
             else [("authorization", "Bearer " + auth_token)]
-        self._user_id = None
+        self.user_id = None
 
     def login(self, username: str, password: str):
         login = _auth.user_login(self.address, username, password)
-        self._auth_token = login.auth_token
-        self._user_id = login.user_id
-        self.metadata = [("authorization", "Bearer " + self._auth_token)]
+        self.auth_token = login.auth_token
+        self.user_id = login.user_id
+        self.metadata = [("authorization", "Bearer " + self.auth_token)]
 
     def logout(self):
-        if self._user_id != None:
-            _auth.user_logout(self.address, self._user_id, self._auth_token)
-            self._auth_token = None
+        if self.user_id != None:
+            _auth.user_logout(self.address, self.user_id, self.auth_token)
+            self.user_id = None
+            self.auth_token = None
+            self.metadata = []
 
     def user_login(self, username: str, password: str) -> UserLogin:
         return _auth.user_login(self.address, username, password)

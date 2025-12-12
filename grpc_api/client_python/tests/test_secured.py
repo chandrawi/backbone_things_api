@@ -7,31 +7,63 @@ sys.path.append(SOURCE_PATH)
 import uuid
 import dotenv
 import pytest
-import string
 from bbthings_grpc import Auth, Resource, DataType
 from bbthings_grpc.common.utility import generate_access_key
+from bbthings_grpc.common import ROOT_ID, ROOT_NAME
 import utility
 
-ACCESSES = [
-    ("read_model", ["admin", "user"]),
-    ("create_model", ["admin"]),
-    ("delete_model", ["admin"]),
-    ("change_model_type", ["admin"])
+
+API_ID = uuid.uuid4()
+API_PASSWORD = "Api_pa55w0rd"
+
+PROCEDURE_ACCESS = [
+    {
+        "procedure": "read_model",
+        "roles": ["admin", "user"]
+    },
+    {
+        "procedure": "create_model",
+        "roles": ["admin"]
+    },
+    {
+        "procedure": "update_model",
+        "roles": ["admin"]
+    },
+    {
+        "procedure": "delete_model",
+        "roles": ["admin"]
+    }
 ]
+PROCEDURES = [(uuid.uuid4(), access["procedure"]) for access in PROCEDURE_ACCESS]
+ROLE_NAMES = set()
+for item in PROCEDURE_ACCESS:
+    for role in item["roles"]: ROLE_NAMES.add(role)
+ROLES = [(uuid.uuid4(), role) for role in ROLE_NAMES]
+role_access = []
 
-ROLES = ["admin", "user"]
-
-ROOT_NAME = "root"
+ROOT_PASSWORD = "r0ot_P4s5w0rd"
+ADMIN_ID = uuid.uuid4()
 ADMIN_NAME = "administrator"
+ADMIN_PASSWORD = "Adm1n_P4s5w0rd"
+USER_ID = uuid.uuid4()
 USER_NAME = "username"
-ROOT_PW = "r0ot_P4s5w0rd"
-ADMIN_PW = "Adm1n_P4s5w0rd"
-USER_PW = "Us3r_P4s5w0rd"
-
+USER_PASSWORD = "Us3r_P4s5w0rd"
 USERS = [
-    (ADMIN_NAME, ADMIN_PW, "admin"),
-    (USER_NAME, USER_PW, "user")
+    {
+        "id": ADMIN_ID,
+        "name": ADMIN_NAME,
+        "password": ADMIN_PASSWORD,
+        "role": "admin"
+    },
+    {
+        "id": USER_ID,
+        "name": USER_NAME,
+        "password": USER_PASSWORD,
+        "role": "user"
+    }
 ]
+user_role = []
+
 
 def test_secured():
     dotenv.load_dotenv()
@@ -48,97 +80,93 @@ def test_secured():
     utility.start_auth_server(secured=True)
 
     # root login
-    auth = Auth(address_auth)
-    login = auth.user_login(ROOT_NAME, ROOT_PW)
-    root_id = login.user_id
-    root_auth_token = login.auth_token
-    root_access = login.access_tokens[0]
-
-    # create root auth instance
-    auth_root = Auth(address_auth, root_auth_token)
+    auth_root = Auth(address_auth)
+    auth_root.login(ROOT_NAME, ROOT_PASSWORD)
+    assert auth_root.user_id == ROOT_ID
 
     # create api and procedures
-    api_password = "Api_pa55w0rd"
     api_id = auth_root.create_api(
-        id=uuid.uuid4(),
+        id=API_ID,
         name="resource api",
         address="localhost",
         category="RESOURCE",
         description="",
-        password=api_password,
+        password=API_PASSWORD,
         access_key=generate_access_key()
     )
-    proc_map = []
-    for (procedure_name, _) in ACCESSES:
-        proc_id = auth_root.create_procedure(
-            id=uuid.uuid4(),
+    assert api_id == API_ID
+    for (proc_id, proc_name) in PROCEDURES:
+        id_proc = auth_root.create_procedure(
+            id=proc_id,
             api_id=api_id,
-            name=procedure_name,
+            name=proc_name,
             description=""
         )
-        proc_map.append((proc_id, procedure_name))
+        assert id_proc == proc_id
 
     # create roles and link it to procedures
-    role_map = []
-    for name in ROLES:
-        role_id = auth_root.create_role(
-            id=uuid.uuid4(),
-            api_id=api_id,
-            name=name,
+    for (role_id, role_name) in ROLES:
+        id_role = auth_root.create_role(
+            id=role_id,
+            api_id=API_ID,
+            name=role_name,
             multi=False,
             ip_lock=True,
             access_duration=900,
             refresh_duration=43200
         )
-        role_map.append((role_id, name))
-    role_accesses = []
-    for (procedure_name, roles) in ACCESSES:
-        proc_filter = list(filter(lambda x: x[1] == procedure_name, proc_map))
-        if len(proc_filter) == 0: continue
-        proc_id = proc_filter[0][0]
-        for role in roles:
-            role_filter = list(filter(lambda x: x[1] == role, role_map))
-            if len(role_filter) == 0: continue
-            role_id = role_filter[0][0]
-            role_accesses.append((role_id, proc_id))
-    for (role_id, proc_id) in role_accesses:
-        auth_root.add_role_access(role_id, proc_id)
+        assert id_role == role_id
+        for access in PROCEDURE_ACCESS:
+            if any(role == role_name for role in access["roles"]):
+                found = next((p for p in PROCEDURES if p[1] == access["procedure"]), None)
+                procedure_id = found[0] if found else None
+                add = auth_root.add_role_access(role_id, procedure_id)
+                assert add == None
+                role_access.append((role_id, procedure_id))
+                
 
     # create users and link it to a role
-    user_roles = []
-    for (name, password, role) in USERS:
+    for user in USERS:
         user_id = auth_root.create_user(
-            id=uuid.uuid4(),
-            name=name,
+            id=user["id"],
+            name=user["name"],
             email="",
             phone="",
-            password=password
+            password=user["password"]
         )
-        role_filter = list(filter(lambda x: x[1] == role, role_map))
-        if len(role_filter) == 0: continue
-        role_id = role_filter[0][0]
-        user_roles.append((user_id, role_id))
-    for (user_id, role_id) in user_roles:
-        auth_root.add_user_role(user_id, role_id)
+        assert user_id == user["id"]
+        found = next((r for r in ROLES if r[1] == user["role"]), None)
+        role_id = found[0] if found else None
+        add = auth_root.add_user_role(user["id"], role_id)
+        assert add == None
+        user_role.append((user["id"], role_id))
+
+    # test newly created admin user and regular user to login to Auth server
+    auth_admin = Auth(address_auth)
+    auth_admin.login(ADMIN_NAME, ADMIN_PASSWORD)
+    assert auth_admin.user_id == ADMIN_ID
+    auth_admin.logout()
+    assert auth_admin.user_id == None
+    auth_user = Auth(address_auth)
+    auth_user.login(USER_NAME, USER_PASSWORD)
+    assert auth_user.user_id == USER_ID
+    auth_user.logout()
+    assert auth_user.user_id == None
 
     # start resource server for testing
-    utility.start_resource_server(secured=True, api_id=api_id.hex, password=api_password)
+    utility.start_resource_server(secured=True, api_id=api_id.hex, password=API_PASSWORD)
 
-    # user and admin login
-    login = auth.user_login(ADMIN_NAME, ADMIN_PW)
-    admin_id = login.user_id
-    admin_auth_token = login.auth_token
-    admin_access = login.access_tokens[0]
-    login = auth.user_login(USER_NAME, USER_PW)
-    user_id = login.user_id
-    user_auth_token = login.auth_token
-    user_access = login.access_tokens[0]
+    # admin and regular user login
+    res_admin = Resource(address_resource)
+    res_admin.login(address_auth, ADMIN_NAME, ADMIN_PASSWORD)
+    assert res_admin.api_id() == API_ID
+    assert res_admin.user_id == ADMIN_ID
+    res_user = Resource(address_resource)
+    res_user.login(address_auth, USER_NAME, USER_PASSWORD)
+    assert res_user.api_id() == API_ID
+    assert res_user.user_id == USER_ID
 
-    # create admin and regular user resource instance
-    res_admin = Resource(address_resource, admin_access.access_token)
-    res_user = Resource(address_resource, user_access.access_token)
-
-    # try to create model using user service and admin service, user should failed and admin should success
+    # try to create model by regular user and admin user, regular user should failed and admin user should success
     with pytest.raises(Exception):
         res_user.create_model(uuid.uuid4(), "UPLINK", "name", "")
     model_id = res_admin.create_model(
@@ -149,48 +177,53 @@ def test_secured():
         description=""
     )
 
-    # read created model using user service
+    # read created model by regular user
     model = res_user.read_model(model_id)
     assert model.category == "UPLINK"
     assert model.name == "name"
 
-    # refresh user
-    user_refresh = auth.user_refresh(api_id, user_access.access_token, user_access.refresh_token)
-    res_user = Resource(address_resource, user_refresh.access_token)
+    # refresh regular user
+    old_token = res_user.refresh_token
+    res_user.refresh()
+    assert res_user.refresh_token != old_token
     # try to read model again after refreshing token
     res_user.read_model(model_id)
 
-    # remove model type and delete model
-    res_admin.delete_model(model_id)
+    # regular user and admin user logout
+    res_user.logout()
+    assert res_user.auth_token == None
+    res_admin.logout()
+    assert res_admin.auth_token == None
+
+    # try to access resource after logout, regular and admin user should failed
+    with pytest.raises(Exception):
+        res_user.read_model(model_id)
     with pytest.raises(Exception):
         res_admin.read_model(model_id)
 
-    # user and admin logout
-    auth.user_logout(admin_id, admin_auth_token)
-    auth.user_logout(user_id, user_auth_token)
-
     # remove user links to role and delete user
-    for (user_id, role_id) in user_roles:
+    for (user_id, role_id) in user_role:
         auth_root.remove_user_role(user_id, role_id)
         auth_root.delete_user(user_id)
 
     # remove role links to procedure and delete roles
-    for (role_id, proc_id) in role_accesses:
+    for (role_id, proc_id) in role_access:
         auth_root.remove_role_access(role_id, proc_id)
-    for (role_id, _) in role_map:
+    for (role_id, _) in ROLES:
         auth_root.delete_role(role_id)
 
     # delete procedures and api
-    for (proc_id, _) in proc_map:
+    for (proc_id, _) in PROCEDURES:
         auth_root.delete_procedure(proc_id)
-    auth_root.delete_api(api_id)
+    auth_root.delete_api(API_ID)
 
     # root logout
-    auth_root.user_logout(root_id, root_auth_token)
+    auth_root.logout()
+    assert auth_root.auth_token == None
 
     # try to read api after logout, should error
     with pytest.raises(Exception):
-        auth_root.read_api(api_id)
+        auth_root.read_api(API_ID)
 
     # stop auth and resource server
     utility.stop_auth_server()

@@ -18,7 +18,7 @@ use bbthings_grpc_server::proto::auth::auth::{UserLoginResponse, UserRefreshResp
 #[derive(Debug, Clone)]
 pub struct Auth {
     channel: Channel,
-    user_id: Option<Uuid>,
+    pub user_id: Option<Uuid>,
     auth_token: String
 }
 
@@ -53,6 +53,7 @@ impl Auth {
     {
         if let Some(id) = self.user_id {
             auth::user_logout(&self.channel, id, &self.auth_token).await?;
+            self.user_id = None;
             self.auth_token = String::new();
         }
         Ok(())

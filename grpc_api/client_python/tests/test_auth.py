@@ -12,12 +12,11 @@ from bbthings_grpc import Auth, DataType, ProfileMode
 from bbthings_grpc.common.utility import verify_password, generate_access_key
 import utility
 
+
 def test_auth():
     dotenv.load_dotenv()
     address = os.getenv('SERVER_ADDRESS_AUTH')
     db_auth_url_test = os.getenv("DATABASE_URL_AUTH_TEST")
-    print(address)
-    print(db_auth_url_test)
     auth = Auth(address)
 
     # truncate auth tables before testing
