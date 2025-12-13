@@ -1,4 +1,4 @@
-use sea_query::{Iden, Query, Expr, Order, Func};
+use sea_query::{Iden, Query, Expr, Order};
 use uuid::Uuid;
 use crate::common::query_statement::QueryStatement;
 use crate::common::type_value::DataValue;
@@ -266,17 +266,6 @@ pub fn select_device_config(
     QueryStatement::Select(stmt)
 }
 
-pub fn select_device_config_last_id(
-) -> QueryStatement
-{
-    let stmt = Query::select()
-        .expr(Func::max(Expr::col(DeviceConfig::Id)))
-        .from(DeviceConfig::Table)
-        .to_owned();
-
-    QueryStatement::Select(stmt)
-}
-
 pub fn insert_device_config(
     device_id: Uuid,
     name: &str,
@@ -303,6 +292,7 @@ pub fn insert_device_config(
             category.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
+        .returning(Query::returning().column(DeviceConfig::Id))
         .to_owned();
 
     QueryStatement::Insert(stmt)

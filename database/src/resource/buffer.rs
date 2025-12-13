@@ -1,4 +1,4 @@
-use sea_query::{Iden, Query, Expr, Order, Condition, Func};
+use sea_query::{Iden, Query, Expr, Order, Condition};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
 use crate::common::query_statement::QueryStatement;
@@ -229,17 +229,6 @@ pub fn select_buffer_types(
     QueryStatement::Select(stmt)
 }
 
-pub fn select_buffer_last_id(
-) -> QueryStatement
-{
-    let stmt = Query::select()
-        .expr(Func::max(Expr::col(DataBuffer::Id)))
-        .from(DataBuffer::Table)
-        .to_owned();
-
-    QueryStatement::Select(stmt)
-}
-
 pub fn insert_buffer(
     device_id: Uuid,
     model_id: Uuid,
@@ -267,6 +256,7 @@ pub fn insert_buffer(
             bytes.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
+        .returning(Query::returning().column(DataBuffer::Id))
         .to_owned();
 
     QueryStatement::Insert(stmt)
@@ -307,6 +297,7 @@ pub fn insert_buffer_multiple(
             bytes.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
+        .returning(Query::returning().column(DataBuffer::Id))
         .to_owned();
     }
 

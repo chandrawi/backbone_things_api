@@ -279,8 +279,6 @@ impl Auth {
         -> Result<i32, Error>
     {
         let qs = profile::insert_role_profile(role_id, name, value_type, mode);
-        qs.execute(&self.pool).await?;
-        let qs = profile::select_role_profile_last_id();
         qs.fetch_id(&self.pool).await
     }
 
@@ -408,8 +406,6 @@ impl Auth {
         let qs = profile::select_user_profile_max_order(user_id, name);
         let new_order = qs.fetch_max_order(&self.pool, -1).await + 1;
         let qs = profile::insert_user_profile(user_id, name, value, new_order as i16);
-        qs.execute(&self.pool).await?;
-        let qs = profile::select_user_profile_last_id();
         qs.fetch_id(&self.pool).await
     }
 

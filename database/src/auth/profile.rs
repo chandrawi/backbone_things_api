@@ -51,17 +51,6 @@ pub fn select_role_profile(
     QueryStatement::Select(stmt)
 }
 
-pub fn select_role_profile_last_id(
-) -> QueryStatement
-{
-    let stmt = Query::select()
-        .expr(Func::max(Expr::col(ProfileRole::Id)))
-        .from(ProfileRole::Table)
-        .to_owned();
-
-    QueryStatement::Select(stmt)
-}
-
 pub fn insert_role_profile(
     role_id: Uuid,
     name: &str,
@@ -84,6 +73,7 @@ pub fn insert_role_profile(
             i16::from(mode).into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
+        .returning(Query::returning().column(ProfileRole::Id))
         .to_owned();
 
     QueryStatement::Insert(stmt)
@@ -173,17 +163,6 @@ pub fn select_user_profile_max_order(
     QueryStatement::Select(stmt)
 }
 
-pub fn select_user_profile_last_id(
-) -> QueryStatement
-{
-    let stmt = Query::select()
-        .expr(Func::max(Expr::col(ProfileUser::Id)))
-        .from(ProfileUser::Table)
-        .to_owned();
-
-    QueryStatement::Select(stmt)
-}
-
 pub fn insert_user_profile(
     user_id: Uuid,
     name: &str,
@@ -210,6 +189,7 @@ pub fn insert_user_profile(
             type_.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
+        .returning(Query::returning().column(ProfileUser::Id))
         .to_owned();
 
     QueryStatement::Insert(stmt)

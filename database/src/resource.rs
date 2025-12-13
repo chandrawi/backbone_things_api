@@ -133,8 +133,6 @@ impl Resource {
         -> Result<i32, Error>
     {
         let qs = model::insert_model_config(model_id, index, name, value, category);
-        qs.execute(&self.pool).await?;
-        let qs = model::select_model_config_last_id();
         qs.fetch_id(&self.pool).await
     }
 
@@ -340,8 +338,6 @@ impl Resource {
         -> Result<i32, Error>
     {
         let qs = device::insert_device_config(device_id, name, value, category);
-        qs.execute(&self.pool).await?;
-        let qs = device::select_device_config_last_id();
         qs.fetch_id(&self.pool).await
     }
 
@@ -377,8 +373,6 @@ impl Resource {
         -> Result<i32, Error>
     {
         let qs = device::insert_device_config(gateway_id, name, value, category);
-        qs.execute(&self.pool).await?;
-        let qs = device::select_device_config_last_id();
         qs.fetch_id(&self.pool).await
     }
 
@@ -1558,8 +1552,6 @@ impl Resource {
         let data = ArrayDataValue::from_vec(data).convert(&types)
             .ok_or(Error::InvalidArgument(String::from(DATA_TYPE_UNMATCH)))?.to_vec();
         let qs = buffer::insert_buffer(device_id, model_id, timestamp, &data, tag);
-        qs.execute(&self.pool).await?;
-        let qs = buffer::select_buffer_last_id();
         qs.fetch_id(&self.pool).await
     }
 
@@ -1588,10 +1580,8 @@ impl Resource {
         }
         let data_slice: Vec<&[DataValue]> = data_vec.iter().map(|d| d.as_slice()).collect();
         let qs = buffer::insert_buffer_multiple(device_ids, model_ids, timestamps, &data_slice, tags);
-        qs.execute(&self.pool).await?;
-        let qs = buffer::select_buffer_last_id();
         let id = qs.fetch_id(&self.pool).await?;
-        Ok((id-number as i32+1..id+1).collect())
+        Ok((id..id+number as i32).collect())
     }
 
     pub async fn update_buffer(&self, id: i32, data: Option<&[DataValue]>, tag: Option<i16>)
@@ -1903,8 +1893,6 @@ impl Resource {
         -> Result<i32, Error>
     {
         let qs = slice::insert_slice(device_id, model_id, timestamp_begin, timestamp_end, name, description);
-        qs.execute(&self.pool).await?;
-        let qs = slice::select_slice_last_id();
         qs.fetch_id(&self.pool).await
     }
 
@@ -1984,8 +1972,6 @@ impl Resource {
         -> Result<i32, Error>
     {
         let qs = slice::insert_slice_set(set_id, timestamp_begin, timestamp_end, name, description);
-        qs.execute(&self.pool).await?;
-        let qs = slice::select_slice_set_last_id();
         qs.fetch_id(&self.pool).await
     }
 

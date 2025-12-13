@@ -1,4 +1,4 @@
-use sea_query::{Iden, Query, Expr, Order, Func};
+use sea_query::{Iden, Query, Expr, Order};
 use uuid::Uuid;
 use crate::common::query_statement::QueryStatement;
 use crate::common::type_value::{DataType, DataValue};
@@ -221,17 +221,6 @@ pub fn select_model_config(
     QueryStatement::Select(stmt)
 }
 
-pub fn select_model_config_last_id(
-) -> QueryStatement
-{
-    let stmt = Query::select()
-        .expr(Func::max(Expr::col(ModelConfig::Id)))
-        .from(ModelConfig::Table)
-        .to_owned();
-
-    QueryStatement::Select(stmt)
-}
-
 pub fn insert_model_config(
     model_id: Uuid,
     index: i32,
@@ -261,6 +250,7 @@ pub fn insert_model_config(
             category.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
+        .returning(Query::returning().column(ModelConfig::Id))
         .to_owned();
 
     QueryStatement::Insert(stmt)

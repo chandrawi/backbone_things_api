@@ -62,8 +62,8 @@ impl QueryStatement {
 
     pub(crate) async fn fetch_id(&self, pool: &Pool<Postgres>) -> Result<i32, Error>
     {
-        let (sql, _) = self.build();
-        let id = sqlx::query(&sql)
+        let (sql, arguments) = self.build();
+        let id = sqlx::query_with(&sql, arguments)
             .map(|row: PgRow| row.try_get(0))
             .fetch_one(pool)
             .await??;

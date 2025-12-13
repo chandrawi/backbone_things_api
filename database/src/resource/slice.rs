@@ -1,4 +1,4 @@
-use sea_query::{Iden, Query, Expr, Order, Func};
+use sea_query::{Iden, Query, Expr, Order};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
 use crate::common::query_statement::QueryStatement;
@@ -102,18 +102,6 @@ pub fn select_slice(
     QueryStatement::Select(stmt)
 }
 
-pub fn select_slice_last_id(
-
-) -> QueryStatement
-{
-    let stmt = Query::select()
-        .expr(Func::max(Expr::col(SliceData::Id)))
-        .from(SliceData::Table)
-        .to_owned();
-
-    QueryStatement::Select(stmt)
-}
-
 pub fn insert_slice(
     device_id: Uuid,
     model_id: Uuid,
@@ -142,6 +130,7 @@ pub fn insert_slice(
             description.unwrap_or_default().into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
+        .returning(Query::returning().column(SliceData::Id))
         .to_owned();
 
     QueryStatement::Insert(stmt)
@@ -245,18 +234,6 @@ pub fn select_slice_set(
     QueryStatement::Select(stmt)
 }
 
-pub fn select_slice_set_last_id(
-
-) -> QueryStatement
-{
-    let stmt = Query::select()
-        .expr(Func::max(Expr::col(SliceDataSet::Id)))
-        .from(SliceDataSet::Table)
-        .to_owned();
-
-    QueryStatement::Select(stmt)
-}
-
 pub fn insert_slice_set(
     set_id: Uuid,
     timestamp_begin: DateTime<Utc>,
@@ -282,6 +259,7 @@ pub fn insert_slice_set(
             description.unwrap_or_default().into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
+        .returning(Query::returning().column(SliceDataSet::Id))
         .to_owned();
 
     QueryStatement::Insert(stmt)
