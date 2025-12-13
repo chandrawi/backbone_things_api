@@ -1,0 +1,34 @@
+services:
+
+  resource-db:
+    image: timescale/timescaledb:latest-pg18
+    ports:
+      - 5435:5432
+    environment:
+      - POSTGRES_PASSWORD=db_P4s5w0rd
+      - POSTGRES_DB=bbthings_resource
+    volumes:
+      - resource-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  resource-server:
+    image: bbthings_grpc_resource:0.1.0
+    ports:
+      - 9002:9002
+    environment:
+      - DATABASE_URL_RESOURCE=postgres://postgres:db_P4s5w0rd@resource-db/bbthings_resource
+      - BIND_ADDRESS_RESOURCE=0.0.0.0:9002
+      - SERVER_ADDRESS_AUTH=http://auth-server:9001
+      - ROOT_PASSWORD=r0ot_P4s5w0rd
+      - ROOT_ACCESS_DURATION=300
+      - ROOT_REFRESH_DURATION=3600
+      - API_ID=00000000-0000-0000-0000-000000000000
+      - API_PASSWORD=Ap1_P4s5w0rd
+    depends_on:
+      - resource-db
+    restart: unless-stopped
+
+volumes:
+
+  resource-data:
+    driver: local

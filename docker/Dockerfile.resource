@@ -1,0 +1,25 @@
+# build cargo chef tool
+FROM rust:alpine AS chef
+RUN apk update && apk add build-base
+RUN cargo install cargo-chef --locked
+WORKDIR /app
+
+# create recipe
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
+
+# build dependency based on recipe
+FROM chef AS builder
+COPY --from=planner /app/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
+# build the application
+RUN apk add protobuf
+COPY . .
+RUN cargo build --release --bin resource_server
+
+# create application runtime image without rust toolchain
+FROM alpine:latest AS runtime
+WORKDIR /app
+COPY --from=builder /app/target/release/resource_server /usr/local/bin
+ENTRYPOINT ["/usr/local/bin/resource_server"]

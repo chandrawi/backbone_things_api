@@ -1,0 +1,31 @@
+services:
+
+  auth-db:
+    image: postgres:18-alpine
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_PASSWORD=db_P4s5w0rd
+      - POSTGRES_DB=bbthings_auth
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  auth-server:
+    image: bbthings_grpc_auth:0.1.0
+    ports:
+      - 9001:9001
+    environment:
+      - DATABASE_URL_AUTH=postgres://postgres:db_P4s5w0rd@auth-db/bbthings_auth
+      - BIND_ADDRESS_AUTH=0.0.0.0:9001
+      - ROOT_PASSWORD=r0ot_P4s5w0rd
+      - ROOT_ACCESS_DURATION=300
+      - ROOT_REFRESH_DURATION=3600
+    depends_on:
+      - auth-db
+    restart: unless-stopped
+
+volumes:
+
+  auth-data:
+    driver: local
