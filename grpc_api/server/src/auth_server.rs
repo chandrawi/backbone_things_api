@@ -1,4 +1,5 @@
 use bbthings_database::Auth;
+use bbthings_database::utility::migrate_auth;
 use bbthings_grpc_server::proto::auth::api::api_service_server::ApiServiceServer;
 use bbthings_grpc_server::proto::auth::role::role_service_server::RoleServiceServer;
 use bbthings_grpc_server::proto::auth::user::user_service_server::UserServiceServer;
@@ -70,6 +71,8 @@ async fn auth_server(db_url: String, address: String) -> Result<(), Box<dyn std:
     let addr = address.parse()?;
 
     let auth_db = Auth::new_with_url(&db_url).await;
+    migrate_auth(&auth_db.pool).await.unwrap();
+
     let api_server = ApiServer::new(auth_db.clone());
     let role_server = RoleServer::new(auth_db.clone());
     let user_server = UserServer::new(auth_db.clone());
@@ -120,6 +123,8 @@ async fn auth_server_secured(db_url: String, address: String) -> Result<(), Box<
     let addr = address.parse()?;
 
     let auth_db = Auth::new_with_url(&db_url).await;
+    migrate_auth(&auth_db.pool).await.unwrap();
+
     let api_server = ApiServer::new_with_validator(auth_db.clone());
     let role_server = RoleServer::new_with_validator(auth_db.clone());
     let user_server = UserServer::new_with_validator(auth_db.clone());

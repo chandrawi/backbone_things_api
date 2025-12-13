@@ -1,4 +1,5 @@
 use bbthings_database::Resource;
+use bbthings_database::utility::migrate_resource;
 use bbthings_grpc_server::proto::resource::config::config_service_server::ConfigServiceServer;
 use bbthings_grpc_server::proto::resource::model::model_service_server::ModelServiceServer;
 use bbthings_grpc_server::proto::resource::device::device_service_server::DeviceServiceServer;
@@ -102,6 +103,8 @@ async fn resource_server(db_url: String, address: String) -> Result<(), Box<dyn 
     let addr = address.parse()?;
 
     let resource_db = Resource::new_with_url(&db_url).await;
+    migrate_resource(&resource_db.pool).await.unwrap();
+
     let config_server = ConfigServer{};
     let model_server = ModelServer::new(resource_db.clone());
     let device_server = DeviceServer::new(resource_db.clone());
@@ -169,6 +172,8 @@ async fn resource_server_secured(db_url: String, address: String, auth_address: 
     ACCESS_MAP.set(accesses.clone()).unwrap();
 
     let resource_db = Resource::new_with_url(&db_url).await;
+    migrate_resource(&resource_db.pool).await.unwrap();
+
     let config_server = ConfigServer{};
     let model_server = ModelServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
     let device_server = DeviceServer::new_with_validator(resource_db.clone(), &token_key, &accesses);

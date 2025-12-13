@@ -28,7 +28,7 @@ use slice::SliceSelector;
 
 #[derive(Debug, Clone)]
 pub struct Resource {
-    pool: Pool<Postgres>
+    pub pool: Pool<Postgres>
 }
 
 impl Resource {

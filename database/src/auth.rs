@@ -20,7 +20,7 @@ use token::TokenSelector;
 
 #[derive(Debug, Clone)]
 pub struct Auth {
-    pool: Pool<Postgres>
+    pub pool: Pool<Postgres>
 }
 
 impl Auth {
