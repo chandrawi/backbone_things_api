@@ -45,6 +45,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Some(value) => value,
         None => std::env::var("BIND_ADDRESS_AUTH").unwrap()
     };
+    let secured_env = match std::env::var("SECURED") {
+        Ok(value) => ["1", "true", "True", "TRUE"].into_iter().any(|e| *e == value),
+        Err(_) => false
+    };
+    let secured = args.secured || secured_env;
 
     let root_pw = std::env::var("ROOT_PASSWORD");
     let root_ad = std::env::var("ROOT_ACCESS_DURATION");
@@ -59,7 +64,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         )).unwrap();
     }
 
-    if args.secured {
+    if secured {
         auth_server_secured(db_url, address).await
     } else {
         auth_server(db_url, address).await

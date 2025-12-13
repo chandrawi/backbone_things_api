@@ -1,6 +1,7 @@
 import pb_config from "../proto/resource/config_grpc_web_pb.js";
 import pb_auth from "../proto/auth/auth_grpc_web_pb.js";
 import {
+    metadata,
     base64_to_uuid_hex,
     uuid_hex_to_base64,
     importKey,
@@ -43,7 +44,7 @@ export class ResourceConfig {
         // get resource api address from resource server
         const client = new pb_config.ConfigServicePromiseClient(this.address, null, null);
         const apiIdRequest = new pb_config.ApiIdRequest();
-        const api_id = await client.apiId(apiIdRequest)
+        const api_id = await client.apiId(apiIdRequest, metadata(this.access_token))
             .then(response => base64_to_uuid_hex(response.toObject().apiId));
         this.api_id = api_id;
         // login user to auth server

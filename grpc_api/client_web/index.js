@@ -3276,14 +3276,12 @@ var pb_auth = /*@__PURE__*/getDefaultExportFromCjs(auth_grpc_web_pbExports);
 
 /**
  * Construct request metadata
- * @param {{address:string,token:string}} token 
+ * @param {?string} token 
  * @returns {Object.<string,string>}
  */
 function metadata(token) {
-    if (token) {
-        return { "Authorization": "Bearer " + token };
-    }
-    return {};
+    const bearer_token = token ? token : ".";
+    return { "Authorization": "Bearer " + bearer_token };
 }
 
 /**
@@ -94925,7 +94923,7 @@ class ResourceConfig {
         // get resource api address from resource server
         const client = new pb_config.ConfigServicePromiseClient(this.address, null, null);
         const apiIdRequest = new pb_config.ApiIdRequest();
-        const api_id = await client.apiId(apiIdRequest)
+        const api_id = await client.apiId(apiIdRequest, metadata(this.access_token))
             .then(response => base64_to_uuid_hex(response.toObject().apiId));
         this.api_id = api_id;
         // login user to auth server

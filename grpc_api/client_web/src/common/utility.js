@@ -1,13 +1,11 @@
 /**
  * Construct request metadata
- * @param {{address:string,token:string}} token 
+ * @param {?string} token 
  * @returns {Object.<string,string>}
  */
 export function metadata(token) {
-    if (token) {
-        return { "Authorization": "Bearer " + token };
-    }
-    return {};
+    const bearer_token = token ? token : ".";
+    return { "Authorization": "Bearer " + bearer_token };
 }
 
 /**

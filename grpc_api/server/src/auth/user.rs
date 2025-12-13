@@ -38,8 +38,9 @@ impl UserService for UserServer {
     {
         let extension = request.extensions();
         let request = request.get_ref();
-        self.validate(extension, ValidatorKind::User(Uuid::from_slice(&request.id).unwrap_or_default())).await?;
-        let result = self.auth_db.read_user(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        let user_id = Uuid::from_slice(&request.id).unwrap_or_default();
+        self.validate(extension, ValidatorKind::User(user_id)).await?;
+        let result = self.auth_db.read_user(user_id).await;
         let result = match result {
             Ok(value) => Some(value.into()),
             Err(e) => return Err(handle_error(e))
@@ -159,7 +160,8 @@ impl UserService for UserServer {
     {
         let extension = request.extensions();
         let request = request.get_ref();
-        self.validate(extension, ValidatorKind::User(Uuid::from_slice(&request.id).unwrap_or_default())).await?;
+        let user_id = Uuid::from_slice(&request.id).unwrap_or_default();
+        self.validate(extension, ValidatorKind::User(user_id)).await?;
         // decrypt encrypted password and then hash the password
         let mut password_decrypt = None;
         if let Some(password) = &request.password {
@@ -168,7 +170,7 @@ impl UserService for UserServer {
             password_decrypt = Some(utility::decrypt_message_string(password, priv_key)?);
         }
         let result = self.auth_db.update_user(
-            Uuid::from_slice(&request.id).unwrap_or_default(),
+            user_id,
             request.name.as_deref(),
             request.email.as_deref(),
             request.phone.as_deref(),
@@ -186,8 +188,9 @@ impl UserService for UserServer {
     {
         let extension = request.extensions();
         let request = request.get_ref();
-        self.validate(extension, ValidatorKind::User(Uuid::from_slice(&request.id).unwrap_or_default())).await?;
-        let result = self.auth_db.delete_user(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        let user_id = Uuid::from_slice(&request.id).unwrap_or_default();
+        self.validate(extension, ValidatorKind::User(user_id)).await?;
+        let result = self.auth_db.delete_user(user_id).await;
         match result {
             Ok(_) => (),
             Err(e) => return Err(handle_error(e))

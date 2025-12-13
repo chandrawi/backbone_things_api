@@ -4,10 +4,31 @@ use crate::proto::resource::config::{
     ApiIdRequest, ApiIdResponse, AccessRequest, ProcedureAccesResponse, RoleAccesResponse,
     ProcedureAcces, RoleAcces, 
 };
+use crate::common::validator::{AccessValidator, AccessSchema};
 use crate::common::config::{API_ID, ACCESS_MAP};
+
+const GET_ACCESS: &str = "get_access";
 
 #[derive(Debug)]
 pub struct ConfigServer {
+    token_key: Vec<u8>,
+    accesses: Vec<AccessSchema>
+}
+
+impl ConfigServer {
+    pub fn new() -> Self {
+        Self {
+            token_key: Vec::new(),
+            accesses: Vec::new()
+        }
+    }
+    pub fn new_with_validator(token_key: &[u8], accesses: &[AccessSchema]) -> Self {
+        const PROCEDURES: &[&str] = &[GET_ACCESS];
+        Self {
+            token_key: token_key.to_vec(),
+            accesses: Self::construct_accesses(accesses, PROCEDURES)
+        }
+    }
 }
 
 #[tonic::async_trait]
@@ -23,9 +44,10 @@ impl ConfigService for ConfigServer {
         Ok(Response::new(ApiIdResponse { api_id }))
     }
 
-    async fn procedure_access(&self, _: Request<AccessRequest>)
+    async fn procedure_access(&self, request: Request<AccessRequest>)
         ->  Result<Response<ProcedureAccesResponse>, Status>
     {
+        self.validate(request.extensions(), GET_ACCESS)?;
         let access = match ACCESS_MAP.get() {
             Some(value) => value.into_iter().map(|a| {
                     ProcedureAcces {
@@ -38,9 +60,10 @@ impl ConfigService for ConfigServer {
         Ok(Response::new(ProcedureAccesResponse { access }))
     }
 
-    async fn role_access(&self, _: Request<AccessRequest>)
+    async fn role_access(&self, request: Request<AccessRequest>)
         ->  Result<Response<RoleAccesResponse>, Status>
     {
+        self.validate(request.extensions(), GET_ACCESS)?;
         let access = match ACCESS_MAP.get() {
             Some(value) => {
                 let mut pairs: Vec<(String, String)> = Vec::new();
@@ -76,6 +99,18 @@ impl ConfigService for ConfigServer {
             None => Vec::new()
         };
         Ok(Response::new(RoleAccesResponse { access }))
+    }
+
+}
+
+impl AccessValidator for ConfigServer {
+
+    fn token_key(&self) -> Vec<u8> {
+        self.token_key.clone()
+    }
+
+    fn accesses(&self) -> Vec<AccessSchema> {
+        self.accesses.clone()
     }
 
 }

@@ -21,6 +21,7 @@ services:
       - ROOT_PASSWORD=r0ot_P4s5w0rd
       - ROOT_ACCESS_DURATION=300
       - ROOT_REFRESH_DURATION=3600
+      - SECURED=1
     depends_on:
       - auth-db
     restart: unless-stopped

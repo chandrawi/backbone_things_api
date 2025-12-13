@@ -21,6 +21,7 @@ services:
       - ROOT_PASSWORD=r0ot_P4s5w0rd
       - ROOT_ACCESS_DURATION=300
       - ROOT_REFRESH_DURATION=3600
+      - SECURED=1
     depends_on:
       - auth-db
     restart: unless-stopped
@@ -49,6 +50,7 @@ services:
       - ROOT_REFRESH_DURATION=3600
       - API_ID=00000000-0000-0000-0000-000000000000
       - API_PASSWORD=Ap1_P4s5w0rd
+      - SECURED=1
     depends_on:
       - resource-db
       - auth-server

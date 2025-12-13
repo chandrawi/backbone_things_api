@@ -31,13 +31,13 @@ class Resource:
         self.auth_token = auth_token
         self.access_token = access_token
         self.refresh_token = refresh_token
-        self.metadata = [] if access_token == None \
-            else [("authorization", "Bearer " + access_token)]
+        access_token = "" if access_token == None else access_token
+        self.metadata = [("authorization", "Bearer " + access_token)]
         self._api_id = api_id
         self.user_id=None
 
     def login(self, auth_address: str, username: str, password: str):
-        self._api_id = _config.api_id(self.address)
+        self._api_id = _config.api_id(self)
         login = _auth.user_login(auth_address, username, password)
         self.auth_address = auth_address
         self.auth_token = login.auth_token
@@ -65,7 +65,7 @@ class Resource:
             self.metadata = []
 
     def api_id(self) -> UUID:
-        return _config.api_id(self.address)
+        return _config.api_id(self)
 
     def procedure_access(self) -> List[ProcedureAcces]:
         return _config.procedure_access(self)

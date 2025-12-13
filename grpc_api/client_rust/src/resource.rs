@@ -58,7 +58,7 @@ impl Resource {
 
     pub async fn login(&mut self, auth_address: &str, username: &str, password: &str) -> Result<(), Status>
     {
-        self.api_id = Some(config::api_id(&self.channel).await?);
+        self.api_id = Some(config::api_id(&self).await?);
         let channel = crate::utility::channel(auth_address).await;
         let login = auth::user_login(&channel, username, password).await?;
         self.channel_auth = Some(channel);
@@ -97,7 +97,7 @@ impl Resource {
 
     pub async fn api_id(&self) -> Result<Uuid, Status>
     {
-        config::api_id(&self.channel).await
+        config::api_id(&self).await
     }
 
     pub async fn procedure_access(&self) -> Result<Vec<ProcedureAcces>, Status>

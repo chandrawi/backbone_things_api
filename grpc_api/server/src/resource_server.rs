@@ -74,6 +74,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Some(value) => value,
         None => std::env::var("API_PASSWORD").unwrap()
     };
+    let secured_env = match std::env::var("SECURED") {
+        Ok(value) => ["1", "true", "True", "TRUE"].into_iter().any(|e| *e == value),
+        Err(_) => false
+    };
+    let secured = args.secured || secured_env;
 
     let api_id = Uuid::try_parse(&api_id).unwrap();
     API_ID.set(api_id).unwrap();
@@ -91,7 +96,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         )).unwrap();
     }
 
-    if args.secured {
+    if secured {
         resource_server_secured(db_url, address, auth_address, api_id, password).await
     } else {
         resource_server(db_url, address).await
@@ -105,7 +110,7 @@ async fn resource_server(db_url: String, address: String) -> Result<(), Box<dyn 
     let resource_db = Resource::new_with_url(&db_url).await;
     migrate_resource(&resource_db.pool).await.unwrap();
 
-    let config_server = ConfigServer{};
+    let config_server = ConfigServer::new();
     let model_server = ModelServer::new(resource_db.clone());
     let device_server = DeviceServer::new(resource_db.clone());
     let group_server = GroupServer::new(resource_db.clone());
@@ -174,7 +179,7 @@ async fn resource_server_secured(db_url: String, address: String, auth_address: 
     let resource_db = Resource::new_with_url(&db_url).await;
     migrate_resource(&resource_db.pool).await.unwrap();
 
-    let config_server = ConfigServer{};
+    let config_server = ConfigServer::new_with_validator(&token_key, &accesses);
     let model_server = ModelServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
     let device_server = DeviceServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
     let group_server = GroupServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
@@ -183,7 +188,7 @@ async fn resource_server_secured(db_url: String, address: String, auth_address: 
     let buffer_server = BufferServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
     let slice_server = SliceServer::new_with_validator(resource_db.clone(), &token_key, &accesses);
 
-    let config_service = ConfigServiceServer::new(config_server);
+    let config_service = ConfigServiceServer::with_interceptor(config_server, interceptor);
     let model_service = ModelServiceServer::with_interceptor(model_server, interceptor);
     let device_service = DeviceServiceServer::with_interceptor(device_server, interceptor);
     let group_service = GroupServiceServer::with_interceptor(group_server, interceptor);
