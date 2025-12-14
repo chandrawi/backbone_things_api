@@ -84,11 +84,6 @@ class ProfileServiceStub(object):
                 request_serializer=bbthings__grpc_dot_proto_dot_auth_dot_profile__pb2.ProfileId.SerializeToString,
                 response_deserializer=bbthings__grpc_dot_proto_dot_auth_dot_profile__pb2.ProfileChangeResponse.FromString,
                 _registered_method=True)
-        self.SwapUserProfile = channel.unary_unary(
-                '/profile.ProfileService/SwapUserProfile',
-                request_serializer=bbthings__grpc_dot_proto_dot_auth_dot_profile__pb2.UserProfileSwap.SerializeToString,
-                response_deserializer=bbthings__grpc_dot_proto_dot_auth_dot_profile__pb2.ProfileChangeResponse.FromString,
-                _registered_method=True)
 
 
 class ProfileServiceServicer(object):
@@ -154,12 +149,6 @@ class ProfileServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def SwapUserProfile(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_ProfileServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -211,11 +200,6 @@ def add_ProfileServiceServicer_to_server(servicer, server):
             'DeleteUserProfile': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteUserProfile,
                     request_deserializer=bbthings__grpc_dot_proto_dot_auth_dot_profile__pb2.ProfileId.FromString,
-                    response_serializer=bbthings__grpc_dot_proto_dot_auth_dot_profile__pb2.ProfileChangeResponse.SerializeToString,
-            ),
-            'SwapUserProfile': grpc.unary_unary_rpc_method_handler(
-                    servicer.SwapUserProfile,
-                    request_deserializer=bbthings__grpc_dot_proto_dot_auth_dot_profile__pb2.UserProfileSwap.FromString,
                     response_serializer=bbthings__grpc_dot_proto_dot_auth_dot_profile__pb2.ProfileChangeResponse.SerializeToString,
             ),
     }
@@ -488,33 +472,6 @@ class ProfileService(object):
             target,
             '/profile.ProfileService/DeleteUserProfile',
             bbthings__grpc_dot_proto_dot_auth_dot_profile__pb2.ProfileId.SerializeToString,
-            bbthings__grpc_dot_proto_dot_auth_dot_profile__pb2.ProfileChangeResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def SwapUserProfile(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/profile.ProfileService/SwapUserProfile',
-            bbthings__grpc_dot_proto_dot_auth_dot_profile__pb2.UserProfileSwap.SerializeToString,
             bbthings__grpc_dot_proto_dot_auth_dot_profile__pb2.ProfileChangeResponse.FromString,
             options,
             channel_credentials,

@@ -74,7 +74,7 @@ impl From<RoleSchema> for role::RoleSchema {
             access_duration: value.access_duration,
             refresh_duration: value.refresh_duration,
             access_key: value.access_key,
-            procedures: value.procedures.into_iter().map(|v| v.as_bytes().to_vec()).collect()
+            procedure_ids: value.procedure_ids.into_iter().map(|v| v.as_bytes().to_vec()).collect()
         }
     }
 }
@@ -90,7 +90,7 @@ impl From<role::RoleSchema> for RoleSchema {
             access_duration: value.access_duration,
             refresh_duration: value.refresh_duration,
             access_key: value.access_key,
-            procedures: value.procedures.into_iter().map(|v| Uuid::from_slice(&v).unwrap_or_default()).collect()
+            procedure_ids: value.procedure_ids.into_iter().map(|v| Uuid::from_slice(&v).unwrap_or_default()).collect()
         }
     }
 }
@@ -156,7 +156,7 @@ impl From<RoleProfileSchema> for profile::RoleProfileSchema {
             role_id: value.role_id.as_bytes().to_vec(),
             name: value.name,
             value_type: value.value_type.into(),
-            mode: value.mode.into()
+            category: value.category
         }
     }
 }
@@ -168,7 +168,7 @@ impl From<profile::RoleProfileSchema> for RoleProfileSchema {
             role_id: Uuid::from_slice(&value.role_id).unwrap_or_default(),
             name: value.name,
             value_type: value.value_type.into(),
-            mode: value.mode.into()
+            category: value.category
         }
     }
 }
@@ -181,7 +181,7 @@ impl From<UserProfileSchema> for profile::UserProfileSchema {
             name: value.name,
             value_bytes: value.value.to_bytes(),
             value_type: value.value.get_type().into(),
-            order: value.order as u32
+            category: value.category
         }
     }
 }
@@ -193,7 +193,7 @@ impl From<profile::UserProfileSchema> for UserProfileSchema {
             user_id: Uuid::from_slice(&value.user_id).unwrap_or_default(),
             name: value.name,
             value: DataValue::from_bytes(value.value_bytes.as_slice(), DataType::from(value.value_type)),
-            order: value.order as i16
+            category: value.category
         }
     }
 }

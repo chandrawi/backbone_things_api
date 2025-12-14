@@ -33,7 +33,7 @@ pub struct RoleSchema {
     pub access_duration: i32,
     pub refresh_duration: i32,
     pub access_key: Vec<u8>,
-    pub procedures: Vec<Uuid>
+    pub procedure_ids: Vec<Uuid>
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
@@ -58,55 +58,12 @@ pub struct UserRoleSchema {
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
-pub enum ProfileMode {
-    #[default]
-    SingleOptional,
-    SingleRequired,
-    MultipleOptional,
-    MultipleRequired
-}
-
-impl From<i16> for ProfileMode {
-    fn from(value: i16) -> Self {
-        match value {
-            1 => Self::SingleRequired,
-            2 => Self::MultipleOptional,
-            3 => Self::MultipleRequired,
-            _ => Self::SingleOptional
-        }
-    }
-}
-
-impl From<ProfileMode> for i16 {
-    fn from(value: ProfileMode) -> Self {
-        match &value {
-            ProfileMode::SingleOptional => 0,
-            ProfileMode::SingleRequired => 1,
-            ProfileMode::MultipleOptional => 2,
-            ProfileMode::MultipleRequired => 3
-        }
-    }
-}
-
-impl From<u32> for ProfileMode {
-    fn from(value: u32) -> Self {
-        Self::from(value as i16)
-    }
-}
-
-impl From<ProfileMode> for u32 {
-    fn from(value: ProfileMode) -> Self {
-        i16::from(value) as u32
-    }
-}
-
-#[derive(Debug, Default, PartialEq, Clone)]
 pub struct RoleProfileSchema {
     pub id: i32,
     pub role_id: Uuid,
     pub name: String,
     pub value_type: DataType,
-    pub mode: ProfileMode
+    pub category: String
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
@@ -115,7 +72,7 @@ pub struct UserProfileSchema {
     pub user_id: Uuid,
     pub name: String,
     pub value: DataValue,
-    pub order: i16
+    pub category: String
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]

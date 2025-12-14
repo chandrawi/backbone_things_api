@@ -46,12 +46,12 @@ class RoleSchema:
     access_duration: int
     refresh_duration: int
     access_key: bytes
-    procedures: List[UUID]
+    procedure_ids: List[UUID]
 
     def from_response(r):
-        procedures = []
-        for p in r.procedures: procedures.append(UUID(bytes=p))
-        return RoleSchema(UUID(bytes=r.id), UUID(bytes=r.api_id), r.name, r.multi, r.ip_lock, r.access_duration, r.refresh_duration, r.access_key, procedures)
+        procedure_ids = []
+        for p in r.procedure_ids: procedure_ids.append(UUID(bytes=p))
+        return RoleSchema(UUID(bytes=r.id), UUID(bytes=r.api_id), r.name, r.multi, r.ip_lock, r.access_duration, r.refresh_duration, r.access_key, procedure_ids)
 
 
 @dataclass
@@ -83,44 +83,6 @@ class UserSchema:
         return UserSchema(UUID(bytes=r.id), r.name, r.email, r.phone, r.password, user_roles)
 
 
-class ProfileMode:
-    SINGLE_OPTIONAL = 0
-    SINGLE_REQUIRED = 1
-    MULTIPLE_OPTIONAL = 2
-    MULTIPLE_REQUIRED = 3
-
-    @staticmethod
-    def from_str(mode: str) -> int:
-        if mode == "SINGLE_REQUIRED":
-            return 1
-        elif mode == "MULTIPLE_OPTIONAL":
-            return 2
-        elif mode == "MULTIPLE_REQUIRED":
-            return 3
-        else:
-            return 0
-
-    @staticmethod
-    def to_str(mode: int) -> str:
-        if mode == 1:
-            return "SINGLE_REQUIRED"
-        elif mode == 2:
-            return "MULTIPLE_OPTIONAL"
-        elif mode == 3:
-            return "MULTIPLE_REQUIRED"
-        else:
-            return "SINGLE_OPTIONAL"
-
-    @staticmethod
-    def from_int_str(mode: Union[int, str]) -> int:
-        if isinstance(mode, int):
-            if mode >= 1 and mode <= 3: return mode
-            else: return 0
-        elif isinstance(mode, str):
-            return ProfileMode.from_str(mode)
-        else:
-            return 0
-
 
 @dataclass
 class RoleProfileSchema:
@@ -128,11 +90,10 @@ class RoleProfileSchema:
     role_id: UUID
     name: str
     value_type: DataType
-    mode: int
+    category: str
 
     def from_response(r):
-        mode = int(r.mode)
-        return RoleProfileSchema(r.id, UUID(bytes=r.role_id), r.name, DataType(r.value_type), mode)
+        return RoleProfileSchema(r.id, UUID(bytes=r.role_id), r.name, DataType(r.value_type), r.category)
 
 
 @dataclass
@@ -141,11 +102,11 @@ class UserProfileSchema:
     user_id: UUID
     name: str
     value: List[Union[bool, int, float, str, None]]
-    order: int
+    category: str
 
     def from_response(r):
         value = unpack_data(r.value_bytes, DataType(r.value_type))
-        return UserProfileSchema(r.id, UUID(bytes=r.user_id), r.name, value, r.order)
+        return UserProfileSchema(r.id, UUID(bytes=r.user_id), r.name, value, r.category)
 
 
 @dataclass

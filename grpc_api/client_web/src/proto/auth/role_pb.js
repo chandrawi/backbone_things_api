@@ -354,7 +354,7 @@ ipLock: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
 accessDuration: jspb.Message.getFieldWithDefault(msg, 6, 0),
 refreshDuration: jspb.Message.getFieldWithDefault(msg, 7, 0),
 accessKey: msg.getAccessKey_asB64(),
-proceduresList: msg.getProceduresList_asB64()
+procedureIdsList: msg.getProcedureIdsList_asB64()
   };
 
   if (includeInstance) {
@@ -425,7 +425,7 @@ proto.role.RoleSchema.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 9:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.addProcedures(value);
+      msg.addProcedureIds(value);
       break;
     default:
       reader.skipField();
@@ -512,7 +512,7 @@ proto.role.RoleSchema.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getProceduresList_asU8();
+  f = message.getProcedureIdsList_asU8();
   if (f.length > 0) {
     writer.writeRepeatedBytes(
       9,
@@ -739,35 +739,35 @@ proto.role.RoleSchema.prototype.setAccessKey = function(value) {
 
 
 /**
- * repeated bytes procedures = 9;
+ * repeated bytes procedure_ids = 9;
  * @return {!(Array<!Uint8Array>|Array<string>)}
  */
-proto.role.RoleSchema.prototype.getProceduresList = function() {
+proto.role.RoleSchema.prototype.getProcedureIdsList = function() {
   return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 9));
 };
 
 
 /**
- * repeated bytes procedures = 9;
- * This is a type-conversion wrapper around `getProceduresList()`
+ * repeated bytes procedure_ids = 9;
+ * This is a type-conversion wrapper around `getProcedureIdsList()`
  * @return {!Array<string>}
  */
-proto.role.RoleSchema.prototype.getProceduresList_asB64 = function() {
+proto.role.RoleSchema.prototype.getProcedureIdsList_asB64 = function() {
   return /** @type {!Array<string>} */ (jspb.Message.bytesListAsB64(
-      this.getProceduresList()));
+      this.getProcedureIdsList()));
 };
 
 
 /**
- * repeated bytes procedures = 9;
+ * repeated bytes procedure_ids = 9;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getProceduresList()`
+ * This is a type-conversion wrapper around `getProcedureIdsList()`
  * @return {!Array<!Uint8Array>}
  */
-proto.role.RoleSchema.prototype.getProceduresList_asU8 = function() {
+proto.role.RoleSchema.prototype.getProcedureIdsList_asU8 = function() {
   return /** @type {!Array<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
-      this.getProceduresList()));
+      this.getProcedureIdsList()));
 };
 
 
@@ -775,7 +775,7 @@ proto.role.RoleSchema.prototype.getProceduresList_asU8 = function() {
  * @param {!(Array<!Uint8Array>|Array<string>)} value
  * @return {!proto.role.RoleSchema} returns this
  */
-proto.role.RoleSchema.prototype.setProceduresList = function(value) {
+proto.role.RoleSchema.prototype.setProcedureIdsList = function(value) {
   return jspb.Message.setField(this, 9, value || []);
 };
 
@@ -785,7 +785,7 @@ proto.role.RoleSchema.prototype.setProceduresList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.role.RoleSchema} returns this
  */
-proto.role.RoleSchema.prototype.addProcedures = function(value, opt_index) {
+proto.role.RoleSchema.prototype.addProcedureIds = function(value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 9, value, opt_index);
 };
 
@@ -794,8 +794,8 @@ proto.role.RoleSchema.prototype.addProcedures = function(value, opt_index) {
  * Clears the list making it empty but non-null.
  * @return {!proto.role.RoleSchema} returns this
  */
-proto.role.RoleSchema.prototype.clearProceduresList = function() {
-  return this.setProceduresList([]);
+proto.role.RoleSchema.prototype.clearProcedureIdsList = function() {
+  return this.setProcedureIdsList([]);
 };
 
 

@@ -14,7 +14,7 @@ use crate::common::type_value::{DataType, DataValue};
 use crate::common::utility;
 use _schema::{
     ApiSchema, ProcedureSchema, RoleSchema, UserSchema, 
-    RoleProfileSchema, UserProfileSchema, ProfileMode, TokenSchema
+    RoleProfileSchema, UserProfileSchema, TokenSchema
 };
 use token::TokenSelector;
 
@@ -275,17 +275,17 @@ impl Auth {
         qs.fetch_role_profile_schema(&self.pool).await
     }
 
-    pub async fn create_role_profile(&self, role_id: Uuid, name: &str, value_type: DataType, mode: ProfileMode)
+    pub async fn create_role_profile(&self, role_id: Uuid, name: &str, value_type: DataType, category: &str)
         -> Result<i32, Error>
     {
-        let qs = profile::insert_role_profile(role_id, name, value_type, mode);
+        let qs = profile::insert_role_profile(role_id, name, value_type, category);
         qs.fetch_id(&self.pool).await
     }
 
-    pub async fn update_role_profile(&self, id: i32, name: Option<&str>, value_type: Option<DataType>, mode: Option<ProfileMode>)
+    pub async fn update_role_profile(&self, id: i32, name: Option<&str>, value_type: Option<DataType>, category: Option<&str>)
         -> Result<(), Error>
     {
-        let qs = profile::update_role_profile(id, name, value_type, mode);
+        let qs = profile::update_role_profile(id, name, value_type, category);
         qs.execute(&self.pool).await
     }
 
@@ -400,19 +400,17 @@ impl Auth {
         qs.fetch_user_profile_schema(&self.pool).await
     }
 
-    pub async fn create_user_profile(&self, user_id: Uuid, name: &str, value: DataValue)
+    pub async fn create_user_profile(&self, user_id: Uuid, name: &str, value: DataValue, category: &str)
         -> Result<i32, Error>
     {
-        let qs = profile::select_user_profile_max_order(user_id, name);
-        let new_order = qs.fetch_max_order(&self.pool, -1).await + 1;
-        let qs = profile::insert_user_profile(user_id, name, value, new_order as i16);
+        let qs = profile::insert_user_profile(user_id, name, value, category);
         qs.fetch_id(&self.pool).await
     }
 
-    pub async fn update_user_profile(&self, id: i32, name: Option<&str>, value: Option<DataValue>)
+    pub async fn update_user_profile(&self, id: i32, name: Option<&str>, value: Option<DataValue>, category: Option<&str>)
         -> Result<(), Error>
     {
-        let qs = profile::update_user_profile(id, name, value);
+        let qs = profile::update_user_profile(id, name, value, category);
         qs.execute(&self.pool).await
     }
 
@@ -420,17 +418,6 @@ impl Auth {
         -> Result<(), Error>
     {
         let qs = profile::delete_user_profile(id);
-        qs.execute(&self.pool).await
-    }
-
-    pub async fn swap_user_profile(&self, user_id: Uuid, name: &str, order_1: i16, order_2: i16)
-        -> Result<(), Error>
-    {
-        let qs = profile::update_user_profile_order(user_id, name, order_1, i16::MAX);
-        qs.execute(&self.pool).await?;
-        let qs = profile::update_user_profile_order(user_id, name, order_2, order_1);
-        qs.execute(&self.pool).await?;
-        let qs = profile::update_user_profile_order(user_id, name, i16::MAX, order_2);
         qs.execute(&self.pool).await
     }
 

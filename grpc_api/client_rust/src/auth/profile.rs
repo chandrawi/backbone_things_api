@@ -1,10 +1,10 @@
 use tonic::{Request, Status};
 use uuid::Uuid;
-use bbthings_database::{ProfileMode, DataType, DataValue};
+use bbthings_database::{DataType, DataValue};
 use bbthings_grpc_server::proto::auth::profile::profile_service_client::ProfileServiceClient;
 use bbthings_grpc_server::proto::auth::profile::{
     ProfileId, RoleId, UserId, RoleProfileSchema, RoleProfileUpdate, 
-    UserProfileSchema, UserProfileUpdate, UserProfileSwap
+    UserProfileSchema, UserProfileUpdate
 };
 use crate::auth::Auth;
 use bbthings_grpc_server::common::interceptor::TokenInterceptor;
@@ -41,7 +41,7 @@ pub(crate) async fn list_role_profile_by_role(auth: &Auth, role_id: Uuid)
     Ok(response.results)
 }
 
-pub(crate) async fn create_role_profile(auth: &Auth, role_id: Uuid, name: &str, value_type: DataType, mode: ProfileMode)
+pub(crate) async fn create_role_profile(auth: &Auth, role_id: Uuid, name: &str, value_type: DataType, category: &str)
     -> Result<i32, Status>
 {
     let interceptor = TokenInterceptor(auth.auth_token.clone());
@@ -52,7 +52,7 @@ pub(crate) async fn create_role_profile(auth: &Auth, role_id: Uuid, name: &str, 
         role_id: role_id.as_bytes().to_vec(),
         name: name.to_owned(),
         value_type: value_type.into(),
-        mode: mode.into()
+        category: category.to_owned()
     });
     let response = client.create_role_profile(request)
         .await?
@@ -60,7 +60,7 @@ pub(crate) async fn create_role_profile(auth: &Auth, role_id: Uuid, name: &str, 
     Ok(response.id)
 }
 
-pub(crate) async fn update_role_profile(auth: &Auth, id: i32, name: Option<&str>, value_type: Option<DataType>, mode: Option<ProfileMode>)
+pub(crate) async fn update_role_profile(auth: &Auth, id: i32, name: Option<&str>, value_type: Option<DataType>, category: Option<&str>)
     -> Result<(), Status>
 {
     let interceptor = TokenInterceptor(auth.auth_token.clone());
@@ -70,7 +70,7 @@ pub(crate) async fn update_role_profile(auth: &Auth, id: i32, name: Option<&str>
         id,
         name: name.map(|s| s.to_owned()),
         value_type: value_type.map(|v| v.into()),
-        mode: mode.map(|v| v.into())
+        category: category.map(|v| v.to_owned())
     });
     client.update_role_profile(request)
         .await?;
@@ -121,7 +121,7 @@ pub(crate) async fn list_user_profile_by_user(auth: &Auth, user_id: Uuid)
     Ok(response.results)
 }
 
-pub(crate) async fn create_user_profile(auth: &Auth, user_id: Uuid, name: &str, value: DataValue)
+pub(crate) async fn create_user_profile(auth: &Auth, user_id: Uuid, name: &str, value: DataValue, category: &str)
     -> Result<i32, Status>
 {
     let interceptor = TokenInterceptor(auth.auth_token.clone());
@@ -133,7 +133,7 @@ pub(crate) async fn create_user_profile(auth: &Auth, user_id: Uuid, name: &str, 
         name: name.to_owned(),
         value_bytes: value.to_bytes(),
         value_type: value.get_type().into(),
-        order: 0
+        category: category.to_owned()
     });
     let response = client.create_user_profile(request)
         .await?
@@ -141,7 +141,7 @@ pub(crate) async fn create_user_profile(auth: &Auth, user_id: Uuid, name: &str, 
     Ok(response.id)
 }
 
-pub(crate) async fn update_user_profile(auth: &Auth, id: i32, name: Option<&str>, value: Option<DataValue>)
+pub(crate) async fn update_user_profile(auth: &Auth, id: i32, name: Option<&str>, value: Option<DataValue>, category: Option<&str>)
     -> Result<(), Status>
 {
     let interceptor = TokenInterceptor(auth.auth_token.clone());
@@ -151,7 +151,8 @@ pub(crate) async fn update_user_profile(auth: &Auth, id: i32, name: Option<&str>
         id,
         name: name.map(|s| s.to_owned()),
         value_type: value.clone().map(|v| v.get_type().into()),
-        value_bytes: value.map(|v| v.to_bytes())
+        value_bytes: value.map(|v| v.to_bytes()),
+        category: category.map(|s| s.to_owned())
     });
     client.update_user_profile(request)
         .await?;
@@ -168,23 +169,6 @@ pub(crate) async fn delete_user_profile(auth: &Auth, id: i32)
         id
     });
     client.delete_user_profile(request)
-        .await?;
-    Ok(())
-}
-
-pub(crate) async fn swap_user_profile(auth: &Auth, user_id: Uuid, name: &str, order_1: i16, order_2: i16)
-    -> Result<(), Status>
-{
-    let interceptor = TokenInterceptor(auth.auth_token.clone());
-    let mut client = 
-        ProfileServiceClient::with_interceptor(auth.channel.to_owned(), interceptor);
-    let request = Request::new(UserProfileSwap {
-        user_id: user_id.as_bytes().to_vec(),
-        name: name.to_owned(),
-        order_1: order_1 as u32,
-        order_2: order_2 as u32
-    });
-    client.swap_user_profile(request)
         .await?;
     Ok(())
 }

@@ -2,7 +2,7 @@ use sqlx::{Row, FromRow, Error, postgres::PgRow};
 use uuid::Uuid;
 use crate::auth::_schema::{
     ApiSchema, ProcedureSchema, RoleSchema, UserSchema, UserRoleSchema, 
-    ProfileMode, RoleProfileSchema, UserProfileSchema, TokenSchema
+    RoleProfileSchema, UserProfileSchema, TokenSchema
 };
 use crate::common::type_value::{DataType, DataValue};
 
@@ -226,13 +226,13 @@ pub(crate) fn map_to_role_schema(rows: Vec<RoleRow>) -> Vec<RoleSchema> {
                 access_duration: row.access_duration,
                 refresh_duration: row.refresh_duration,
                 access_key: row.access_key,
-                procedures: Vec::new(),
+                procedure_ids: Vec::new(),
             });
         }
 
         // 2) Add procedure id if exists
         if let (Some(role), Some(proc_id)) = (last_role.as_mut(), row.procedure_id) {
-            role.procedures.push(proc_id);
+            role.procedure_ids.push(proc_id);
         }
     }
 
@@ -329,27 +329,26 @@ pub(crate) fn map_to_user_schema(rows: Vec<UserRow>) -> Vec<UserSchema> {
 impl<'r> FromRow<'r, PgRow> for RoleProfileSchema {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
         let type_number: i16 = row.try_get(3)?;
-        let mode_number: i16 = row.try_get(4)?;
         Ok(Self {
             id: row.try_get(0)?,
             role_id: row.try_get(1)?,
             name: row.try_get(2)?,
             value_type: DataType::from(type_number),
-            mode: ProfileMode::from(mode_number)
+            category: row.try_get(4)?
         })
     }
 }
 
 impl<'r> FromRow<'r, PgRow> for UserProfileSchema {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
-        let bytes: Vec<u8> = row.try_get(4)?;
-        let type_number: i16 = row.try_get(5)?;
+        let bytes: Vec<u8> = row.try_get(3)?;
+        let type_number: i16 = row.try_get(4)?;
         Ok(Self {
             id: row.try_get(0)?,
             user_id: row.try_get(1)?,
             name: row.try_get(2)?,
             value: DataValue::from_bytes(&bytes, DataType::from(type_number)),
-            order: row.try_get(3)?
+            category: row.try_get(5)?
         })
     }
 }

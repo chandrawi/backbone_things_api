@@ -8,7 +8,7 @@ from datetime import datetime
 import uuid
 import dotenv
 import pytest
-from bbthings_grpc import Auth, DataType, ProfileMode
+from bbthings_grpc import Auth, DataType
 from bbthings_grpc.common.utility import verify_password, generate_access_key
 import utility
 
@@ -78,9 +78,9 @@ def test_auth():
     assert role.name == "administrator"
     assert role.multi == False
     assert role.ip_lock == False
-    assert proc_id1 in role.procedures
-    assert proc_id2 in role.procedures
-    assert proc_id3 in role.procedures
+    assert proc_id1 in role.procedure_ids
+    assert proc_id2 in role.procedure_ids
+    assert proc_id3 in role.procedure_ids
 
     assert len(role.access_key) == 32
 
@@ -140,10 +140,10 @@ def test_auth():
     assert user.password != old_password
 
     # create role and user profile
-    profile_role_id1 = auth.create_role_profile(role_id1, "name", DataType.STRING, "SINGLE_REQUIRED")
-    profile_role_id2 = auth.create_role_profile(role_id1, "age", DataType.U16, "SINGLE_OPTIONAL")
-    profile_user_id1 = auth.create_user_profile(user_id1, "name", "john doe")
-    profile_user_id2 = auth.create_user_profile(user_id1, "age", 20)
+    profile_role_id1 = auth.create_role_profile(role_id1, "name", DataType.STRING, "")
+    profile_role_id2 = auth.create_role_profile(role_id1, "age", DataType.U16, "")
+    profile_user_id1 = auth.create_user_profile(user_id1, "name", "john doe", "")
+    profile_user_id2 = auth.create_user_profile(user_id1, "age", 20, "")
 
     # read role and user profile
     profile_role1 = auth.read_role_profile(profile_role_id1)
@@ -152,12 +152,12 @@ def test_auth():
     profile_users = auth.list_user_profile_by_user(user_id1)
 
     assert profile_role1.name == "name"
-    assert profile_role2.mode == ProfileMode.SINGLE_OPTIONAL
+    assert profile_role2.category == ""
     assert profile_user1.value == "john doe"
     assert profile_user1 in profile_users
 
     # update user profile
-    auth.update_user_profile(profile_user_id2, None, 21)
+    auth.update_user_profile(profile_user_id2, None, 21, None)
     profile_user2 = auth.read_user_profile(profile_user_id2)
 
     assert profile_user2.value == 21

@@ -10114,7 +10114,7 @@ function requireRole_pb () {
 		accessDuration: jspb.Message.getFieldWithDefault(msg, 6, 0),
 		refreshDuration: jspb.Message.getFieldWithDefault(msg, 7, 0),
 		accessKey: msg.getAccessKey_asB64(),
-		proceduresList: msg.getProceduresList_asB64()
+		procedureIdsList: msg.getProcedureIdsList_asB64()
 		  };
 
 		  if (includeInstance) {
@@ -10185,7 +10185,7 @@ function requireRole_pb () {
 		      break;
 		    case 9:
 		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.addProcedures(value);
+		      msg.addProcedureIds(value);
 		      break;
 		    default:
 		      reader.skipField();
@@ -10272,7 +10272,7 @@ function requireRole_pb () {
 		      f
 		    );
 		  }
-		  f = message.getProceduresList_asU8();
+		  f = message.getProcedureIdsList_asU8();
 		  if (f.length > 0) {
 		    writer.writeRepeatedBytes(
 		      9,
@@ -10499,35 +10499,35 @@ function requireRole_pb () {
 
 
 		/**
-		 * repeated bytes procedures = 9;
+		 * repeated bytes procedure_ids = 9;
 		 * @return {!(Array<!Uint8Array>|Array<string>)}
 		 */
-		proto.role.RoleSchema.prototype.getProceduresList = function() {
+		proto.role.RoleSchema.prototype.getProcedureIdsList = function() {
 		  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 9));
 		};
 
 
 		/**
-		 * repeated bytes procedures = 9;
-		 * This is a type-conversion wrapper around `getProceduresList()`
+		 * repeated bytes procedure_ids = 9;
+		 * This is a type-conversion wrapper around `getProcedureIdsList()`
 		 * @return {!Array<string>}
 		 */
-		proto.role.RoleSchema.prototype.getProceduresList_asB64 = function() {
+		proto.role.RoleSchema.prototype.getProcedureIdsList_asB64 = function() {
 		  return /** @type {!Array<string>} */ (jspb.Message.bytesListAsB64(
-		      this.getProceduresList()));
+		      this.getProcedureIdsList()));
 		};
 
 
 		/**
-		 * repeated bytes procedures = 9;
+		 * repeated bytes procedure_ids = 9;
 		 * Note that Uint8Array is not supported on all browsers.
 		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getProceduresList()`
+		 * This is a type-conversion wrapper around `getProcedureIdsList()`
 		 * @return {!Array<!Uint8Array>}
 		 */
-		proto.role.RoleSchema.prototype.getProceduresList_asU8 = function() {
+		proto.role.RoleSchema.prototype.getProcedureIdsList_asU8 = function() {
 		  return /** @type {!Array<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
-		      this.getProceduresList()));
+		      this.getProcedureIdsList()));
 		};
 
 
@@ -10535,7 +10535,7 @@ function requireRole_pb () {
 		 * @param {!(Array<!Uint8Array>|Array<string>)} value
 		 * @return {!proto.role.RoleSchema} returns this
 		 */
-		proto.role.RoleSchema.prototype.setProceduresList = function(value) {
+		proto.role.RoleSchema.prototype.setProcedureIdsList = function(value) {
 		  return jspb.Message.setField(this, 9, value || []);
 		};
 
@@ -10545,7 +10545,7 @@ function requireRole_pb () {
 		 * @param {number=} opt_index
 		 * @return {!proto.role.RoleSchema} returns this
 		 */
-		proto.role.RoleSchema.prototype.addProcedures = function(value, opt_index) {
+		proto.role.RoleSchema.prototype.addProcedureIds = function(value, opt_index) {
 		  return jspb.Message.addToRepeatedField(this, 9, value, opt_index);
 		};
 
@@ -10554,8 +10554,8 @@ function requireRole_pb () {
 		 * Clears the list making it empty but non-null.
 		 * @return {!proto.role.RoleSchema} returns this
 		 */
-		proto.role.RoleSchema.prototype.clearProceduresList = function() {
-		  return this.setProceduresList([]);
+		proto.role.RoleSchema.prototype.clearProcedureIdsList = function() {
+		  return this.setProcedureIdsList([]);
 		};
 
 
@@ -13723,7 +13723,7 @@ var pb_role = /*@__PURE__*/getDefaultExportFromCjs(role_grpc_web_pbExports);
  * @property {number} access_duration
  * @property {number} refresh_duration
  * @property {string} access_key
- * @property {string[]} procedures
+ * @property {string[]} procedure_ids
  */
 
 /**
@@ -13740,7 +13740,7 @@ function get_role_schema(r) {
         access_duration: r.accessDuration,
         refresh_duration: r.refreshDuration,
         access_key: r.accessKey,
-        procedures: r.proceduresList.map((v) => {return base64_to_uuid_hex(v)})
+        procedure_ids: r.procedureIdsList.map((v) => {return base64_to_uuid_hex(v)})
     };
 }
 
@@ -13773,7 +13773,7 @@ function get_role_schema_vec(r) {
  * Read a role by uuid
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleId} request role uuid: id
- * @returns {Promise<RoleSchema>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 async function read_role(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -13787,7 +13787,7 @@ async function read_role(config, request) {
  * Read a role by name
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleName} request role name: api_id, name
- * @returns {Promise<RoleSchema>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 async function read_role_by_name(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -13802,7 +13802,7 @@ async function read_role_by_name(config, request) {
  * Read roles by uuid list
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleIds} request role uuid list: ids
- * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 async function list_role_by_ids(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -13816,7 +13816,7 @@ async function list_role_by_ids(config, request) {
  * Read roles by api uuid
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ApiId} request api uuid: id
- * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 async function list_role_by_api(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -13830,7 +13830,7 @@ async function list_role_by_api(config, request) {
  * Read roles by user uuid
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserId} request user uuid: id
- * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 async function list_role_by_user(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -13844,7 +13844,7 @@ async function list_role_by_user(config, request) {
  * Read roles by name
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleName} request role name: name
- * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 async function list_role_by_name(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -13858,7 +13858,7 @@ async function list_role_by_name(config, request) {
  * Read roles with options
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleOption} request role option: api_id, user_id, name
- * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 async function list_role_option(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -18685,7 +18685,6 @@ function requireProfile_pb () {
 		goog.exportSymbol('proto.profile.UserProfileListResponse', null, global);
 		goog.exportSymbol('proto.profile.UserProfileReadResponse', null, global);
 		goog.exportSymbol('proto.profile.UserProfileSchema', null, global);
-		goog.exportSymbol('proto.profile.UserProfileSwap', null, global);
 		goog.exportSymbol('proto.profile.UserProfileUpdate', null, global);
 		/**
 		 * Generated by JsPbCodeGenerator.
@@ -18833,27 +18832,6 @@ function requireProfile_pb () {
 		   * @override
 		   */
 		  proto.profile.UserProfileUpdate.displayName = 'proto.profile.UserProfileUpdate';
-		}
-		/**
-		 * Generated by JsPbCodeGenerator.
-		 * @param {Array=} opt_data Optional initial data array, typically from a
-		 * server response, or constructed directly in Javascript. The array is used
-		 * in place and becomes part of the constructed object. It is not cloned.
-		 * If no data is provided, the constructed object will be empty, but still
-		 * valid.
-		 * @extends {jspb.Message}
-		 * @constructor
-		 */
-		proto.profile.UserProfileSwap = function(opt_data) {
-		  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-		};
-		goog.inherits(proto.profile.UserProfileSwap, jspb.Message);
-		if (goog.DEBUG && !COMPILED) {
-		  /**
-		   * @public
-		   * @override
-		   */
-		  proto.profile.UserProfileSwap.displayName = 'proto.profile.UserProfileSwap';
 		}
 		/**
 		 * Generated by JsPbCodeGenerator.
@@ -19017,7 +18995,7 @@ function requireProfile_pb () {
 		roleId: msg.getRoleId_asB64(),
 		name: jspb.Message.getFieldWithDefault(msg, 3, ""),
 		valueType: jspb.Message.getFieldWithDefault(msg, 4, 0),
-		mode: jspb.Message.getFieldWithDefault(msg, 5, 0)
+		category: jspb.Message.getFieldWithDefault(msg, 5, "")
 		  };
 
 		  if (includeInstance) {
@@ -19071,8 +19049,8 @@ function requireProfile_pb () {
 		      msg.setValueType(value);
 		      break;
 		    case 5:
-		      var value = /** @type {number} */ (reader.readUint32());
-		      msg.setMode(value);
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setCategory(value);
 		      break;
 		    default:
 		      reader.skipField();
@@ -19131,9 +19109,9 @@ function requireProfile_pb () {
 		      f
 		    );
 		  }
-		  f = message.getMode();
-		  if (f !== 0) {
-		    writer.writeUint32(
+		  f = message.getCategory();
+		  if (f.length > 0) {
+		    writer.writeString(
 		      5,
 		      f
 		    );
@@ -19238,20 +19216,20 @@ function requireProfile_pb () {
 
 
 		/**
-		 * optional uint32 mode = 5;
-		 * @return {number}
+		 * optional string category = 5;
+		 * @return {string}
 		 */
-		proto.profile.RoleProfileSchema.prototype.getMode = function() {
-		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+		proto.profile.RoleProfileSchema.prototype.getCategory = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 		};
 
 
 		/**
-		 * @param {number} value
+		 * @param {string} value
 		 * @return {!proto.profile.RoleProfileSchema} returns this
 		 */
-		proto.profile.RoleProfileSchema.prototype.setMode = function(value) {
-		  return jspb.Message.setProto3IntField(this, 5, value);
+		proto.profile.RoleProfileSchema.prototype.setCategory = function(value) {
+		  return jspb.Message.setProto3StringField(this, 5, value);
 		};
 
 
@@ -19292,7 +19270,7 @@ function requireProfile_pb () {
 		name: jspb.Message.getFieldWithDefault(msg, 3, ""),
 		valueBytes: msg.getValueBytes_asB64(),
 		valueType: jspb.Message.getFieldWithDefault(msg, 5, 0),
-		order: jspb.Message.getFieldWithDefault(msg, 6, 0)
+		category: jspb.Message.getFieldWithDefault(msg, 6, "")
 		  };
 
 		  if (includeInstance) {
@@ -19350,8 +19328,8 @@ function requireProfile_pb () {
 		      msg.setValueType(value);
 		      break;
 		    case 6:
-		      var value = /** @type {number} */ (reader.readUint32());
-		      msg.setOrder(value);
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setCategory(value);
 		      break;
 		    default:
 		      reader.skipField();
@@ -19417,9 +19395,9 @@ function requireProfile_pb () {
 		      f
 		    );
 		  }
-		  f = message.getOrder();
-		  if (f !== 0) {
-		    writer.writeUint32(
+		  f = message.getCategory();
+		  if (f.length > 0) {
+		    writer.writeString(
 		      6,
 		      f
 		    );
@@ -19566,20 +19544,20 @@ function requireProfile_pb () {
 
 
 		/**
-		 * optional uint32 order = 6;
-		 * @return {number}
+		 * optional string category = 6;
+		 * @return {string}
 		 */
-		proto.profile.UserProfileSchema.prototype.getOrder = function() {
-		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+		proto.profile.UserProfileSchema.prototype.getCategory = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 		};
 
 
 		/**
-		 * @param {number} value
+		 * @param {string} value
 		 * @return {!proto.profile.UserProfileSchema} returns this
 		 */
-		proto.profile.UserProfileSchema.prototype.setOrder = function(value) {
-		  return jspb.Message.setProto3IntField(this, 6, value);
+		proto.profile.UserProfileSchema.prototype.setCategory = function(value) {
+		  return jspb.Message.setProto3StringField(this, 6, value);
 		};
 
 
@@ -20056,7 +20034,7 @@ function requireProfile_pb () {
 		id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 		name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
 		valueType: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-		mode: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+		category: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
 		  };
 
 		  if (includeInstance) {
@@ -20106,8 +20084,8 @@ function requireProfile_pb () {
 		      msg.setValueType(value);
 		      break;
 		    case 4:
-		      var value = /** @type {number} */ (reader.readUint32());
-		      msg.setMode(value);
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setCategory(value);
 		      break;
 		    default:
 		      reader.skipField();
@@ -20159,9 +20137,9 @@ function requireProfile_pb () {
 		      f
 		    );
 		  }
-		  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+		  f = /** @type {string} */ (jspb.Message.getField(message, 4));
 		  if (f != null) {
-		    writer.writeUint32(
+		    writer.writeString(
 		      4,
 		      f
 		    );
@@ -20260,19 +20238,19 @@ function requireProfile_pb () {
 
 
 		/**
-		 * optional uint32 mode = 4;
-		 * @return {number}
+		 * optional string category = 4;
+		 * @return {string}
 		 */
-		proto.profile.RoleProfileUpdate.prototype.getMode = function() {
-		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+		proto.profile.RoleProfileUpdate.prototype.getCategory = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 		};
 
 
 		/**
-		 * @param {number} value
+		 * @param {string} value
 		 * @return {!proto.profile.RoleProfileUpdate} returns this
 		 */
-		proto.profile.RoleProfileUpdate.prototype.setMode = function(value) {
+		proto.profile.RoleProfileUpdate.prototype.setCategory = function(value) {
 		  return jspb.Message.setField(this, 4, value);
 		};
 
@@ -20281,7 +20259,7 @@ function requireProfile_pb () {
 		 * Clears the field making it undefined.
 		 * @return {!proto.profile.RoleProfileUpdate} returns this
 		 */
-		proto.profile.RoleProfileUpdate.prototype.clearMode = function() {
+		proto.profile.RoleProfileUpdate.prototype.clearCategory = function() {
 		  return jspb.Message.setField(this, 4, undefined);
 		};
 
@@ -20290,7 +20268,7 @@ function requireProfile_pb () {
 		 * Returns whether this field is set.
 		 * @return {boolean}
 		 */
-		proto.profile.RoleProfileUpdate.prototype.hasMode = function() {
+		proto.profile.RoleProfileUpdate.prototype.hasCategory = function() {
 		  return jspb.Message.getField(this, 4) != null;
 		};
 
@@ -20330,7 +20308,8 @@ function requireProfile_pb () {
 		id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 		name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
 		valueBytes: msg.getValueBytes_asB64(),
-		valueType: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+		valueType: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
+		category: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
 		  };
 
 		  if (includeInstance) {
@@ -20382,6 +20361,10 @@ function requireProfile_pb () {
 		    case 4:
 		      var value = /** @type {number} */ (reader.readUint32());
 		      msg.setValueType(value);
+		      break;
+		    case 5:
+		      var value = /** @type {string} */ (reader.readString());
+		      msg.setCategory(value);
 		      break;
 		    default:
 		      reader.skipField();
@@ -20437,6 +20420,13 @@ function requireProfile_pb () {
 		  if (f != null) {
 		    writer.writeUint32(
 		      4,
+		      f
+		    );
+		  }
+		  f = /** @type {string} */ (jspb.Message.getField(message, 5));
+		  if (f != null) {
+		    writer.writeString(
+		      5,
 		      f
 		    );
 		  }
@@ -20593,247 +20583,39 @@ function requireProfile_pb () {
 		};
 
 
-
-
-
-		if (jspb.Message.GENERATE_TO_OBJECT) {
 		/**
-		 * Creates an object representation of this proto.
-		 * Field names that are reserved in JavaScript and will be renamed to pb_name.
-		 * Optional fields that are not set will be set to undefined.
-		 * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
-		 * For the list of reserved names please see:
-		 *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
-		 * @param {boolean=} opt_includeInstance Deprecated. whether to include the
-		 *     JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @return {!Object}
-		 */
-		proto.profile.UserProfileSwap.prototype.toObject = function(opt_includeInstance) {
-		  return proto.profile.UserProfileSwap.toObject(opt_includeInstance, this);
-		};
-
-
-		/**
-		 * Static version of the {@see toObject} method.
-		 * @param {boolean|undefined} includeInstance Deprecated. Whether to include
-		 *     the JSPB instance for transitional soy proto support:
-		 *     http://goto/soy-param-migration
-		 * @param {!proto.profile.UserProfileSwap} msg The msg instance to transform.
-		 * @return {!Object}
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.profile.UserProfileSwap.toObject = function(includeInstance, msg) {
-		  var obj = {
-		userId: msg.getUserId_asB64(),
-		name: jspb.Message.getFieldWithDefault(msg, 2, ""),
-		order1: jspb.Message.getFieldWithDefault(msg, 3, 0),
-		order2: jspb.Message.getFieldWithDefault(msg, 4, 0)
-		  };
-
-		  if (includeInstance) {
-		    obj.$jspbMessageInstance = msg;
-		  }
-		  return obj;
-		};
-		}
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format).
-		 * @param {jspb.ByteSource} bytes The bytes to deserialize.
-		 * @return {!proto.profile.UserProfileSwap}
-		 */
-		proto.profile.UserProfileSwap.deserializeBinary = function(bytes) {
-		  var reader = new jspb.BinaryReader(bytes);
-		  var msg = new proto.profile.UserProfileSwap;
-		  return proto.profile.UserProfileSwap.deserializeBinaryFromReader(msg, reader);
-		};
-
-
-		/**
-		 * Deserializes binary data (in protobuf wire format) from the
-		 * given reader into the given message object.
-		 * @param {!proto.profile.UserProfileSwap} msg The message object to deserialize into.
-		 * @param {!jspb.BinaryReader} reader The BinaryReader to use.
-		 * @return {!proto.profile.UserProfileSwap}
-		 */
-		proto.profile.UserProfileSwap.deserializeBinaryFromReader = function(msg, reader) {
-		  while (reader.nextField()) {
-		    if (reader.isEndGroup()) {
-		      break;
-		    }
-		    var field = reader.getFieldNumber();
-		    switch (field) {
-		    case 1:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setUserId(value);
-		      break;
-		    case 2:
-		      var value = /** @type {string} */ (reader.readString());
-		      msg.setName(value);
-		      break;
-		    case 3:
-		      var value = /** @type {number} */ (reader.readUint32());
-		      msg.setOrder1(value);
-		      break;
-		    case 4:
-		      var value = /** @type {number} */ (reader.readUint32());
-		      msg.setOrder2(value);
-		      break;
-		    default:
-		      reader.skipField();
-		      break;
-		    }
-		  }
-		  return msg;
-		};
-
-
-		/**
-		 * Serializes the message to binary data (in protobuf wire format).
-		 * @return {!Uint8Array}
-		 */
-		proto.profile.UserProfileSwap.prototype.serializeBinary = function() {
-		  var writer = new jspb.BinaryWriter();
-		  proto.profile.UserProfileSwap.serializeBinaryToWriter(this, writer);
-		  return writer.getResultBuffer();
-		};
-
-
-		/**
-		 * Serializes the given message to binary data (in protobuf wire
-		 * format), writing to the given BinaryWriter.
-		 * @param {!proto.profile.UserProfileSwap} message
-		 * @param {!jspb.BinaryWriter} writer
-		 * @suppress {unusedLocalVariables} f is only used for nested messages
-		 */
-		proto.profile.UserProfileSwap.serializeBinaryToWriter = function(message, writer) {
-		  var f = undefined;
-		  f = message.getUserId_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
-		      1,
-		      f
-		    );
-		  }
-		  f = message.getName();
-		  if (f.length > 0) {
-		    writer.writeString(
-		      2,
-		      f
-		    );
-		  }
-		  f = message.getOrder1();
-		  if (f !== 0) {
-		    writer.writeUint32(
-		      3,
-		      f
-		    );
-		  }
-		  f = message.getOrder2();
-		  if (f !== 0) {
-		    writer.writeUint32(
-		      4,
-		      f
-		    );
-		  }
-		};
-
-
-		/**
-		 * optional bytes user_id = 1;
-		 * @return {!(string|Uint8Array)}
-		 */
-		proto.profile.UserProfileSwap.prototype.getUserId = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-		};
-
-
-		/**
-		 * optional bytes user_id = 1;
-		 * This is a type-conversion wrapper around `getUserId()`
+		 * optional string category = 5;
 		 * @return {string}
 		 */
-		proto.profile.UserProfileSwap.prototype.getUserId_asB64 = function() {
-		  return /** @type {string} */ (jspb.Message.bytesAsB64(
-		      this.getUserId()));
-		};
-
-
-		/**
-		 * optional bytes user_id = 1;
-		 * Note that Uint8Array is not supported on all browsers.
-		 * @see http://caniuse.com/Uint8Array
-		 * This is a type-conversion wrapper around `getUserId()`
-		 * @return {!Uint8Array}
-		 */
-		proto.profile.UserProfileSwap.prototype.getUserId_asU8 = function() {
-		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-		      this.getUserId()));
-		};
-
-
-		/**
-		 * @param {!(string|Uint8Array)} value
-		 * @return {!proto.profile.UserProfileSwap} returns this
-		 */
-		proto.profile.UserProfileSwap.prototype.setUserId = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 1, value);
-		};
-
-
-		/**
-		 * optional string name = 2;
-		 * @return {string}
-		 */
-		proto.profile.UserProfileSwap.prototype.getName = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+		proto.profile.UserProfileUpdate.prototype.getCategory = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 		};
 
 
 		/**
 		 * @param {string} value
-		 * @return {!proto.profile.UserProfileSwap} returns this
+		 * @return {!proto.profile.UserProfileUpdate} returns this
 		 */
-		proto.profile.UserProfileSwap.prototype.setName = function(value) {
-		  return jspb.Message.setProto3StringField(this, 2, value);
+		proto.profile.UserProfileUpdate.prototype.setCategory = function(value) {
+		  return jspb.Message.setField(this, 5, value);
 		};
 
 
 		/**
-		 * optional uint32 order_1 = 3;
-		 * @return {number}
+		 * Clears the field making it undefined.
+		 * @return {!proto.profile.UserProfileUpdate} returns this
 		 */
-		proto.profile.UserProfileSwap.prototype.getOrder1 = function() {
-		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+		proto.profile.UserProfileUpdate.prototype.clearCategory = function() {
+		  return jspb.Message.setField(this, 5, undefined);
 		};
 
 
 		/**
-		 * @param {number} value
-		 * @return {!proto.profile.UserProfileSwap} returns this
+		 * Returns whether this field is set.
+		 * @return {boolean}
 		 */
-		proto.profile.UserProfileSwap.prototype.setOrder1 = function(value) {
-		  return jspb.Message.setProto3IntField(this, 3, value);
-		};
-
-
-		/**
-		 * optional uint32 order_2 = 4;
-		 * @return {number}
-		 */
-		proto.profile.UserProfileSwap.prototype.getOrder2 = function() {
-		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-		};
-
-
-		/**
-		 * @param {number} value
-		 * @return {!proto.profile.UserProfileSwap} returns this
-		 */
-		proto.profile.UserProfileSwap.prototype.setOrder2 = function(value) {
-		  return jspb.Message.setProto3IntField(this, 4, value);
+		proto.profile.UserProfileUpdate.prototype.hasCategory = function() {
+		  return jspb.Message.getField(this, 5) != null;
 		};
 
 
@@ -22386,67 +22168,6 @@ function requireProfile_grpc_web_pb () {
 	};
 
 
-	/**
-	 * @const
-	 * @type {!grpc.web.MethodDescriptor<
-	 *   !proto.profile.UserProfileSwap,
-	 *   !proto.profile.ProfileChangeResponse>}
-	 */
-	const methodDescriptor_ProfileService_SwapUserProfile = new grpc.web.MethodDescriptor(
-	  '/profile.ProfileService/SwapUserProfile',
-	  grpc.web.MethodType.UNARY,
-	  proto.profile.UserProfileSwap,
-	  proto.profile.ProfileChangeResponse,
-	  /**
-	   * @param {!proto.profile.UserProfileSwap} request
-	   * @return {!Uint8Array}
-	   */
-	  function(request) {
-	    return request.serializeBinary();
-	  },
-	  proto.profile.ProfileChangeResponse.deserializeBinary
-	);
-
-
-	/**
-	 * @param {!proto.profile.UserProfileSwap} request The
-	 *     request proto
-	 * @param {?Object<string, string>} metadata User defined
-	 *     call metadata
-	 * @param {function(?grpc.web.RpcError, ?proto.profile.ProfileChangeResponse)}
-	 *     callback The callback function(error, response)
-	 * @return {!grpc.web.ClientReadableStream<!proto.profile.ProfileChangeResponse>|undefined}
-	 *     The XHR Node Readable Stream
-	 */
-	proto.profile.ProfileServiceClient.prototype.swapUserProfile =
-	    function(request, metadata, callback) {
-	  return this.client_.rpcCall(this.hostname_ +
-	      '/profile.ProfileService/SwapUserProfile',
-	      request,
-	      metadata || {},
-	      methodDescriptor_ProfileService_SwapUserProfile,
-	      callback);
-	};
-
-
-	/**
-	 * @param {!proto.profile.UserProfileSwap} request The
-	 *     request proto
-	 * @param {?Object<string, string>=} metadata User defined
-	 *     call metadata
-	 * @return {!Promise<!proto.profile.ProfileChangeResponse>}
-	 *     Promise that resolves to the response
-	 */
-	proto.profile.ProfileServicePromiseClient.prototype.swapUserProfile =
-	    function(request, metadata) {
-	  return this.client_.unaryCall(this.hostname_ +
-	      '/profile.ProfileService/SwapUserProfile',
-	      request,
-	      metadata || {},
-	      methodDescriptor_ProfileService_SwapUserProfile);
-	};
-
-
 	profile_grpc_web_pb = proto.profile;
 	return profile_grpc_web_pb;
 }
@@ -22485,7 +22206,7 @@ var pb_profile = /*@__PURE__*/getDefaultExportFromCjs(profile_grpc_web_pbExports
  * @property {Uuid} role_id
  * @property {string} name
  * @property {number|string} value_type
- * @property {number|string} mode
+ * @property {string} category
  */
 
 /**
@@ -22498,7 +22219,7 @@ function get_role_profile_schema(r) {
         role_id: base64_to_uuid_hex(r.roleId),
         name: r.name,
         value_type: get_data_type(r.valueType),
-        mode: get_profile_mode(r.mode)
+        category: r.category
     };
 }
 
@@ -22516,7 +22237,7 @@ function get_role_profile_schema_vec(r) {
  * @property {Uuid} user_id
  * @property {string} name
  * @property {number|bigint|string|Uint8Array|boolean} value
- * @property {number} order
+ * @property {string} category
  */
 
 /**
@@ -22529,7 +22250,7 @@ function get_user_profile_schema(r) {
         user_id: base64_to_uuid_hex(r.userId),
         name: r.name,
         value: get_data_value(r.valueBytes, r.valueType),
-        order: r.order
+        category: r.category
     };
 }
 
@@ -22546,7 +22267,7 @@ function get_user_profile_schema_vec(r) {
  * @property {number} id
  * @property {?string} name
  * @property {?number|string} value_type
- * @property {?number|string} mode
+ * @property {?string} category
  */
 
 /**
@@ -22554,55 +22275,15 @@ function get_user_profile_schema_vec(r) {
  * @property {number} id
  * @property {?string} name
  * @property {?number|bigint|string|Uint8Array|boolean} value
+ * @property {?string} category
  */
-
-/**
- * @typedef {Object} UserProfileSwap
- * @property {Uuid} user_id
- * @property {string} name
- * @property {number} order_1
- * @property {number} order_2
- */
-
-/**
- * @param {number} mode 
- * @returns {string}
- */
-function get_profile_mode(mode) {
-    switch (mode) {
-        case 1: return "SINGLE_REQUIRED";
-        case 2: return "MULTIPLE_OPTIONAL";
-        case 3: return "MULTIPLE_REQUIRED";
-        default: return "SINGLE_OPTIONAL";
-    }
-}
-
-/**
- * @param {?number|string} mode 
- * @returns {number}
- */
-function set_profile_mode(mode) {
-    if (typeof mode == "number") {
-        if (mode > 0 && mode <= 3) return mode;
-    }
-    if (typeof mode == "string") {
-        mode = mode.replace(/[a-z][A-Z]/, s => `${s.charAt(0)}_${s.charAt(1)}`);
-        switch (mode.toUpperCase()) {
-            case "SINGLE_OPTIONAL": return 0;
-            case "SINGLE_REQUIRED": return 1;
-            case "MULTIPLE_OPTIONAL": return 2;
-            case "MULTIPLE_REQUIRED": return 3;
-        }
-    }
-    return 0;
-}
 
 
 /**
  * Read a role profile by id
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProfileId} request profile id: id
- * @returns {Promise<RoleProfileSchema>} role profile schema: id, role_id, name, value_type, mode
+ * @returns {Promise<RoleProfileSchema>} role profile schema: id, role_id, name, value_type, category
  */
 async function read_role_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -22616,7 +22297,7 @@ async function read_role_profile(config, request) {
  * Read role profiles by role id
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleId} request role id: id
- * @returns {Promise<RoleProfileSchema[]>} role profile schema: id, role_id, name, value_type, mode
+ * @returns {Promise<RoleProfileSchema[]>} role profile schema: id, role_id, name, value_type, category
  */
 async function list_role_profile_by_role(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -22629,7 +22310,7 @@ async function list_role_profile_by_role(config, request) {
 /**
  * Create a role profile
  * @param {ServerConfig} config Auth server config: address, auth_token
- * @param {RoleProfileSchema} request role profile schema: role_id, name, value_type, mode
+ * @param {RoleProfileSchema} request role profile schema: role_id, name, value_type, category
  * @returns {Promise<number>} profile id
  */
 async function create_role_profile(config, request) {
@@ -22638,7 +22319,7 @@ async function create_role_profile(config, request) {
     roleProfileSchema.setRoleId(uuid_hex_to_base64(request.role_id));
     roleProfileSchema.setName(request.name);
     roleProfileSchema.setValueType(set_data_type(request.value_type));
-    roleProfileSchema.setMode(set_profile_mode(request.mode));
+    roleProfileSchema.setCategory(request.category);
     return client.createRoleProfile(roleProfileSchema, metadata(config.auth_token))
         .then(response => response.toObject().id);
 }
@@ -22646,7 +22327,7 @@ async function create_role_profile(config, request) {
 /**
  * Update a role profile
  * @param {ServerConfig} config Auth server config: address, auth_token
- * @param {RoleProfileUpdate} request role update: id, name, value_type, mode
+ * @param {RoleProfileUpdate} request role update: id, name, value_type, category
  * @returns {Promise<null>} update response
  */
 async function update_role_profile(config, request) {
@@ -22657,7 +22338,7 @@ async function update_role_profile(config, request) {
     if (request.value_type) {
         roleProfileUpdate.setValueType(set_data_type(request.value_type));
     }
-    roleProfileUpdate.setMode(set_profile_mode(request.mode));
+    roleProfileUpdate.setCategory(request.category);
     return client.updateRoleProfile(roleProfileUpdate, metadata(config.auth_token))
         .then(response => null);
 }
@@ -22680,7 +22361,7 @@ async function delete_role_profile(config, request) {
  * Read a user profile by id
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProfileId} request profile id: id
- * @returns {Promise<UserProfileSchema>} user profile schema: id, user_id, name, value, order
+ * @returns {Promise<UserProfileSchema>} user profile schema: id, user_id, name, value, category
  */
 async function read_user_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -22694,7 +22375,7 @@ async function read_user_profile(config, request) {
  * Read user profiles by user id
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserId} request user id: id
- * @returns {Promise<UserProfileSchema[]>} user profile schema: id, user_id, name, value, order
+ * @returns {Promise<UserProfileSchema[]>} user profile schema: id, user_id, name, value, category
  */
 async function list_user_profile_by_user(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -22707,7 +22388,7 @@ async function list_user_profile_by_user(config, request) {
 /**
  * Create a user profile
  * @param {ServerConfig} config Auth server config: address, auth_token
- * @param {UserProfileSchema} request user profile schema: user_id, name, value, order
+ * @param {UserProfileSchema} request user profile schema: user_id, name, value, category
  * @returns {Promise<number>} profile id
  */
 async function create_user_profile(config, request) {
@@ -22718,7 +22399,7 @@ async function create_user_profile(config, request) {
     const value = set_data_value(request.value);
     userProfileSchema.setValueBytes(value.bytes);
     userProfileSchema.setValueType(value.type);
-    userProfileSchema.setOrder(request.order);
+    userProfileSchema.setCategory(request.category);
     return client.createUserProfile(userProfileSchema, metadata(config.auth_token))
         .then(response => response.toObject().id);
 }
@@ -22726,7 +22407,7 @@ async function create_user_profile(config, request) {
 /**
  * Update a user profile
  * @param {ServerConfig} config Auth server config: address, auth_token
- * @param {UserProfileUpdate} request user update: id, name, value
+ * @param {UserProfileUpdate} request user update: id, name, value, category
  * @returns {Promise<null>} update response
  */
 async function update_user_profile(config, request) {
@@ -22737,6 +22418,7 @@ async function update_user_profile(config, request) {
     const value = set_data_value(request.value);
     userProfileUpdate.setValueBytes(value.bytes);
     userProfileUpdate.setValueType(value.type);
+    userProfileUpdate.setCategory(request.category);
     return client.updateUserProfile(userProfileUpdate, metadata(config.auth_token))
         .then(response => null);
 }
@@ -22752,23 +22434,6 @@ async function delete_user_profile(config, request) {
     const profileId = new pb_profile.ProfileId();
     profileId.setId(request.id);
     return client.deleteUserProfile(profileId, metadata(config.auth_token))
-        .then(response => null);
-}
-
-/**
- * Swap a user profile order
- * @param {ServerConfig} config Auth server config: address, auth_token
- * @param {UserProfileSwap} request user profile swap: user_id, name, order_1, order_2
- * @returns {Promise<null>} change response
- */
-async function swap_user_profile(config, request) {
-    const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
-    const userProfileSwap = new pb_profile.UserProfileSwap();
-    userProfileSwap.setUserId(uuid_hex_to_base64(request.user_id));
-    userProfileSwap.setName(request.name);
-    userProfileSwap.setOrder1(request.order_1);
-    userProfileSwap.setOrder2(request.order_2);
-    return client.swapUserProfile(userProfileSwap, metadata(config.auth_token))
         .then(response => null);
 }
 
@@ -27989,7 +27654,6 @@ var index$1 = /*#__PURE__*/Object.freeze({
 	read_user_profile: read_user_profile,
 	remove_role_access: remove_role_access,
 	remove_user_role: remove_user_role,
-	swap_user_profile: swap_user_profile,
 	update_access_token: update_access_token,
 	update_api: update_api,
 	update_auth_token: update_auth_token,
@@ -95219,4 +94883,4 @@ var index = /*#__PURE__*/Object.freeze({
 	update_type: update_type
 });
 
-export { AuthConfig, DataType, ResourceConfig, Tag, add_group_device_member, add_group_gateway_member, add_group_model_member, add_role_access, add_set_member, add_set_template_member, add_type_model, add_user_role, api_id, index$1 as auth, count_buffer, count_buffer_by_earlier, count_buffer_by_later, count_buffer_by_range, count_buffer_group, count_buffer_group_by_earlier, count_buffer_group_by_later, count_buffer_group_by_range, count_data, count_data_by_earlier, count_data_by_later, count_data_by_range, count_data_group, count_data_group_by_earlier, count_data_group_by_later, count_data_group_by_range, create_access_token, create_api, create_auth_token, create_buffer, create_buffer_multiple, create_data, create_data_multiple, create_device, create_device_config, create_gateway, create_gateway_config, create_group_device, create_group_gateway, create_group_model, create_model, create_model_config, create_procedure, create_role, create_role_profile, create_set, create_set_template, create_slice, create_slice_set, create_tag, create_type, create_user, create_user_profile, delete_access_token, delete_api, delete_auth_token, delete_buffer, delete_buffer_by_time, delete_data, delete_device, delete_device_config, delete_gateway, delete_gateway_config, delete_group_device, delete_group_gateway, delete_group_model, delete_model, delete_model_config, delete_procedure, delete_role, delete_role_profile, delete_set, delete_set_template, delete_slice, delete_slice_set, delete_tag, delete_token_by_user, delete_type, delete_user, delete_user_profile, list_api_by_category, list_api_by_ids, list_api_by_name, list_api_option, list_auth_token, list_buffer_by_earlier, list_buffer_by_ids, list_buffer_by_later, list_buffer_by_number_after, list_buffer_by_number_before, list_buffer_by_range, list_buffer_by_time, list_buffer_first, list_buffer_first_offset, list_buffer_group_by_earlier, list_buffer_group_by_later, list_buffer_group_by_number_after, list_buffer_group_by_number_before, list_buffer_group_by_range, list_buffer_group_by_time, list_buffer_group_first, list_buffer_group_first_offset, list_buffer_group_last, list_buffer_group_last_offset, list_buffer_group_timestamp_by_earlier, list_buffer_group_timestamp_by_later, list_buffer_group_timestamp_by_range, list_buffer_group_timestamp_first, list_buffer_group_timestamp_last, list_buffer_last, list_buffer_last_offset, list_buffer_set_by_earlier, list_buffer_set_by_later, list_buffer_set_by_range, list_buffer_set_by_time, list_buffer_timestamp_by_earlier, list_buffer_timestamp_by_later, list_buffer_timestamp_by_range, list_buffer_timestamp_first, list_buffer_timestamp_last, list_data_by_earlier, list_data_by_later, list_data_by_number_after, list_data_by_number_before, list_data_by_range, list_data_by_time, list_data_group_by_earlier, list_data_group_by_later, list_data_group_by_number_after, list_data_group_by_number_before, list_data_group_by_range, list_data_group_by_time, list_data_group_timestamp_by_earlier, list_data_group_timestamp_by_later, list_data_group_timestamp_by_range, list_data_set_by_earlier, list_data_set_by_later, list_data_set_by_range, list_data_set_by_time, list_data_timestamp_by_earlier, list_data_timestamp_by_later, list_data_timestamp_by_range, list_device_by_gateway, list_device_by_ids, list_device_by_name, list_device_by_type, list_device_config_by_device, list_device_option, list_gateway_by_ids, list_gateway_by_name, list_gateway_by_type, list_gateway_config_by_gateway, list_gateway_option, list_group_device_by_category, list_group_device_by_ids, list_group_device_by_name, list_group_device_option, list_group_gateway_by_category, list_group_gateway_by_ids, list_group_gateway_by_name, list_group_gateway_option, list_group_model_by_category, list_group_model_by_ids, list_group_model_by_name, list_group_model_option, list_model_by_category, list_model_by_ids, list_model_by_name, list_model_by_type, list_model_config_by_model, list_model_option, list_procedure_by_api, list_procedure_by_ids, list_procedure_by_name, list_procedure_option, list_role_by_api, list_role_by_ids, list_role_by_name, list_role_by_user, list_role_option, list_role_profile_by_role, list_set_by_ids, list_set_by_name, list_set_by_template, list_set_option, list_set_template_by_ids, list_set_template_by_name, list_set_template_option, list_slice_by_ids, list_slice_by_name_range, list_slice_by_name_time, list_slice_by_range, list_slice_by_time, list_slice_group_by_range, list_slice_group_by_time, list_slice_group_option, list_slice_option, list_slice_set_by_ids, list_slice_set_by_name_range, list_slice_set_by_name_time, list_slice_set_by_range, list_slice_set_by_time, list_slice_set_option, list_tag_by_model, list_token_by_created_earlier, list_token_by_created_later, list_token_by_created_range, list_token_by_expired_earlier, list_token_by_expired_later, list_token_by_expired_range, list_token_by_range, list_token_by_user, list_type_by_ids, list_type_by_name, list_type_option, list_user_by_api, list_user_by_ids, list_user_by_name, list_user_by_role, list_user_option, list_user_profile_by_user, procedure_access, read_access_token, read_api, read_api_by_name, read_buffer, read_buffer_by_time, read_buffer_first, read_buffer_group_first, read_buffer_group_last, read_buffer_group_timestamp, read_buffer_last, read_buffer_set, read_buffer_timestamp, read_data, read_data_group_timestamp, read_data_set, read_data_timestamp, read_device, read_device_by_sn, read_device_config, read_gateway, read_gateway_by_sn, read_gateway_config, read_group_device, read_group_gateway, read_group_model, read_model, read_model_config, read_procedure, read_procedure_by_name, read_role, read_role_by_name, read_role_profile, read_set, read_set_template, read_slice, read_slice_set, read_tag, read_type, read_user, read_user_by_name, read_user_profile, remove_group_device_member, remove_group_gateway_member, remove_group_model_member, remove_role_access, remove_set_member, remove_set_template_member, remove_type_model, remove_user_role, index as resource, role_access, swap_set_member, swap_set_template_member, swap_user_profile, update_access_token, update_api, update_auth_token, update_buffer, update_buffer_by_time, update_device, update_device_config, update_gateway, update_gateway_config, update_group_device, update_group_gateway, update_group_model, update_model, update_model_config, update_procedure, update_role, update_role_profile, update_set, update_set_template, update_slice, update_slice_set, update_tag, update_type, update_user, update_user_profile, user_login, user_login_key, user_logout, user_refresh, utility };
+export { AuthConfig, DataType, ResourceConfig, Tag, add_group_device_member, add_group_gateway_member, add_group_model_member, add_role_access, add_set_member, add_set_template_member, add_type_model, add_user_role, api_id, index$1 as auth, count_buffer, count_buffer_by_earlier, count_buffer_by_later, count_buffer_by_range, count_buffer_group, count_buffer_group_by_earlier, count_buffer_group_by_later, count_buffer_group_by_range, count_data, count_data_by_earlier, count_data_by_later, count_data_by_range, count_data_group, count_data_group_by_earlier, count_data_group_by_later, count_data_group_by_range, create_access_token, create_api, create_auth_token, create_buffer, create_buffer_multiple, create_data, create_data_multiple, create_device, create_device_config, create_gateway, create_gateway_config, create_group_device, create_group_gateway, create_group_model, create_model, create_model_config, create_procedure, create_role, create_role_profile, create_set, create_set_template, create_slice, create_slice_set, create_tag, create_type, create_user, create_user_profile, delete_access_token, delete_api, delete_auth_token, delete_buffer, delete_buffer_by_time, delete_data, delete_device, delete_device_config, delete_gateway, delete_gateway_config, delete_group_device, delete_group_gateway, delete_group_model, delete_model, delete_model_config, delete_procedure, delete_role, delete_role_profile, delete_set, delete_set_template, delete_slice, delete_slice_set, delete_tag, delete_token_by_user, delete_type, delete_user, delete_user_profile, list_api_by_category, list_api_by_ids, list_api_by_name, list_api_option, list_auth_token, list_buffer_by_earlier, list_buffer_by_ids, list_buffer_by_later, list_buffer_by_number_after, list_buffer_by_number_before, list_buffer_by_range, list_buffer_by_time, list_buffer_first, list_buffer_first_offset, list_buffer_group_by_earlier, list_buffer_group_by_later, list_buffer_group_by_number_after, list_buffer_group_by_number_before, list_buffer_group_by_range, list_buffer_group_by_time, list_buffer_group_first, list_buffer_group_first_offset, list_buffer_group_last, list_buffer_group_last_offset, list_buffer_group_timestamp_by_earlier, list_buffer_group_timestamp_by_later, list_buffer_group_timestamp_by_range, list_buffer_group_timestamp_first, list_buffer_group_timestamp_last, list_buffer_last, list_buffer_last_offset, list_buffer_set_by_earlier, list_buffer_set_by_later, list_buffer_set_by_range, list_buffer_set_by_time, list_buffer_timestamp_by_earlier, list_buffer_timestamp_by_later, list_buffer_timestamp_by_range, list_buffer_timestamp_first, list_buffer_timestamp_last, list_data_by_earlier, list_data_by_later, list_data_by_number_after, list_data_by_number_before, list_data_by_range, list_data_by_time, list_data_group_by_earlier, list_data_group_by_later, list_data_group_by_number_after, list_data_group_by_number_before, list_data_group_by_range, list_data_group_by_time, list_data_group_timestamp_by_earlier, list_data_group_timestamp_by_later, list_data_group_timestamp_by_range, list_data_set_by_earlier, list_data_set_by_later, list_data_set_by_range, list_data_set_by_time, list_data_timestamp_by_earlier, list_data_timestamp_by_later, list_data_timestamp_by_range, list_device_by_gateway, list_device_by_ids, list_device_by_name, list_device_by_type, list_device_config_by_device, list_device_option, list_gateway_by_ids, list_gateway_by_name, list_gateway_by_type, list_gateway_config_by_gateway, list_gateway_option, list_group_device_by_category, list_group_device_by_ids, list_group_device_by_name, list_group_device_option, list_group_gateway_by_category, list_group_gateway_by_ids, list_group_gateway_by_name, list_group_gateway_option, list_group_model_by_category, list_group_model_by_ids, list_group_model_by_name, list_group_model_option, list_model_by_category, list_model_by_ids, list_model_by_name, list_model_by_type, list_model_config_by_model, list_model_option, list_procedure_by_api, list_procedure_by_ids, list_procedure_by_name, list_procedure_option, list_role_by_api, list_role_by_ids, list_role_by_name, list_role_by_user, list_role_option, list_role_profile_by_role, list_set_by_ids, list_set_by_name, list_set_by_template, list_set_option, list_set_template_by_ids, list_set_template_by_name, list_set_template_option, list_slice_by_ids, list_slice_by_name_range, list_slice_by_name_time, list_slice_by_range, list_slice_by_time, list_slice_group_by_range, list_slice_group_by_time, list_slice_group_option, list_slice_option, list_slice_set_by_ids, list_slice_set_by_name_range, list_slice_set_by_name_time, list_slice_set_by_range, list_slice_set_by_time, list_slice_set_option, list_tag_by_model, list_token_by_created_earlier, list_token_by_created_later, list_token_by_created_range, list_token_by_expired_earlier, list_token_by_expired_later, list_token_by_expired_range, list_token_by_range, list_token_by_user, list_type_by_ids, list_type_by_name, list_type_option, list_user_by_api, list_user_by_ids, list_user_by_name, list_user_by_role, list_user_option, list_user_profile_by_user, procedure_access, read_access_token, read_api, read_api_by_name, read_buffer, read_buffer_by_time, read_buffer_first, read_buffer_group_first, read_buffer_group_last, read_buffer_group_timestamp, read_buffer_last, read_buffer_set, read_buffer_timestamp, read_data, read_data_group_timestamp, read_data_set, read_data_timestamp, read_device, read_device_by_sn, read_device_config, read_gateway, read_gateway_by_sn, read_gateway_config, read_group_device, read_group_gateway, read_group_model, read_model, read_model_config, read_procedure, read_procedure_by_name, read_role, read_role_by_name, read_role_profile, read_set, read_set_template, read_slice, read_slice_set, read_tag, read_type, read_user, read_user_by_name, read_user_profile, remove_group_device_member, remove_group_gateway_member, remove_group_model_member, remove_role_access, remove_set_member, remove_set_template_member, remove_type_model, remove_user_role, index as resource, role_access, swap_set_member, swap_set_template_member, update_access_token, update_api, update_auth_token, update_buffer, update_buffer_by_time, update_device, update_device_config, update_gateway, update_gateway_config, update_group_device, update_group_gateway, update_group_model, update_model, update_model_config, update_procedure, update_role, update_role_profile, update_set, update_set_template, update_slice, update_slice_set, update_tag, update_type, update_user, update_user_profile, user_login, user_login_key, user_logout, user_refresh, utility };

@@ -7,7 +7,7 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class RoleSchema(_message.Message):
-    __slots__ = ("id", "api_id", "name", "multi", "ip_lock", "access_duration", "refresh_duration", "access_key", "procedures")
+    __slots__ = ("id", "api_id", "name", "multi", "ip_lock", "access_duration", "refresh_duration", "access_key", "procedure_ids")
     ID_FIELD_NUMBER: _ClassVar[int]
     API_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -16,7 +16,7 @@ class RoleSchema(_message.Message):
     ACCESS_DURATION_FIELD_NUMBER: _ClassVar[int]
     REFRESH_DURATION_FIELD_NUMBER: _ClassVar[int]
     ACCESS_KEY_FIELD_NUMBER: _ClassVar[int]
-    PROCEDURES_FIELD_NUMBER: _ClassVar[int]
+    PROCEDURE_IDS_FIELD_NUMBER: _ClassVar[int]
     id: bytes
     api_id: bytes
     name: str
@@ -25,8 +25,8 @@ class RoleSchema(_message.Message):
     access_duration: int
     refresh_duration: int
     access_key: bytes
-    procedures: _containers.RepeatedScalarFieldContainer[bytes]
-    def __init__(self, id: _Optional[bytes] = ..., api_id: _Optional[bytes] = ..., name: _Optional[str] = ..., multi: bool = ..., ip_lock: bool = ..., access_duration: _Optional[int] = ..., refresh_duration: _Optional[int] = ..., access_key: _Optional[bytes] = ..., procedures: _Optional[_Iterable[bytes]] = ...) -> None: ...
+    procedure_ids: _containers.RepeatedScalarFieldContainer[bytes]
+    def __init__(self, id: _Optional[bytes] = ..., api_id: _Optional[bytes] = ..., name: _Optional[str] = ..., multi: bool = ..., ip_lock: bool = ..., access_duration: _Optional[int] = ..., refresh_duration: _Optional[int] = ..., access_key: _Optional[bytes] = ..., procedure_ids: _Optional[_Iterable[bytes]] = ...) -> None: ...
 
 class RoleId(_message.Message):
     __slots__ = ("id",)

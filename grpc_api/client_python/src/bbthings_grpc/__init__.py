@@ -3,7 +3,7 @@ from .common.type_value import DataType
 from .common.tag import Tag
 from .auth._schema import (
     ApiSchema, ProcedureSchema, RoleSchema, UserSchema, UserRoleSchema,
-    RoleProfileSchema, UserProfileSchema, ProfileMode, TokenSchema,
+    RoleProfileSchema, UserProfileSchema, TokenSchema,
     UserLogin, UserRefresh, AccessToken
 )
 from .resource._schema import (

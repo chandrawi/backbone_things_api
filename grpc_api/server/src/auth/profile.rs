@@ -1,10 +1,9 @@
 use tonic::{Request, Response, Status};
 use uuid::Uuid;
-use bbthings_database::{Auth, ProfileMode, DataType, DataValue};
+use bbthings_database::{Auth, DataType, DataValue};
 use crate::proto::auth::profile::profile_service_server::ProfileService;
 use crate::proto::auth::profile::{
-    RoleProfileSchema, UserProfileSchema, ProfileId, RoleId, UserId, 
-    RoleProfileUpdate, UserProfileUpdate, UserProfileSwap, 
+    RoleProfileSchema, UserProfileSchema, ProfileId, RoleId, UserId, RoleProfileUpdate, UserProfileUpdate, 
     RoleProfileReadResponse, RoleProfileListResponse, UserProfileReadResponse, UserProfileListResponse,
     ProfileCreateResponse, ProfileChangeResponse
 };
@@ -69,7 +68,7 @@ impl ProfileService for ProfileServer {
             Uuid::from_slice(&request.role_id).unwrap_or_default(),
             &request.name,
             DataType::from(request.value_type),
-            ProfileMode::from(request.mode)
+            &request.category
         ).await;
         let id = match result {
             Ok(value) => value,
@@ -87,7 +86,7 @@ impl ProfileService for ProfileServer {
             request.id,
             request.name.as_deref(),
             request.value_type.map(|x| DataType::from(x)),
-            request.mode.map(|x| ProfileMode::from(x))
+            request.category.as_deref()
         ).await;
         match result {
             Ok(_) => (),
@@ -146,7 +145,8 @@ impl ProfileService for ProfileServer {
             DataValue::from_bytes(
                 &request.value_bytes,
                 DataType::from(request.value_type)
-            )
+            ),
+            &request.category
         ).await;
         let id = match result {
             Ok(value) => value,
@@ -168,7 +168,8 @@ impl ProfileService for ProfileServer {
                     &s,
                     DataType::from(request.value_type.unwrap_or_default())
                 )
-            })
+            }),
+            request.category.as_deref()
         ).await;
         match result {
             Ok(_) => (),
@@ -183,24 +184,6 @@ impl ProfileService for ProfileServer {
         self.validate(request.extensions(), ValidatorKind::Root).await?;
         let request = request.into_inner();
         let result = self.auth_db.delete_user_profile(request.id).await;
-        match result {
-            Ok(_) => (),
-            Err(e) => return Err(handle_error(e))
-        };
-        Ok(Response::new(ProfileChangeResponse { }))
-    }
-
-    async fn swap_user_profile(&self, request: Request<UserProfileSwap>)
-        -> Result<Response<ProfileChangeResponse>, Status>
-    {
-        self.validate(request.extensions(), ValidatorKind::Root).await?;
-        let request = request.into_inner();
-        let result = self.auth_db.swap_user_profile(
-            Uuid::from_slice(&request.user_id).unwrap_or_default(),
-            &request.name,
-            request.order_1 as i16,
-            request.order_2 as i16
-        ).await;
         match result {
             Ok(_) => (),
             Err(e) => return Err(handle_error(e))

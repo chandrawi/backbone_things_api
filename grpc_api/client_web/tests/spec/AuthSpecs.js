@@ -149,9 +149,9 @@ describe("Backbone Things Auth test", function() {
         expect(role_ids).toContain(role_user_1_id);
         expect(role.name).toEqual("administrator");
         expect(role.multi).toEqual(false);
-        expect(role.procedures).toContain(proc_id_1);
-        expect(role.procedures).toContain(proc_id_2);
-        expect(role.procedures).toContain(proc_id_3);
+        expect(role.procedure_ids).toContain(proc_id_1);
+        expect(role.procedure_ids).toContain(proc_id_2);
+        expect(role.procedure_ids).toContain(proc_id_3);
     });
 
     it("should update API 1", async function() {
@@ -230,16 +230,17 @@ describe("Backbone Things Auth test", function() {
             role_id: role_admin_id,
             name: "name",
             value_type: "STRING",
-            mode: "SINGLE_REQUIRED"
+            category: ""
         });
         profile_user_id_1 = await auth.create_user_profile(config, {
             user_id: admin_id,
             name: "name",
-            value: "john doe"
+            value: "john doe",
+            category: ""
         });
         const profile_role = await auth.read_role_profile(config, { id: profile_role_id });
         expect(profile_role.name).toEqual("name");
-        expect(profile_role.mode).toEqual("SINGLE_REQUIRED");
+        expect(profile_role.category).toEqual("");
         const profile_user = await auth.read_user_profile(config, { id: profile_user_id_1 });
         expect(profile_user.value).toEqual("john doe");
         profile_user_id_2 = await auth.create_user_profile(config, {

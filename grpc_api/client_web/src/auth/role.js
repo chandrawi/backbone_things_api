@@ -59,7 +59,7 @@ import {
  * @property {number} access_duration
  * @property {number} refresh_duration
  * @property {string} access_key
- * @property {string[]} procedures
+ * @property {string[]} procedure_ids
  */
 
 /**
@@ -76,7 +76,7 @@ function get_role_schema(r) {
         access_duration: r.accessDuration,
         refresh_duration: r.refreshDuration,
         access_key: r.accessKey,
-        procedures: r.proceduresList.map((v) => {return base64_to_uuid_hex(v)})
+        procedure_ids: r.procedureIdsList.map((v) => {return base64_to_uuid_hex(v)})
     };
 }
 
@@ -109,7 +109,7 @@ function get_role_schema_vec(r) {
  * Read a role by uuid
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleId} request role uuid: id
- * @returns {Promise<RoleSchema>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 export async function read_role(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -123,7 +123,7 @@ export async function read_role(config, request) {
  * Read a role by name
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleName} request role name: api_id, name
- * @returns {Promise<RoleSchema>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 export async function read_role_by_name(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -138,7 +138,7 @@ export async function read_role_by_name(config, request) {
  * Read roles by uuid list
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleIds} request role uuid list: ids
- * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 export async function list_role_by_ids(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -152,7 +152,7 @@ export async function list_role_by_ids(config, request) {
  * Read roles by api uuid
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ApiId} request api uuid: id
- * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 export async function list_role_by_api(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -166,7 +166,7 @@ export async function list_role_by_api(config, request) {
  * Read roles by user uuid
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {UserId} request user uuid: id
- * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 export async function list_role_by_user(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -180,7 +180,7 @@ export async function list_role_by_user(config, request) {
  * Read roles by name
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleName} request role name: name
- * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 export async function list_role_by_name(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);
@@ -194,7 +194,7 @@ export async function list_role_by_name(config, request) {
  * Read roles with options
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleOption} request role option: api_id, user_id, name
- * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedures
+ * @returns {Promise<RoleSchema[]>} role schema: id, api_id, name, multi, ip_lock, access_duration, refresh_duration, access_key, procedure_ids
  */
 export async function list_role_option(config, request) {
     const client = new pb_role.RoleServicePromiseClient(config.address, null, null);

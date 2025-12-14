@@ -18,7 +18,7 @@ pub struct RoleSchema {
     #[prost(bytes = "vec", tag = "8")]
     pub access_key: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes = "vec", repeated, tag = "9")]
-    pub procedures: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    pub procedure_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RoleId {

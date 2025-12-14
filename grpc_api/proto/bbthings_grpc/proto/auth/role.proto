@@ -36,7 +36,7 @@ message RoleSchema {
     int32 access_duration = 6;
     int32 refresh_duration = 7;
     bytes access_key = 8;
-    repeated bytes procedures = 9;
+    repeated bytes procedure_ids = 9;
 }
 
 message RoleId {

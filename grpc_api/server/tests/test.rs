@@ -147,7 +147,7 @@ mod tests {
                 access_duration: 900,
                 refresh_duration: 43200,
                 access_key: Vec::new(),
-                procedures: Vec::new()
+                procedure_ids: Vec::new()
             });
             let response = role_service.create_role(request).await.unwrap().into_inner();
             role_map.push((response.id, name));

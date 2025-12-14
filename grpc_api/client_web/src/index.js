@@ -65,8 +65,7 @@ export {
     list_user_profile_by_user,
     create_user_profile,
     update_user_profile,
-    delete_user_profile,
-    swap_user_profile
+    delete_user_profile
 } from './auth/profile.js';
 export {
     read_access_token,

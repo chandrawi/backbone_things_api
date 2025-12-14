@@ -3,7 +3,6 @@ mod tests {
     use uuid::Uuid;
     use chrono::DateTime;
     use bbthings_grpc_client::Auth;
-    use bbthings_grpc_client::ProfileMode::*;
     use bbthings_grpc_client::{DataType::*, DataValue::*};
     use bbthings_grpc_client::utility;
     use bbthings_grpc_server::common::test::{TestServerKind, TestServer};
@@ -68,9 +67,9 @@ mod tests {
         assert_eq!(role.name, "administrator");
         assert_eq!(role.multi, false);
         assert_eq!(role.ip_lock, false);
-        assert!(role.procedures.contains(&proc_id1));
-        assert!(role.procedures.contains(&proc_id2));
-        assert!(role.procedures.contains(&proc_id3));
+        assert!(role.procedure_ids.contains(&proc_id1));
+        assert!(role.procedure_ids.contains(&proc_id2));
+        assert!(role.procedure_ids.contains(&proc_id3));
 
         let access_key = role.access_key;
         assert_eq!(access_key.len(), 32);
@@ -129,10 +128,10 @@ mod tests {
         assert_ne!(user.password, old_password);
 
         // create role and user profile
-        let profile_role_id1 = auth.create_role_profile(role_id1, "name", StringT, SingleRequired).await.unwrap();
-        let profile_role_id2 = auth.create_role_profile(role_id1, "age", U16T, SingleOptional).await.unwrap();
-        let profile_user_id1 = auth.create_user_profile(user_id1, "name", String("john doe".to_owned())).await.unwrap();
-        let profile_user_id2 = auth.create_user_profile(user_id1, "age", U16(20)).await.unwrap();
+        let profile_role_id1 = auth.create_role_profile(role_id1, "name", StringT, "").await.unwrap();
+        let profile_role_id2 = auth.create_role_profile(role_id1, "age", U16T, "").await.unwrap();
+        let profile_user_id1 = auth.create_user_profile(user_id1, "name", String("john doe".to_owned()), "").await.unwrap();
+        let profile_user_id2 = auth.create_user_profile(user_id1, "age", U16(20), "").await.unwrap();
 
         // read role and user profile
         let profile_role1 = auth.read_role_profile(profile_role_id1).await.unwrap();
@@ -141,12 +140,12 @@ mod tests {
         let profile_users = auth.list_user_profile_by_user(user_id1).await.unwrap();
 
         assert_eq!(profile_role1.name, "name");
-        assert_eq!(profile_role2.mode, SingleOptional);
+        assert_eq!(profile_role2.category, "");
         assert_eq!(profile_user1.value, String("john doe".to_owned()));
         assert!(profile_users.contains(&profile_user1));
 
         // update user profile
-        auth.update_user_profile(profile_user_id2, None, Some(U16(21))).await.unwrap();
+        auth.update_user_profile(profile_user_id2, None, Some(U16(21)), None).await.unwrap();
         let profile_user2 = auth.read_user_profile(profile_user_id2).await.unwrap();
 
         assert_eq!(profile_user2.value, U16(21));

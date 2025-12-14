@@ -5,7 +5,7 @@ pub use auth::Auth;
 pub use resource::Resource;
 pub use bbthings_database::{
     ApiSchema, ProcedureSchema, RoleSchema, UserSchema, UserRoleSchema,
-    RoleProfileSchema, UserProfileSchema, ProfileMode, TokenSchema,
+    RoleProfileSchema, UserProfileSchema, TokenSchema,
     ModelSchema, TagSchema, ModelConfigSchema,
     DeviceSchema, GatewaySchema, TypeSchema, DeviceConfigSchema, GatewayConfigSchema,
     GroupModelSchema, GroupDeviceSchema, GroupGatewaySchema,

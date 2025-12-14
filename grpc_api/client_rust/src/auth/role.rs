@@ -133,7 +133,7 @@ pub(crate) async fn create_role(auth: &Auth, id: Uuid, api_id: Uuid, name: &str,
         access_duration,
         refresh_duration,
         access_key: Vec::new(),
-        procedures: Vec::new()
+        procedure_ids: Vec::new()
     });
     let response = client.create_role(request)
         .await?

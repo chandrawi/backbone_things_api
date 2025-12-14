@@ -10,7 +10,7 @@ use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use bbthings_database::{
     ApiSchema, ProcedureSchema, RoleSchema, UserSchema,
-    RoleProfileSchema, UserProfileSchema, ProfileMode, TokenSchema,
+    RoleProfileSchema, UserProfileSchema, TokenSchema,
     DataValue, DataType
 };
 use bbthings_grpc_server::proto::auth::auth::{UserLoginResponse, UserRefreshResponse, UserLogoutResponse};
@@ -301,17 +301,17 @@ impl Auth {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_role_profile(&self, role_id: Uuid, name: &str, value_type: DataType, mode: ProfileMode)
+    pub async fn create_role_profile(&self, role_id: Uuid, name: &str, value_type: DataType, category: &str)
         -> Result<i32, Status>
     {
-        profile::create_role_profile(&self, role_id, name, value_type, mode)
+        profile::create_role_profile(&self, role_id, name, value_type, category)
             .await
     }
 
-    pub async fn update_role_profile(&self, id: i32, name: Option<&str>, value_type: Option<DataType>, mode: Option<ProfileMode>)
+    pub async fn update_role_profile(&self, id: i32, name: Option<&str>, value_type: Option<DataType>, category: Option<&str>)
         -> Result<(), Status>
     {
-        profile::update_role_profile(&self, id, name, value_type, mode)
+        profile::update_role_profile(&self, id, name, value_type, category)
             .await
     }
 
@@ -420,17 +420,17 @@ impl Auth {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_user_profile(&self, user_id: Uuid, name: &str, value: DataValue)
+    pub async fn create_user_profile(&self, user_id: Uuid, name: &str, value: DataValue, category: &str)
         -> Result<i32, Status>
     {
-        profile::create_user_profile(&self, user_id, name, value)
+        profile::create_user_profile(&self, user_id, name, value, category)
             .await
     }
 
-    pub async fn update_user_profile(&self, id: i32, name: Option<&str>, value: Option<DataValue>)
+    pub async fn update_user_profile(&self, id: i32, name: Option<&str>, value: Option<DataValue>, category: Option<&str>)
         -> Result<(), Status>
     {
-        profile::update_user_profile(&self, id, name, value)
+        profile::update_user_profile(&self, id, name, value, category)
             .await
     }
 
@@ -438,13 +438,6 @@ impl Auth {
         -> Result<(), Status>
     {
         profile::delete_user_profile(&self, id)
-            .await
-    }
-
-    pub async fn swap_user_profile(&self, user_id: Uuid, name: &str, order_1: i16, order_2: i16)
-        -> Result<(), Status>
-    {
-        profile::swap_user_profile(&self, user_id, name, order_1, order_2)
             .await
     }
 

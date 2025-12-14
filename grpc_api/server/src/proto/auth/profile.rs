@@ -9,8 +9,8 @@ pub struct RoleProfileSchema {
     pub name: ::prost::alloc::string::String,
     #[prost(uint32, tag = "4")]
     pub value_type: u32,
-    #[prost(uint32, tag = "5")]
-    pub mode: u32,
+    #[prost(string, tag = "5")]
+    pub category: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct UserProfileSchema {
@@ -24,8 +24,8 @@ pub struct UserProfileSchema {
     pub value_bytes: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint32, tag = "5")]
     pub value_type: u32,
-    #[prost(uint32, tag = "6")]
-    pub order: u32,
+    #[prost(string, tag = "6")]
+    pub category: ::prost::alloc::string::String,
 }
 #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ProfileId {
@@ -50,8 +50,8 @@ pub struct RoleProfileUpdate {
     pub name: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(uint32, optional, tag = "3")]
     pub value_type: ::core::option::Option<u32>,
-    #[prost(uint32, optional, tag = "4")]
-    pub mode: ::core::option::Option<u32>,
+    #[prost(string, optional, tag = "4")]
+    pub category: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct UserProfileUpdate {
@@ -63,17 +63,8 @@ pub struct UserProfileUpdate {
     pub value_bytes: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     #[prost(uint32, optional, tag = "4")]
     pub value_type: ::core::option::Option<u32>,
-}
-#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
-pub struct UserProfileSwap {
-    #[prost(bytes = "vec", tag = "1")]
-    pub user_id: ::prost::alloc::vec::Vec<u8>,
-    #[prost(string, tag = "2")]
-    pub name: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "3")]
-    pub order_1: u32,
-    #[prost(uint32, tag = "4")]
-    pub order_2: u32,
+    #[prost(string, optional, tag = "5")]
+    pub category: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RoleProfileReadResponse {
@@ -433,30 +424,6 @@ pub mod profile_service_client {
                 .insert(GrpcMethod::new("profile.ProfileService", "DeleteUserProfile"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn swap_user_profile(
-            &mut self,
-            request: impl tonic::IntoRequest<super::UserProfileSwap>,
-        ) -> std::result::Result<
-            tonic::Response<super::ProfileChangeResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic_prost::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/profile.ProfileService/SwapUserProfile",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("profile.ProfileService", "SwapUserProfile"));
-            self.inner.unary(req, path, codec).await
-        }
     }
 }
 /// Generated server implementations.
@@ -538,13 +505,6 @@ pub mod profile_service_server {
         async fn delete_user_profile(
             &self,
             request: tonic::Request<super::ProfileId>,
-        ) -> std::result::Result<
-            tonic::Response<super::ProfileChangeResponse>,
-            tonic::Status,
-        >;
-        async fn swap_user_profile(
-            &self,
-            request: tonic::Request<super::UserProfileSwap>,
         ) -> std::result::Result<
             tonic::Response<super::ProfileChangeResponse>,
             tonic::Status,
@@ -1059,52 +1019,6 @@ pub mod profile_service_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let method = DeleteUserProfileSvc(inner);
-                        let codec = tonic_prost::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/profile.ProfileService/SwapUserProfile" => {
-                    #[allow(non_camel_case_types)]
-                    struct SwapUserProfileSvc<T: ProfileService>(pub Arc<T>);
-                    impl<
-                        T: ProfileService,
-                    > tonic::server::UnaryService<super::UserProfileSwap>
-                    for SwapUserProfileSvc<T> {
-                        type Response = super::ProfileChangeResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::UserProfileSwap>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as ProfileService>::swap_user_profile(&inner, request)
-                                    .await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = SwapUserProfileSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
