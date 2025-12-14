@@ -3,7 +3,7 @@ from typing import Optional, Union, List
 from uuid import UUID
 import grpc
 from ..common.type_value import DataType, pack_data
-from ._schema import DeviceSchema, DeviceConfigSchema, GatewaySchema, GatewayConfigSchema, TypeSchema
+from ._schema import DeviceSchema, DeviceConfigSchema, GatewaySchema, GatewayConfigSchema, TypeSchema, TypeConfigSchema
 
 
 def read_device(resource, id: UUID):
@@ -76,14 +76,13 @@ def list_device_option(resource, gateway_id: Optional[UUID], type_id: Optional[U
 def create_device(resource, id: UUID, gateway_id: UUID, type_id: UUID, serial_number: str, name: str, description: str):
     with grpc.insecure_channel(resource.address) as channel:
         stub = device_pb2_grpc.DeviceServiceStub(channel)
-        type_schema = device_pb2.TypeSchema(id=type_id.bytes)
         request = device_pb2.DeviceSchema(
             id=id.bytes,
             gateway_id=gateway_id.bytes,
             serial_number=serial_number,
             name=name,
             description=description,
-            device_type=type_schema
+            type_id=type_id.bytes
         )
         response = stub.CreateDevice(request=request, metadata=resource.metadata)
         return UUID(bytes=response.id)
@@ -169,13 +168,12 @@ def list_gateway_option(resource, type_id: Optional[UUID], name: Optional[str]):
 def create_gateway(resource, id: UUID, type_id: UUID, serial_number: str, name: str, description: str):
     with grpc.insecure_channel(resource.address) as channel:
         stub = device_pb2_grpc.DeviceServiceStub(channel)
-        type_schema = device_pb2.TypeSchema(id=type_id.bytes)
         request = device_pb2.GatewaySchema(
             id=id.bytes,
             serial_number=serial_number,
             name=name,
             description=description,
-            gateway_type=type_schema
+            type_id=type_id.bytes
         )
         response = stub.CreateGateway(request=request, metadata=resource.metadata)
         return UUID(bytes=response.id)
@@ -366,3 +364,48 @@ def remove_type_model(resource, id: UUID, model_id: UUID):
         stub = device_pb2_grpc.DeviceServiceStub(channel)
         request = device_pb2.TypeModel(id=id.bytes, model_id=model_id.bytes)
         stub.RemoveTypeModel(request=request, metadata=resource.metadata)
+
+def read_type_config(resource, id: int):
+    with grpc.insecure_channel(resource.address) as channel:
+        stub = device_pb2_grpc.DeviceServiceStub(channel)
+        request = device_pb2.TypeConfigId(id=id)
+        response = stub.ReadTypeConfig(request=request, metadata=resource.metadata)
+        return TypeConfigSchema.from_response(response.result)
+
+def list_type_config_by_type(resource, type_id: UUID):
+    with grpc.insecure_channel(resource.address) as channel:
+        stub = device_pb2_grpc.DeviceServiceStub(channel)
+        request = device_pb2.TypeId(id=type_id.bytes)
+        response = stub.ListTypeConfig(request=request, metadata=resource.metadata)
+        ls = []
+        for result in response.results: ls.append(TypeConfigSchema.from_response(result))
+        return ls
+
+def create_type_config(resource, type_id: UUID, name: str, value_type: DataType, category: str):
+    with grpc.insecure_channel(resource.address) as channel:
+        stub = device_pb2_grpc.DeviceServiceStub(channel)
+        request = device_pb2.TypeConfigSchema(
+            type_id=type_id.bytes,
+            name=name,
+            config_type=value_type.value,
+            category=category
+        )
+        response = stub.CreateTypeConfig(request=request, metadata=resource.metadata)
+        return response.id
+
+def update_type_config(resource, id: int, name: Optional[str]=None, value_type: Optional[DataType]=None, category: Optional[str]=None):
+    with grpc.insecure_channel(resource.address) as channel:
+        stub = device_pb2_grpc.DeviceServiceStub(channel)
+        request = device_pb2.TypeConfigUpdate(
+            id=id,
+            name=name,
+            config_type=value_type.value,
+            category=category
+        )
+        stub.UpdateTypeConfig(request=request, metadata=resource.metadata)
+
+def delete_type_config(resource, id: int):
+    with grpc.insecure_channel(resource.address) as channel:
+        stub = device_pb2_grpc.DeviceServiceStub(channel)
+        request = device_pb2.TypeConfigId(id=id)
+        stub.DeleteTypeConfig(request=request, metadata=resource.metadata)

@@ -224,6 +224,31 @@ class DeviceServiceStub(object):
                 request_serializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeModel.SerializeToString,
                 response_deserializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeChangeResponse.FromString,
                 _registered_method=True)
+        self.ReadTypeConfig = channel.unary_unary(
+                '/device.DeviceService/ReadTypeConfig',
+                request_serializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigId.SerializeToString,
+                response_deserializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigReadResponse.FromString,
+                _registered_method=True)
+        self.ListTypeConfig = channel.unary_unary(
+                '/device.DeviceService/ListTypeConfig',
+                request_serializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeId.SerializeToString,
+                response_deserializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigListResponse.FromString,
+                _registered_method=True)
+        self.CreateTypeConfig = channel.unary_unary(
+                '/device.DeviceService/CreateTypeConfig',
+                request_serializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigSchema.SerializeToString,
+                response_deserializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.ConfigCreateResponse.FromString,
+                _registered_method=True)
+        self.UpdateTypeConfig = channel.unary_unary(
+                '/device.DeviceService/UpdateTypeConfig',
+                request_serializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigUpdate.SerializeToString,
+                response_deserializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.ConfigChangeResponse.FromString,
+                _registered_method=True)
+        self.DeleteTypeConfig = channel.unary_unary(
+                '/device.DeviceService/DeleteTypeConfig',
+                request_serializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigId.SerializeToString,
+                response_deserializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.ConfigChangeResponse.FromString,
+                _registered_method=True)
 
 
 class DeviceServiceServicer(object):
@@ -457,6 +482,36 @@ class DeviceServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ReadTypeConfig(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListTypeConfig(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CreateTypeConfig(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateTypeConfig(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteTypeConfig(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_DeviceServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -649,6 +704,31 @@ def add_DeviceServiceServicer_to_server(servicer, server):
                     servicer.RemoveTypeModel,
                     request_deserializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeModel.FromString,
                     response_serializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeChangeResponse.SerializeToString,
+            ),
+            'ReadTypeConfig': grpc.unary_unary_rpc_method_handler(
+                    servicer.ReadTypeConfig,
+                    request_deserializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigId.FromString,
+                    response_serializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigReadResponse.SerializeToString,
+            ),
+            'ListTypeConfig': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListTypeConfig,
+                    request_deserializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeId.FromString,
+                    response_serializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigListResponse.SerializeToString,
+            ),
+            'CreateTypeConfig': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreateTypeConfig,
+                    request_deserializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigSchema.FromString,
+                    response_serializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.ConfigCreateResponse.SerializeToString,
+            ),
+            'UpdateTypeConfig': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateTypeConfig,
+                    request_deserializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigUpdate.FromString,
+                    response_serializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.ConfigChangeResponse.SerializeToString,
+            ),
+            'DeleteTypeConfig': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteTypeConfig,
+                    request_deserializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigId.FromString,
+                    response_serializer=bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.ConfigChangeResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -1677,6 +1757,141 @@ class DeviceService(object):
             '/device.DeviceService/RemoveTypeModel',
             bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeModel.SerializeToString,
             bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeChangeResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ReadTypeConfig(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/device.DeviceService/ReadTypeConfig',
+            bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigId.SerializeToString,
+            bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigReadResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListTypeConfig(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/device.DeviceService/ListTypeConfig',
+            bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeId.SerializeToString,
+            bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CreateTypeConfig(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/device.DeviceService/CreateTypeConfig',
+            bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigSchema.SerializeToString,
+            bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.ConfigCreateResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateTypeConfig(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/device.DeviceService/UpdateTypeConfig',
+            bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigUpdate.SerializeToString,
+            bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.ConfigChangeResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeleteTypeConfig(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/device.DeviceService/DeleteTypeConfig',
+            bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.TypeConfigId.SerializeToString,
+            bbthings__grpc_dot_proto_dot_resource_dot_device__pb2.ConfigChangeResponse.FromString,
             options,
             channel_credentials,
             insecure,

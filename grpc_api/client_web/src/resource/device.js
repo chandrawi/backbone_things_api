@@ -1,4 +1,4 @@
-import { get_data_value, set_data_value } from '../common/type_value.js';
+import { get_data_value, set_data_value, get_data_type, set_data_type } from '../common/type_value.js';
 import pb_device from '../proto/resource/device_grpc_web_pb.js';
 import {
     metadata,
@@ -57,7 +57,8 @@ import {
  * @property {Uuid} id
  * @property {string} name
  * @property {string} description
- * @property {Uuid[]} models
+ * @property {Uuid[]} model_ids
+ * @property {TypeConfigSchema[]} configs
  */
 
 /**
@@ -69,7 +70,8 @@ export function get_type_schema(r) {
         id: base64_to_uuid_hex(r.id),
         name: r.name,
         description: r.description,
-        model_ids: r.modelIdsList.map((v) => {return base64_to_uuid_hex(v)})
+        model_ids: r.modelIdsList.map((v) => {return base64_to_uuid_hex(v)}),
+        configs: get_type_config_schema_vec(r.configsList)
     };
 }
 
@@ -100,7 +102,9 @@ function get_type_schema_vec(r) {
  * @property {string} serial_number
  * @property {string} name
  * @property {string} description
- * @property {TypeSchema} device_type
+ * @property {Uuid} type_id
+ * @property {string} type_name
+ * @property {Uuid[]} model_ids
  * @property {DeviceConfigSchema[]} configs
  */
 
@@ -115,7 +119,9 @@ function get_device_schema(r) {
         serial_number: r.serialNumber,
         name: r.name,
         description: r.description,
-        device_type: get_type_schema(r.deviceType),
+        type_id: r.typeId,
+        type_name: r.typeName,
+        model_ids: r.modelIdsList.map((v) => {return base64_to_uuid_hex(v)}),
         configs: get_device_config_schema_vec(r.configsList)
     };
 }
@@ -127,16 +133,6 @@ function get_device_schema(r) {
 function get_device_schema_vec(r) {
     return r.map((v) => {return get_device_schema(v)});
 }
-
-/**
- * @typedef {Object} DeviceCreate
- * @property {Uuid} id
- * @property {Uuid} gateway_id
- * @property {string} serial_number
- * @property {string} name
- * @property {string} description
- * @property {Uuid} type_id
- */
 
 /**
  * @typedef {Object} DeviceUpdate
@@ -175,7 +171,9 @@ function get_device_schema_vec(r) {
  * @property {string} serial_number
  * @property {string} name
  * @property {string} description
- * @property {TypeSchema} gateway_type
+ * @property {Uuid} type_id
+ * @property {string} type_name
+ * @property {Uuid[]} model_ids
  * @property {GatewayConfigSchema[]} configs
  */
 
@@ -189,7 +187,9 @@ function get_gateway_schema(r) {
         serial_number: r.serialNumber,
         name: r.name,
         description: r.description,
-        gateway_type: get_type_schema(r.gatewayType),
+        type_id: r.typeId,
+        type_name: r.typeName,
+        model_ids: r.modelIdsList.map((v) => {return base64_to_uuid_hex(v)}),
         configs: get_device_config_schema_vec(r.configsList)
     };
 }
@@ -201,15 +201,6 @@ function get_gateway_schema(r) {
 function get_gateway_schema_vec(r) {
     return r.map((v) => {return get_gateway_schema(v)});
 }
-
-/**
- * @typedef {Object} GatewayCreate
- * @property {Uuid} id
- * @property {string} serial_number
- * @property {string} name
- * @property {string} description
- * @property {?Uuid} type_id
- */
 
 /**
  * @typedef {Object} GatewayUpdate
@@ -307,6 +298,45 @@ function get_gateway_config_schema_vec(r) {
  * @property {?number|bigint|string|Uint8Array|boolean} value
  * @property {?string} category
  */
+
+/**
+ * @typedef {Object} TypeConfigSchema
+ * @property {number} id
+ * @property {Uuid} type_id
+ * @property {string} name
+ * @property {number|string} value_type
+ * @property {string} category
+ */
+
+/**
+ * @typedef {Object} TypeConfigUpdate
+ * @property {number} id
+ * @property {?string} name
+ * @property {?number|string} value_type
+ * @property {?string} category
+ */
+
+/**
+ * @param {*} r 
+ * @returns {TypeConfigSchema}
+ */
+function get_type_config_schema(r) {
+    return {
+        id: r.id,
+        type_id: base64_to_uuid_hex(r.typeId),
+        name: r.name,
+        value_type: get_data_type(r.configType),
+        category: r.category
+    };
+}
+
+/**
+ * @param {*} r 
+ * @returns {TypeConfigSchema[]}
+ */
+function get_type_config_schema_vec(r) {
+    return r.map((v) => {return get_type_config_schema(v)});
+}
 
 
 /**
@@ -416,20 +446,18 @@ export async function list_device_option(config, request) {
 /**
  * Create a device
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {DeviceCreate} request device schema: id, gateway_id, serial_number, name, description, type_id
+ * @param {DeviceSchema} request device schema: id, gateway_id, serial_number, name, description, type_id
  * @returns {Promise<Uuid>} device uuid
  */
 export async function create_device(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
-    const typeSchema = new pb_device.TypeSchema();
-    typeSchema.setId(uuid_hex_to_base64(request.type_id));
     const deviceSchema = new pb_device.DeviceSchema();
     deviceSchema.setId(uuid_hex_to_base64(request.id));
     deviceSchema.setGatewayId(uuid_hex_to_base64(request.gateway_id));
     deviceSchema.setSerialNumber(request.serial_number);
     deviceSchema.setName(request.name);
     deviceSchema.setDescription(request.description);
-    deviceSchema.setDeviceType(typeSchema);
+    deviceSchema.setTypeId(uuid_hex_to_base64(request.type_id));
     return client.createDevice(deviceSchema, metadata(config.access_token))
         .then(response => base64_to_uuid_hex(response.toObject().id));
 }
@@ -559,19 +587,17 @@ export async function list_gateway_option(config, request) {
 /**
  * Create a gateway
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {GatewayCreate} request gateway schema: id, serial_number, name, description, type_id
+ * @param {GatewaySchema} request gateway schema: id, serial_number, name, description, type_id
  * @returns {Promise<Uuid>} gateway uuid
  */
 export async function create_gateway(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
-    const typeSchema = new pb_device.TypeSchema();
-    typeSchema.setId(uuid_hex_to_base64(request.type_id));
     const gatewaySchema = new pb_device.GatewaySchema();
     gatewaySchema.setId(uuid_hex_to_base64(request.id));
     gatewaySchema.setSerialNumber(request.serial_number);
     gatewaySchema.setName(request.name);
     gatewaySchema.setDescription(request.description);
-    gatewaySchema.setGatewayType(typeSchema);
+    gatewaySchema.setTypeId(uuid_hex_to_base64(request.type_id));
     return client.createGateway(gatewaySchema, metadata(config.access_token))
         .then(response => base64_to_uuid_hex(response.toObject().id));
 }
@@ -611,7 +637,7 @@ export async function delete_gateway(config, request) {
 /**
  * Read a device configuration by uuid
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {ConfigId} request device config uuid: id
+ * @param {ConfigId} request device config id: id
  * @returns {Promise<DeviceConfigSchema>} device config schema: id, device_id, name, value, category
  */
 export async function read_device_config(config, request) {
@@ -677,7 +703,7 @@ export async function update_device_config(config, request) {
 /**
  * Delete a device configuration
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {ConfigId} request device config uuid: id
+ * @param {ConfigId} request device config id: id
  * @returns {Promise<null>} delete response
  */
 export async function delete_device_config(config, request) {
@@ -691,7 +717,7 @@ export async function delete_device_config(config, request) {
 /**
  * Read a gateway configuration by uuid
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {ConfigId} request gateway config uuid: id
+ * @param {ConfigId} request gateway config id: id
  * @returns {Promise<GatewayConfigSchema>} gateway config schema: id, gateway_id, name, value, category
  */
 export async function read_gateway_config(config, request) {
@@ -757,7 +783,7 @@ export async function update_gateway_config(config, request) {
 /**
  * Delete a gateway configuration
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {ConfigId} request gateway config uuid: id
+ * @param {ConfigId} request gateway config id: id
  * @returns {Promise<null>} delete response
  */
 export async function delete_gateway_config(config, request) {
@@ -897,5 +923,81 @@ export async function remove_type_model(config, request) {
     typeModel.setId(uuid_hex_to_base64(request.id));
     typeModel.setModelId(uuid_hex_to_base64(request.model_id));
     return client.removeTypeModel(typeModel, metadata(config.access_token))
+        .then(response => null);
+}
+
+/**
+ * Read a type configuration by uuid
+ * @param {ServerConfig} config Resource server config: address, access_token
+ * @param {ConfigId} request type config id: id
+ * @returns {Promise<TypeConfigSchema>} type config schema: id, type_id, name, value, category
+ */
+export async function read_type_config(config, request) {
+    const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
+    const configId = new pb_device.TypeConfigId();
+    configId.setId(request.id);
+    return client.readTypeConfig(configId, metadata(config.access_token))
+        .then(response => get_type_config_schema(response.toObject().result));
+}
+
+/**
+ * Read type configurations by type uuid
+ * @param {ServerConfig} config Resource server config: address, access_token
+ * @param {TypeId} request type uuid: id
+ * @returns {Promise<TypeConfigSchema[]>} type config schema: id, type_id, name, value, category
+ */
+export async function list_type_config_by_type(config, request) {
+    const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
+    const typeId = new pb_device.TypeId();
+    typeId.setId(uuid_hex_to_base64(request.id));
+    return client.listTypeConfig(typeId, metadata(config.access_token))
+        .then(response => get_type_config_schema_vec(response.toObject().resultsList));
+}
+
+/**
+ * Create a type configuration
+ * @param {ServerConfig} config Resource server config: address, access_token
+ * @param {TypeConfigSchema} request type config schema: type_id, name, type_value, category
+ * @returns {Promise<number>} type config id
+ */
+export async function create_type_config(config, request) {
+    const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
+    const configSchema = new pb_device.TypeConfigSchema();
+    configSchema.setTypeId(uuid_hex_to_base64(request.type_id));
+    configSchema.setName(request.name);
+    configSchema.setConfigType(set_data_type(request.value_type));
+    configSchema.setCategory(request.category);
+    return client.createTypeConfig(configSchema, metadata(config.access_token))
+        .then(response => response.toObject().id);
+}
+
+/**
+ * Update a type configuration
+ * @param {ServerConfig} config Resource server config: address, access_token
+ * @param {TypeConfigUpdate} request type config update: id, name, type_value, category
+ * @returns {Promise<null>} update response
+ */
+export async function update_type_config(config, request) {
+    const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
+    const configUpdate = new pb_device.TypeConfigUpdate();
+    configUpdate.setId(request.id);
+    configUpdate.setName(request.name);
+    configUpdate.setConfigType(set_data_type(request.value_type));
+    configUpdate.setCategory(request.category);
+    return client.updateTypeConfig(configUpdate, metadata(config.access_token))
+        .then(response => null);
+}
+
+/**
+ * Delete a type configuration
+ * @param {ServerConfig} config Resource server config: address, access_token
+ * @param {ConfigId} request type config uuid: id
+ * @returns {Promise<null>} delete response
+ */
+export async function delete_type_config(config, request) {
+    const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
+    const configId = new pb_device.TypeConfigId();
+    configId.setId(request.id);
+    return client.deleteTypeConfig(configId, metadata(config.access_token))
         .then(response => null);
 }

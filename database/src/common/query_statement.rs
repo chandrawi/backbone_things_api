@@ -12,7 +12,7 @@ use crate::auth::_row::{
     map_to_api_schema, map_to_procedure_schema, map_to_role_schema, map_to_user_schema
 };
 use crate::resource::_schema::{
-    ModelSchema, TagSchema, ModelConfigSchema, DeviceSchema, TypeSchema, DeviceConfigSchema,
+    ModelSchema, TagSchema, ModelConfigSchema, DeviceSchema, TypeSchema, DeviceConfigSchema, TypeConfigSchema,
     GroupSchema, SetSchema, SetMember, SetTemplateSchema, SetTemplateMember,
     DataSchema, DataSetSchema, BufferSchema, BufferSetSchema, SliceSchema, SliceSetSchema
 };
@@ -234,6 +234,14 @@ impl QueryStatement {
             .fetch_all(pool)
             .await?;
         Ok(map_to_type_schema(rows))
+    }
+
+    pub(crate) async fn fetch_type_config_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<TypeConfigSchema>, Error>
+    {
+        let (sql, arguments) = self.build();
+        sqlx::query_as_with(&sql, arguments)
+            .fetch_all(pool)
+            .await
     }
 
     pub(crate) async fn fetch_group_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<GroupSchema>, Error>

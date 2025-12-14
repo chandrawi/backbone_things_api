@@ -171,7 +171,12 @@ export {
     update_type,
     delete_type,
     add_type_model,
-    remove_type_model
+    remove_type_model,
+    read_type_config,
+    list_type_config_by_type,
+    create_type_config,
+    update_type_config,
+    delete_type_config
 } from './device.js';
 export {
     read_group_model,
@@ -228,31 +233,6 @@ export {
     remove_set_template_member,
     swap_set_template_member
 } from './set.js';
-export {
-    read_slice,
-    list_slice_by_ids,
-    list_slice_by_time,
-    list_slice_by_range,
-    list_slice_by_name_time,
-    list_slice_by_name_range,
-    list_slice_option,
-    list_slice_group_by_time,
-    list_slice_group_by_range,
-    list_slice_group_option,
-    create_slice,
-    update_slice,
-    delete_slice,
-    read_slice_set,
-    list_slice_set_by_ids,
-    list_slice_set_by_time,
-    list_slice_set_by_range,
-    list_slice_set_by_name_time,
-    list_slice_set_by_name_range,
-    list_slice_set_option,
-    create_slice_set,
-    update_slice_set,
-    delete_slice_set
-} from './slice.js';
 export {
     read_data,
     list_data_by_time,
@@ -352,3 +332,28 @@ export {
     count_buffer_group_by_later,
     count_buffer_group_by_range
 } from './buffer.js';
+export {
+    read_slice,
+    list_slice_by_ids,
+    list_slice_by_time,
+    list_slice_by_range,
+    list_slice_by_name_time,
+    list_slice_by_name_range,
+    list_slice_option,
+    list_slice_group_by_time,
+    list_slice_group_by_range,
+    list_slice_group_option,
+    create_slice,
+    update_slice,
+    delete_slice,
+    read_slice_set,
+    list_slice_set_by_ids,
+    list_slice_set_by_time,
+    list_slice_set_by_range,
+    list_slice_set_by_name_time,
+    list_slice_set_by_name_range,
+    list_slice_set_option,
+    create_slice_set,
+    update_slice_set,
+    delete_slice_set
+} from './slice.js';

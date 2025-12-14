@@ -2,7 +2,7 @@ use sqlx::{Row, FromRow, Error, postgres::PgRow};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
 use crate::resource::_schema::{
-    ModelSchema, TagSchema, ModelConfigSchema, DeviceSchema, TypeSchema, DeviceConfigSchema,
+    ModelSchema, TagSchema, ModelConfigSchema, DeviceSchema, TypeSchema, DeviceConfigSchema, TypeConfigSchema,
     GroupSchema, SetSchema, SetMember, SetTemplateSchema, SetTemplateMember,
     DataSchema, DataSetSchema, BufferSchema, BufferSetSchema, SliceSchema, SliceSetSchema
 };
@@ -164,7 +164,6 @@ pub(crate) struct DeviceRow {
     name: String,
     description: String,
     type_name: String,
-    type_description: String,
     model_id: Option<Uuid>,
     config_id: Option<i32>,
     config_name: Option<String>,
@@ -174,8 +173,8 @@ pub(crate) struct DeviceRow {
 
 impl<'r> FromRow<'r, PgRow> for DeviceRow {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
-        let bytes: Option<Vec<u8>> = row.try_get(11)?;
-        let type_number: Option<i16> = row.try_get(12)?;
+        let bytes: Option<Vec<u8>> = row.try_get(10)?;
+        let type_number: Option<i16> = row.try_get(11)?;
         let config_value = match (bytes, type_number) {
             (Some(b), Some(t)) => Some(DataValue::from_bytes(&b, DataType::from(t))),
             _ => None
@@ -188,12 +187,11 @@ impl<'r> FromRow<'r, PgRow> for DeviceRow {
             name: row.try_get(4)?,
             description: row.try_get(5)?,
             type_name: row.try_get(6)?,
-            type_description: row.try_get(7)?,
-            model_id: row.try_get(8)?,
-            config_id: row.try_get(9)?,
-            config_name: row.try_get(10)?,
+            model_id: row.try_get(7)?,
+            config_id: row.try_get(8)?,
+            config_name: row.try_get(9)?,
             config_value,
-            config_category: row.try_get(13)?
+            config_category: row.try_get(12)?
         })
     }
 }
@@ -223,12 +221,9 @@ pub(crate) fn map_to_device_schema(rows: Vec<DeviceRow>) -> Vec<DeviceSchema> {
                 serial_number: row.serial_number,
                 name: row.name,
                 description: row.description,
-                type_: TypeSchema {
-                    id: row.type_id,
-                    name: row.type_name,
-                    description: row.type_description,
-                    model_ids: Vec::new()
-                },
+                type_id: row.type_id,
+                type_name: row.type_name,
+                model_ids: Vec::new(),
                 configs: Vec::new()
             });
         }
@@ -236,8 +231,8 @@ pub(crate) fn map_to_device_schema(rows: Vec<DeviceRow>) -> Vec<DeviceSchema> {
         if let Some(device) = last_device.as_mut() {
             // 2) Add model_id if exists without duplicates
             if let Some(model_id) = row.model_id {
-                if device.type_.model_ids.last() !=  Some(&model_id) {
-                    device.type_.model_ids.push(model_id);
+                if device.model_ids.last() !=  Some(&model_id) {
+                    device.model_ids.push(model_id);
                 }
             }
     
@@ -269,16 +264,25 @@ pub(crate) struct TypeRow {
     type_id: Uuid,
     name: String,
     description: String,
-    model_id: Option<Uuid>
+    model_id: Option<Uuid>,
+    config_id: Option<i32>,
+    config_name: Option<String>,
+    config_type: Option<DataType>,
+    config_category: Option<String>
 }
 
 impl<'r> FromRow<'r, PgRow> for TypeRow {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
+        let type_number: Option<i16> = row.try_get(6)?;
         Ok(Self {
             type_id: row.try_get(0)?,
             name: row.try_get(1)?,
             description: row.try_get(2)?,
-            model_id: row.try_get(3)?
+            model_id: row.try_get(3)?,
+            config_id: row.try_get(4)?,
+            config_name: row.try_get(5)?,
+            config_type: type_number.map(|t| DataType::from(t)),
+            config_category: row.try_get(7)?
         })
     }
 }
@@ -306,12 +310,32 @@ pub(crate) fn map_to_type_schema(rows: Vec<TypeRow>) -> Vec<TypeSchema> {
                 name: row.name,
                 description: row.description,
                 model_ids: Vec::new(),
+                configs: Vec::new()
             });
         }
 
-        // 2) Add model_id if exists
-        if let (Some(type_), Some(model_id)) = (last_type.as_mut(), row.model_id) {
-            type_.model_ids.push(model_id);
+        if let Some(type_) = last_type.as_mut() {
+            // 2) Add model_id if exists without duplicates
+            if let Some(model_id) = row.model_id {
+                if type_.model_ids.last() !=  Some(&model_id) {
+                    type_.model_ids.push(model_id);
+                }
+            }
+
+            // 3) Add type config if exists without duplicates
+            if let Some(config_id) = row.config_id {
+                let exists = type_.configs.iter().any(|c| c.id == config_id);
+                if !exists {
+                    // push previous config to last_device
+                    type_.configs.push(TypeConfigSchema {
+                        id: config_id,
+                        type_id: row.type_id,
+                        name: row.config_name.unwrap_or_default(),
+                        value_type: row.config_type.unwrap_or_default(),
+                        category: row.config_category.unwrap_or_default()
+                    });
+                }
+            }
         }
     }
 
@@ -332,6 +356,19 @@ impl<'r> FromRow<'r, PgRow> for DeviceConfigSchema {
             name: row.try_get(2)?,
             value: DataValue::from_bytes(bytes, DataType::from(type_number)),
             category: row.try_get(5)?
+        })
+    }
+}
+
+impl<'r> FromRow<'r, PgRow> for TypeConfigSchema {
+    fn from_row(row: &PgRow) -> Result<Self, Error> {
+        let type_number: i16 = row.try_get(3)?;
+        Ok(Self {
+            id: row.try_get(0)?,
+            type_id: row.try_get(1)?,
+            name: row.try_get(2)?,
+            value_type: DataType::from(type_number),
+            category: row.try_get(4)?
         })
     }
 }

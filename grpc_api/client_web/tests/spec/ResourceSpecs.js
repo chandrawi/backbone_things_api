@@ -204,7 +204,7 @@ describe("Backbone Things Resource test", function() {
                 type = ty;
             }
         }
-        expect(type).toEqual(device_1.device_type);
+        expect(type.name).toEqual(device_1.type_name);
     });
 
     it("should read model groups", async function() {

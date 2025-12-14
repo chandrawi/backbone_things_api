@@ -15,7 +15,7 @@ use uuid::Uuid;
 use std::slice::from_ref;
 use crate::common::type_value::{DataType, DataValue, ArrayDataValue};
 use _schema::{
-    ModelSchema, ModelConfigSchema, TagSchema, 
+    ModelSchema, ModelConfigSchema, TagSchema, TypeConfigSchema,
     DeviceSchema, DeviceConfigSchema, GatewaySchema, GatewayConfigSchema, TypeSchema,
     GroupModelSchema, GroupDeviceSchema, GroupGatewaySchema, SetSchema, SetTemplateSchema,
     DataSchema, DataSetSchema, BufferSchema, BufferSetSchema, SliceSchema, SliceSetSchema
@@ -451,6 +451,41 @@ impl Resource {
         -> Result<(), Error>
     {
         let qs = device::delete_device_type_model(id, model_id);
+        qs.execute(&self.pool).await
+    }
+
+    pub async fn read_type_config(&self, id: i32)
+        -> Result<TypeConfigSchema, Error>
+    {
+        let qs = device::select_device_type_config(Some(id), None);
+        qs.fetch_type_config_schema(&self.pool).await?.into_iter().next().ok_or(Error::RowNotFound)
+    }
+
+    pub async fn list_type_config_by_type(&self, type_id: Uuid)
+        -> Result<Vec<TypeConfigSchema>, Error>
+    {
+        let qs = device::select_device_type_config(None, Some(type_id));
+        qs.fetch_type_config_schema(&self.pool).await
+    }
+
+    pub async fn create_type_config(&self, type_id: Uuid, name: &str, value_type: DataType, category: &str)
+        -> Result<i32, Error>
+    {
+        let qs = device::insert_device_type_config(type_id, name, value_type, category);
+        qs.fetch_id(&self.pool).await
+    }
+
+    pub async fn update_type_config(&self, id: i32, name: Option<&str>, value_type: Option<DataValue>, category: Option<&str>)
+        -> Result<(), Error>
+    {
+        let qs = device::update_device_config(id, name, value_type, category);
+        qs.execute(&self.pool).await
+    }
+
+    pub async fn delete_type_config(&self, id: i32)
+        -> Result<(), Error>
+    {
+        let qs = device::delete_device_config(id);
         qs.execute(&self.pool).await
     }
 

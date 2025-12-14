@@ -70,15 +70,30 @@ class TagSchema:
 
 
 @dataclass
+class TypeConfigSchema:
+    id: int
+    type_id: UUID
+    name: str
+    value_type: DataType
+    category: str
+
+    def from_response(r):
+        return TypeConfigSchema(r.id, UUID(bytes=r.type_id), r.name, DataType(r.config_type), r.category)
+
+
+@dataclass
 class TypeSchema:
     id: UUID
     name: str
     description: str
     model_ids: List[UUID]
+    configs: List[TypeConfigSchema]
 
     def from_response(r):
         models = []
         for model in r.model_ids: models.append(UUID(bytes=model))
+        configs = []
+        for conf in r.configs: configs.append(TypeConfigSchema.from_response(conf))
         return TypeSchema(UUID(bytes=r.id), r.name, r.description, models)
 
 
@@ -115,14 +130,17 @@ class DeviceSchema:
     serial_number: str
     name: str
     description: str
-    type: TypeSchema
+    type_id: UUID
+    type_name: UUID
+    model_ids: List[UUID]
     configs: List[DeviceConfigSchema]
 
     def from_response(r):
         configs = []
         for conf in r.configs: configs.append(DeviceConfigSchema.from_response(conf))
-        type_schema = TypeSchema.from_response(r.device_type)
-        return DeviceSchema(UUID(bytes=r.id), UUID(bytes=r.gateway_id), r.serial_number, r.name, r.description, type_schema, configs)
+        model_ids = []
+        for id in r.model_ids: model_ids.append(UUID(bytes=id))
+        return DeviceSchema(UUID(bytes=r.id), UUID(bytes=r.gateway_id), r.serial_number, r.name, r.description, r.type_id, r.type_name, model_ids, configs)
 
 
 @dataclass
@@ -131,14 +149,17 @@ class GatewaySchema:
     serial_number: str
     name: str
     description: str
-    type: TypeSchema
+    type_id: UUID
+    type_name: UUID
+    model_ids: List[UUID]
     configs: List[GatewayConfigSchema]
 
     def from_response(r):
         configs = []
         for conf in r.configs: configs.append(GatewayConfigSchema.from_response(conf))
-        type_schema = TypeSchema.from_response(r.device_type)
-        return GatewaySchema(UUID(bytes=r.id), r.serial_number, r.name, r.description, type_schema, configs)
+        model_ids = []
+        for id in r.model_ids: model_ids.append(UUID(bytes=id))
+        return GatewaySchema(UUID(bytes=r.id), r.serial_number, r.name, r.description, r.type_id, r.type_name, model_ids, configs)
 
 
 @dataclass

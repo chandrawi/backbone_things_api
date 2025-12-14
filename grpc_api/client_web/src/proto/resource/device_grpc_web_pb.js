@@ -2392,5 +2392,310 @@ proto.device.DeviceServicePromiseClient.prototype.removeTypeModel =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.device.TypeConfigId,
+ *   !proto.device.TypeConfigReadResponse>}
+ */
+const methodDescriptor_DeviceService_ReadTypeConfig = new grpc.web.MethodDescriptor(
+  '/device.DeviceService/ReadTypeConfig',
+  grpc.web.MethodType.UNARY,
+  proto.device.TypeConfigId,
+  proto.device.TypeConfigReadResponse,
+  /**
+   * @param {!proto.device.TypeConfigId} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.device.TypeConfigReadResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.device.TypeConfigId} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.device.TypeConfigReadResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.device.TypeConfigReadResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.device.DeviceServiceClient.prototype.readTypeConfig =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/device.DeviceService/ReadTypeConfig',
+      request,
+      metadata || {},
+      methodDescriptor_DeviceService_ReadTypeConfig,
+      callback);
+};
+
+
+/**
+ * @param {!proto.device.TypeConfigId} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.device.TypeConfigReadResponse>}
+ *     Promise that resolves to the response
+ */
+proto.device.DeviceServicePromiseClient.prototype.readTypeConfig =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/device.DeviceService/ReadTypeConfig',
+      request,
+      metadata || {},
+      methodDescriptor_DeviceService_ReadTypeConfig);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.device.TypeId,
+ *   !proto.device.TypeConfigListResponse>}
+ */
+const methodDescriptor_DeviceService_ListTypeConfig = new grpc.web.MethodDescriptor(
+  '/device.DeviceService/ListTypeConfig',
+  grpc.web.MethodType.UNARY,
+  proto.device.TypeId,
+  proto.device.TypeConfigListResponse,
+  /**
+   * @param {!proto.device.TypeId} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.device.TypeConfigListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.device.TypeId} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.device.TypeConfigListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.device.TypeConfigListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.device.DeviceServiceClient.prototype.listTypeConfig =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/device.DeviceService/ListTypeConfig',
+      request,
+      metadata || {},
+      methodDescriptor_DeviceService_ListTypeConfig,
+      callback);
+};
+
+
+/**
+ * @param {!proto.device.TypeId} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.device.TypeConfigListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.device.DeviceServicePromiseClient.prototype.listTypeConfig =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/device.DeviceService/ListTypeConfig',
+      request,
+      metadata || {},
+      methodDescriptor_DeviceService_ListTypeConfig);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.device.TypeConfigSchema,
+ *   !proto.device.ConfigCreateResponse>}
+ */
+const methodDescriptor_DeviceService_CreateTypeConfig = new grpc.web.MethodDescriptor(
+  '/device.DeviceService/CreateTypeConfig',
+  grpc.web.MethodType.UNARY,
+  proto.device.TypeConfigSchema,
+  proto.device.ConfigCreateResponse,
+  /**
+   * @param {!proto.device.TypeConfigSchema} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.device.ConfigCreateResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.device.TypeConfigSchema} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.device.ConfigCreateResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.device.ConfigCreateResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.device.DeviceServiceClient.prototype.createTypeConfig =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/device.DeviceService/CreateTypeConfig',
+      request,
+      metadata || {},
+      methodDescriptor_DeviceService_CreateTypeConfig,
+      callback);
+};
+
+
+/**
+ * @param {!proto.device.TypeConfigSchema} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.device.ConfigCreateResponse>}
+ *     Promise that resolves to the response
+ */
+proto.device.DeviceServicePromiseClient.prototype.createTypeConfig =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/device.DeviceService/CreateTypeConfig',
+      request,
+      metadata || {},
+      methodDescriptor_DeviceService_CreateTypeConfig);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.device.TypeConfigUpdate,
+ *   !proto.device.ConfigChangeResponse>}
+ */
+const methodDescriptor_DeviceService_UpdateTypeConfig = new grpc.web.MethodDescriptor(
+  '/device.DeviceService/UpdateTypeConfig',
+  grpc.web.MethodType.UNARY,
+  proto.device.TypeConfigUpdate,
+  proto.device.ConfigChangeResponse,
+  /**
+   * @param {!proto.device.TypeConfigUpdate} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.device.ConfigChangeResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.device.TypeConfigUpdate} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.device.ConfigChangeResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.device.ConfigChangeResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.device.DeviceServiceClient.prototype.updateTypeConfig =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/device.DeviceService/UpdateTypeConfig',
+      request,
+      metadata || {},
+      methodDescriptor_DeviceService_UpdateTypeConfig,
+      callback);
+};
+
+
+/**
+ * @param {!proto.device.TypeConfigUpdate} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.device.ConfigChangeResponse>}
+ *     Promise that resolves to the response
+ */
+proto.device.DeviceServicePromiseClient.prototype.updateTypeConfig =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/device.DeviceService/UpdateTypeConfig',
+      request,
+      metadata || {},
+      methodDescriptor_DeviceService_UpdateTypeConfig);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.device.TypeConfigId,
+ *   !proto.device.ConfigChangeResponse>}
+ */
+const methodDescriptor_DeviceService_DeleteTypeConfig = new grpc.web.MethodDescriptor(
+  '/device.DeviceService/DeleteTypeConfig',
+  grpc.web.MethodType.UNARY,
+  proto.device.TypeConfigId,
+  proto.device.ConfigChangeResponse,
+  /**
+   * @param {!proto.device.TypeConfigId} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.device.ConfigChangeResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.device.TypeConfigId} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.device.ConfigChangeResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.device.ConfigChangeResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.device.DeviceServiceClient.prototype.deleteTypeConfig =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/device.DeviceService/DeleteTypeConfig',
+      request,
+      metadata || {},
+      methodDescriptor_DeviceService_DeleteTypeConfig,
+      callback);
+};
+
+
+/**
+ * @param {!proto.device.TypeConfigId} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.device.ConfigChangeResponse>}
+ *     Promise that resolves to the response
+ */
+proto.device.DeviceServicePromiseClient.prototype.deleteTypeConfig =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/device.DeviceService/DeleteTypeConfig',
+      request,
+      metadata || {},
+      methodDescriptor_DeviceService_DeleteTypeConfig);
+};
+
+
 module.exports = proto.device;
 

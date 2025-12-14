@@ -15,6 +15,18 @@ CREATE TABLE IF NOT EXISTS "device_type_model" (
     REFERENCES "model" ("model_id") ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS "device_type_config" (
+  "id" serial NOT NULL,
+  "type_id" uuid NOT NULL,
+  "name" varchar(128) NOT NULL,
+  "type" smallint NOT NULL DEFAULT 0,
+  "category" varchar(64) NOT NULL,
+  PRIMARY KEY ("id"),
+  UNIQUE ("type_id","name"),
+  FOREIGN KEY ("type_id")
+    REFERENCES "device_type" ("type_id") ON UPDATE CASCADE ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS "device" (
   "device_id" uuid NOT NULL,
   "gateway_id" uuid NOT NULL,

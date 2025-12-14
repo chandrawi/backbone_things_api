@@ -85,7 +85,7 @@ mod tests {
         // read type
         let types = resource.list_type_by_name("Speedometer").await.unwrap();
         let device_type = types.iter().filter(|x| x.id == type_id).next().unwrap();
-        assert_eq!(device1.type_, device_type.to_owned());
+        assert_eq!(device1.type_name, device_type.name);
         // read device configurations
         let device_configs = resource.list_device_config_by_device(device_id1).await.unwrap();
         assert_eq!(device1.configs, device_configs);

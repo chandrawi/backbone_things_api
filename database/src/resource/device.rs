@@ -1,7 +1,7 @@
 use sea_query::{Iden, Query, Expr, Order};
 use uuid::Uuid;
 use crate::common::query_statement::QueryStatement;
-use crate::common::type_value::DataValue;
+use crate::common::type_value::{DataType, DataValue};
 
 #[derive(Iden)]
 pub(crate) enum Device {
@@ -40,6 +40,16 @@ pub(crate) enum DeviceConfig {
     Category
 }
 
+#[derive(Iden)]
+pub(crate) enum DeviceTypeConfig {
+    Table,
+    Id,
+    TypeId,
+    Name,
+    Type,
+    Category
+}
+
 pub enum DeviceKind {
     Device,
     Gateway
@@ -65,8 +75,7 @@ pub fn select_device(
             (Device::Table, Device::Description)
         ])
         .columns([
-            (DeviceType::Table, DeviceType::Name),
-            (DeviceType::Table, DeviceType::Description)
+            (DeviceType::Table, DeviceType::Name)
         ])
         .columns([
             (DeviceTypeModel::Table, DeviceTypeModel::ModelId)
@@ -357,10 +366,20 @@ pub fn select_device_type(
         .columns([
             (DeviceTypeModel::Table, DeviceTypeModel::ModelId)
         ])
+        .columns([
+            (DeviceTypeConfig::Table, DeviceTypeConfig::Id),
+            (DeviceTypeConfig::Table, DeviceTypeConfig::Name),
+            (DeviceTypeConfig::Table, DeviceTypeConfig::Type),
+            (DeviceTypeConfig::Table, DeviceTypeConfig::Category)
+        ])
         .from(DeviceType::Table)
         .left_join(DeviceTypeModel::Table, 
             Expr::col((DeviceType::Table, DeviceType::TypeId))
             .equals((DeviceTypeModel::Table, DeviceTypeModel::TypeId))
+        )
+        .left_join(DeviceTypeConfig::Table, 
+            Expr::col((DeviceType::Table, DeviceType::TypeId))
+            .equals((DeviceTypeConfig::Table, DeviceTypeConfig::TypeId))
         )
         .to_owned();
 
@@ -475,6 +494,105 @@ pub fn delete_device_type_model(
         .from_table(DeviceTypeModel::Table)
         .and_where(Expr::col(DeviceTypeModel::TypeId).eq(id))
         .and_where(Expr::col(DeviceTypeModel::ModelId).eq(model_id))
+        .to_owned();
+
+    QueryStatement::Delete(stmt)
+}
+
+pub fn select_device_type_config(
+    id: Option<i32>,
+    type_id: Option<Uuid>
+) -> QueryStatement
+{
+    let mut stmt = Query::select()
+        .columns([
+            DeviceTypeConfig::Id,
+            DeviceTypeConfig::TypeId,
+            DeviceTypeConfig::Name,
+            DeviceTypeConfig::Type,
+            DeviceTypeConfig::Category
+        ])
+        .from(DeviceConfig::Table)
+        .to_owned();
+
+    if let Some(id) = id {
+        stmt = stmt.and_where(Expr::col(DeviceTypeConfig::Id).eq(id)).to_owned();
+    }
+    else if let Some(type_id) = type_id {
+        stmt = stmt.and_where(Expr::col(DeviceTypeConfig::TypeId).eq(type_id)).to_owned();
+    }
+
+    let stmt = stmt
+        .order_by(DeviceTypeConfig::TypeId, Order::Asc)
+        .order_by(DeviceTypeConfig::Id, Order::Asc)
+        .to_owned();
+
+    QueryStatement::Select(stmt)
+}
+
+pub fn insert_device_type_config(
+    type_id: Uuid,
+    name: &str,
+    value_type: DataType,
+    category: &str
+) -> QueryStatement
+{
+    let stmt = Query::insert()
+        .into_table(DeviceTypeConfig::Table)
+        .columns([
+            DeviceTypeConfig::TypeId,
+            DeviceTypeConfig::Name,
+            DeviceTypeConfig::Type,
+            DeviceTypeConfig::Category
+        ])
+        .values([
+            type_id.into(),
+            name.into(),
+            i16::from(value_type).into(),
+            category.into()
+        ])
+        .unwrap_or(&mut sea_query::InsertStatement::default())
+        .returning(Query::returning().column(DeviceTypeConfig::Id))
+        .to_owned();
+
+    QueryStatement::Insert(stmt)
+}
+
+pub fn update_device_type_config(
+    id: i32,
+    name: Option<&str>,
+    value_type: Option<DataType>,
+    category: Option<&str>
+) -> QueryStatement
+{
+    let mut stmt = Query::update()
+        .table(DeviceTypeConfig::Table)
+        .to_owned();
+
+    if let Some(value) = name {
+        stmt = stmt.value(DeviceTypeConfig::Name, value).to_owned();
+    }
+    if let Some(value) = value_type {
+        stmt = stmt.value(DeviceTypeConfig::Name, i16::from(value)).to_owned();
+    }
+    if let Some(value) = category {
+        stmt = stmt.value(DeviceTypeConfig::Category, value).to_owned();
+    }
+
+    let stmt = stmt
+        .and_where(Expr::col(DeviceTypeConfig::TypeId).eq(id))
+        .to_owned();
+
+    QueryStatement::Update(stmt)
+}
+
+pub fn delete_device_type_config(
+    id: Uuid
+) -> QueryStatement
+{
+    let stmt = Query::delete()
+        .from_table(DeviceTypeConfig::Table)
+        .and_where(Expr::col(DeviceTypeConfig::Id).eq(id))
         .to_owned();
 
     QueryStatement::Delete(stmt)

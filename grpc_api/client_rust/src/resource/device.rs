@@ -1,12 +1,13 @@
 use tonic::{Request, Status};
 use uuid::Uuid;
-use bbthings_database::common::type_value::DataValue;
+use bbthings_database::common::type_value::{DataType, DataValue};
 use bbthings_grpc_server::proto::resource::device::device_service_client::DeviceServiceClient;
 use bbthings_grpc_server::proto::resource::device::{
     DeviceSchema, DeviceId, DeviceIds, DeviceName, DeviceOption, DeviceUpdate,
     GatewaySchema, GatewayId, GatewayIds, GatewayName, SerialNumber, GatewayOption, GatewayUpdate,
     ConfigSchema, ConfigId, ConfigUpdate,
-    TypeSchema, TypeId, TypeIds, TypeName, TypeOption, TypeUpdate, TypeModel
+    TypeSchema, TypeId, TypeIds, TypeName, TypeOption, TypeUpdate, TypeModel,
+    TypeConfigSchema, TypeConfigId, TypeConfigUpdate
 };
 use crate::resource::Resource;
 use bbthings_grpc_server::common::interceptor::TokenInterceptor;
@@ -135,12 +136,9 @@ pub(crate) async fn create_device(resource: &Resource, id: Uuid, gateway_id: Uui
         serial_number: serial_number.to_owned(),
         name: name.to_owned(),
         description: description.unwrap_or_default().to_owned(),
-        device_type: Some(TypeSchema {
-            id: type_id.as_bytes().to_vec(),
-            name: String::new(),
-            description: String::new(),
-            model_ids: Vec::new()
-        }),
+        type_id: type_id.as_bytes().to_vec(),
+        type_name: String::new(),
+        model_ids: Vec::new(),
         configs: Vec::new()
     });
     client.create_device(request)
@@ -283,12 +281,9 @@ pub(crate) async fn create_gateway(resource: &Resource, id: Uuid, type_id: Uuid,
         serial_number: serial_number.to_owned(),
         name: name.to_owned(),
         description: description.unwrap_or_default().to_owned(),
-        gateway_type: Some(TypeSchema {
-            id: type_id.as_bytes().to_vec(),
-            name: String::new(),
-            description: String::new(),
-            model_ids: Vec::new()
-        }),
+        type_id: type_id.as_bytes().to_vec(),
+        type_name: String::new(),
+        model_ids: Vec::new(),
         configs: Vec::new()
     });
     client.create_gateway(request)
@@ -562,7 +557,8 @@ pub(crate) async fn create_type(resource: &Resource, id: Uuid, name: &str, descr
         id: id.as_bytes().to_vec(),
         name: name.to_owned(),
         description: description.unwrap_or_default().to_owned(),
-        model_ids: Vec::new()
+        model_ids: Vec::new(),
+        configs: Vec::new()
     });
     let response = client.create_type(request)
         .await?
@@ -626,6 +622,86 @@ pub(crate) async fn remove_type_model(resource: &Resource, id: Uuid, model_id: U
         model_id: model_id.as_bytes().to_vec()
     });
     client.remove_type_model(request)
+        .await?;
+    Ok(())
+}
+
+pub(crate) async fn read_type_config(resource: &Resource, id: i32)
+    -> Result<TypeConfigSchema, Status>
+{
+    let interceptor = TokenInterceptor(resource.access_token.clone());
+    let mut client = 
+        DeviceServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let request = Request::new(TypeConfigId {
+        id
+    });
+    let response = client.read_type_config(request)
+        .await?
+        .into_inner();
+    Ok(response.result.ok_or(Status::not_found(CONF_NOT_FOUND))?)
+}
+
+pub(crate) async fn list_type_config_by_type(resource: &Resource, type_id: Uuid)
+    -> Result<Vec<TypeConfigSchema>, Status>
+{
+    let interceptor = TokenInterceptor(resource.access_token.clone());
+    let mut client = 
+        DeviceServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let request = Request::new(TypeId {
+        id: type_id.as_bytes().to_vec()
+    });
+    let response = client.list_type_config(request)
+        .await?
+        .into_inner();
+    Ok(response.results)
+}
+
+pub(crate) async fn create_type_config(resource: &Resource, type_id: Uuid, name: &str, value_type: DataType, category: &str)
+    -> Result<i32, Status>
+{
+    let interceptor = TokenInterceptor(resource.access_token.clone());
+    let mut client = 
+        DeviceServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let request = Request::new(TypeConfigSchema {
+        id: 0,
+        type_id: type_id.as_bytes().to_vec(),
+        name: name.to_owned(),
+        config_type: value_type.into(),
+        category: category.to_owned()
+    });
+    let response = client.create_type_config(request)
+        .await?
+        .into_inner();
+    Ok(response.id)
+}
+
+pub(crate) async fn update_type_config(resource: &Resource, id: i32, name: Option<&str>, value_type: Option<DataType>, category: Option<&str>)
+    -> Result<(), Status>
+{
+    let interceptor = TokenInterceptor(resource.access_token.clone());
+    let mut client = 
+        DeviceServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let request = Request::new(TypeConfigUpdate {
+        id,
+        name: name.map(|s| s.to_owned()),
+        config_type: value_type.map(|s| s.into()),
+        category: category.map(|s| s.to_owned())
+    });
+    client.update_type_config(request)
+        .await?;
+    Ok(())
+}
+
+pub(crate) async fn delete_type_config(resource: &Resource, id: i32)
+    -> Result<(), Status>
+{
+    let interceptor = TokenInterceptor(resource.access_token.clone());
+    let mut client = 
+        DeviceServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let request = Request::new(TypeConfigId {
+        id
+    });
+    client.delete_type_config(request)
         .await?;
     Ok(())
 }

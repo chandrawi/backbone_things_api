@@ -11,9 +11,13 @@ pub struct DeviceSchema {
     pub name: ::prost::alloc::string::String,
     #[prost(string, tag = "5")]
     pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "6")]
-    pub device_type: ::core::option::Option<TypeSchema>,
-    #[prost(message, repeated, tag = "7")]
+    #[prost(bytes = "vec", tag = "6")]
+    pub type_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag = "7")]
+    pub type_name: ::prost::alloc::string::String,
+    #[prost(bytes = "vec", repeated, tag = "8")]
+    pub model_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    #[prost(message, repeated, tag = "9")]
     pub configs: ::prost::alloc::vec::Vec<ConfigSchema>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -26,9 +30,13 @@ pub struct GatewaySchema {
     pub name: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
     pub description: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "5")]
-    pub gateway_type: ::core::option::Option<TypeSchema>,
-    #[prost(message, repeated, tag = "6")]
+    #[prost(bytes = "vec", tag = "5")]
+    pub type_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag = "6")]
+    pub type_name: ::prost::alloc::string::String,
+    #[prost(bytes = "vec", repeated, tag = "7")]
+    pub model_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    #[prost(message, repeated, tag = "8")]
     pub configs: ::prost::alloc::vec::Vec<ConfigSchema>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
@@ -143,7 +151,7 @@ pub struct ConfigUpdate {
     #[prost(string, optional, tag = "5")]
     pub category: ::core::option::Option<::prost::alloc::string::String>,
 }
-#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TypeSchema {
     #[prost(bytes = "vec", tag = "1")]
     pub id: ::prost::alloc::vec::Vec<u8>,
@@ -153,6 +161,8 @@ pub struct TypeSchema {
     pub description: ::prost::alloc::string::String,
     #[prost(bytes = "vec", repeated, tag = "4")]
     pub model_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    #[prost(message, repeated, tag = "5")]
+    pub configs: ::prost::alloc::vec::Vec<TypeConfigSchema>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct TypeId {
@@ -189,6 +199,35 @@ pub struct TypeModel {
     pub id: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes = "vec", tag = "2")]
     pub model_id: ::prost::alloc::vec::Vec<u8>,
+}
+#[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct TypeConfigId {
+    #[prost(int32, tag = "1")]
+    pub id: i32,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct TypeConfigSchema {
+    #[prost(int32, tag = "1")]
+    pub id: i32,
+    #[prost(bytes = "vec", tag = "2")]
+    pub type_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag = "3")]
+    pub name: ::prost::alloc::string::String,
+    #[prost(uint32, tag = "4")]
+    pub config_type: u32,
+    #[prost(string, tag = "5")]
+    pub category: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct TypeConfigUpdate {
+    #[prost(int32, tag = "1")]
+    pub id: i32,
+    #[prost(string, optional, tag = "2")]
+    pub name: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(uint32, optional, tag = "3")]
+    pub config_type: ::core::option::Option<u32>,
+    #[prost(string, optional, tag = "4")]
+    pub category: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DeviceReadResponse {
@@ -241,7 +280,7 @@ pub struct ConfigCreateResponse {
 }
 #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ConfigChangeResponse {}
-#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TypeReadResponse {
     #[prost(message, optional, tag = "1")]
     pub result: ::core::option::Option<TypeSchema>,
@@ -258,6 +297,16 @@ pub struct TypeCreateResponse {
 }
 #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct TypeChangeResponse {}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct TypeConfigReadResponse {
+    #[prost(message, optional, tag = "1")]
+    pub result: ::core::option::Option<TypeConfigSchema>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TypeConfigListResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub results: ::prost::alloc::vec::Vec<TypeConfigSchema>,
+}
 /// Generated client implementations.
 pub mod device_service_client {
     #![allow(
@@ -1261,6 +1310,126 @@ pub mod device_service_client {
                 .insert(GrpcMethod::new("device.DeviceService", "RemoveTypeModel"));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn read_type_config(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TypeConfigId>,
+        ) -> std::result::Result<
+            tonic::Response<super::TypeConfigReadResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/device.DeviceService/ReadTypeConfig",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("device.DeviceService", "ReadTypeConfig"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_type_config(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TypeId>,
+        ) -> std::result::Result<
+            tonic::Response<super::TypeConfigListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/device.DeviceService/ListTypeConfig",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("device.DeviceService", "ListTypeConfig"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn create_type_config(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TypeConfigSchema>,
+        ) -> std::result::Result<
+            tonic::Response<super::ConfigCreateResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/device.DeviceService/CreateTypeConfig",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("device.DeviceService", "CreateTypeConfig"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn update_type_config(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TypeConfigUpdate>,
+        ) -> std::result::Result<
+            tonic::Response<super::ConfigChangeResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/device.DeviceService/UpdateTypeConfig",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("device.DeviceService", "UpdateTypeConfig"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn delete_type_config(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TypeConfigId>,
+        ) -> std::result::Result<
+            tonic::Response<super::ConfigChangeResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/device.DeviceService/DeleteTypeConfig",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("device.DeviceService", "DeleteTypeConfig"));
+            self.inner.unary(req, path, codec).await
+        }
     }
 }
 /// Generated server implementations.
@@ -1540,6 +1709,41 @@ pub mod device_service_server {
             request: tonic::Request<super::TypeModel>,
         ) -> std::result::Result<
             tonic::Response<super::TypeChangeResponse>,
+            tonic::Status,
+        >;
+        async fn read_type_config(
+            &self,
+            request: tonic::Request<super::TypeConfigId>,
+        ) -> std::result::Result<
+            tonic::Response<super::TypeConfigReadResponse>,
+            tonic::Status,
+        >;
+        async fn list_type_config(
+            &self,
+            request: tonic::Request<super::TypeId>,
+        ) -> std::result::Result<
+            tonic::Response<super::TypeConfigListResponse>,
+            tonic::Status,
+        >;
+        async fn create_type_config(
+            &self,
+            request: tonic::Request<super::TypeConfigSchema>,
+        ) -> std::result::Result<
+            tonic::Response<super::ConfigCreateResponse>,
+            tonic::Status,
+        >;
+        async fn update_type_config(
+            &self,
+            request: tonic::Request<super::TypeConfigUpdate>,
+        ) -> std::result::Result<
+            tonic::Response<super::ConfigChangeResponse>,
+            tonic::Status,
+        >;
+        async fn delete_type_config(
+            &self,
+            request: tonic::Request<super::TypeConfigId>,
+        ) -> std::result::Result<
+            tonic::Response<super::ConfigChangeResponse>,
             tonic::Status,
         >;
     }
@@ -3292,6 +3496,234 @@ pub mod device_service_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let method = RemoveTypeModelSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/device.DeviceService/ReadTypeConfig" => {
+                    #[allow(non_camel_case_types)]
+                    struct ReadTypeConfigSvc<T: DeviceService>(pub Arc<T>);
+                    impl<
+                        T: DeviceService,
+                    > tonic::server::UnaryService<super::TypeConfigId>
+                    for ReadTypeConfigSvc<T> {
+                        type Response = super::TypeConfigReadResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TypeConfigId>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as DeviceService>::read_type_config(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ReadTypeConfigSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/device.DeviceService/ListTypeConfig" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListTypeConfigSvc<T: DeviceService>(pub Arc<T>);
+                    impl<T: DeviceService> tonic::server::UnaryService<super::TypeId>
+                    for ListTypeConfigSvc<T> {
+                        type Response = super::TypeConfigListResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TypeId>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as DeviceService>::list_type_config(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListTypeConfigSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/device.DeviceService/CreateTypeConfig" => {
+                    #[allow(non_camel_case_types)]
+                    struct CreateTypeConfigSvc<T: DeviceService>(pub Arc<T>);
+                    impl<
+                        T: DeviceService,
+                    > tonic::server::UnaryService<super::TypeConfigSchema>
+                    for CreateTypeConfigSvc<T> {
+                        type Response = super::ConfigCreateResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TypeConfigSchema>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as DeviceService>::create_type_config(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CreateTypeConfigSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/device.DeviceService/UpdateTypeConfig" => {
+                    #[allow(non_camel_case_types)]
+                    struct UpdateTypeConfigSvc<T: DeviceService>(pub Arc<T>);
+                    impl<
+                        T: DeviceService,
+                    > tonic::server::UnaryService<super::TypeConfigUpdate>
+                    for UpdateTypeConfigSvc<T> {
+                        type Response = super::ConfigChangeResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TypeConfigUpdate>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as DeviceService>::update_type_config(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = UpdateTypeConfigSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/device.DeviceService/DeleteTypeConfig" => {
+                    #[allow(non_camel_case_types)]
+                    struct DeleteTypeConfigSvc<T: DeviceService>(pub Arc<T>);
+                    impl<
+                        T: DeviceService,
+                    > tonic::server::UnaryService<super::TypeConfigId>
+                    for DeleteTypeConfigSvc<T> {
+                        type Response = super::ConfigChangeResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TypeConfigId>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as DeviceService>::delete_type_config(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = DeleteTypeConfigSvc(inner);
                         let codec = tonic_prost::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

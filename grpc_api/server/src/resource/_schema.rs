@@ -2,8 +2,8 @@ use chrono::{Utc, TimeZone};
 use uuid::Uuid;
 use bbthings_database::{DataType, DataValue, ArrayDataValue};
 use bbthings_database::{
-    ModelSchema, TagSchema, ModelConfigSchema,
-    DeviceSchema, GatewaySchema, TypeSchema, DeviceConfigSchema, GatewayConfigSchema,
+    ModelSchema, TagSchema, ModelConfigSchema, DeviceSchema, GatewaySchema,
+    TypeSchema, TypeConfigSchema, DeviceConfigSchema, GatewayConfigSchema,
     GroupModelSchema, GroupDeviceSchema, GroupGatewaySchema,
     SetSchema, SetMember, SetTemplateSchema, SetTemplateMember,
     DataSchema, DataSetSchema, BufferSchema, BufferSetSchema,
@@ -105,7 +105,9 @@ impl From<DeviceSchema> for device::DeviceSchema {
             serial_number: value.serial_number,
             name: value.name,
             description: value.description,
-            device_type: Some(value.type_.into()),
+            type_id: value.type_id.as_bytes().to_vec(),
+            type_name: value.type_name,
+            model_ids: value.model_ids.into_iter().map(|id| id.as_bytes().to_vec()).collect(),
             configs: value.configs.into_iter().map(|e| e.into()).collect()
         }
     }
@@ -119,7 +121,9 @@ impl From<device::DeviceSchema> for DeviceSchema {
             serial_number: value.serial_number,
             name: value.name,
             description: value.description,
-            type_: value.device_type.map(|s| s.into()).unwrap_or_default(),
+            type_id: Uuid::from_slice(&value.type_id).unwrap_or_default(),
+            type_name: value.type_name,
+            model_ids: value.model_ids.into_iter().map(|id| Uuid::from_slice(&id).unwrap_or_default()).collect(),
             configs: value.configs.into_iter().map(|e| e.into()).collect()
         }
     }
@@ -132,7 +136,9 @@ impl From<GatewaySchema> for device::GatewaySchema {
             serial_number: value.serial_number,
             name: value.name,
             description: value.description,
-            gateway_type: Some(value.type_.into()),
+            type_id: value.type_id.as_bytes().to_vec(),
+            type_name: value.type_name,
+            model_ids: value.model_ids.into_iter().map(|v| v.as_bytes().to_vec()).collect(),
             configs: value.configs.into_iter().map(|e| e.into()).collect()
         }
     }
@@ -145,7 +151,9 @@ impl From<device::GatewaySchema> for GatewaySchema {
             serial_number: value.serial_number,
             name: value.name,
             description: value.description,
-            type_:  value.gateway_type.map(|s| s.into()).unwrap_or_default(),
+            type_id: Uuid::from_slice(&value.type_id).unwrap_or_default(),
+            type_name: value.type_name,
+            model_ids: value.model_ids.into_iter().map(|v| Uuid::from_slice(&v).unwrap_or_default()).collect(),
             configs: value.configs.into_iter().map(|e| e.into()).collect()
         }
     }
@@ -157,7 +165,8 @@ impl From<TypeSchema> for device::TypeSchema {
             id: value.id.as_bytes().to_vec(),
             name: value.name,
             description: value.description,
-            model_ids: value.model_ids.into_iter().map(|u| u.as_bytes().to_vec()).collect()
+            model_ids: value.model_ids.into_iter().map(|u| u.as_bytes().to_vec()).collect(),
+            configs: value.configs.into_iter().map(|v| v.into()).collect()
         }
     }
 }
@@ -168,7 +177,8 @@ impl From<device::TypeSchema> for TypeSchema {
             id: Uuid::from_slice(&value.id).unwrap_or_default(),
             name: value.name,
             description: value.description,
-            model_ids: value.model_ids.into_iter().map(|u| Uuid::from_slice(&u).unwrap_or_default()).collect()
+            model_ids: value.model_ids.into_iter().map(|u| Uuid::from_slice(&u).unwrap_or_default()).collect(),
+            configs: value.configs.into_iter().map(|v| v.into()).collect()
         }
     }
 }
@@ -224,6 +234,30 @@ impl From<device::ConfigSchema> for GatewayConfigSchema {
                 &value.config_bytes,
                 DataType::from(value.config_type)
             ),
+            category: value.category
+        }
+    }
+}
+
+impl From<TypeConfigSchema> for device::TypeConfigSchema {
+    fn from(value: TypeConfigSchema) -> Self {
+        Self {
+            id: value.id,
+            type_id: value.type_id.as_bytes().to_vec(),
+            name: value.name,
+            config_type: value.value_type.into(),
+            category: value.category
+        }
+    }
+}
+
+impl From<device::TypeConfigSchema> for TypeConfigSchema {
+    fn from(value: device::TypeConfigSchema) -> Self {
+        Self {
+            id: value.id,
+            type_id: Uuid::from_slice(&value.type_id).unwrap_or_default(),
+            name: value.name,
+            value_type: DataType::from(value.config_type),
             category: value.category
         }
     }

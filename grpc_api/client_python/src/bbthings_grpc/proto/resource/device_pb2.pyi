@@ -7,38 +7,46 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class DeviceSchema(_message.Message):
-    __slots__ = ("id", "gateway_id", "serial_number", "name", "description", "device_type", "configs")
+    __slots__ = ("id", "gateway_id", "serial_number", "name", "description", "type_id", "type_name", "model_ids", "configs")
     ID_FIELD_NUMBER: _ClassVar[int]
     GATEWAY_ID_FIELD_NUMBER: _ClassVar[int]
     SERIAL_NUMBER_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
-    DEVICE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    TYPE_ID_FIELD_NUMBER: _ClassVar[int]
+    TYPE_NAME_FIELD_NUMBER: _ClassVar[int]
+    MODEL_IDS_FIELD_NUMBER: _ClassVar[int]
     CONFIGS_FIELD_NUMBER: _ClassVar[int]
     id: bytes
     gateway_id: bytes
     serial_number: str
     name: str
     description: str
-    device_type: TypeSchema
+    type_id: bytes
+    type_name: str
+    model_ids: _containers.RepeatedScalarFieldContainer[bytes]
     configs: _containers.RepeatedCompositeFieldContainer[ConfigSchema]
-    def __init__(self, id: _Optional[bytes] = ..., gateway_id: _Optional[bytes] = ..., serial_number: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., device_type: _Optional[_Union[TypeSchema, _Mapping]] = ..., configs: _Optional[_Iterable[_Union[ConfigSchema, _Mapping]]] = ...) -> None: ...
+    def __init__(self, id: _Optional[bytes] = ..., gateway_id: _Optional[bytes] = ..., serial_number: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., type_id: _Optional[bytes] = ..., type_name: _Optional[str] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., configs: _Optional[_Iterable[_Union[ConfigSchema, _Mapping]]] = ...) -> None: ...
 
 class GatewaySchema(_message.Message):
-    __slots__ = ("id", "serial_number", "name", "description", "gateway_type", "configs")
+    __slots__ = ("id", "serial_number", "name", "description", "type_id", "type_name", "model_ids", "configs")
     ID_FIELD_NUMBER: _ClassVar[int]
     SERIAL_NUMBER_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
-    GATEWAY_TYPE_FIELD_NUMBER: _ClassVar[int]
+    TYPE_ID_FIELD_NUMBER: _ClassVar[int]
+    TYPE_NAME_FIELD_NUMBER: _ClassVar[int]
+    MODEL_IDS_FIELD_NUMBER: _ClassVar[int]
     CONFIGS_FIELD_NUMBER: _ClassVar[int]
     id: bytes
     serial_number: str
     name: str
     description: str
-    gateway_type: TypeSchema
+    type_id: bytes
+    type_name: str
+    model_ids: _containers.RepeatedScalarFieldContainer[bytes]
     configs: _containers.RepeatedCompositeFieldContainer[ConfigSchema]
-    def __init__(self, id: _Optional[bytes] = ..., serial_number: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., gateway_type: _Optional[_Union[TypeSchema, _Mapping]] = ..., configs: _Optional[_Iterable[_Union[ConfigSchema, _Mapping]]] = ...) -> None: ...
+    def __init__(self, id: _Optional[bytes] = ..., serial_number: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., type_id: _Optional[bytes] = ..., type_name: _Optional[str] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., configs: _Optional[_Iterable[_Union[ConfigSchema, _Mapping]]] = ...) -> None: ...
 
 class DeviceId(_message.Message):
     __slots__ = ("id",)
@@ -167,16 +175,18 @@ class ConfigUpdate(_message.Message):
     def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ..., config_bytes: _Optional[bytes] = ..., config_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
 
 class TypeSchema(_message.Message):
-    __slots__ = ("id", "name", "description", "model_ids")
+    __slots__ = ("id", "name", "description", "model_ids", "configs")
     ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     MODEL_IDS_FIELD_NUMBER: _ClassVar[int]
+    CONFIGS_FIELD_NUMBER: _ClassVar[int]
     id: bytes
     name: str
     description: str
     model_ids: _containers.RepeatedScalarFieldContainer[bytes]
-    def __init__(self, id: _Optional[bytes] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., model_ids: _Optional[_Iterable[bytes]] = ...) -> None: ...
+    configs: _containers.RepeatedCompositeFieldContainer[TypeConfigSchema]
+    def __init__(self, id: _Optional[bytes] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., configs: _Optional[_Iterable[_Union[TypeConfigSchema, _Mapping]]] = ...) -> None: ...
 
 class TypeId(_message.Message):
     __slots__ = ("id",)
@@ -219,6 +229,38 @@ class TypeModel(_message.Message):
     id: bytes
     model_id: bytes
     def __init__(self, id: _Optional[bytes] = ..., model_id: _Optional[bytes] = ...) -> None: ...
+
+class TypeConfigId(_message.Message):
+    __slots__ = ("id",)
+    ID_FIELD_NUMBER: _ClassVar[int]
+    id: int
+    def __init__(self, id: _Optional[int] = ...) -> None: ...
+
+class TypeConfigSchema(_message.Message):
+    __slots__ = ("id", "type_id", "name", "config_type", "category")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    TYPE_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    CONFIG_TYPE_FIELD_NUMBER: _ClassVar[int]
+    CATEGORY_FIELD_NUMBER: _ClassVar[int]
+    id: int
+    type_id: bytes
+    name: str
+    config_type: int
+    category: str
+    def __init__(self, id: _Optional[int] = ..., type_id: _Optional[bytes] = ..., name: _Optional[str] = ..., config_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
+
+class TypeConfigUpdate(_message.Message):
+    __slots__ = ("id", "name", "config_type", "category")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    CONFIG_TYPE_FIELD_NUMBER: _ClassVar[int]
+    CATEGORY_FIELD_NUMBER: _ClassVar[int]
+    id: int
+    name: str
+    config_type: int
+    category: str
+    def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ..., config_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
 
 class DeviceReadResponse(_message.Message):
     __slots__ = ("result",)
@@ -307,3 +349,15 @@ class TypeCreateResponse(_message.Message):
 class TypeChangeResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class TypeConfigReadResponse(_message.Message):
+    __slots__ = ("result",)
+    RESULT_FIELD_NUMBER: _ClassVar[int]
+    result: TypeConfigSchema
+    def __init__(self, result: _Optional[_Union[TypeConfigSchema, _Mapping]] = ...) -> None: ...
+
+class TypeConfigListResponse(_message.Message):
+    __slots__ = ("results",)
+    RESULTS_FIELD_NUMBER: _ClassVar[int]
+    results: _containers.RepeatedCompositeFieldContainer[TypeConfigSchema]
+    def __init__(self, results: _Optional[_Iterable[_Union[TypeConfigSchema, _Mapping]]] = ...) -> None: ...

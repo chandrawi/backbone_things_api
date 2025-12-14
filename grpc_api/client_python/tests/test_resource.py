@@ -91,7 +91,7 @@ def test_resource():
     types = resource.list_type_by_name("Speedometer")
     device_type_filter = filter(lambda x: x.id == type_id, types)
     device_type = list(device_type_filter)[0]
-    assert device1.type == device_type
+    assert device1.type_name == device_type.name
     # read device configurations
     device_configs = resource.list_device_config_by_device(device_id1)
     assert device1.configs == device_configs

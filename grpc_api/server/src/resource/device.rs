@@ -3,7 +3,15 @@ use uuid::Uuid;
 use bbthings_database::{Resource, DataType, DataValue};
 use crate::proto::resource::device::device_service_server::DeviceService;
 use crate::proto::resource::device::{
-    ConfigChangeResponse, ConfigCreateResponse, ConfigId, ConfigListResponse, ConfigReadResponse, ConfigSchema, ConfigUpdate, DeviceChangeResponse, DeviceCreateResponse, DeviceId, DeviceIds, DeviceListResponse, DeviceName, DeviceOption, DeviceReadResponse, DeviceSchema, DeviceUpdate, GatewayChangeResponse, GatewayCreateResponse, GatewayId, GatewayIds, GatewayListResponse, GatewayName, GatewayOption, GatewayReadResponse, GatewaySchema, GatewayUpdate, SerialNumber, TypeChangeResponse, TypeCreateResponse, TypeId, TypeIds, TypeListResponse, TypeModel, TypeName, TypeOption, TypeReadResponse, TypeSchema, TypeUpdate
+    DeviceSchema, DeviceId, DeviceIds, SerialNumber, DeviceName, DeviceOption, DeviceUpdate,
+    GatewaySchema, GatewayId, GatewayIds, GatewayName, GatewayOption, GatewayUpdate,
+    TypeSchema, TypeId, TypeIds, TypeName, TypeOption, TypeUpdate, TypeModel,
+    ConfigSchema, ConfigId, ConfigUpdate, TypeConfigSchema, TypeConfigId, TypeConfigUpdate,
+    DeviceReadResponse, DeviceListResponse, DeviceCreateResponse, DeviceChangeResponse,
+    GatewayReadResponse, GatewayListResponse, GatewayCreateResponse, GatewayChangeResponse,
+    ConfigReadResponse, ConfigListResponse, ConfigCreateResponse, ConfigChangeResponse,
+    TypeReadResponse, TypeListResponse, TypeCreateResponse, TypeChangeResponse,
+    TypeConfigReadResponse, TypeConfigListResponse
 };
 use crate::common::validator::{AccessValidator, AccessSchema};
 use crate::common::utility::handle_error;
@@ -21,6 +29,10 @@ const CREATE_TYPE: &str = "create_type";
 const UPDATE_TYPE: &str = "update_type";
 const DELETE_TYPE: &str = "delete_type";
 const CHANGE_TYPE_MODEL: &str = "change_type_model";
+const READ_TYPE_CONFIG: &str = "read_type_config";
+const CREATE_TYPE_CONFIG: &str = "create_type_config";
+const UPDATE_TYPE_CONFIG: &str = "update_type_config";
+const DELETE_TYPE_CONFIG: &str = "delete_type_config";
 
 #[derive(Debug)]
 pub struct DeviceServer {
@@ -158,7 +170,7 @@ impl DeviceService for DeviceServer {
         let result = self.resource_db.create_device(
             Uuid::from_slice(&request.id).unwrap_or_default(),
             Uuid::from_slice(&request.gateway_id).unwrap_or_default(),
-            Uuid::from_slice(&request.device_type.unwrap_or_default().id).unwrap_or_default(),
+            Uuid::from_slice(&request.type_id).unwrap_or_default(),
             &request.serial_number,
             &request.name,
             Some(&request.description)
@@ -293,7 +305,7 @@ impl DeviceService for DeviceServer {
         let request = request.into_inner();
         let result = self.resource_db.create_gateway(
             Uuid::from_slice(&request.id).unwrap_or_default(),
-            Uuid::from_slice(&request.gateway_type.unwrap_or_default().id).unwrap_or_default(),
+            Uuid::from_slice(&request.type_id).unwrap_or_default(),
             &request.serial_number,
             &request.name,
             Some(&request.description)
@@ -635,6 +647,82 @@ impl DeviceService for DeviceServer {
         };
         Ok(Response::new(TypeChangeResponse { }))
     }
+
+    async fn read_type_config(&self, request: Request<TypeConfigId>)
+        -> Result<Response<TypeConfigReadResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_TYPE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.read_type_config(request.id).await;
+        let result = match result {
+            Ok(value) => Some(value.into()),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(TypeConfigReadResponse { result }))
+    }
+
+    async fn list_type_config(&self, request: Request<TypeId>)
+        -> Result<Response<TypeConfigListResponse>, Status>
+    {
+        self.validate(request.extensions(), READ_TYPE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.list_type_config_by_type(Uuid::from_slice(&request.id).unwrap_or_default()).await;
+        let results = match result {
+            Ok(value) => value.into_iter().map(|e| e.into()).collect(),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(TypeConfigListResponse { results }))
+    }
+
+    async fn create_type_config(&self, request: Request<TypeConfigSchema>)
+        -> Result<Response<ConfigCreateResponse>, Status>
+    {
+        self.validate(request.extensions(), CREATE_TYPE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.create_type_config(
+            Uuid::from_slice(&request.type_id).unwrap_or_default(),
+            &request.name,
+            DataType::from(request.config_type),
+            &request.category
+        ).await;
+        let id = match result {
+            Ok(value) => value,
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigCreateResponse { id }))
+    }
+
+    async fn update_type_config(&self, request: Request<TypeConfigUpdate>)
+        -> Result<Response<ConfigChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), UPDATE_TYPE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.update_type_config(
+            request.id,
+            request.name.as_deref(),
+            request.config_type.map(|c| c.into()),
+            request.category.as_deref()
+        ).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigChangeResponse { }))
+    }
+
+    async fn delete_type_config(&self, request: Request<TypeConfigId>)
+        -> Result<Response<ConfigChangeResponse>, Status>
+    {
+        self.validate(request.extensions(), DELETE_TYPE_CONFIG)?;
+        let request = request.into_inner();
+        let result = self.resource_db.delete_type_config(request.id).await;
+        match result {
+            Ok(_) => (),
+            Err(e) => return Err(handle_error(e))
+        };
+        Ok(Response::new(ConfigChangeResponse { }))
+    }
+
 }
 
 impl AccessValidator for DeviceServer {

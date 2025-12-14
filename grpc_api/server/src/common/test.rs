@@ -58,7 +58,7 @@ impl TestServer {
         let pool = PgPoolOptions::new().connect(self.db_url.as_str()).await?;
         let sql = match self.kind {
             TestServerKind::Auth => "TRUNCATE TABLE \"profile_user\", \"profile_role\", \"token\", \"user_role\", \"user\", \"role_access\", \"role\", \"api_procedure\", \"api\";",
-            TestServerKind::Resource => "TRUNCATE TABLE \"slice_data_set\", \"slice_data\", \"data_buffer\", \"data\", \"set_map\", \"set_template_map\", \"set\", \"set_template\", \"group_model_map\", \"group_device_map\", \"group_model\", \"group_device\", \"device_config\", \"device\", \"device_type_model\", \"device_type\", \"model_tag\", \"model_config\", \"model\";"
+            TestServerKind::Resource => "TRUNCATE TABLE \"slice_data_set\", \"slice_data\", \"data_buffer\", \"data\", \"set_map\", \"set_template_map\", \"set\", \"set_template\", \"group_model_map\", \"group_device_map\", \"group_model\", \"group_device\", \"device_config\", \"device\", \"device_type_config\", \"device_type_model\", \"device_type\", \"model_tag\", \"model_config\", \"model\";"
         };
         sqlx::query(sql)
             .execute(&pool)

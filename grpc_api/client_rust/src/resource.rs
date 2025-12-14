@@ -12,7 +12,7 @@ use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use bbthings_database::{
     ModelSchema, TagSchema, ModelConfigSchema,
-    DeviceSchema, GatewaySchema, TypeSchema, DeviceConfigSchema, GatewayConfigSchema,
+    DeviceSchema, GatewaySchema, TypeSchema, DeviceConfigSchema, GatewayConfigSchema, TypeConfigSchema,
     GroupModelSchema, GroupDeviceSchema, GroupGatewaySchema, SetSchema, SetTemplateSchema,
     DataSchema, DataSetSchema, BufferSchema, BufferSetSchema, SliceSchema, SliceSetSchema,
     DataValue, DataType
@@ -506,6 +506,41 @@ impl Resource {
         -> Result<(), Status>
     {
         device::remove_type_model(&self, id, model_id)
+            .await
+    }
+
+    pub async fn read_type_config(&self, id: i32)
+        -> Result<TypeConfigSchema, Status>
+    {
+        device::read_type_config(&self, id).await
+            .map(|s| s.into())
+    }
+
+    pub async fn list_type_config_by_type(&self, type_id: Uuid)
+        -> Result<Vec<TypeConfigSchema>, Status>
+    {
+        device::list_type_config_by_type(&self, type_id).await
+            .map(|v| v.into_iter().map(|s| s.into()).collect())
+    }
+
+    pub async fn create_type_config(&self, type_id: Uuid, name: &str, value_type: DataType, category: &str)
+        -> Result<i32, Status>
+    {
+        device::create_type_config(&self, type_id, name, value_type, category)
+            .await
+    }
+
+    pub async fn update_type_config(&self, id: i32, name: Option<&str>, value_type: Option<DataType>, category: Option<&str>)
+        -> Result<(), Status>
+    {
+        device::update_type_config(&self, id, name, value_type, category)
+            .await
+    }
+
+    pub async fn delete_type_config(&self, id: i32)
+        -> Result<(), Status>
+    {
+        device::delete_type_config(&self, id)
             .await
     }
 

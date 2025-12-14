@@ -77,6 +77,16 @@ service DeviceService {
     rpc AddTypeModel(TypeModel) returns (TypeChangeResponse);
 
     rpc RemoveTypeModel(TypeModel) returns (TypeChangeResponse);
+
+    rpc ReadTypeConfig(TypeConfigId) returns (TypeConfigReadResponse);
+
+    rpc ListTypeConfig(TypeId) returns (TypeConfigListResponse);
+
+    rpc CreateTypeConfig(TypeConfigSchema) returns (ConfigCreateResponse);
+
+    rpc UpdateTypeConfig(TypeConfigUpdate) returns (ConfigChangeResponse);
+
+    rpc DeleteTypeConfig(TypeConfigId) returns (ConfigChangeResponse);
 }
 
 message DeviceSchema {
@@ -85,8 +95,10 @@ message DeviceSchema {
     string serial_number = 3;
     string name = 4;
     string description = 5;
-    TypeSchema device_type = 6;
-    repeated ConfigSchema configs = 7;
+    bytes type_id = 6;
+    string type_name = 7;
+    repeated bytes model_ids = 8;
+    repeated ConfigSchema configs = 9;
 }
 
 message GatewaySchema {
@@ -94,8 +106,10 @@ message GatewaySchema {
     string serial_number = 2;
     string name = 3;
     string description = 4;
-    TypeSchema gateway_type = 5;
-    repeated ConfigSchema configs = 6;
+    bytes type_id = 5;
+    string type_name = 6;
+    repeated bytes model_ids = 7;
+    repeated ConfigSchema configs = 8;
 }
 
 message DeviceId {
@@ -180,6 +194,7 @@ message TypeSchema {
     string name = 2;
     string description = 3;
     repeated bytes model_ids = 4;
+    repeated TypeConfigSchema configs = 5;
 }
 
 message TypeId {
@@ -207,6 +222,25 @@ message TypeUpdate {
 message TypeModel {
     bytes id = 1;
     bytes model_id = 2;
+}
+
+message TypeConfigId {
+    int32 id = 1;
+}
+
+message TypeConfigSchema {
+    int32 id = 1;
+    bytes type_id = 2;
+    string name = 3;
+    uint32 config_type = 4;
+    string category = 5;
+}
+
+message TypeConfigUpdate {
+    int32 id = 1;
+    optional string name = 2;
+    optional uint32 config_type = 3;
+    optional string category = 4;
 }
 
 message DeviceReadResponse {
@@ -267,4 +301,12 @@ message TypeCreateResponse {
 }
 
 message TypeChangeResponse {
+}
+
+message TypeConfigReadResponse {
+    TypeConfigSchema result = 1;
+}
+
+message TypeConfigListResponse {
+    repeated TypeConfigSchema results = 1;
 }

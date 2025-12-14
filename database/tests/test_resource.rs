@@ -22,7 +22,7 @@ mod tests {
 
     async fn truncate_tables(pool: &Pool<Postgres>) -> Result<(), Error>
     {
-        let sql = "TRUNCATE TABLE \"slice_data_set\", \"slice_data\", \"data_buffer\", \"data\", \"set_map\", \"set_template_map\", \"set\", \"set_template\", \"group_model_map\", \"group_device_map\", \"group_model\", \"group_device\", \"device_config\", \"device\", \"device_type_model\", \"device_type\", \"model_tag\", \"model_config\", \"model\";";
+        let sql = "TRUNCATE TABLE \"slice_data_set\", \"slice_data\", \"data_buffer\", \"data\", \"set_map\", \"set_template_map\", \"set\", \"set_template\", \"group_model_map\", \"group_device_map\", \"group_model\", \"group_device\", \"device_config\", \"device\", \"device_type_config\", \"device_type_model\", \"device_type\", \"model_tag\", \"model_config\", \"model\";";
         sqlx::query(sql)
             .execute(pool)
             .await?;
@@ -105,7 +105,7 @@ mod tests {
         // read type
         let types = resource.list_type_by_name("Speedometer").await.unwrap();
         let device_type = types.iter().filter(|x| x.id == type_id).next().unwrap();
-        assert_eq!(device1.type_, device_type.to_owned());
+        assert_eq!(device1.type_name, device_type.name);
         // read device configurations
         let device_configs = resource.list_device_config_by_device(device_id1).await.unwrap();
         assert_eq!(device1.configs, device_configs);

@@ -14,7 +14,7 @@ from . import (
 from ..common.type_value import DataType
 from ._schema import (
     ModelSchema, TagSchema, ModelConfigSchema, DeviceSchema, GatewaySchema,
-    TypeSchema, DeviceConfigSchema, GatewayConfigSchema,
+    TypeSchema, DeviceConfigSchema, GatewayConfigSchema, TypeConfigSchema,
     GroupModelSchema, GroupDeviceSchema, GroupGatewaySchema, SetSchema, SetTemplateSchema,
     DataSchema, DataSetSchema, BufferSchema, BufferSetSchema, SliceSchema, SliceSetSchema,
     ProcedureAcces, RoleAcces
@@ -243,6 +243,21 @@ class Resource:
 
     def remove_type_model(self, id: UUID, model_id: UUID):
         return _device.remove_type_model(self, id, model_id)
+
+    def read_type_config(self, id: int) -> TypeConfigSchema:
+        return _device.read_type_config(self, id)
+
+    def list_type_config_by_type(self, type_id: UUID) -> List[TypeConfigSchema]:
+        return _device.list_type_config_by_type(self, type_id)
+
+    def create_type_config(self, type_id: UUID, name: str, value_type: DataType, category: str) -> int:
+        return _device.create_type_config(self, type_id, name, value_type, category)
+
+    def update_type_config(self, id: int, name: Optional[str]=None, value_type: Optional[DataType]=None, category: Optional[str]=None):
+        return _device.update_type_config(self, id, name, value_type, category)
+
+    def delete_type_config(self, id: int):
+        return _device.delete_type_config(self, id)
 
     def read_group_model(self, id: UUID) -> GroupModelSchema:
         return _group.read_group_model(self, id)

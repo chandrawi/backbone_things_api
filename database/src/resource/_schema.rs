@@ -38,7 +38,9 @@ pub struct DeviceSchema {
     pub serial_number: String,
     pub name: String,
     pub description: String,
-    pub type_: TypeSchema,
+    pub type_id: Uuid,
+    pub type_name: String,
+    pub model_ids: Vec<Uuid>,
     pub configs: Vec<DeviceConfigSchema>
 }
 
@@ -48,7 +50,9 @@ pub struct GatewaySchema {
     pub serial_number: String,
     pub name: String,
     pub description: String,
-    pub type_: TypeSchema,
+    pub type_id: Uuid,
+    pub type_name: String,
+    pub model_ids: Vec<Uuid>,
     pub configs: Vec<GatewayConfigSchema>
 }
 
@@ -59,7 +63,9 @@ impl From<DeviceSchema> for GatewaySchema {
             serial_number: value.serial_number,
             name: value.name,
             description: value.description,
-            type_: value.type_,
+            type_id: value.type_id,
+            type_name: value.type_name,
+            model_ids: value.model_ids,
             configs: value.configs.into_iter().map(|el| el.into()).collect()
         }
     }
@@ -70,7 +76,8 @@ pub struct TypeSchema {
     pub id: Uuid,
     pub name: String,
     pub description: String,
-    pub model_ids: Vec<Uuid>
+    pub model_ids: Vec<Uuid>,
+    pub configs: Vec<TypeConfigSchema>
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
@@ -88,6 +95,15 @@ pub struct GatewayConfigSchema {
     pub gateway_id: Uuid,
     pub name: String,
     pub value: DataValue,
+    pub category: String
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct TypeConfigSchema {
+    pub id: i32,
+    pub type_id: Uuid,
+    pub name: String,
+    pub value_type: DataType,
     pub category: String
 }
 
