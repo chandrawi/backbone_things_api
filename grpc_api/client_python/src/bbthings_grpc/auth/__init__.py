@@ -143,11 +143,11 @@ class Auth:
     def list_role_profile_by_role(self, role_id: UUID) -> List[RoleProfileSchema]:
         return _profile.list_role_profile_by_role(self, role_id)
 
-    def create_role_profile(self, role_id: UUID, name: str, value_type: DataType, category: str) -> int:
-        return _profile.create_role_profile(self, role_id, name, value_type, category)
+    def create_role_profile(self, role_id: UUID, name: str, value_type: DataType, value_default: Union[int, float, str, bool, None], category: str) -> int:
+        return _profile.create_role_profile(self, role_id, name, value_type, value_default, category)
 
-    def update_role_profile(self, id: int, name: Optional[str], value_type: Optional[DataType], category: Optional[str]):
-        return _profile.update_role_profile(self, id, name, value_type, category)
+    def update_role_profile(self, id: int, name: Optional[str], value_type: Optional[DataType], value_default: Optional[Union[int, float, str, bool, None]], category: Optional[str]):
+        return _profile.update_role_profile(self, id, name, value_type, value_default, category)
 
     def delete_role_profile(self, id: int):
         return _profile.delete_role_profile(self, id)

@@ -9,8 +9,9 @@ pub(crate) enum ProfileRole {
     Id,
     RoleId,
     Name,
+    Category,
     Type,
-    Category
+    Value
 }
 
 #[derive(Iden)]
@@ -19,9 +20,9 @@ pub(crate) enum ProfileUser {
     Id,
     UserId,
     Name,
-    Value,
+    Category,
     Type,
-    Category
+    Value
 }
 
 pub fn select_role_profile(
@@ -34,8 +35,9 @@ pub fn select_role_profile(
             (ProfileRole::Table, ProfileRole::Id),
             (ProfileRole::Table, ProfileRole::RoleId),
             (ProfileRole::Table, ProfileRole::Name),
+            (ProfileRole::Table, ProfileRole::Category),
             (ProfileRole::Table, ProfileRole::Type),
-            (ProfileRole::Table, ProfileRole::Category)
+            (ProfileRole::Table, ProfileRole::Value)
         ])
         .from(ProfileRole::Table)
         .to_owned();
@@ -54,6 +56,7 @@ pub fn insert_role_profile(
     role_id: Uuid,
     name: &str,
     value_type: DataType,
+    value_default: DataValue,
     category: &str
 ) -> QueryStatement
 {
@@ -63,12 +66,14 @@ pub fn insert_role_profile(
             ProfileRole::RoleId,
             ProfileRole::Name,
             ProfileRole::Type,
+            ProfileRole::Value,
             ProfileRole::Category
         ])
         .values([
             role_id.into(),
             name.into(),
             i16::from(value_type).into(),
+            value_default.to_bytes().into(),
             category.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
@@ -82,6 +87,7 @@ pub fn update_role_profile(
     id: i32,
     name: Option<&str>,
     value_type: Option<DataType>,
+    value_default: Option<DataValue>,
     category: Option<&str>
 ) -> QueryStatement
 {
@@ -93,8 +99,10 @@ pub fn update_role_profile(
         stmt = stmt.value(ProfileRole::Name, value).to_owned();
     }
     if let Some(value) = value_type {
-        let value_type = i16::from(value);
-        stmt = stmt.value(ProfileRole::Type, value_type).to_owned();
+        stmt = stmt.value(ProfileRole::Type, i16::from(value)).to_owned();
+    }
+    if let Some(value) = value_default {
+        stmt = stmt.value(ProfileRole::Type, value.to_bytes()).to_owned();
     }
     if let Some(value) = category {
         stmt = stmt.value(ProfileRole::Category, value).to_owned();
@@ -129,9 +137,9 @@ pub fn select_user_profile(
             (ProfileUser::Table, ProfileUser::Id),
             (ProfileUser::Table, ProfileUser::UserId),
             (ProfileUser::Table, ProfileUser::Name),
-            (ProfileUser::Table, ProfileUser::Value),
+            (ProfileUser::Table, ProfileUser::Category),
             (ProfileUser::Table, ProfileUser::Type),
-            (ProfileUser::Table, ProfileUser::Category)
+            (ProfileUser::Table, ProfileUser::Value)
         ])
         .from(ProfileUser::Table)
         .to_owned();

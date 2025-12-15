@@ -18995,7 +18995,8 @@ function requireProfile_pb () {
 		roleId: msg.getRoleId_asB64(),
 		name: jspb.Message.getFieldWithDefault(msg, 3, ""),
 		valueType: jspb.Message.getFieldWithDefault(msg, 4, 0),
-		category: jspb.Message.getFieldWithDefault(msg, 5, "")
+		valueBytes: msg.getValueBytes_asB64(),
+		category: jspb.Message.getFieldWithDefault(msg, 6, "")
 		  };
 
 		  if (includeInstance) {
@@ -19049,6 +19050,10 @@ function requireProfile_pb () {
 		      msg.setValueType(value);
 		      break;
 		    case 5:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setValueBytes(value);
+		      break;
+		    case 6:
 		      var value = /** @type {string} */ (reader.readString());
 		      msg.setCategory(value);
 		      break;
@@ -19109,10 +19114,17 @@ function requireProfile_pb () {
 		      f
 		    );
 		  }
+		  f = message.getValueBytes_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      5,
+		      f
+		    );
+		  }
 		  f = message.getCategory();
 		  if (f.length > 0) {
 		    writer.writeString(
-		      5,
+		      6,
 		      f
 		    );
 		  }
@@ -19216,11 +19228,53 @@ function requireProfile_pb () {
 
 
 		/**
-		 * optional string category = 5;
+		 * optional bytes value_bytes = 5;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.profile.RoleProfileSchema.prototype.getValueBytes = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+		};
+
+
+		/**
+		 * optional bytes value_bytes = 5;
+		 * This is a type-conversion wrapper around `getValueBytes()`
+		 * @return {string}
+		 */
+		proto.profile.RoleProfileSchema.prototype.getValueBytes_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getValueBytes()));
+		};
+
+
+		/**
+		 * optional bytes value_bytes = 5;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getValueBytes()`
+		 * @return {!Uint8Array}
+		 */
+		proto.profile.RoleProfileSchema.prototype.getValueBytes_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getValueBytes()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.profile.RoleProfileSchema} returns this
+		 */
+		proto.profile.RoleProfileSchema.prototype.setValueBytes = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 5, value);
+		};
+
+
+		/**
+		 * optional string category = 6;
 		 * @return {string}
 		 */
 		proto.profile.RoleProfileSchema.prototype.getCategory = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 		};
 
 
@@ -19229,7 +19283,7 @@ function requireProfile_pb () {
 		 * @return {!proto.profile.RoleProfileSchema} returns this
 		 */
 		proto.profile.RoleProfileSchema.prototype.setCategory = function(value) {
-		  return jspb.Message.setProto3StringField(this, 5, value);
+		  return jspb.Message.setProto3StringField(this, 6, value);
 		};
 
 
@@ -19268,8 +19322,8 @@ function requireProfile_pb () {
 		id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 		userId: msg.getUserId_asB64(),
 		name: jspb.Message.getFieldWithDefault(msg, 3, ""),
+		valueType: jspb.Message.getFieldWithDefault(msg, 4, 0),
 		valueBytes: msg.getValueBytes_asB64(),
-		valueType: jspb.Message.getFieldWithDefault(msg, 5, 0),
 		category: jspb.Message.getFieldWithDefault(msg, 6, "")
 		  };
 
@@ -19320,12 +19374,12 @@ function requireProfile_pb () {
 		      msg.setName(value);
 		      break;
 		    case 4:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setValueBytes(value);
-		      break;
-		    case 5:
 		      var value = /** @type {number} */ (reader.readUint32());
 		      msg.setValueType(value);
+		      break;
+		    case 5:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setValueBytes(value);
 		      break;
 		    case 6:
 		      var value = /** @type {string} */ (reader.readString());
@@ -19381,16 +19435,16 @@ function requireProfile_pb () {
 		      f
 		    );
 		  }
-		  f = message.getValueBytes_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
+		  f = message.getValueType();
+		  if (f !== 0) {
+		    writer.writeUint32(
 		      4,
 		      f
 		    );
 		  }
-		  f = message.getValueType();
-		  if (f !== 0) {
-		    writer.writeUint32(
+		  f = message.getValueBytes_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
 		      5,
 		      f
 		    );
@@ -19484,16 +19538,34 @@ function requireProfile_pb () {
 
 
 		/**
-		 * optional bytes value_bytes = 4;
-		 * @return {!(string|Uint8Array)}
+		 * optional uint32 value_type = 4;
+		 * @return {number}
 		 */
-		proto.profile.UserProfileSchema.prototype.getValueBytes = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+		proto.profile.UserProfileSchema.prototype.getValueType = function() {
+		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 		};
 
 
 		/**
-		 * optional bytes value_bytes = 4;
+		 * @param {number} value
+		 * @return {!proto.profile.UserProfileSchema} returns this
+		 */
+		proto.profile.UserProfileSchema.prototype.setValueType = function(value) {
+		  return jspb.Message.setProto3IntField(this, 4, value);
+		};
+
+
+		/**
+		 * optional bytes value_bytes = 5;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.profile.UserProfileSchema.prototype.getValueBytes = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+		};
+
+
+		/**
+		 * optional bytes value_bytes = 5;
 		 * This is a type-conversion wrapper around `getValueBytes()`
 		 * @return {string}
 		 */
@@ -19504,7 +19576,7 @@ function requireProfile_pb () {
 
 
 		/**
-		 * optional bytes value_bytes = 4;
+		 * optional bytes value_bytes = 5;
 		 * Note that Uint8Array is not supported on all browsers.
 		 * @see http://caniuse.com/Uint8Array
 		 * This is a type-conversion wrapper around `getValueBytes()`
@@ -19521,25 +19593,7 @@ function requireProfile_pb () {
 		 * @return {!proto.profile.UserProfileSchema} returns this
 		 */
 		proto.profile.UserProfileSchema.prototype.setValueBytes = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 4, value);
-		};
-
-
-		/**
-		 * optional uint32 value_type = 5;
-		 * @return {number}
-		 */
-		proto.profile.UserProfileSchema.prototype.getValueType = function() {
-		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-		};
-
-
-		/**
-		 * @param {number} value
-		 * @return {!proto.profile.UserProfileSchema} returns this
-		 */
-		proto.profile.UserProfileSchema.prototype.setValueType = function(value) {
-		  return jspb.Message.setProto3IntField(this, 5, value);
+		  return jspb.Message.setProto3BytesField(this, 5, value);
 		};
 
 
@@ -20034,7 +20088,8 @@ function requireProfile_pb () {
 		id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 		name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
 		valueType: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-		category: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+		valueBytes: msg.getValueBytes_asB64(),
+		category: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
 		  };
 
 		  if (includeInstance) {
@@ -20084,6 +20139,10 @@ function requireProfile_pb () {
 		      msg.setValueType(value);
 		      break;
 		    case 4:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setValueBytes(value);
+		      break;
+		    case 5:
 		      var value = /** @type {string} */ (reader.readString());
 		      msg.setCategory(value);
 		      break;
@@ -20137,10 +20196,17 @@ function requireProfile_pb () {
 		      f
 		    );
 		  }
-		  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+		  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
+		  if (f != null) {
+		    writer.writeBytes(
+		      4,
+		      f
+		    );
+		  }
+		  f = /** @type {string} */ (jspb.Message.getField(message, 5));
 		  if (f != null) {
 		    writer.writeString(
-		      4,
+		      5,
 		      f
 		    );
 		  }
@@ -20238,19 +20304,43 @@ function requireProfile_pb () {
 
 
 		/**
-		 * optional string category = 4;
-		 * @return {string}
+		 * optional bytes value_bytes = 4;
+		 * @return {!(string|Uint8Array)}
 		 */
-		proto.profile.RoleProfileUpdate.prototype.getCategory = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+		proto.profile.RoleProfileUpdate.prototype.getValueBytes = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 		};
 
 
 		/**
-		 * @param {string} value
+		 * optional bytes value_bytes = 4;
+		 * This is a type-conversion wrapper around `getValueBytes()`
+		 * @return {string}
+		 */
+		proto.profile.RoleProfileUpdate.prototype.getValueBytes_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getValueBytes()));
+		};
+
+
+		/**
+		 * optional bytes value_bytes = 4;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getValueBytes()`
+		 * @return {!Uint8Array}
+		 */
+		proto.profile.RoleProfileUpdate.prototype.getValueBytes_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getValueBytes()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
 		 * @return {!proto.profile.RoleProfileUpdate} returns this
 		 */
-		proto.profile.RoleProfileUpdate.prototype.setCategory = function(value) {
+		proto.profile.RoleProfileUpdate.prototype.setValueBytes = function(value) {
 		  return jspb.Message.setField(this, 4, value);
 		};
 
@@ -20259,7 +20349,7 @@ function requireProfile_pb () {
 		 * Clears the field making it undefined.
 		 * @return {!proto.profile.RoleProfileUpdate} returns this
 		 */
-		proto.profile.RoleProfileUpdate.prototype.clearCategory = function() {
+		proto.profile.RoleProfileUpdate.prototype.clearValueBytes = function() {
 		  return jspb.Message.setField(this, 4, undefined);
 		};
 
@@ -20268,8 +20358,44 @@ function requireProfile_pb () {
 		 * Returns whether this field is set.
 		 * @return {boolean}
 		 */
-		proto.profile.RoleProfileUpdate.prototype.hasCategory = function() {
+		proto.profile.RoleProfileUpdate.prototype.hasValueBytes = function() {
 		  return jspb.Message.getField(this, 4) != null;
+		};
+
+
+		/**
+		 * optional string category = 5;
+		 * @return {string}
+		 */
+		proto.profile.RoleProfileUpdate.prototype.getCategory = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @return {!proto.profile.RoleProfileUpdate} returns this
+		 */
+		proto.profile.RoleProfileUpdate.prototype.setCategory = function(value) {
+		  return jspb.Message.setField(this, 5, value);
+		};
+
+
+		/**
+		 * Clears the field making it undefined.
+		 * @return {!proto.profile.RoleProfileUpdate} returns this
+		 */
+		proto.profile.RoleProfileUpdate.prototype.clearCategory = function() {
+		  return jspb.Message.setField(this, 5, undefined);
+		};
+
+
+		/**
+		 * Returns whether this field is set.
+		 * @return {boolean}
+		 */
+		proto.profile.RoleProfileUpdate.prototype.hasCategory = function() {
+		  return jspb.Message.getField(this, 5) != null;
 		};
 
 
@@ -20307,8 +20433,8 @@ function requireProfile_pb () {
 		  var f, obj = {
 		id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 		name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+		valueType: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
 		valueBytes: msg.getValueBytes_asB64(),
-		valueType: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
 		category: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
 		  };
 
@@ -20355,12 +20481,12 @@ function requireProfile_pb () {
 		      msg.setName(value);
 		      break;
 		    case 3:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setValueBytes(value);
-		      break;
-		    case 4:
 		      var value = /** @type {number} */ (reader.readUint32());
 		      msg.setValueType(value);
+		      break;
+		    case 4:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setValueBytes(value);
 		      break;
 		    case 5:
 		      var value = /** @type {string} */ (reader.readString());
@@ -20409,16 +20535,16 @@ function requireProfile_pb () {
 		      f
 		    );
 		  }
-		  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 3));
+		  f = /** @type {number} */ (jspb.Message.getField(message, 3));
 		  if (f != null) {
-		    writer.writeBytes(
+		    writer.writeUint32(
 		      3,
 		      f
 		    );
 		  }
-		  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+		  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
 		  if (f != null) {
-		    writer.writeUint32(
+		    writer.writeBytes(
 		      4,
 		      f
 		    );
@@ -20488,16 +20614,52 @@ function requireProfile_pb () {
 
 
 		/**
-		 * optional bytes value_bytes = 3;
-		 * @return {!(string|Uint8Array)}
+		 * optional uint32 value_type = 3;
+		 * @return {number}
 		 */
-		proto.profile.UserProfileUpdate.prototype.getValueBytes = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+		proto.profile.UserProfileUpdate.prototype.getValueType = function() {
+		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 		};
 
 
 		/**
-		 * optional bytes value_bytes = 3;
+		 * @param {number} value
+		 * @return {!proto.profile.UserProfileUpdate} returns this
+		 */
+		proto.profile.UserProfileUpdate.prototype.setValueType = function(value) {
+		  return jspb.Message.setField(this, 3, value);
+		};
+
+
+		/**
+		 * Clears the field making it undefined.
+		 * @return {!proto.profile.UserProfileUpdate} returns this
+		 */
+		proto.profile.UserProfileUpdate.prototype.clearValueType = function() {
+		  return jspb.Message.setField(this, 3, undefined);
+		};
+
+
+		/**
+		 * Returns whether this field is set.
+		 * @return {boolean}
+		 */
+		proto.profile.UserProfileUpdate.prototype.hasValueType = function() {
+		  return jspb.Message.getField(this, 3) != null;
+		};
+
+
+		/**
+		 * optional bytes value_bytes = 4;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.profile.UserProfileUpdate.prototype.getValueBytes = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+		};
+
+
+		/**
+		 * optional bytes value_bytes = 4;
 		 * This is a type-conversion wrapper around `getValueBytes()`
 		 * @return {string}
 		 */
@@ -20508,7 +20670,7 @@ function requireProfile_pb () {
 
 
 		/**
-		 * optional bytes value_bytes = 3;
+		 * optional bytes value_bytes = 4;
 		 * Note that Uint8Array is not supported on all browsers.
 		 * @see http://caniuse.com/Uint8Array
 		 * This is a type-conversion wrapper around `getValueBytes()`
@@ -20525,42 +20687,6 @@ function requireProfile_pb () {
 		 * @return {!proto.profile.UserProfileUpdate} returns this
 		 */
 		proto.profile.UserProfileUpdate.prototype.setValueBytes = function(value) {
-		  return jspb.Message.setField(this, 3, value);
-		};
-
-
-		/**
-		 * Clears the field making it undefined.
-		 * @return {!proto.profile.UserProfileUpdate} returns this
-		 */
-		proto.profile.UserProfileUpdate.prototype.clearValueBytes = function() {
-		  return jspb.Message.setField(this, 3, undefined);
-		};
-
-
-		/**
-		 * Returns whether this field is set.
-		 * @return {boolean}
-		 */
-		proto.profile.UserProfileUpdate.prototype.hasValueBytes = function() {
-		  return jspb.Message.getField(this, 3) != null;
-		};
-
-
-		/**
-		 * optional uint32 value_type = 4;
-		 * @return {number}
-		 */
-		proto.profile.UserProfileUpdate.prototype.getValueType = function() {
-		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-		};
-
-
-		/**
-		 * @param {number} value
-		 * @return {!proto.profile.UserProfileUpdate} returns this
-		 */
-		proto.profile.UserProfileUpdate.prototype.setValueType = function(value) {
 		  return jspb.Message.setField(this, 4, value);
 		};
 
@@ -20569,7 +20695,7 @@ function requireProfile_pb () {
 		 * Clears the field making it undefined.
 		 * @return {!proto.profile.UserProfileUpdate} returns this
 		 */
-		proto.profile.UserProfileUpdate.prototype.clearValueType = function() {
+		proto.profile.UserProfileUpdate.prototype.clearValueBytes = function() {
 		  return jspb.Message.setField(this, 4, undefined);
 		};
 
@@ -20578,7 +20704,7 @@ function requireProfile_pb () {
 		 * Returns whether this field is set.
 		 * @return {boolean}
 		 */
-		proto.profile.UserProfileUpdate.prototype.hasValueType = function() {
+		proto.profile.UserProfileUpdate.prototype.hasValueBytes = function() {
 		  return jspb.Message.getField(this, 4) != null;
 		};
 
@@ -22206,6 +22332,7 @@ var pb_profile = /*@__PURE__*/getDefaultExportFromCjs(profile_grpc_web_pbExports
  * @property {Uuid} role_id
  * @property {string} name
  * @property {number|string} value_type
+ * @property {number|bigint|string|Uint8Array|boolean} value_default
  * @property {string} category
  */
 
@@ -22219,6 +22346,7 @@ function get_role_profile_schema(r) {
         role_id: base64_to_uuid_hex(r.roleId),
         name: r.name,
         value_type: get_data_type(r.valueType),
+        value_default: get_data_value(r.valueBytes, r.valueType),
         category: r.category
     };
 }
@@ -22267,6 +22395,7 @@ function get_user_profile_schema_vec(r) {
  * @property {number} id
  * @property {?string} name
  * @property {?number|string} value_type
+ * @property {?number|bigint|string|Uint8Array|boolean} value_default
  * @property {?string} category
  */
 
@@ -22283,7 +22412,7 @@ function get_user_profile_schema_vec(r) {
  * Read a role profile by id
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProfileId} request profile id: id
- * @returns {Promise<RoleProfileSchema>} role profile schema: id, role_id, name, value_type, category
+ * @returns {Promise<RoleProfileSchema>} role profile schema: id, role_id, name, value_type, value_default, category
  */
 async function read_role_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -22297,7 +22426,7 @@ async function read_role_profile(config, request) {
  * Read role profiles by role id
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleId} request role id: id
- * @returns {Promise<RoleProfileSchema[]>} role profile schema: id, role_id, name, value_type, category
+ * @returns {Promise<RoleProfileSchema[]>} role profile schema: id, role_id, name, value_type, value_default, category
  */
 async function list_role_profile_by_role(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -22310,7 +22439,7 @@ async function list_role_profile_by_role(config, request) {
 /**
  * Create a role profile
  * @param {ServerConfig} config Auth server config: address, auth_token
- * @param {RoleProfileSchema} request role profile schema: role_id, name, value_type, category
+ * @param {RoleProfileSchema} request role profile schema: role_id, name, value_type, value_default, category
  * @returns {Promise<number>} profile id
  */
 async function create_role_profile(config, request) {
@@ -22319,6 +22448,8 @@ async function create_role_profile(config, request) {
     roleProfileSchema.setRoleId(uuid_hex_to_base64(request.role_id));
     roleProfileSchema.setName(request.name);
     roleProfileSchema.setValueType(set_data_type(request.value_type));
+    const value = set_data_value(request.value_default);
+    roleProfileSchema.setValueBytes(value.bytes);
     roleProfileSchema.setCategory(request.category);
     return client.createRoleProfile(roleProfileSchema, metadata(config.auth_token))
         .then(response => response.toObject().id);
@@ -22327,7 +22458,7 @@ async function create_role_profile(config, request) {
 /**
  * Update a role profile
  * @param {ServerConfig} config Auth server config: address, auth_token
- * @param {RoleProfileUpdate} request role update: id, name, value_type, category
+ * @param {RoleProfileUpdate} request role update: id, name, value_type, value_default, category
  * @returns {Promise<null>} update response
  */
 async function update_role_profile(config, request) {
@@ -22335,9 +22466,9 @@ async function update_role_profile(config, request) {
     const roleProfileUpdate = new pb_profile.RoleProfileUpdate();
     roleProfileUpdate.setId(request.id);
     roleProfileUpdate.setName(request.name);
-    if (request.value_type) {
-        roleProfileUpdate.setValueType(set_data_type(request.value_type));
-    }
+    roleProfileUpdate.setValueType(set_data_type(request.value_type));
+    const value = set_data_value(request.value_default);
+    roleProfileUpdate.setValueBytes(value.bytes);
     roleProfileUpdate.setCategory(request.category);
     return client.updateRoleProfile(roleProfileUpdate, metadata(config.auth_token))
         .then(response => null);
@@ -31890,8 +32021,8 @@ function requireModel_pb () {
 		modelId: msg.getModelId_asB64(),
 		index: jspb.Message.getFieldWithDefault(msg, 3, 0),
 		name: jspb.Message.getFieldWithDefault(msg, 4, ""),
+		configType: jspb.Message.getFieldWithDefault(msg, 5, 0),
 		configBytes: msg.getConfigBytes_asB64(),
-		configType: jspb.Message.getFieldWithDefault(msg, 6, 0),
 		category: jspb.Message.getFieldWithDefault(msg, 7, "")
 		  };
 
@@ -31946,12 +32077,12 @@ function requireModel_pb () {
 		      msg.setName(value);
 		      break;
 		    case 5:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setConfigBytes(value);
-		      break;
-		    case 6:
 		      var value = /** @type {number} */ (reader.readUint32());
 		      msg.setConfigType(value);
+		      break;
+		    case 6:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setConfigBytes(value);
 		      break;
 		    case 7:
 		      var value = /** @type {string} */ (reader.readString());
@@ -32014,16 +32145,16 @@ function requireModel_pb () {
 		      f
 		    );
 		  }
-		  f = message.getConfigBytes_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
+		  f = message.getConfigType();
+		  if (f !== 0) {
+		    writer.writeUint32(
 		      5,
 		      f
 		    );
 		  }
-		  f = message.getConfigType();
-		  if (f !== 0) {
-		    writer.writeUint32(
+		  f = message.getConfigBytes_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
 		      6,
 		      f
 		    );
@@ -32135,16 +32266,34 @@ function requireModel_pb () {
 
 
 		/**
-		 * optional bytes config_bytes = 5;
-		 * @return {!(string|Uint8Array)}
+		 * optional uint32 config_type = 5;
+		 * @return {number}
 		 */
-		proto.model.ConfigSchema.prototype.getConfigBytes = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+		proto.model.ConfigSchema.prototype.getConfigType = function() {
+		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 		};
 
 
 		/**
-		 * optional bytes config_bytes = 5;
+		 * @param {number} value
+		 * @return {!proto.model.ConfigSchema} returns this
+		 */
+		proto.model.ConfigSchema.prototype.setConfigType = function(value) {
+		  return jspb.Message.setProto3IntField(this, 5, value);
+		};
+
+
+		/**
+		 * optional bytes config_bytes = 6;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.model.ConfigSchema.prototype.getConfigBytes = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+		};
+
+
+		/**
+		 * optional bytes config_bytes = 6;
 		 * This is a type-conversion wrapper around `getConfigBytes()`
 		 * @return {string}
 		 */
@@ -32155,7 +32304,7 @@ function requireModel_pb () {
 
 
 		/**
-		 * optional bytes config_bytes = 5;
+		 * optional bytes config_bytes = 6;
 		 * Note that Uint8Array is not supported on all browsers.
 		 * @see http://caniuse.com/Uint8Array
 		 * This is a type-conversion wrapper around `getConfigBytes()`
@@ -32172,25 +32321,7 @@ function requireModel_pb () {
 		 * @return {!proto.model.ConfigSchema} returns this
 		 */
 		proto.model.ConfigSchema.prototype.setConfigBytes = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 5, value);
-		};
-
-
-		/**
-		 * optional uint32 config_type = 6;
-		 * @return {number}
-		 */
-		proto.model.ConfigSchema.prototype.getConfigType = function() {
-		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
-		};
-
-
-		/**
-		 * @param {number} value
-		 * @return {!proto.model.ConfigSchema} returns this
-		 */
-		proto.model.ConfigSchema.prototype.setConfigType = function(value) {
-		  return jspb.Message.setProto3IntField(this, 6, value);
+		  return jspb.Message.setProto3BytesField(this, 6, value);
 		};
 
 
@@ -32376,8 +32507,8 @@ function requireModel_pb () {
 		  var f, obj = {
 		id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 		name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+		configType: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
 		configBytes: msg.getConfigBytes_asB64(),
-		configType: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
 		category: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
 		  };
 
@@ -32424,12 +32555,12 @@ function requireModel_pb () {
 		      msg.setName(value);
 		      break;
 		    case 3:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setConfigBytes(value);
-		      break;
-		    case 4:
 		      var value = /** @type {number} */ (reader.readUint32());
 		      msg.setConfigType(value);
+		      break;
+		    case 4:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setConfigBytes(value);
 		      break;
 		    case 5:
 		      var value = /** @type {string} */ (reader.readString());
@@ -32478,16 +32609,16 @@ function requireModel_pb () {
 		      f
 		    );
 		  }
-		  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 3));
+		  f = /** @type {number} */ (jspb.Message.getField(message, 3));
 		  if (f != null) {
-		    writer.writeBytes(
+		    writer.writeUint32(
 		      3,
 		      f
 		    );
 		  }
-		  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+		  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
 		  if (f != null) {
-		    writer.writeUint32(
+		    writer.writeBytes(
 		      4,
 		      f
 		    );
@@ -32557,16 +32688,52 @@ function requireModel_pb () {
 
 
 		/**
-		 * optional bytes config_bytes = 3;
-		 * @return {!(string|Uint8Array)}
+		 * optional uint32 config_type = 3;
+		 * @return {number}
 		 */
-		proto.model.ConfigUpdate.prototype.getConfigBytes = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+		proto.model.ConfigUpdate.prototype.getConfigType = function() {
+		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 		};
 
 
 		/**
-		 * optional bytes config_bytes = 3;
+		 * @param {number} value
+		 * @return {!proto.model.ConfigUpdate} returns this
+		 */
+		proto.model.ConfigUpdate.prototype.setConfigType = function(value) {
+		  return jspb.Message.setField(this, 3, value);
+		};
+
+
+		/**
+		 * Clears the field making it undefined.
+		 * @return {!proto.model.ConfigUpdate} returns this
+		 */
+		proto.model.ConfigUpdate.prototype.clearConfigType = function() {
+		  return jspb.Message.setField(this, 3, undefined);
+		};
+
+
+		/**
+		 * Returns whether this field is set.
+		 * @return {boolean}
+		 */
+		proto.model.ConfigUpdate.prototype.hasConfigType = function() {
+		  return jspb.Message.getField(this, 3) != null;
+		};
+
+
+		/**
+		 * optional bytes config_bytes = 4;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.model.ConfigUpdate.prototype.getConfigBytes = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+		};
+
+
+		/**
+		 * optional bytes config_bytes = 4;
 		 * This is a type-conversion wrapper around `getConfigBytes()`
 		 * @return {string}
 		 */
@@ -32577,7 +32744,7 @@ function requireModel_pb () {
 
 
 		/**
-		 * optional bytes config_bytes = 3;
+		 * optional bytes config_bytes = 4;
 		 * Note that Uint8Array is not supported on all browsers.
 		 * @see http://caniuse.com/Uint8Array
 		 * This is a type-conversion wrapper around `getConfigBytes()`
@@ -32594,42 +32761,6 @@ function requireModel_pb () {
 		 * @return {!proto.model.ConfigUpdate} returns this
 		 */
 		proto.model.ConfigUpdate.prototype.setConfigBytes = function(value) {
-		  return jspb.Message.setField(this, 3, value);
-		};
-
-
-		/**
-		 * Clears the field making it undefined.
-		 * @return {!proto.model.ConfigUpdate} returns this
-		 */
-		proto.model.ConfigUpdate.prototype.clearConfigBytes = function() {
-		  return jspb.Message.setField(this, 3, undefined);
-		};
-
-
-		/**
-		 * Returns whether this field is set.
-		 * @return {boolean}
-		 */
-		proto.model.ConfigUpdate.prototype.hasConfigBytes = function() {
-		  return jspb.Message.getField(this, 3) != null;
-		};
-
-
-		/**
-		 * optional uint32 config_type = 4;
-		 * @return {number}
-		 */
-		proto.model.ConfigUpdate.prototype.getConfigType = function() {
-		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-		};
-
-
-		/**
-		 * @param {number} value
-		 * @return {!proto.model.ConfigUpdate} returns this
-		 */
-		proto.model.ConfigUpdate.prototype.setConfigType = function(value) {
 		  return jspb.Message.setField(this, 4, value);
 		};
 
@@ -32638,7 +32769,7 @@ function requireModel_pb () {
 		 * Clears the field making it undefined.
 		 * @return {!proto.model.ConfigUpdate} returns this
 		 */
-		proto.model.ConfigUpdate.prototype.clearConfigType = function() {
+		proto.model.ConfigUpdate.prototype.clearConfigBytes = function() {
 		  return jspb.Message.setField(this, 4, undefined);
 		};
 
@@ -32647,7 +32778,7 @@ function requireModel_pb () {
 		 * Returns whether this field is set.
 		 * @return {boolean}
 		 */
-		proto.model.ConfigUpdate.prototype.hasConfigType = function() {
+		proto.model.ConfigUpdate.prototype.hasConfigBytes = function() {
 		  return jspb.Message.getField(this, 4) != null;
 		};
 
@@ -41094,8 +41225,8 @@ function requireDevice_pb () {
 		id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 		deviceId: msg.getDeviceId_asB64(),
 		name: jspb.Message.getFieldWithDefault(msg, 3, ""),
+		configType: jspb.Message.getFieldWithDefault(msg, 4, 0),
 		configBytes: msg.getConfigBytes_asB64(),
-		configType: jspb.Message.getFieldWithDefault(msg, 5, 0),
 		category: jspb.Message.getFieldWithDefault(msg, 6, "")
 		  };
 
@@ -41146,12 +41277,12 @@ function requireDevice_pb () {
 		      msg.setName(value);
 		      break;
 		    case 4:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setConfigBytes(value);
-		      break;
-		    case 5:
 		      var value = /** @type {number} */ (reader.readUint32());
 		      msg.setConfigType(value);
+		      break;
+		    case 5:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setConfigBytes(value);
 		      break;
 		    case 6:
 		      var value = /** @type {string} */ (reader.readString());
@@ -41207,16 +41338,16 @@ function requireDevice_pb () {
 		      f
 		    );
 		  }
-		  f = message.getConfigBytes_asU8();
-		  if (f.length > 0) {
-		    writer.writeBytes(
+		  f = message.getConfigType();
+		  if (f !== 0) {
+		    writer.writeUint32(
 		      4,
 		      f
 		    );
 		  }
-		  f = message.getConfigType();
-		  if (f !== 0) {
-		    writer.writeUint32(
+		  f = message.getConfigBytes_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
 		      5,
 		      f
 		    );
@@ -41310,16 +41441,34 @@ function requireDevice_pb () {
 
 
 		/**
-		 * optional bytes config_bytes = 4;
-		 * @return {!(string|Uint8Array)}
+		 * optional uint32 config_type = 4;
+		 * @return {number}
 		 */
-		proto.device.ConfigSchema.prototype.getConfigBytes = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+		proto.device.ConfigSchema.prototype.getConfigType = function() {
+		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 		};
 
 
 		/**
-		 * optional bytes config_bytes = 4;
+		 * @param {number} value
+		 * @return {!proto.device.ConfigSchema} returns this
+		 */
+		proto.device.ConfigSchema.prototype.setConfigType = function(value) {
+		  return jspb.Message.setProto3IntField(this, 4, value);
+		};
+
+
+		/**
+		 * optional bytes config_bytes = 5;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.device.ConfigSchema.prototype.getConfigBytes = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+		};
+
+
+		/**
+		 * optional bytes config_bytes = 5;
 		 * This is a type-conversion wrapper around `getConfigBytes()`
 		 * @return {string}
 		 */
@@ -41330,7 +41479,7 @@ function requireDevice_pb () {
 
 
 		/**
-		 * optional bytes config_bytes = 4;
+		 * optional bytes config_bytes = 5;
 		 * Note that Uint8Array is not supported on all browsers.
 		 * @see http://caniuse.com/Uint8Array
 		 * This is a type-conversion wrapper around `getConfigBytes()`
@@ -41347,25 +41496,7 @@ function requireDevice_pb () {
 		 * @return {!proto.device.ConfigSchema} returns this
 		 */
 		proto.device.ConfigSchema.prototype.setConfigBytes = function(value) {
-		  return jspb.Message.setProto3BytesField(this, 4, value);
-		};
-
-
-		/**
-		 * optional uint32 config_type = 5;
-		 * @return {number}
-		 */
-		proto.device.ConfigSchema.prototype.getConfigType = function() {
-		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-		};
-
-
-		/**
-		 * @param {number} value
-		 * @return {!proto.device.ConfigSchema} returns this
-		 */
-		proto.device.ConfigSchema.prototype.setConfigType = function(value) {
-		  return jspb.Message.setProto3IntField(this, 5, value);
+		  return jspb.Message.setProto3BytesField(this, 5, value);
 		};
 
 
@@ -41551,8 +41682,8 @@ function requireDevice_pb () {
 		  var f, obj = {
 		id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 		name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+		configType: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
 		configBytes: msg.getConfigBytes_asB64(),
-		configType: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
 		category: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
 		  };
 
@@ -41599,12 +41730,12 @@ function requireDevice_pb () {
 		      msg.setName(value);
 		      break;
 		    case 3:
-		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-		      msg.setConfigBytes(value);
-		      break;
-		    case 4:
 		      var value = /** @type {number} */ (reader.readUint32());
 		      msg.setConfigType(value);
+		      break;
+		    case 4:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setConfigBytes(value);
 		      break;
 		    case 5:
 		      var value = /** @type {string} */ (reader.readString());
@@ -41653,16 +41784,16 @@ function requireDevice_pb () {
 		      f
 		    );
 		  }
-		  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 3));
+		  f = /** @type {number} */ (jspb.Message.getField(message, 3));
 		  if (f != null) {
-		    writer.writeBytes(
+		    writer.writeUint32(
 		      3,
 		      f
 		    );
 		  }
-		  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+		  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
 		  if (f != null) {
-		    writer.writeUint32(
+		    writer.writeBytes(
 		      4,
 		      f
 		    );
@@ -41732,16 +41863,52 @@ function requireDevice_pb () {
 
 
 		/**
-		 * optional bytes config_bytes = 3;
-		 * @return {!(string|Uint8Array)}
+		 * optional uint32 config_type = 3;
+		 * @return {number}
 		 */
-		proto.device.ConfigUpdate.prototype.getConfigBytes = function() {
-		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+		proto.device.ConfigUpdate.prototype.getConfigType = function() {
+		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 		};
 
 
 		/**
-		 * optional bytes config_bytes = 3;
+		 * @param {number} value
+		 * @return {!proto.device.ConfigUpdate} returns this
+		 */
+		proto.device.ConfigUpdate.prototype.setConfigType = function(value) {
+		  return jspb.Message.setField(this, 3, value);
+		};
+
+
+		/**
+		 * Clears the field making it undefined.
+		 * @return {!proto.device.ConfigUpdate} returns this
+		 */
+		proto.device.ConfigUpdate.prototype.clearConfigType = function() {
+		  return jspb.Message.setField(this, 3, undefined);
+		};
+
+
+		/**
+		 * Returns whether this field is set.
+		 * @return {boolean}
+		 */
+		proto.device.ConfigUpdate.prototype.hasConfigType = function() {
+		  return jspb.Message.getField(this, 3) != null;
+		};
+
+
+		/**
+		 * optional bytes config_bytes = 4;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.device.ConfigUpdate.prototype.getConfigBytes = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+		};
+
+
+		/**
+		 * optional bytes config_bytes = 4;
 		 * This is a type-conversion wrapper around `getConfigBytes()`
 		 * @return {string}
 		 */
@@ -41752,7 +41919,7 @@ function requireDevice_pb () {
 
 
 		/**
-		 * optional bytes config_bytes = 3;
+		 * optional bytes config_bytes = 4;
 		 * Note that Uint8Array is not supported on all browsers.
 		 * @see http://caniuse.com/Uint8Array
 		 * This is a type-conversion wrapper around `getConfigBytes()`
@@ -41769,42 +41936,6 @@ function requireDevice_pb () {
 		 * @return {!proto.device.ConfigUpdate} returns this
 		 */
 		proto.device.ConfigUpdate.prototype.setConfigBytes = function(value) {
-		  return jspb.Message.setField(this, 3, value);
-		};
-
-
-		/**
-		 * Clears the field making it undefined.
-		 * @return {!proto.device.ConfigUpdate} returns this
-		 */
-		proto.device.ConfigUpdate.prototype.clearConfigBytes = function() {
-		  return jspb.Message.setField(this, 3, undefined);
-		};
-
-
-		/**
-		 * Returns whether this field is set.
-		 * @return {boolean}
-		 */
-		proto.device.ConfigUpdate.prototype.hasConfigBytes = function() {
-		  return jspb.Message.getField(this, 3) != null;
-		};
-
-
-		/**
-		 * optional uint32 config_type = 4;
-		 * @return {number}
-		 */
-		proto.device.ConfigUpdate.prototype.getConfigType = function() {
-		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-		};
-
-
-		/**
-		 * @param {number} value
-		 * @return {!proto.device.ConfigUpdate} returns this
-		 */
-		proto.device.ConfigUpdate.prototype.setConfigType = function(value) {
 		  return jspb.Message.setField(this, 4, value);
 		};
 
@@ -41813,7 +41944,7 @@ function requireDevice_pb () {
 		 * Clears the field making it undefined.
 		 * @return {!proto.device.ConfigUpdate} returns this
 		 */
-		proto.device.ConfigUpdate.prototype.clearConfigType = function() {
+		proto.device.ConfigUpdate.prototype.clearConfigBytes = function() {
 		  return jspb.Message.setField(this, 4, undefined);
 		};
 
@@ -41822,7 +41953,7 @@ function requireDevice_pb () {
 		 * Returns whether this field is set.
 		 * @return {boolean}
 		 */
-		proto.device.ConfigUpdate.prototype.hasConfigType = function() {
+		proto.device.ConfigUpdate.prototype.hasConfigBytes = function() {
 		  return jspb.Message.getField(this, 4) != null;
 		};
 
@@ -43446,7 +43577,8 @@ function requireDevice_pb () {
 		typeId: msg.getTypeId_asB64(),
 		name: jspb.Message.getFieldWithDefault(msg, 3, ""),
 		configType: jspb.Message.getFieldWithDefault(msg, 4, 0),
-		category: jspb.Message.getFieldWithDefault(msg, 5, "")
+		configBytes: msg.getConfigBytes_asB64(),
+		category: jspb.Message.getFieldWithDefault(msg, 6, "")
 		  };
 
 		  if (includeInstance) {
@@ -43500,6 +43632,10 @@ function requireDevice_pb () {
 		      msg.setConfigType(value);
 		      break;
 		    case 5:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setConfigBytes(value);
+		      break;
+		    case 6:
 		      var value = /** @type {string} */ (reader.readString());
 		      msg.setCategory(value);
 		      break;
@@ -43560,10 +43696,17 @@ function requireDevice_pb () {
 		      f
 		    );
 		  }
+		  f = message.getConfigBytes_asU8();
+		  if (f.length > 0) {
+		    writer.writeBytes(
+		      5,
+		      f
+		    );
+		  }
 		  f = message.getCategory();
 		  if (f.length > 0) {
 		    writer.writeString(
-		      5,
+		      6,
 		      f
 		    );
 		  }
@@ -43667,11 +43810,53 @@ function requireDevice_pb () {
 
 
 		/**
-		 * optional string category = 5;
+		 * optional bytes config_bytes = 5;
+		 * @return {!(string|Uint8Array)}
+		 */
+		proto.device.TypeConfigSchema.prototype.getConfigBytes = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+		};
+
+
+		/**
+		 * optional bytes config_bytes = 5;
+		 * This is a type-conversion wrapper around `getConfigBytes()`
+		 * @return {string}
+		 */
+		proto.device.TypeConfigSchema.prototype.getConfigBytes_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getConfigBytes()));
+		};
+
+
+		/**
+		 * optional bytes config_bytes = 5;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getConfigBytes()`
+		 * @return {!Uint8Array}
+		 */
+		proto.device.TypeConfigSchema.prototype.getConfigBytes_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getConfigBytes()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
+		 * @return {!proto.device.TypeConfigSchema} returns this
+		 */
+		proto.device.TypeConfigSchema.prototype.setConfigBytes = function(value) {
+		  return jspb.Message.setProto3BytesField(this, 5, value);
+		};
+
+
+		/**
+		 * optional string category = 6;
 		 * @return {string}
 		 */
 		proto.device.TypeConfigSchema.prototype.getCategory = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 		};
 
 
@@ -43680,7 +43865,7 @@ function requireDevice_pb () {
 		 * @return {!proto.device.TypeConfigSchema} returns this
 		 */
 		proto.device.TypeConfigSchema.prototype.setCategory = function(value) {
-		  return jspb.Message.setProto3StringField(this, 5, value);
+		  return jspb.Message.setProto3StringField(this, 6, value);
 		};
 
 
@@ -43719,7 +43904,8 @@ function requireDevice_pb () {
 		id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 		name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
 		configType: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-		category: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+		configBytes: msg.getConfigBytes_asB64(),
+		category: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
 		  };
 
 		  if (includeInstance) {
@@ -43769,6 +43955,10 @@ function requireDevice_pb () {
 		      msg.setConfigType(value);
 		      break;
 		    case 4:
+		      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+		      msg.setConfigBytes(value);
+		      break;
+		    case 5:
 		      var value = /** @type {string} */ (reader.readString());
 		      msg.setCategory(value);
 		      break;
@@ -43822,10 +44012,17 @@ function requireDevice_pb () {
 		      f
 		    );
 		  }
-		  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+		  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
+		  if (f != null) {
+		    writer.writeBytes(
+		      4,
+		      f
+		    );
+		  }
+		  f = /** @type {string} */ (jspb.Message.getField(message, 5));
 		  if (f != null) {
 		    writer.writeString(
-		      4,
+		      5,
 		      f
 		    );
 		  }
@@ -43923,19 +44120,43 @@ function requireDevice_pb () {
 
 
 		/**
-		 * optional string category = 4;
-		 * @return {string}
+		 * optional bytes config_bytes = 4;
+		 * @return {!(string|Uint8Array)}
 		 */
-		proto.device.TypeConfigUpdate.prototype.getCategory = function() {
-		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+		proto.device.TypeConfigUpdate.prototype.getConfigBytes = function() {
+		  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 		};
 
 
 		/**
-		 * @param {string} value
+		 * optional bytes config_bytes = 4;
+		 * This is a type-conversion wrapper around `getConfigBytes()`
+		 * @return {string}
+		 */
+		proto.device.TypeConfigUpdate.prototype.getConfigBytes_asB64 = function() {
+		  return /** @type {string} */ (jspb.Message.bytesAsB64(
+		      this.getConfigBytes()));
+		};
+
+
+		/**
+		 * optional bytes config_bytes = 4;
+		 * Note that Uint8Array is not supported on all browsers.
+		 * @see http://caniuse.com/Uint8Array
+		 * This is a type-conversion wrapper around `getConfigBytes()`
+		 * @return {!Uint8Array}
+		 */
+		proto.device.TypeConfigUpdate.prototype.getConfigBytes_asU8 = function() {
+		  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+		      this.getConfigBytes()));
+		};
+
+
+		/**
+		 * @param {!(string|Uint8Array)} value
 		 * @return {!proto.device.TypeConfigUpdate} returns this
 		 */
-		proto.device.TypeConfigUpdate.prototype.setCategory = function(value) {
+		proto.device.TypeConfigUpdate.prototype.setConfigBytes = function(value) {
 		  return jspb.Message.setField(this, 4, value);
 		};
 
@@ -43944,7 +44165,7 @@ function requireDevice_pb () {
 		 * Clears the field making it undefined.
 		 * @return {!proto.device.TypeConfigUpdate} returns this
 		 */
-		proto.device.TypeConfigUpdate.prototype.clearCategory = function() {
+		proto.device.TypeConfigUpdate.prototype.clearConfigBytes = function() {
 		  return jspb.Message.setField(this, 4, undefined);
 		};
 
@@ -43953,8 +44174,44 @@ function requireDevice_pb () {
 		 * Returns whether this field is set.
 		 * @return {boolean}
 		 */
-		proto.device.TypeConfigUpdate.prototype.hasCategory = function() {
+		proto.device.TypeConfigUpdate.prototype.hasConfigBytes = function() {
 		  return jspb.Message.getField(this, 4) != null;
+		};
+
+
+		/**
+		 * optional string category = 5;
+		 * @return {string}
+		 */
+		proto.device.TypeConfigUpdate.prototype.getCategory = function() {
+		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+		};
+
+
+		/**
+		 * @param {string} value
+		 * @return {!proto.device.TypeConfigUpdate} returns this
+		 */
+		proto.device.TypeConfigUpdate.prototype.setCategory = function(value) {
+		  return jspb.Message.setField(this, 5, value);
+		};
+
+
+		/**
+		 * Clears the field making it undefined.
+		 * @return {!proto.device.TypeConfigUpdate} returns this
+		 */
+		proto.device.TypeConfigUpdate.prototype.clearCategory = function() {
+		  return jspb.Message.setField(this, 5, undefined);
+		};
+
+
+		/**
+		 * Returns whether this field is set.
+		 * @return {boolean}
+		 */
+		proto.device.TypeConfigUpdate.prototype.hasCategory = function() {
+		  return jspb.Message.getField(this, 5) != null;
 		};
 
 
@@ -49520,6 +49777,7 @@ function get_gateway_config_schema_vec(r) {
  * @property {Uuid} type_id
  * @property {string} name
  * @property {number|string} value_type
+ * @property {number|bigint|string|Uint8Array|boolean} value_default
  * @property {string} category
  */
 
@@ -49528,6 +49786,7 @@ function get_gateway_config_schema_vec(r) {
  * @property {number} id
  * @property {?string} name
  * @property {?number|string} value_type
+ * @property {?number|bigint|string|Uint8Array|boolean} value_default
  * @property {?string} category
  */
 
@@ -49541,6 +49800,7 @@ function get_type_config_schema(r) {
         type_id: base64_to_uuid_hex(r.typeId),
         name: r.name,
         value_type: get_data_type(r.configType),
+        value_default: get_data_value(r.configBytes, r.configType),
         category: r.category
     };
 }
@@ -50145,7 +50405,7 @@ async function remove_type_model(config, request) {
  * Read a type configuration by uuid
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ConfigId} request type config id: id
- * @returns {Promise<TypeConfigSchema>} type config schema: id, type_id, name, value, category
+ * @returns {Promise<TypeConfigSchema>} type config schema: id, type_id, name, value_type, value_default, category
  */
 async function read_type_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -50159,7 +50419,7 @@ async function read_type_config(config, request) {
  * Read type configurations by type uuid
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeId} request type uuid: id
- * @returns {Promise<TypeConfigSchema[]>} type config schema: id, type_id, name, value, category
+ * @returns {Promise<TypeConfigSchema[]>} type config schema: id, type_id, name, value_type, value_default, category
  */
 async function list_type_config_by_type(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -50172,7 +50432,7 @@ async function list_type_config_by_type(config, request) {
 /**
  * Create a type configuration
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {TypeConfigSchema} request type config schema: type_id, name, type_value, category
+ * @param {TypeConfigSchema} request type config schema: type_id, name, value_type, value_default, category
  * @returns {Promise<number>} type config id
  */
 async function create_type_config(config, request) {
@@ -50181,6 +50441,8 @@ async function create_type_config(config, request) {
     configSchema.setTypeId(uuid_hex_to_base64(request.type_id));
     configSchema.setName(request.name);
     configSchema.setConfigType(set_data_type(request.value_type));
+    const value = set_data_value(request.value_default);
+    configSchema.setValueBytes(value.bytes);
     configSchema.setCategory(request.category);
     return client.createTypeConfig(configSchema, metadata(config.access_token))
         .then(response => response.toObject().id);
@@ -50189,7 +50451,7 @@ async function create_type_config(config, request) {
 /**
  * Update a type configuration
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {TypeConfigUpdate} request type config update: id, name, type_value, category
+ * @param {TypeConfigUpdate} request type config update: id, name, value_type, value_default, category
  * @returns {Promise<null>} update response
  */
 async function update_type_config(config, request) {
@@ -50198,6 +50460,8 @@ async function update_type_config(config, request) {
     configUpdate.setId(request.id);
     configUpdate.setName(request.name);
     configUpdate.setConfigType(set_data_type(request.value_type));
+    const value = set_data_value(request.value_default);
+    configUpdate.setConfigBytes(value.bytes);
     configUpdate.setCategory(request.category);
     return client.updateTypeConfig(configUpdate, metadata(config.access_token))
         .then(response => null);

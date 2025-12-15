@@ -656,7 +656,7 @@ pub(crate) async fn list_type_config_by_type(resource: &Resource, type_id: Uuid)
     Ok(response.results)
 }
 
-pub(crate) async fn create_type_config(resource: &Resource, type_id: Uuid, name: &str, value_type: DataType, category: &str)
+pub(crate) async fn create_type_config(resource: &Resource, type_id: Uuid, name: &str, value_type: DataType, value_default: DataValue, category: &str)
     -> Result<i32, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -667,6 +667,7 @@ pub(crate) async fn create_type_config(resource: &Resource, type_id: Uuid, name:
         type_id: type_id.as_bytes().to_vec(),
         name: name.to_owned(),
         config_type: value_type.into(),
+        config_bytes: value_default.to_bytes(),
         category: category.to_owned()
     });
     let response = client.create_type_config(request)
@@ -675,7 +676,7 @@ pub(crate) async fn create_type_config(resource: &Resource, type_id: Uuid, name:
     Ok(response.id)
 }
 
-pub(crate) async fn update_type_config(resource: &Resource, id: i32, name: Option<&str>, value_type: Option<DataType>, category: Option<&str>)
+pub(crate) async fn update_type_config(resource: &Resource, id: i32, name: Option<&str>, value_type: Option<DataType>, value_default: Option<DataValue>, category: Option<&str>)
     -> Result<(), Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -685,6 +686,7 @@ pub(crate) async fn update_type_config(resource: &Resource, id: i32, name: Optio
         id,
         name: name.map(|s| s.to_owned()),
         config_type: value_type.map(|s| s.into()),
+        config_bytes: value_default.map(|s| s.to_bytes()),
         category: category.map(|s| s.to_owned())
     });
     client.update_type_config(request)

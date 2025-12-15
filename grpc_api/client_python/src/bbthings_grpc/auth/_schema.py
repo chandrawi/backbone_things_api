@@ -90,10 +90,12 @@ class RoleProfileSchema:
     role_id: UUID
     name: str
     value_type: DataType
+    value_default: Union[bool, int, float, str, None]
     category: str
 
     def from_response(r):
-        return RoleProfileSchema(r.id, UUID(bytes=r.role_id), r.name, DataType(r.value_type), r.category)
+        value = unpack_data(r.value_bytes, DataType(r.value_type))
+        return RoleProfileSchema(r.id, UUID(bytes=r.role_id), r.name, DataType(r.value_type), value, r.category)
 
 
 @dataclass
@@ -101,7 +103,7 @@ class UserProfileSchema:
     id: int
     user_id: UUID
     name: str
-    value: List[Union[bool, int, float, str, None]]
+    value: Union[bool, int, float, str, None]
     category: str
 
     def from_response(r):

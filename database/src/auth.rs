@@ -275,17 +275,19 @@ impl Auth {
         qs.fetch_role_profile_schema(&self.pool).await
     }
 
-    pub async fn create_role_profile(&self, role_id: Uuid, name: &str, value_type: DataType, category: &str)
+    pub async fn create_role_profile(&self, role_id: Uuid, name: &str, value_type: DataType, value_default: DataValue, category: &str)
         -> Result<i32, Error>
     {
-        let qs = profile::insert_role_profile(role_id, name, value_type, category);
+        let value_default = value_default.convert(value_type.clone())
+            .ok_or(Error::InvalidArgument(String::from(crate::resource::DATA_TYPE_UNMATCH)))?;
+        let qs = profile::insert_role_profile(role_id, name, value_type, value_default, category);
         qs.fetch_id(&self.pool).await
     }
 
-    pub async fn update_role_profile(&self, id: i32, name: Option<&str>, value_type: Option<DataType>, category: Option<&str>)
+    pub async fn update_role_profile(&self, id: i32, name: Option<&str>, value_type: Option<DataType>, value_default: Option<DataValue>, category: Option<&str>)
         -> Result<(), Error>
     {
-        let qs = profile::update_role_profile(id, name, value_type, category);
+        let qs = profile::update_role_profile(id, name, value_type, value_default, category);
         qs.execute(&self.pool).await
     }
 

@@ -75,10 +75,12 @@ class TypeConfigSchema:
     type_id: UUID
     name: str
     value_type: DataType
+    value_default: Union[bool, int, float, str, None]
     category: str
 
     def from_response(r):
-        return TypeConfigSchema(r.id, UUID(bytes=r.type_id), r.name, DataType(r.config_type), r.category)
+        value = unpack_data(r.config_bytes, DataType(r.config_type))
+        return TypeConfigSchema(r.id, UUID(bytes=r.type_id), r.name, DataType(r.config_type), value, r.category)
 
 
 @dataclass
@@ -94,7 +96,7 @@ class TypeSchema:
         for model in r.model_ids: models.append(UUID(bytes=model))
         configs = []
         for conf in r.configs: configs.append(TypeConfigSchema.from_response(conf))
-        return TypeSchema(UUID(bytes=r.id), r.name, r.description, models)
+        return TypeSchema(UUID(bytes=r.id), r.name, r.description, models, configs)
 
 
 @dataclass
@@ -140,7 +142,7 @@ class DeviceSchema:
         for conf in r.configs: configs.append(DeviceConfigSchema.from_response(conf))
         model_ids = []
         for id in r.model_ids: model_ids.append(UUID(bytes=id))
-        return DeviceSchema(UUID(bytes=r.id), UUID(bytes=r.gateway_id), r.serial_number, r.name, r.description, r.type_id, r.type_name, model_ids, configs)
+        return DeviceSchema(UUID(bytes=r.id), UUID(bytes=r.gateway_id), r.serial_number, r.name, r.description, (UUID(bytes=r.type_id)), r.type_name, model_ids, configs)
 
 
 @dataclass

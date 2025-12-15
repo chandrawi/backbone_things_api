@@ -140,8 +140,8 @@ def test_auth():
     assert user.password != old_password
 
     # create role and user profile
-    profile_role_id1 = auth.create_role_profile(role_id1, "name", DataType.STRING, "")
-    profile_role_id2 = auth.create_role_profile(role_id1, "age", DataType.U16, "")
+    profile_role_id1 = auth.create_role_profile(role_id1, "name", DataType.STRING, "", "")
+    profile_role_id2 = auth.create_role_profile(role_id1, "age", DataType.U16, 0, "")
     profile_user_id1 = auth.create_user_profile(user_id1, "name", "john doe", "")
     profile_user_id2 = auth.create_user_profile(user_id1, "age", 20, "")
 

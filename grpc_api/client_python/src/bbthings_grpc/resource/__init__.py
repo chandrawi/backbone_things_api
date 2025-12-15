@@ -250,11 +250,11 @@ class Resource:
     def list_type_config_by_type(self, type_id: UUID) -> List[TypeConfigSchema]:
         return _device.list_type_config_by_type(self, type_id)
 
-    def create_type_config(self, type_id: UUID, name: str, value_type: DataType, category: str) -> int:
-        return _device.create_type_config(self, type_id, name, value_type, category)
+    def create_type_config(self, type_id: UUID, name: str, value_type: DataType, value_default: Union[int, float, str, bool, None], category: str) -> int:
+        return _device.create_type_config(self, type_id, name, value_type, value_default, category)
 
-    def update_type_config(self, id: int, name: Optional[str]=None, value_type: Optional[DataType]=None, category: Optional[str]=None):
-        return _device.update_type_config(self, id, name, value_type, category)
+    def update_type_config(self, id: int, name: Optional[str]=None, value_type: Optional[DataType]=None, value_default: Union[int, float, str, bool, None]=None, category: Optional[str]=None):
+        return _device.update_type_config(self, id, name, value_type, value_default, category)
 
     def delete_type_config(self, id: int):
         return _device.delete_type_config(self, id)

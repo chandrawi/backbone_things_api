@@ -104,6 +104,7 @@ pub struct TypeConfigSchema {
     pub type_id: Uuid,
     pub name: String,
     pub value_type: DataType,
+    pub value_default: DataValue,
     pub category: String
 }
 

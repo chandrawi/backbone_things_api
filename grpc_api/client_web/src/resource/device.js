@@ -305,6 +305,7 @@ function get_gateway_config_schema_vec(r) {
  * @property {Uuid} type_id
  * @property {string} name
  * @property {number|string} value_type
+ * @property {number|bigint|string|Uint8Array|boolean} value_default
  * @property {string} category
  */
 
@@ -313,6 +314,7 @@ function get_gateway_config_schema_vec(r) {
  * @property {number} id
  * @property {?string} name
  * @property {?number|string} value_type
+ * @property {?number|bigint|string|Uint8Array|boolean} value_default
  * @property {?string} category
  */
 
@@ -326,6 +328,7 @@ function get_type_config_schema(r) {
         type_id: base64_to_uuid_hex(r.typeId),
         name: r.name,
         value_type: get_data_type(r.configType),
+        value_default: get_data_value(r.configBytes, r.configType),
         category: r.category
     };
 }
@@ -930,7 +933,7 @@ export async function remove_type_model(config, request) {
  * Read a type configuration by uuid
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ConfigId} request type config id: id
- * @returns {Promise<TypeConfigSchema>} type config schema: id, type_id, name, value, category
+ * @returns {Promise<TypeConfigSchema>} type config schema: id, type_id, name, value_type, value_default, category
  */
 export async function read_type_config(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -944,7 +947,7 @@ export async function read_type_config(config, request) {
  * Read type configurations by type uuid
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeId} request type uuid: id
- * @returns {Promise<TypeConfigSchema[]>} type config schema: id, type_id, name, value, category
+ * @returns {Promise<TypeConfigSchema[]>} type config schema: id, type_id, name, value_type, value_default, category
  */
 export async function list_type_config_by_type(config, request) {
     const client = new pb_device.DeviceServicePromiseClient(config.address, null, null);
@@ -957,7 +960,7 @@ export async function list_type_config_by_type(config, request) {
 /**
  * Create a type configuration
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {TypeConfigSchema} request type config schema: type_id, name, type_value, category
+ * @param {TypeConfigSchema} request type config schema: type_id, name, value_type, value_default, category
  * @returns {Promise<number>} type config id
  */
 export async function create_type_config(config, request) {
@@ -966,6 +969,8 @@ export async function create_type_config(config, request) {
     configSchema.setTypeId(uuid_hex_to_base64(request.type_id));
     configSchema.setName(request.name);
     configSchema.setConfigType(set_data_type(request.value_type));
+    const value = set_data_value(request.value_default);
+    configSchema.setValueBytes(value.bytes);
     configSchema.setCategory(request.category);
     return client.createTypeConfig(configSchema, metadata(config.access_token))
         .then(response => response.toObject().id);
@@ -974,7 +979,7 @@ export async function create_type_config(config, request) {
 /**
  * Update a type configuration
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {TypeConfigUpdate} request type config update: id, name, type_value, category
+ * @param {TypeConfigUpdate} request type config update: id, name, value_type, value_default, category
  * @returns {Promise<null>} update response
  */
 export async function update_type_config(config, request) {
@@ -983,6 +988,8 @@ export async function update_type_config(config, request) {
     configUpdate.setId(request.id);
     configUpdate.setName(request.name);
     configUpdate.setConfigType(set_data_type(request.value_type));
+    const value = set_data_value(request.value_default);
+    configUpdate.setConfigBytes(value.bytes);
     configUpdate.setCategory(request.category);
     return client.updateTypeConfig(configUpdate, metadata(config.access_token))
         .then(response => null);

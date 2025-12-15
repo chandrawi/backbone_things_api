@@ -683,6 +683,10 @@ impl DeviceService for DeviceServer {
             Uuid::from_slice(&request.type_id).unwrap_or_default(),
             &request.name,
             DataType::from(request.config_type),
+            DataValue::from_bytes(
+                &request.config_bytes, 
+                DataType::from(request.config_type)
+            ),
             &request.category
         ).await;
         let id = match result {
@@ -701,6 +705,12 @@ impl DeviceService for DeviceServer {
             request.id,
             request.name.as_deref(),
             request.config_type.map(|c| c.into()),
+            request.config_bytes.map(|s| {
+                DataValue::from_bytes(
+                    &s,
+                    DataType::from(request.config_type.unwrap_or_default())
+                )
+            }),
             request.category.as_deref()
         ).await;
         match result {

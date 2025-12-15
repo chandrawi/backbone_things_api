@@ -328,27 +328,29 @@ pub(crate) fn map_to_user_schema(rows: Vec<UserRow>) -> Vec<UserSchema> {
 
 impl<'r> FromRow<'r, PgRow> for RoleProfileSchema {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
-        let type_number: i16 = row.try_get(3)?;
+        let type_number: i16 = row.try_get(4)?;
+        let bytes: Vec<u8> = row.try_get(5)?;
         Ok(Self {
             id: row.try_get(0)?,
             role_id: row.try_get(1)?,
             name: row.try_get(2)?,
+            category: row.try_get(3)?,
             value_type: DataType::from(type_number),
-            category: row.try_get(4)?
+            value_default: DataValue::from_bytes(&bytes, DataType::from(type_number))
         })
     }
 }
 
 impl<'r> FromRow<'r, PgRow> for UserProfileSchema {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
-        let bytes: Vec<u8> = row.try_get(3)?;
         let type_number: i16 = row.try_get(4)?;
+        let bytes: Vec<u8> = row.try_get(5)?;
         Ok(Self {
             id: row.try_get(0)?,
             user_id: row.try_get(1)?,
             name: row.try_get(2)?,
-            value: DataValue::from_bytes(&bytes, DataType::from(type_number)),
-            category: row.try_get(5)?
+            category: row.try_get(3)?,
+            value: DataValue::from_bytes(&bytes, DataType::from(type_number))
         })
     }
 }

@@ -41,7 +41,7 @@ pub(crate) async fn list_role_profile_by_role(auth: &Auth, role_id: Uuid)
     Ok(response.results)
 }
 
-pub(crate) async fn create_role_profile(auth: &Auth, role_id: Uuid, name: &str, value_type: DataType, category: &str)
+pub(crate) async fn create_role_profile(auth: &Auth, role_id: Uuid, name: &str, value_type: DataType, value_default: DataValue, category: &str)
     -> Result<i32, Status>
 {
     let interceptor = TokenInterceptor(auth.auth_token.clone());
@@ -52,6 +52,7 @@ pub(crate) async fn create_role_profile(auth: &Auth, role_id: Uuid, name: &str, 
         role_id: role_id.as_bytes().to_vec(),
         name: name.to_owned(),
         value_type: value_type.into(),
+        value_bytes: value_default.to_bytes(),
         category: category.to_owned()
     });
     let response = client.create_role_profile(request)
@@ -60,7 +61,7 @@ pub(crate) async fn create_role_profile(auth: &Auth, role_id: Uuid, name: &str, 
     Ok(response.id)
 }
 
-pub(crate) async fn update_role_profile(auth: &Auth, id: i32, name: Option<&str>, value_type: Option<DataType>, category: Option<&str>)
+pub(crate) async fn update_role_profile(auth: &Auth, id: i32, name: Option<&str>, value_type: Option<DataType>, value_default: Option<DataValue>, category: Option<&str>)
     -> Result<(), Status>
 {
     let interceptor = TokenInterceptor(auth.auth_token.clone());
@@ -70,6 +71,7 @@ pub(crate) async fn update_role_profile(auth: &Auth, id: i32, name: Option<&str>
         id,
         name: name.map(|s| s.to_owned()),
         value_type: value_type.map(|v| v.into()),
+        value_bytes: value_default.map(|v| v.to_bytes()),
         category: category.map(|v| v.to_owned())
     });
     client.update_role_profile(request)

@@ -35,9 +35,9 @@ pub(crate) enum DeviceConfig {
     Id,
     DeviceId,
     Name,
-    Value,
+    Category,
     Type,
-    Category
+    Value
 }
 
 #[derive(Iden)]
@@ -46,8 +46,9 @@ pub(crate) enum DeviceTypeConfig {
     Id,
     TypeId,
     Name,
+    Category,
     Type,
-    Category
+    Value,
 }
 
 pub enum DeviceKind {
@@ -83,9 +84,9 @@ pub fn select_device(
         .columns([
             (DeviceConfig::Table, DeviceConfig::Id),
             (DeviceConfig::Table, DeviceConfig::Name),
-            (DeviceConfig::Table, DeviceConfig::Value),
+            (DeviceConfig::Table, DeviceConfig::Category),
             (DeviceConfig::Table, DeviceConfig::Type),
-            (DeviceConfig::Table, DeviceConfig::Category)
+            (DeviceConfig::Table, DeviceConfig::Value)
         ])
         .from(Device::Table)
         .inner_join(DeviceType::Table, 
@@ -241,9 +242,9 @@ pub fn select_device_config(
             (DeviceConfig::Table, DeviceConfig::Id),
             (DeviceConfig::Table, DeviceConfig::DeviceId),
             (DeviceConfig::Table, DeviceConfig::Name),
-            (DeviceConfig::Table, DeviceConfig::Value),
+            (DeviceConfig::Table, DeviceConfig::Category),
             (DeviceConfig::Table, DeviceConfig::Type),
-            (DeviceConfig::Table, DeviceConfig::Category)
+            (DeviceConfig::Table, DeviceConfig::Value)
         ])
         .columns([
             (Device::Table, Device::GatewayId)
@@ -369,8 +370,9 @@ pub fn select_device_type(
         .columns([
             (DeviceTypeConfig::Table, DeviceTypeConfig::Id),
             (DeviceTypeConfig::Table, DeviceTypeConfig::Name),
+            (DeviceTypeConfig::Table, DeviceTypeConfig::Category),
             (DeviceTypeConfig::Table, DeviceTypeConfig::Type),
-            (DeviceTypeConfig::Table, DeviceTypeConfig::Category)
+            (DeviceTypeConfig::Table, DeviceTypeConfig::Value)
         ])
         .from(DeviceType::Table)
         .left_join(DeviceTypeModel::Table, 
@@ -509,8 +511,9 @@ pub fn select_device_type_config(
             DeviceTypeConfig::Id,
             DeviceTypeConfig::TypeId,
             DeviceTypeConfig::Name,
+            DeviceTypeConfig::Category,
             DeviceTypeConfig::Type,
-            DeviceTypeConfig::Category
+            DeviceTypeConfig::Value
         ])
         .from(DeviceConfig::Table)
         .to_owned();
@@ -534,6 +537,7 @@ pub fn insert_device_type_config(
     type_id: Uuid,
     name: &str,
     value_type: DataType,
+    value_default: DataValue,
     category: &str
 ) -> QueryStatement
 {
@@ -543,12 +547,14 @@ pub fn insert_device_type_config(
             DeviceTypeConfig::TypeId,
             DeviceTypeConfig::Name,
             DeviceTypeConfig::Type,
+            DeviceTypeConfig::Value,
             DeviceTypeConfig::Category
         ])
         .values([
             type_id.into(),
             name.into(),
             i16::from(value_type).into(),
+            value_default.to_bytes().into(),
             category.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
@@ -562,6 +568,7 @@ pub fn update_device_type_config(
     id: i32,
     name: Option<&str>,
     value_type: Option<DataType>,
+    value_default: Option<DataValue>,
     category: Option<&str>
 ) -> QueryStatement
 {
@@ -574,6 +581,9 @@ pub fn update_device_type_config(
     }
     if let Some(value) = value_type {
         stmt = stmt.value(DeviceTypeConfig::Name, i16::from(value)).to_owned();
+    }
+    if let Some(value) = value_default {
+        stmt = stmt.value(DeviceTypeConfig::Name, value.to_bytes()).to_owned();
     }
     if let Some(value) = category {
         stmt = stmt.value(DeviceTypeConfig::Category, value).to_owned();

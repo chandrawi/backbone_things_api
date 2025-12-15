@@ -68,6 +68,10 @@ impl ProfileService for ProfileServer {
             Uuid::from_slice(&request.role_id).unwrap_or_default(),
             &request.name,
             DataType::from(request.value_type),
+            DataValue::from_bytes(
+                &request.value_bytes, 
+                DataType::from(request.value_type)
+            ),
             &request.category
         ).await;
         let id = match result {
@@ -86,6 +90,12 @@ impl ProfileService for ProfileServer {
             request.id,
             request.name.as_deref(),
             request.value_type.map(|x| DataType::from(x)),
+            request.value_bytes.map(|s| {
+                DataValue::from_bytes(
+                    &s,
+                    DataType::from(request.value_type.unwrap_or_default())
+                )
+            }),
             request.category.as_deref()
         ).await;
         match result {

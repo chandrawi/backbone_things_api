@@ -12,9 +12,9 @@ CREATE TABLE IF NOT EXISTS "model_config" (
   "model_id" uuid NOT NULL,
   "index" smallint NOT NULL,
   "name" varchar(128) NOT NULL,
-  "value" bytea NOT NULL,
-  "type" smallint NOT NULL DEFAULT 0,
   "category" varchar(64) NOT NULL,
+  "type" smallint NOT NULL DEFAULT 0,
+  "value" bytea NOT NULL,
   PRIMARY KEY ("id"),
   FOREIGN KEY ("model_id")
     REFERENCES "model" ("model_id") ON UPDATE CASCADE ON DELETE CASCADE

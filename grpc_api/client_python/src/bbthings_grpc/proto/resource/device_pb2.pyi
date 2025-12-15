@@ -139,20 +139,20 @@ class GatewayUpdate(_message.Message):
     def __init__(self, id: _Optional[bytes] = ..., serial_number: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., type_id: _Optional[bytes] = ...) -> None: ...
 
 class ConfigSchema(_message.Message):
-    __slots__ = ("id", "device_id", "name", "config_bytes", "config_type", "category")
+    __slots__ = ("id", "device_id", "name", "config_type", "config_bytes", "category")
     ID_FIELD_NUMBER: _ClassVar[int]
     DEVICE_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    CONFIG_BYTES_FIELD_NUMBER: _ClassVar[int]
     CONFIG_TYPE_FIELD_NUMBER: _ClassVar[int]
+    CONFIG_BYTES_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
     id: int
     device_id: bytes
     name: str
-    config_bytes: bytes
     config_type: int
+    config_bytes: bytes
     category: str
-    def __init__(self, id: _Optional[int] = ..., device_id: _Optional[bytes] = ..., name: _Optional[str] = ..., config_bytes: _Optional[bytes] = ..., config_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[int] = ..., device_id: _Optional[bytes] = ..., name: _Optional[str] = ..., config_type: _Optional[int] = ..., config_bytes: _Optional[bytes] = ..., category: _Optional[str] = ...) -> None: ...
 
 class ConfigId(_message.Message):
     __slots__ = ("id",)
@@ -161,18 +161,18 @@ class ConfigId(_message.Message):
     def __init__(self, id: _Optional[int] = ...) -> None: ...
 
 class ConfigUpdate(_message.Message):
-    __slots__ = ("id", "name", "config_bytes", "config_type", "category")
+    __slots__ = ("id", "name", "config_type", "config_bytes", "category")
     ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    CONFIG_BYTES_FIELD_NUMBER: _ClassVar[int]
     CONFIG_TYPE_FIELD_NUMBER: _ClassVar[int]
+    CONFIG_BYTES_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
     id: int
     name: str
-    config_bytes: bytes
     config_type: int
+    config_bytes: bytes
     category: str
-    def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ..., config_bytes: _Optional[bytes] = ..., config_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ..., config_type: _Optional[int] = ..., config_bytes: _Optional[bytes] = ..., category: _Optional[str] = ...) -> None: ...
 
 class TypeSchema(_message.Message):
     __slots__ = ("id", "name", "description", "model_ids", "configs")
@@ -237,30 +237,34 @@ class TypeConfigId(_message.Message):
     def __init__(self, id: _Optional[int] = ...) -> None: ...
 
 class TypeConfigSchema(_message.Message):
-    __slots__ = ("id", "type_id", "name", "config_type", "category")
+    __slots__ = ("id", "type_id", "name", "config_type", "config_bytes", "category")
     ID_FIELD_NUMBER: _ClassVar[int]
     TYPE_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     CONFIG_TYPE_FIELD_NUMBER: _ClassVar[int]
+    CONFIG_BYTES_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
     id: int
     type_id: bytes
     name: str
     config_type: int
+    config_bytes: bytes
     category: str
-    def __init__(self, id: _Optional[int] = ..., type_id: _Optional[bytes] = ..., name: _Optional[str] = ..., config_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[int] = ..., type_id: _Optional[bytes] = ..., name: _Optional[str] = ..., config_type: _Optional[int] = ..., config_bytes: _Optional[bytes] = ..., category: _Optional[str] = ...) -> None: ...
 
 class TypeConfigUpdate(_message.Message):
-    __slots__ = ("id", "name", "config_type", "category")
+    __slots__ = ("id", "name", "config_type", "config_bytes", "category")
     ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     CONFIG_TYPE_FIELD_NUMBER: _ClassVar[int]
+    CONFIG_BYTES_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
     id: int
     name: str
     config_type: int
+    config_bytes: bytes
     category: str
-    def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ..., config_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ..., config_type: _Optional[int] = ..., config_bytes: _Optional[bytes] = ..., category: _Optional[str] = ...) -> None: ...
 
 class DeviceReadResponse(_message.Message):
     __slots__ = ("result",)

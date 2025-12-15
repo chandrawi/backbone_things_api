@@ -38,6 +38,7 @@ import {
  * @property {Uuid} role_id
  * @property {string} name
  * @property {number|string} value_type
+ * @property {number|bigint|string|Uint8Array|boolean} value_default
  * @property {string} category
  */
 
@@ -51,6 +52,7 @@ function get_role_profile_schema(r) {
         role_id: base64_to_uuid_hex(r.roleId),
         name: r.name,
         value_type: get_data_type(r.valueType),
+        value_default: get_data_value(r.valueBytes, r.valueType),
         category: r.category
     };
 }
@@ -99,6 +101,7 @@ function get_user_profile_schema_vec(r) {
  * @property {number} id
  * @property {?string} name
  * @property {?number|string} value_type
+ * @property {?number|bigint|string|Uint8Array|boolean} value_default
  * @property {?string} category
  */
 
@@ -115,7 +118,7 @@ function get_user_profile_schema_vec(r) {
  * Read a role profile by id
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {ProfileId} request profile id: id
- * @returns {Promise<RoleProfileSchema>} role profile schema: id, role_id, name, value_type, category
+ * @returns {Promise<RoleProfileSchema>} role profile schema: id, role_id, name, value_type, value_default, category
  */
 export async function read_role_profile(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -129,7 +132,7 @@ export async function read_role_profile(config, request) {
  * Read role profiles by role id
  * @param {ServerConfig} config Auth server config: address, auth_token
  * @param {RoleId} request role id: id
- * @returns {Promise<RoleProfileSchema[]>} role profile schema: id, role_id, name, value_type, category
+ * @returns {Promise<RoleProfileSchema[]>} role profile schema: id, role_id, name, value_type, value_default, category
  */
 export async function list_role_profile_by_role(config, request) {
     const client = new pb_profile.ProfileServicePromiseClient(config.address, null, null);
@@ -142,7 +145,7 @@ export async function list_role_profile_by_role(config, request) {
 /**
  * Create a role profile
  * @param {ServerConfig} config Auth server config: address, auth_token
- * @param {RoleProfileSchema} request role profile schema: role_id, name, value_type, category
+ * @param {RoleProfileSchema} request role profile schema: role_id, name, value_type, value_default, category
  * @returns {Promise<number>} profile id
  */
 export async function create_role_profile(config, request) {
@@ -151,6 +154,8 @@ export async function create_role_profile(config, request) {
     roleProfileSchema.setRoleId(uuid_hex_to_base64(request.role_id));
     roleProfileSchema.setName(request.name);
     roleProfileSchema.setValueType(set_data_type(request.value_type));
+    const value = set_data_value(request.value_default);
+    roleProfileSchema.setValueBytes(value.bytes);
     roleProfileSchema.setCategory(request.category);
     return client.createRoleProfile(roleProfileSchema, metadata(config.auth_token))
         .then(response => response.toObject().id);
@@ -159,7 +164,7 @@ export async function create_role_profile(config, request) {
 /**
  * Update a role profile
  * @param {ServerConfig} config Auth server config: address, auth_token
- * @param {RoleProfileUpdate} request role update: id, name, value_type, category
+ * @param {RoleProfileUpdate} request role update: id, name, value_type, value_default, category
  * @returns {Promise<null>} update response
  */
 export async function update_role_profile(config, request) {
@@ -167,9 +172,9 @@ export async function update_role_profile(config, request) {
     const roleProfileUpdate = new pb_profile.RoleProfileUpdate();
     roleProfileUpdate.setId(request.id);
     roleProfileUpdate.setName(request.name);
-    if (request.value_type) {
-        roleProfileUpdate.setValueType(set_data_type(request.value_type));
-    }
+    roleProfileUpdate.setValueType(set_data_type(request.value_type));
+    const value = set_data_value(request.value_default);
+    roleProfileUpdate.setValueBytes(value.bytes);
     roleProfileUpdate.setCategory(request.category);
     return client.updateRoleProfile(roleProfileUpdate, metadata(config.auth_token))
         .then(response => null);

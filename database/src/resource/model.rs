@@ -31,9 +31,9 @@ pub(crate) enum ModelConfig {
     ModelId,
     Index,
     Name,
-    Value,
+    Category,
     Type,
-    Category
+    Value
 }
 
 pub fn select_model(
@@ -61,9 +61,9 @@ pub fn select_model(
             (ModelConfig::Table, ModelConfig::Id),
             (ModelConfig::Table, ModelConfig::Index),
             (ModelConfig::Table, ModelConfig::Name),
-            (ModelConfig::Table, ModelConfig::Value),
+            (ModelConfig::Table, ModelConfig::Category),
             (ModelConfig::Table, ModelConfig::Type),
-            (ModelConfig::Table, ModelConfig::Category)
+            (ModelConfig::Table, ModelConfig::Value)
         ])
         .from(Model::Table)
         .left_join(ModelTag::Table, 
@@ -198,9 +198,9 @@ pub fn select_model_config(
             ModelConfig::ModelId,
             ModelConfig::Index,
             ModelConfig::Name,
-            ModelConfig::Value,
+            ModelConfig::Category,
             ModelConfig::Type,
-            ModelConfig::Category
+            ModelConfig::Value
         ])
         .from(ModelConfig::Table)
         .to_owned();

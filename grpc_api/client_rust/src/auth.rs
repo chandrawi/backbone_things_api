@@ -301,17 +301,17 @@ impl Auth {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_role_profile(&self, role_id: Uuid, name: &str, value_type: DataType, category: &str)
+    pub async fn create_role_profile(&self, role_id: Uuid, name: &str, value_type: DataType, value_default: DataValue, category: &str)
         -> Result<i32, Status>
     {
-        profile::create_role_profile(&self, role_id, name, value_type, category)
+        profile::create_role_profile(&self, role_id, name, value_type, value_default, category)
             .await
     }
 
-    pub async fn update_role_profile(&self, id: i32, name: Option<&str>, value_type: Option<DataType>, category: Option<&str>)
+    pub async fn update_role_profile(&self, id: i32, name: Option<&str>, value_type: Option<DataType>, value_default: Option<DataValue>, category: Option<&str>)
         -> Result<(), Status>
     {
-        profile::update_role_profile(&self, id, name, value_type, category)
+        profile::update_role_profile(&self, id, name, value_type, value_default, category)
             .await
     }
 

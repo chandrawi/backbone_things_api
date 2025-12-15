@@ -4382,8 +4382,8 @@ proto.device.ConfigSchema.toObject = function(includeInstance, msg) {
 id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 deviceId: msg.getDeviceId_asB64(),
 name: jspb.Message.getFieldWithDefault(msg, 3, ""),
+configType: jspb.Message.getFieldWithDefault(msg, 4, 0),
 configBytes: msg.getConfigBytes_asB64(),
-configType: jspb.Message.getFieldWithDefault(msg, 5, 0),
 category: jspb.Message.getFieldWithDefault(msg, 6, "")
   };
 
@@ -4434,12 +4434,12 @@ proto.device.ConfigSchema.deserializeBinaryFromReader = function(msg, reader) {
       msg.setName(value);
       break;
     case 4:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setConfigBytes(value);
-      break;
-    case 5:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setConfigType(value);
+      break;
+    case 5:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setConfigBytes(value);
       break;
     case 6:
       var value = /** @type {string} */ (reader.readString());
@@ -4495,16 +4495,16 @@ proto.device.ConfigSchema.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getConfigBytes_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
+  f = message.getConfigType();
+  if (f !== 0) {
+    writer.writeUint32(
       4,
       f
     );
   }
-  f = message.getConfigType();
-  if (f !== 0) {
-    writer.writeUint32(
+  f = message.getConfigBytes_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
       5,
       f
     );
@@ -4598,16 +4598,34 @@ proto.device.ConfigSchema.prototype.setName = function(value) {
 
 
 /**
- * optional bytes config_bytes = 4;
- * @return {!(string|Uint8Array)}
+ * optional uint32 config_type = 4;
+ * @return {number}
  */
-proto.device.ConfigSchema.prototype.getConfigBytes = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+proto.device.ConfigSchema.prototype.getConfigType = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /**
- * optional bytes config_bytes = 4;
+ * @param {number} value
+ * @return {!proto.device.ConfigSchema} returns this
+ */
+proto.device.ConfigSchema.prototype.setConfigType = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional bytes config_bytes = 5;
+ * @return {!(string|Uint8Array)}
+ */
+proto.device.ConfigSchema.prototype.getConfigBytes = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * optional bytes config_bytes = 5;
  * This is a type-conversion wrapper around `getConfigBytes()`
  * @return {string}
  */
@@ -4618,7 +4636,7 @@ proto.device.ConfigSchema.prototype.getConfigBytes_asB64 = function() {
 
 
 /**
- * optional bytes config_bytes = 4;
+ * optional bytes config_bytes = 5;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getConfigBytes()`
@@ -4635,25 +4653,7 @@ proto.device.ConfigSchema.prototype.getConfigBytes_asU8 = function() {
  * @return {!proto.device.ConfigSchema} returns this
  */
 proto.device.ConfigSchema.prototype.setConfigBytes = function(value) {
-  return jspb.Message.setProto3BytesField(this, 4, value);
-};
-
-
-/**
- * optional uint32 config_type = 5;
- * @return {number}
- */
-proto.device.ConfigSchema.prototype.getConfigType = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.device.ConfigSchema} returns this
- */
-proto.device.ConfigSchema.prototype.setConfigType = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -4839,8 +4839,8 @@ proto.device.ConfigUpdate.toObject = function(includeInstance, msg) {
   var f, obj = {
 id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+configType: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
 configBytes: msg.getConfigBytes_asB64(),
-configType: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
 category: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
   };
 
@@ -4887,12 +4887,12 @@ proto.device.ConfigUpdate.deserializeBinaryFromReader = function(msg, reader) {
       msg.setName(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setConfigBytes(value);
-      break;
-    case 4:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setConfigType(value);
+      break;
+    case 4:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setConfigBytes(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
@@ -4941,16 +4941,16 @@ proto.device.ConfigUpdate.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 3));
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeBytes(
+    writer.writeUint32(
       3,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
   if (f != null) {
-    writer.writeUint32(
+    writer.writeBytes(
       4,
       f
     );
@@ -5020,16 +5020,52 @@ proto.device.ConfigUpdate.prototype.hasName = function() {
 
 
 /**
- * optional bytes config_bytes = 3;
- * @return {!(string|Uint8Array)}
+ * optional uint32 config_type = 3;
+ * @return {number}
  */
-proto.device.ConfigUpdate.prototype.getConfigBytes = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+proto.device.ConfigUpdate.prototype.getConfigType = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
- * optional bytes config_bytes = 3;
+ * @param {number} value
+ * @return {!proto.device.ConfigUpdate} returns this
+ */
+proto.device.ConfigUpdate.prototype.setConfigType = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.device.ConfigUpdate} returns this
+ */
+proto.device.ConfigUpdate.prototype.clearConfigType = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.device.ConfigUpdate.prototype.hasConfigType = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional bytes config_bytes = 4;
+ * @return {!(string|Uint8Array)}
+ */
+proto.device.ConfigUpdate.prototype.getConfigBytes = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * optional bytes config_bytes = 4;
  * This is a type-conversion wrapper around `getConfigBytes()`
  * @return {string}
  */
@@ -5040,7 +5076,7 @@ proto.device.ConfigUpdate.prototype.getConfigBytes_asB64 = function() {
 
 
 /**
- * optional bytes config_bytes = 3;
+ * optional bytes config_bytes = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getConfigBytes()`
@@ -5057,42 +5093,6 @@ proto.device.ConfigUpdate.prototype.getConfigBytes_asU8 = function() {
  * @return {!proto.device.ConfigUpdate} returns this
  */
 proto.device.ConfigUpdate.prototype.setConfigBytes = function(value) {
-  return jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.device.ConfigUpdate} returns this
- */
-proto.device.ConfigUpdate.prototype.clearConfigBytes = function() {
-  return jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.device.ConfigUpdate.prototype.hasConfigBytes = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * optional uint32 config_type = 4;
- * @return {number}
- */
-proto.device.ConfigUpdate.prototype.getConfigType = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.device.ConfigUpdate} returns this
- */
-proto.device.ConfigUpdate.prototype.setConfigType = function(value) {
   return jspb.Message.setField(this, 4, value);
 };
 
@@ -5101,7 +5101,7 @@ proto.device.ConfigUpdate.prototype.setConfigType = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.device.ConfigUpdate} returns this
  */
-proto.device.ConfigUpdate.prototype.clearConfigType = function() {
+proto.device.ConfigUpdate.prototype.clearConfigBytes = function() {
   return jspb.Message.setField(this, 4, undefined);
 };
 
@@ -5110,7 +5110,7 @@ proto.device.ConfigUpdate.prototype.clearConfigType = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.device.ConfigUpdate.prototype.hasConfigType = function() {
+proto.device.ConfigUpdate.prototype.hasConfigBytes = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
@@ -6734,7 +6734,8 @@ id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 typeId: msg.getTypeId_asB64(),
 name: jspb.Message.getFieldWithDefault(msg, 3, ""),
 configType: jspb.Message.getFieldWithDefault(msg, 4, 0),
-category: jspb.Message.getFieldWithDefault(msg, 5, "")
+configBytes: msg.getConfigBytes_asB64(),
+category: jspb.Message.getFieldWithDefault(msg, 6, "")
   };
 
   if (includeInstance) {
@@ -6788,6 +6789,10 @@ proto.device.TypeConfigSchema.deserializeBinaryFromReader = function(msg, reader
       msg.setConfigType(value);
       break;
     case 5:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setConfigBytes(value);
+      break;
+    case 6:
       var value = /** @type {string} */ (reader.readString());
       msg.setCategory(value);
       break;
@@ -6848,10 +6853,17 @@ proto.device.TypeConfigSchema.serializeBinaryToWriter = function(message, writer
       f
     );
   }
+  f = message.getConfigBytes_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      5,
+      f
+    );
+  }
   f = message.getCategory();
   if (f.length > 0) {
     writer.writeString(
-      5,
+      6,
       f
     );
   }
@@ -6955,11 +6967,53 @@ proto.device.TypeConfigSchema.prototype.setConfigType = function(value) {
 
 
 /**
- * optional string category = 5;
+ * optional bytes config_bytes = 5;
+ * @return {!(string|Uint8Array)}
+ */
+proto.device.TypeConfigSchema.prototype.getConfigBytes = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * optional bytes config_bytes = 5;
+ * This is a type-conversion wrapper around `getConfigBytes()`
+ * @return {string}
+ */
+proto.device.TypeConfigSchema.prototype.getConfigBytes_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getConfigBytes()));
+};
+
+
+/**
+ * optional bytes config_bytes = 5;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getConfigBytes()`
+ * @return {!Uint8Array}
+ */
+proto.device.TypeConfigSchema.prototype.getConfigBytes_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getConfigBytes()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.device.TypeConfigSchema} returns this
+ */
+proto.device.TypeConfigSchema.prototype.setConfigBytes = function(value) {
+  return jspb.Message.setProto3BytesField(this, 5, value);
+};
+
+
+/**
+ * optional string category = 6;
  * @return {string}
  */
 proto.device.TypeConfigSchema.prototype.getCategory = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
 
@@ -6968,7 +7022,7 @@ proto.device.TypeConfigSchema.prototype.getCategory = function() {
  * @return {!proto.device.TypeConfigSchema} returns this
  */
 proto.device.TypeConfigSchema.prototype.setCategory = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
+  return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 
@@ -7007,7 +7061,8 @@ proto.device.TypeConfigUpdate.toObject = function(includeInstance, msg) {
 id: jspb.Message.getFieldWithDefault(msg, 1, 0),
 name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
 configType: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
-category: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
+configBytes: msg.getConfigBytes_asB64(),
+category: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -7057,6 +7112,10 @@ proto.device.TypeConfigUpdate.deserializeBinaryFromReader = function(msg, reader
       msg.setConfigType(value);
       break;
     case 4:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setConfigBytes(value);
+      break;
+    case 5:
       var value = /** @type {string} */ (reader.readString());
       msg.setCategory(value);
       break;
@@ -7110,10 +7169,17 @@ proto.device.TypeConfigUpdate.serializeBinaryToWriter = function(message, writer
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeBytes(
+      4,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 5));
   if (f != null) {
     writer.writeString(
-      4,
+      5,
       f
     );
   }
@@ -7211,19 +7277,43 @@ proto.device.TypeConfigUpdate.prototype.hasConfigType = function() {
 
 
 /**
- * optional string category = 4;
- * @return {string}
+ * optional bytes config_bytes = 4;
+ * @return {!(string|Uint8Array)}
  */
-proto.device.TypeConfigUpdate.prototype.getCategory = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+proto.device.TypeConfigUpdate.prototype.getConfigBytes = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * @param {string} value
+ * optional bytes config_bytes = 4;
+ * This is a type-conversion wrapper around `getConfigBytes()`
+ * @return {string}
+ */
+proto.device.TypeConfigUpdate.prototype.getConfigBytes_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getConfigBytes()));
+};
+
+
+/**
+ * optional bytes config_bytes = 4;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getConfigBytes()`
+ * @return {!Uint8Array}
+ */
+proto.device.TypeConfigUpdate.prototype.getConfigBytes_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getConfigBytes()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
  * @return {!proto.device.TypeConfigUpdate} returns this
  */
-proto.device.TypeConfigUpdate.prototype.setCategory = function(value) {
+proto.device.TypeConfigUpdate.prototype.setConfigBytes = function(value) {
   return jspb.Message.setField(this, 4, value);
 };
 
@@ -7232,7 +7322,7 @@ proto.device.TypeConfigUpdate.prototype.setCategory = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.device.TypeConfigUpdate} returns this
  */
-proto.device.TypeConfigUpdate.prototype.clearCategory = function() {
+proto.device.TypeConfigUpdate.prototype.clearConfigBytes = function() {
   return jspb.Message.setField(this, 4, undefined);
 };
 
@@ -7241,8 +7331,44 @@ proto.device.TypeConfigUpdate.prototype.clearCategory = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.device.TypeConfigUpdate.prototype.hasCategory = function() {
+proto.device.TypeConfigUpdate.prototype.hasConfigBytes = function() {
   return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional string category = 5;
+ * @return {string}
+ */
+proto.device.TypeConfigUpdate.prototype.getCategory = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.device.TypeConfigUpdate} returns this
+ */
+proto.device.TypeConfigUpdate.prototype.setCategory = function(value) {
+  return jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.device.TypeConfigUpdate} returns this
+ */
+proto.device.TypeConfigUpdate.prototype.clearCategory = function() {
+  return jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.device.TypeConfigUpdate.prototype.hasCategory = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 

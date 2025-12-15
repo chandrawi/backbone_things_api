@@ -7,34 +7,36 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class RoleProfileSchema(_message.Message):
-    __slots__ = ("id", "role_id", "name", "value_type", "category")
+    __slots__ = ("id", "role_id", "name", "value_type", "value_bytes", "category")
     ID_FIELD_NUMBER: _ClassVar[int]
     ROLE_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     VALUE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    VALUE_BYTES_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
     id: int
     role_id: bytes
     name: str
     value_type: int
+    value_bytes: bytes
     category: str
-    def __init__(self, id: _Optional[int] = ..., role_id: _Optional[bytes] = ..., name: _Optional[str] = ..., value_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[int] = ..., role_id: _Optional[bytes] = ..., name: _Optional[str] = ..., value_type: _Optional[int] = ..., value_bytes: _Optional[bytes] = ..., category: _Optional[str] = ...) -> None: ...
 
 class UserProfileSchema(_message.Message):
-    __slots__ = ("id", "user_id", "name", "value_bytes", "value_type", "category")
+    __slots__ = ("id", "user_id", "name", "value_type", "value_bytes", "category")
     ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    VALUE_BYTES_FIELD_NUMBER: _ClassVar[int]
     VALUE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    VALUE_BYTES_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
     id: int
     user_id: bytes
     name: str
-    value_bytes: bytes
     value_type: int
+    value_bytes: bytes
     category: str
-    def __init__(self, id: _Optional[int] = ..., user_id: _Optional[bytes] = ..., name: _Optional[str] = ..., value_bytes: _Optional[bytes] = ..., value_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[int] = ..., user_id: _Optional[bytes] = ..., name: _Optional[str] = ..., value_type: _Optional[int] = ..., value_bytes: _Optional[bytes] = ..., category: _Optional[str] = ...) -> None: ...
 
 class ProfileId(_message.Message):
     __slots__ = ("id",)
@@ -55,30 +57,32 @@ class UserId(_message.Message):
     def __init__(self, id: _Optional[bytes] = ...) -> None: ...
 
 class RoleProfileUpdate(_message.Message):
-    __slots__ = ("id", "name", "value_type", "category")
+    __slots__ = ("id", "name", "value_type", "value_bytes", "category")
     ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     VALUE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    VALUE_BYTES_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
     id: int
     name: str
     value_type: int
+    value_bytes: bytes
     category: str
-    def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ..., value_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ..., value_type: _Optional[int] = ..., value_bytes: _Optional[bytes] = ..., category: _Optional[str] = ...) -> None: ...
 
 class UserProfileUpdate(_message.Message):
-    __slots__ = ("id", "name", "value_bytes", "value_type", "category")
+    __slots__ = ("id", "name", "value_type", "value_bytes", "category")
     ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    VALUE_BYTES_FIELD_NUMBER: _ClassVar[int]
     VALUE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    VALUE_BYTES_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
     id: int
     name: str
-    value_bytes: bytes
     value_type: int
+    value_bytes: bytes
     category: str
-    def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ..., value_bytes: _Optional[bytes] = ..., value_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ..., value_type: _Optional[int] = ..., value_bytes: _Optional[bytes] = ..., category: _Optional[str] = ...) -> None: ...
 
 class RoleProfileReadResponse(_message.Message):
     __slots__ = ("result",)

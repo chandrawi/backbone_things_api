@@ -172,8 +172,8 @@ message ConfigSchema {
     int32 id = 1;
     bytes device_id = 2;
     string name = 3;
-    bytes config_bytes = 4;
-    uint32 config_type = 5;
+    uint32 config_type = 4;
+    bytes config_bytes = 5;
     string category = 6;
 }
 
@@ -184,8 +184,8 @@ message ConfigId {
 message ConfigUpdate {
     int32 id = 1;
     optional string name = 2;
-    optional bytes config_bytes = 3;
-    optional uint32 config_type = 4;
+    optional uint32 config_type = 3;
+    optional bytes config_bytes = 4;
     optional string category = 5;
 }
 
@@ -233,14 +233,16 @@ message TypeConfigSchema {
     bytes type_id = 2;
     string name = 3;
     uint32 config_type = 4;
-    string category = 5;
+    bytes config_bytes = 5;
+    string category = 6;
 }
 
 message TypeConfigUpdate {
     int32 id = 1;
     optional string name = 2;
     optional uint32 config_type = 3;
-    optional string category = 4;
+    optional bytes config_bytes = 4;
+    optional string category = 5;
 }
 
 message DeviceReadResponse {

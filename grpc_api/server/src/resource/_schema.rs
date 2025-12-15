@@ -246,6 +246,7 @@ impl From<TypeConfigSchema> for device::TypeConfigSchema {
             type_id: value.type_id.as_bytes().to_vec(),
             name: value.name,
             config_type: value.value_type.into(),
+            config_bytes: value.value_default.to_bytes(),
             category: value.category
         }
     }
@@ -258,6 +259,7 @@ impl From<device::TypeConfigSchema> for TypeConfigSchema {
             type_id: Uuid::from_slice(&value.type_id).unwrap_or_default(),
             name: value.name,
             value_type: DataType::from(value.config_type),
+            value_default: DataValue::from_bytes(&value.config_bytes, DataType::from(value.config_type)),
             category: value.category
         }
     }

@@ -468,17 +468,19 @@ impl Resource {
         qs.fetch_type_config_schema(&self.pool).await
     }
 
-    pub async fn create_type_config(&self, type_id: Uuid, name: &str, value_type: DataType, category: &str)
+    pub async fn create_type_config(&self, type_id: Uuid, name: &str, value_type: DataType, value_default: DataValue, category: &str)
         -> Result<i32, Error>
     {
-        let qs = device::insert_device_type_config(type_id, name, value_type, category);
+        let value_default = value_default.convert(value_type.clone())
+            .ok_or(Error::InvalidArgument(String::from(DATA_TYPE_UNMATCH)))?;
+        let qs = device::insert_device_type_config(type_id, name, value_type, value_default, category);
         qs.fetch_id(&self.pool).await
     }
 
-    pub async fn update_type_config(&self, id: i32, name: Option<&str>, value_type: Option<DataValue>, category: Option<&str>)
+    pub async fn update_type_config(&self, id: i32, name: Option<&str>, value_type: Option<DataType>, value_default: Option<DataValue>, category: Option<&str>)
         -> Result<(), Error>
     {
-        let qs = device::update_device_config(id, name, value_type, category);
+        let qs = device::update_device_type_config(id, name, value_type, value_default, category);
         qs.execute(&self.pool).await
     }
 
@@ -2026,5 +2028,5 @@ impl Resource {
 
 }
 
-const DATA_TYPE_UNMATCH: &str = "The type of input data argument doesn't match with the model";
-const EMPTY_LENGTH_UNMATCH: &str = "One or more input array arguments are empty or doesn't have the same length";
+pub(crate) const DATA_TYPE_UNMATCH: &str = "The type of input data argument doesn't match with the model";
+pub(crate) const EMPTY_LENGTH_UNMATCH: &str = "One or more input array arguments are empty or doesn't have the same length";

@@ -147,8 +147,8 @@ mod tests {
         assert_ne!(user.password, old_password);
 
         // create role and user profile
-        let profile_role_id1 = auth.create_role_profile(role_id1, "name", StringT, "").await.unwrap();
-        let profile_role_id2 = auth.create_role_profile(role_id1, "age", U16T, "").await.unwrap();
+        let profile_role_id1 = auth.create_role_profile(role_id1, "name", StringT, String("".to_string()), "").await.unwrap();
+        let profile_role_id2 = auth.create_role_profile(role_id1, "age", U16T, U16(0), "").await.unwrap();
         let profile_user_id1 = auth.create_user_profile(user_id1, "name", String("john doe".to_owned()), "").await.unwrap();
         let profile_user_id2 = auth.create_user_profile(user_id1, "age", U16(20), "").await.unwrap();
 

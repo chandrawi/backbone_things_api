@@ -19,8 +19,9 @@ CREATE TABLE IF NOT EXISTS "device_type_config" (
   "id" serial NOT NULL,
   "type_id" uuid NOT NULL,
   "name" varchar(128) NOT NULL,
-  "type" smallint NOT NULL DEFAULT 0,
   "category" varchar(64) NOT NULL,
+  "type" smallint NOT NULL DEFAULT 0,
+  "value" bytea NOT NULL,
   PRIMARY KEY ("id"),
   UNIQUE ("type_id","name"),
   FOREIGN KEY ("type_id")
@@ -43,9 +44,9 @@ CREATE TABLE IF NOT EXISTS "device_config" (
   "id" serial NOT NULL,
   "device_id" uuid NOT NULL,
   "name" varchar(128) NOT NULL,
-  "value" bytea NOT NULL,
-  "type" smallint NOT NULL DEFAULT 0,
   "category" varchar(64) NOT NULL,
+  "type" smallint NOT NULL DEFAULT 0,
+  "value" bytea NOT NULL,
   PRIMARY KEY ("id"),
   FOREIGN KEY ("device_id")
     REFERENCES "device" ("device_id") ON UPDATE CASCADE ON DELETE CASCADE

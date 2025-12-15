@@ -523,17 +523,17 @@ impl Resource {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_type_config(&self, type_id: Uuid, name: &str, value_type: DataType, category: &str)
+    pub async fn create_type_config(&self, type_id: Uuid, name: &str, value_type: DataType, value_default: DataValue, category: &str)
         -> Result<i32, Status>
     {
-        device::create_type_config(&self, type_id, name, value_type, category)
+        device::create_type_config(&self, type_id, name, value_type, value_default, category)
             .await
     }
 
-    pub async fn update_type_config(&self, id: i32, name: Option<&str>, value_type: Option<DataType>, category: Option<&str>)
+    pub async fn update_type_config(&self, id: i32, name: Option<&str>, value_type: Option<DataType>, value_default: Option<DataValue>, category: Option<&str>)
         -> Result<(), Status>
     {
-        device::update_type_config(&self, id, name, value_type, category)
+        device::update_type_config(&self, id, name, value_type, value_default, category)
             .await
     }
 

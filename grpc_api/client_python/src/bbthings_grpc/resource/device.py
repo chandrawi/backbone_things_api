@@ -2,7 +2,7 @@ from ..proto.resource import device_pb2, device_pb2_grpc
 from typing import Optional, Union, List
 from uuid import UUID
 import grpc
-from ..common.type_value import DataType, pack_data
+from ..common.type_value import DataType, pack_data, pack_data_model
 from ._schema import DeviceSchema, DeviceConfigSchema, GatewaySchema, GatewayConfigSchema, TypeSchema, TypeConfigSchema
 
 
@@ -381,25 +381,32 @@ def list_type_config_by_type(resource, type_id: UUID):
         for result in response.results: ls.append(TypeConfigSchema.from_response(result))
         return ls
 
-def create_type_config(resource, type_id: UUID, name: str, value_type: DataType, category: str):
+def create_type_config(resource, type_id: UUID, name: str, value_type: DataType, value_default: Union[int, float, str, bool, None], category: str):
     with grpc.insecure_channel(resource.address) as channel:
         stub = device_pb2_grpc.DeviceServiceStub(channel)
         request = device_pb2.TypeConfigSchema(
             type_id=type_id.bytes,
             name=name,
             config_type=value_type.value,
+            config_bytes=pack_data_model(value_default, value_type),
             category=category
         )
         response = stub.CreateTypeConfig(request=request, metadata=resource.metadata)
         return response.id
 
-def update_type_config(resource, id: int, name: Optional[str]=None, value_type: Optional[DataType]=None, category: Optional[str]=None):
+def update_type_config(resource, id: int, name: Optional[str]=None, value_type: Optional[DataType]=None, value_default: Union[int, float, str, bool, None]=None, category: Optional[str]=None):
     with grpc.insecure_channel(resource.address) as channel:
         stub = device_pb2_grpc.DeviceServiceStub(channel)
+        ty = None
+        if value_type != None: ty = value_type.value
+        byt = None
+        if value_type != None and value_default != None: byt = pack_data_model(value_default, value_type)
+        elif value_default != None: byt = pack_data(value_default)
         request = device_pb2.TypeConfigUpdate(
             id=id,
             name=name,
-            config_type=value_type.value,
+            config_type=ty,
+            config_bytes=byt,
             category=category
         )
         stub.UpdateTypeConfig(request=request, metadata=resource.metadata)

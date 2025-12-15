@@ -28,15 +28,16 @@ message RoleProfileSchema {
     bytes role_id = 2;
     string name = 3;
     uint32 value_type = 4;
-    string category = 5;
+    bytes value_bytes = 5;
+    string category = 6;
 }
 
 message UserProfileSchema {
     int32 id = 1;
     bytes user_id = 2;
     string name = 3;
-    bytes value_bytes = 4;
-    uint32 value_type = 5;
+    uint32 value_type = 4;
+    bytes value_bytes = 5;
     string category = 6;
 }
 
@@ -56,14 +57,15 @@ message RoleProfileUpdate {
     int32 id = 1;
     optional string name = 2;
     optional uint32 value_type = 3;
-    optional string category = 4;
+    optional bytes value_bytes = 4;
+    optional string category = 5;
 }
 
 message UserProfileUpdate {
     int32 id = 1;
     optional string name = 2;
-    optional bytes value_bytes = 3;
-    optional uint32 value_type = 4;
+    optional uint32 value_type = 3;
+    optional bytes value_bytes = 4;
     optional string category = 5;
 }
 

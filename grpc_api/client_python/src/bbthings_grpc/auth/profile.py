@@ -3,7 +3,7 @@ from typing import Optional, Union
 from uuid import UUID
 import grpc
 from ._schema import RoleProfileSchema, UserProfileSchema
-from ..common.type_value import DataType, pack_data
+from ..common.type_value import DataType, pack_data, pack_data_model
 
 
 def read_role_profile(auth, id: int):
@@ -22,27 +22,32 @@ def list_role_profile_by_role(auth, role_id: UUID):
         for result in response.results: ls.append(RoleProfileSchema.from_response(result))
         return ls
 
-def create_role_profile(auth, role_id: UUID, name: str, value_type: DataType, category: str):
+def create_role_profile(auth, role_id: UUID, name: str, value_type: DataType, value_default: Union[int, float, str, bool, None], category: str):
     with grpc.insecure_channel(auth.address) as channel:
         stub = profile_pb2_grpc.ProfileServiceStub(channel)
         request = profile_pb2.RoleProfileSchema(
             role_id=role_id.bytes,
             name=name,
             value_type=value_type.value,
+            value_bytes=pack_data_model(value_default, value_type),
             category=category
         )
         response = stub.CreateRoleProfile(request=request, metadata=auth.metadata)
         return response.id
 
-def update_role_profile(auth, id: int, name: Optional[str], value_type: Optional[DataType], category: Optional[str]):
+def update_role_profile(auth, id: int, name: Optional[str], value_type: Optional[DataType], value_default: Union[int, float, str, bool, None], category: Optional[str]):
     with grpc.insecure_channel(auth.address) as channel:
         stub = profile_pb2_grpc.ProfileServiceStub(channel)
         ty = None
         if value_type != None: ty = value_type.value
+        byt = None
+        if value_type != None and value_default != None: byt = pack_data_model(value_default, value_type)
+        elif value_default != None: byt = pack_data(value_default)
         request = profile_pb2.RoleProfileUpdate(
             id=id,
             name=name,
             value_type=ty,
+            value_bytes=byt,
             category=category
         )
         stub.UpdateRoleProfile(request=request, metadata=auth.metadata)

@@ -20,16 +20,28 @@ pub(crate) struct ModelRow {
     config_id: Option<i32>,
     config_index: Option<i16>,
     config_name: Option<String>,
-    config_value: Option<DataValue>,
-    config_category: Option<String>
+    config_category: Option<String>,
+    config_value: Option<DataValue>
 }
 
 impl<'r> FromRow<'r, PgRow> for ModelRow {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
         let type_number_vec: Vec<u8> = row.try_get(4)?;
         let types: Vec<DataType> = type_number_vec.into_iter().map(|ty| ty.into()).collect();
-        let bytes: Option<Vec<u8>> = row.try_get(11)?;
+        let tag = row.try_get(5)?;
+        let bytes: Option<Vec<u8>> = row.try_get(7)?;
+        let mut tags = match tag {
+            Some(tag) => [tag].to_vec(),
+            None => Vec::new()
+        };
+        let tag_members = bytes.map(|bytes| {
+            for chunk in bytes.chunks_exact(2) {
+                tags.push(i16::from_be_bytes([chunk[0], chunk[1]]));
+            }
+            tags
+        });
         let type_number: Option<i16> = row.try_get(12)?;
+        let bytes: Option<Vec<u8>> = row.try_get(13)?;
         let config_value = match (bytes, type_number) {
             (Some(b), Some(t)) => Some(DataValue::from_bytes(&b, DataType::from(t))),
             _ => None
@@ -40,14 +52,14 @@ impl<'r> FromRow<'r, PgRow> for ModelRow {
             category: row.try_get(2)?,
             description: row.try_get(3)?,
             data_type: types,
-            tag: row.try_get(5)?,
+            tag,
             tag_name: row.try_get(6)?,
-            tag_members: row.try_get(7)?,
+            tag_members,
             config_id: row.try_get(8)?,
             config_index: row.try_get(9)?,
             config_name: row.try_get(10)?,
-            config_value,
-            config_category: row.try_get(13)?
+            config_category: row.try_get(11)?,
+            config_value
         })
     }
 }
@@ -143,15 +155,15 @@ impl<'r> FromRow<'r, PgRow> for TagSchema {
 
 impl<'r> FromRow<'r, PgRow> for ModelConfigSchema {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
-        let bytes = row.try_get(4)?;
         let type_number: i16 = row.try_get(5)?;
+        let bytes = row.try_get(6)?;
         Ok(Self {
             id: row.try_get(0)?,
             model_id: row.try_get(1)?,
             index: row.try_get(2)?,
             name: row.try_get(3)?,
-            value: DataValue::from_bytes(bytes, DataType::from(type_number)),
-            category: row.try_get(6)?
+            category: row.try_get(4)?,
+            value: DataValue::from_bytes(bytes, DataType::from(type_number))
         })
     }
 }
@@ -167,14 +179,14 @@ pub(crate) struct DeviceRow {
     model_id: Option<Uuid>,
     config_id: Option<i32>,
     config_name: Option<String>,
-    config_value: Option<DataValue>,
-    config_category: Option<String>
+    config_category: Option<String>,
+    config_value: Option<DataValue>
 }
 
 impl<'r> FromRow<'r, PgRow> for DeviceRow {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
-        let bytes: Option<Vec<u8>> = row.try_get(10)?;
         let type_number: Option<i16> = row.try_get(11)?;
+        let bytes: Option<Vec<u8>> = row.try_get(12)?;
         let config_value = match (bytes, type_number) {
             (Some(b), Some(t)) => Some(DataValue::from_bytes(&b, DataType::from(t))),
             _ => None
@@ -190,8 +202,8 @@ impl<'r> FromRow<'r, PgRow> for DeviceRow {
             model_id: row.try_get(7)?,
             config_id: row.try_get(8)?,
             config_name: row.try_get(9)?,
-            config_value,
-            config_category: row.try_get(12)?
+            config_category: row.try_get(10)?,
+            config_value
         })
     }
 }
@@ -267,13 +279,19 @@ pub(crate) struct TypeRow {
     model_id: Option<Uuid>,
     config_id: Option<i32>,
     config_name: Option<String>,
+    config_category: Option<String>,
     config_type: Option<DataType>,
-    config_category: Option<String>
+    config_value: Option<DataValue>
 }
 
 impl<'r> FromRow<'r, PgRow> for TypeRow {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
-        let type_number: Option<i16> = row.try_get(6)?;
+        let type_number: Option<i16> = row.try_get(7)?;
+        let bytes: Option<Vec<u8>> = row.try_get(8)?;
+        let config_value = match (bytes, type_number) {
+            (Some(b), Some(t)) => Some(DataValue::from_bytes(&b, DataType::from(t))),
+            _ => None
+        };
         Ok(Self {
             type_id: row.try_get(0)?,
             name: row.try_get(1)?,
@@ -281,8 +299,9 @@ impl<'r> FromRow<'r, PgRow> for TypeRow {
             model_id: row.try_get(3)?,
             config_id: row.try_get(4)?,
             config_name: row.try_get(5)?,
+            config_category: row.try_get(6)?,
             config_type: type_number.map(|t| DataType::from(t)),
-            config_category: row.try_get(7)?
+            config_value: config_value
         })
     }
 }
@@ -332,6 +351,7 @@ pub(crate) fn map_to_type_schema(rows: Vec<TypeRow>) -> Vec<TypeSchema> {
                         type_id: row.type_id,
                         name: row.config_name.unwrap_or_default(),
                         value_type: row.config_type.unwrap_or_default(),
+                        value_default: row.config_value.unwrap_or_default(),
                         category: row.config_category.unwrap_or_default()
                     });
                 }
@@ -348,27 +368,29 @@ pub(crate) fn map_to_type_schema(rows: Vec<TypeRow>) -> Vec<TypeSchema> {
 
 impl<'r> FromRow<'r, PgRow> for DeviceConfigSchema {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
-        let bytes = row.try_get(3)?;
         let type_number: i16 = row.try_get(4)?;
+        let bytes = row.try_get(5)?;
         Ok(Self {
             id: row.try_get(0)?,
             device_id: row.try_get(1)?,
             name: row.try_get(2)?,
-            value: DataValue::from_bytes(bytes, DataType::from(type_number)),
-            category: row.try_get(5)?
+            category: row.try_get(3)?,
+            value: DataValue::from_bytes(bytes, DataType::from(type_number))
         })
     }
 }
 
 impl<'r> FromRow<'r, PgRow> for TypeConfigSchema {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
-        let type_number: i16 = row.try_get(3)?;
+        let type_number: i16 = row.try_get(4)?;
+        let bytes = row.try_get(5)?;
         Ok(Self {
             id: row.try_get(0)?,
             type_id: row.try_get(1)?,
             name: row.try_get(2)?,
+            category: row.try_get(3)?,
             value_type: DataType::from(type_number),
-            category: row.try_get(4)?
+            value_default: DataValue::from_bytes(bytes, DataType::from(type_number)),
         })
     }
 }

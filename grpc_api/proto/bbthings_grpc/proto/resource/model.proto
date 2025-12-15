@@ -95,8 +95,8 @@ message ConfigSchema {
     bytes model_id = 2;
     int32 index = 3;
     string name = 4;
-    bytes config_bytes = 5;
-    uint32 config_type = 6;
+    uint32 config_type = 5;
+    bytes config_bytes = 6;
     string category = 7;
 }
 
@@ -107,8 +107,8 @@ message ConfigId {
 message ConfigUpdate {
     int32 id = 1;
     optional string name = 2;
-    optional bytes config_bytes = 3;
-    optional uint32 config_type = 4;
+    optional uint32 config_type = 3;
+    optional bytes config_bytes = 4;
     optional string category = 5;
 }
 

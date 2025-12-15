@@ -126,10 +126,10 @@ pub struct ConfigSchema {
     pub device_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag = "3")]
     pub name: ::prost::alloc::string::String,
-    #[prost(bytes = "vec", tag = "4")]
-    pub config_bytes: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint32, tag = "5")]
+    #[prost(uint32, tag = "4")]
     pub config_type: u32,
+    #[prost(bytes = "vec", tag = "5")]
+    pub config_bytes: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag = "6")]
     pub category: ::prost::alloc::string::String,
 }
@@ -144,10 +144,10 @@ pub struct ConfigUpdate {
     pub id: i32,
     #[prost(string, optional, tag = "2")]
     pub name: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(bytes = "vec", optional, tag = "3")]
-    pub config_bytes: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
-    #[prost(uint32, optional, tag = "4")]
+    #[prost(uint32, optional, tag = "3")]
     pub config_type: ::core::option::Option<u32>,
+    #[prost(bytes = "vec", optional, tag = "4")]
+    pub config_bytes: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     #[prost(string, optional, tag = "5")]
     pub category: ::core::option::Option<::prost::alloc::string::String>,
 }
@@ -215,7 +215,9 @@ pub struct TypeConfigSchema {
     pub name: ::prost::alloc::string::String,
     #[prost(uint32, tag = "4")]
     pub config_type: u32,
-    #[prost(string, tag = "5")]
+    #[prost(bytes = "vec", tag = "5")]
+    pub config_bytes: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag = "6")]
     pub category: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
@@ -226,7 +228,9 @@ pub struct TypeConfigUpdate {
     pub name: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(uint32, optional, tag = "3")]
     pub config_type: ::core::option::Option<u32>,
-    #[prost(string, optional, tag = "4")]
+    #[prost(bytes = "vec", optional, tag = "4")]
+    pub config_bytes: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    #[prost(string, optional, tag = "5")]
     pub category: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

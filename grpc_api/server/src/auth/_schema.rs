@@ -156,6 +156,7 @@ impl From<RoleProfileSchema> for profile::RoleProfileSchema {
             role_id: value.role_id.as_bytes().to_vec(),
             name: value.name,
             value_type: value.value_type.into(),
+            value_bytes: value.value_default.to_bytes(),
             category: value.category
         }
     }
@@ -168,6 +169,7 @@ impl From<profile::RoleProfileSchema> for RoleProfileSchema {
             role_id: Uuid::from_slice(&value.role_id).unwrap_or_default(),
             name: value.name,
             value_type: value.value_type.into(),
+            value_default: DataValue::from_bytes(value.value_bytes.as_slice(), DataType::from(value.value_type)),
             category: value.category
         }
     }

@@ -87,22 +87,22 @@ class ModelUpdate(_message.Message):
     def __init__(self, id: _Optional[bytes] = ..., category: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., data_type: _Optional[_Iterable[int]] = ..., data_type_flag: bool = ...) -> None: ...
 
 class ConfigSchema(_message.Message):
-    __slots__ = ("id", "model_id", "index", "name", "config_bytes", "config_type", "category")
+    __slots__ = ("id", "model_id", "index", "name", "config_type", "config_bytes", "category")
     ID_FIELD_NUMBER: _ClassVar[int]
     MODEL_ID_FIELD_NUMBER: _ClassVar[int]
     INDEX_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    CONFIG_BYTES_FIELD_NUMBER: _ClassVar[int]
     CONFIG_TYPE_FIELD_NUMBER: _ClassVar[int]
+    CONFIG_BYTES_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
     id: int
     model_id: bytes
     index: int
     name: str
-    config_bytes: bytes
     config_type: int
+    config_bytes: bytes
     category: str
-    def __init__(self, id: _Optional[int] = ..., model_id: _Optional[bytes] = ..., index: _Optional[int] = ..., name: _Optional[str] = ..., config_bytes: _Optional[bytes] = ..., config_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[int] = ..., model_id: _Optional[bytes] = ..., index: _Optional[int] = ..., name: _Optional[str] = ..., config_type: _Optional[int] = ..., config_bytes: _Optional[bytes] = ..., category: _Optional[str] = ...) -> None: ...
 
 class ConfigId(_message.Message):
     __slots__ = ("id",)
@@ -111,18 +111,18 @@ class ConfigId(_message.Message):
     def __init__(self, id: _Optional[int] = ...) -> None: ...
 
 class ConfigUpdate(_message.Message):
-    __slots__ = ("id", "name", "config_bytes", "config_type", "category")
+    __slots__ = ("id", "name", "config_type", "config_bytes", "category")
     ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    CONFIG_BYTES_FIELD_NUMBER: _ClassVar[int]
     CONFIG_TYPE_FIELD_NUMBER: _ClassVar[int]
+    CONFIG_BYTES_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
     id: int
     name: str
-    config_bytes: bytes
     config_type: int
+    config_bytes: bytes
     category: str
-    def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ..., config_bytes: _Optional[bytes] = ..., config_type: _Optional[int] = ..., category: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ..., config_type: _Optional[int] = ..., config_bytes: _Optional[bytes] = ..., category: _Optional[str] = ...) -> None: ...
 
 class TagSchema(_message.Message):
     __slots__ = ("model_id", "tag", "name", "members")
