@@ -1773,7 +1773,6 @@ impl Resource {
         let selector = BufferSelector::Last(number, 0);
         let qs = buffer::select_buffer_timestamp(selector, device_ids, model_ids, tags);
         qs.fetch_timestamp(&self.pool).await
-        
     }
 
     pub async fn count_buffer(&self, device_id: Uuid, model_id: Uuid, tag: Option<i16>)

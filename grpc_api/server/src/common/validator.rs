@@ -74,17 +74,16 @@ pub(crate) trait AccessValidator {
             .find(|r| *r == claims.sub);
         match role {
             Some(_) => Ok(()),
-            None => Err(Status::unauthenticated(
-                format!("Role {} {}", claims.sub, ACCESS_RIGHT_ERR)
-            ))
+            None => Err(Status::unauthenticated(format!("Role {} {}", claims.sub, ACCESS_RIGHT_ERR)))
         }
     }
 
 }
 
 pub enum ValidatorKind {
+    Root,
     User(Uuid),
-    Root
+    Profile(i32)
 }
 
 pub(crate) trait AuthValidator {
@@ -113,13 +112,17 @@ pub(crate) trait AuthValidator {
             },
             Err(_) => return Err(Status::unauthenticated(USER_UNREGISTERED))
         };
-        // check input user id or root user
-        if let ValidatorKind::User(id) = kind {
-            if id == user_id {
-                return Ok(());
+        // check if input user id, root user, or profile user id is the same as token user id
+        let user_validation =  match kind {
+            ValidatorKind::Root => user_id == ROOT_ID,
+            ValidatorKind::User(id) => user_id == id || user_id == ROOT_ID,
+            ValidatorKind::Profile(id) => {
+                self.auth_db().read_user_profile(id).await.is_ok_and(|profile| {
+                    user_id == profile.user_id || user_id == ROOT_ID
+                })
             }
-        }
-        if user_id == ROOT_ID {
+        };
+        if user_validation {
             Ok(())
         } else {
             Err(Status::unauthenticated(format!("User {} {}", user_id, ACCESS_RIGHT_ERR)))

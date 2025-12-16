@@ -1,4 +1,4 @@
-use sea_query::{Iden, Query, Expr, Order, Func};
+use sea_query::{Iden, Query, Expr, Order};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
 use crate::common::query_statement::QueryStatement;
@@ -97,33 +97,17 @@ pub fn select_token(
     QueryStatement::Select(stmt)
 }
 
-pub fn select_token_last_access_id(
-) -> QueryStatement
-{
-    let stmt = Query::select()
-        .expr(Func::max(Expr::col(Token::AccessId)))
-        .from(Token::Table)
-        .to_owned();
-
-    QueryStatement::Select(stmt)
-}
-
 pub fn insert_token(
     user_id: Uuid, 
-    access_ids: Vec<i32>,
     refresh_tokens: Vec<&str>,
-    auth_tokens: Vec<&str>,
+    auth_token: &str,
     expired: DateTime<Utc>, 
     ip: &[u8]
 ) -> QueryStatement
 {
-    let numbers = vec![access_ids.len(), refresh_tokens.len(), auth_tokens.len()];
-    let number = numbers.into_iter().min().unwrap_or(0);
-
     let mut stmt = Query::insert()
         .into_table(Token::Table)
         .columns([
-            Token::AccessId,
             Token::UserId,
             Token::RefreshToken,
             Token::AuthToken,
@@ -131,18 +115,18 @@ pub fn insert_token(
             Token::Ip
         ])
         .to_owned();
-    for i in 0..number {
+    for i in 0..refresh_tokens.len() {
         stmt = stmt.values([
-            access_ids[i].into(),
             user_id.into(),
             refresh_tokens[i].into(),
-            auth_tokens[i].into(),
+            auth_token.into(),
             expired.into(),
             ip.to_vec().into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .to_owned();
     }
+    stmt = stmt.returning(Query::returning().column(Token::AccessId)).to_owned();
 
     QueryStatement::Insert(stmt)
 }

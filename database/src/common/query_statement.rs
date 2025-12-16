@@ -70,17 +70,6 @@ impl QueryStatement {
         Ok(id)
     }
 
-    pub(crate) async fn fetch_max_order(&self, pool: &Pool<Postgres>, default: i32) -> i32
-    {
-        let (sql, arguments) = self.build();
-        sqlx::query_with(&sql, arguments)
-            .map(|row: PgRow| row.try_get(0))
-            .fetch_one(pool)
-            .await
-            .unwrap_or(Ok(default))
-            .unwrap_or(default)
-    }
-
     pub(crate) async fn fetch_count(&self, pool: &Pool<Postgres>) -> Result<usize, Error>
     {
         let (sql, arguments) = self.build();

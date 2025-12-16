@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS "token" (
-  "access_id" int NOT NULL,
+  "access_id" serial NOT NULL,
   "user_id" uuid NOT NULL,
   "refresh_token" char(32) NOT NULL,
   "auth_token" char(32) NOT NULL,
