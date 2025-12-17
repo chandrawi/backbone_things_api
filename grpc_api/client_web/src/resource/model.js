@@ -56,6 +56,7 @@ import {
  * @property {string} name
  * @property {string} description
  * @property {number[]|string[]} data_type
+ * @property {number[]} tags
  * @property {ModelConfigSchema[][]} configs
  */
 
@@ -70,6 +71,7 @@ function get_model_schema(r) {
         name: r.name,
         description: r.description,
         data_type: r.dataTypeList.map((v) => { return get_data_type(v) }),
+        tags: r.tagsList,
         configs: r.configsList.map((v) => { return get_model_config_schema_vec(v.configsList) })
     };
 }

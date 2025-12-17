@@ -15,8 +15,6 @@ pub(crate) struct ModelRow {
     description: String,
     data_type: Vec<DataType>,
     tag: Option<i16>,
-    tag_name: Option<String>,
-    tag_members: Option<Vec<i16>>,
     config_id: Option<i32>,
     config_index: Option<i16>,
     config_name: Option<String>,
@@ -27,21 +25,9 @@ pub(crate) struct ModelRow {
 impl<'r> FromRow<'r, PgRow> for ModelRow {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
         let type_number_vec: Vec<u8> = row.try_get(4)?;
-        let types: Vec<DataType> = type_number_vec.into_iter().map(|ty| ty.into()).collect();
-        let tag = row.try_get(5)?;
-        let bytes: Option<Vec<u8>> = row.try_get(7)?;
-        let mut tags = match tag {
-            Some(tag) => [tag].to_vec(),
-            None => Vec::new()
-        };
-        let tag_members = bytes.map(|bytes| {
-            for chunk in bytes.chunks_exact(2) {
-                tags.push(i16::from_be_bytes([chunk[0], chunk[1]]));
-            }
-            tags
-        });
-        let type_number: Option<i16> = row.try_get(12)?;
-        let bytes: Option<Vec<u8>> = row.try_get(13)?;
+        let data_type: Vec<DataType> = type_number_vec.into_iter().map(|ty| ty.into()).collect();
+        let type_number: Option<i16> = row.try_get(10)?;
+        let bytes: Option<Vec<u8>> = row.try_get(11)?;
         let config_value = match (bytes, type_number) {
             (Some(b), Some(t)) => Some(DataValue::from_bytes(&b, DataType::from(t))),
             _ => None
@@ -51,14 +37,12 @@ impl<'r> FromRow<'r, PgRow> for ModelRow {
             name: row.try_get(1)?,
             category: row.try_get(2)?,
             description: row.try_get(3)?,
-            data_type: types,
-            tag,
-            tag_name: row.try_get(6)?,
-            tag_members,
-            config_id: row.try_get(8)?,
-            config_index: row.try_get(9)?,
-            config_name: row.try_get(10)?,
-            config_category: row.try_get(11)?,
+            data_type,
+            tag: row.try_get(5)?,
+            config_id: row.try_get(6)?,
+            config_index: row.try_get(7)?,
+            config_name: row.try_get(8)?,
+            config_category: row.try_get(9)?,
             config_value
         })
     }
@@ -99,13 +83,8 @@ pub(crate) fn map_to_model_schema(rows: Vec<ModelRow>) -> Vec<ModelSchema> {
         if let Some(model) = last_model.as_mut() {
             // 2) Add tag if exists without duplicates
             if let Some(tag) = row.tag {
-                if model.tags.last().map(|t| t.tag) != Some(tag) {
-                    model.tags.push(TagSchema {
-                        model_id: row.model_id,
-                        tag,
-                        name: row.tag_name.unwrap_or_default(),
-                        members: row.tag_members.unwrap_or(vec![tag])
-                    });
+                if model.tags.last() != Some(&tag) {
+                    model.tags.push(tag);
                 }
             }
 
@@ -137,20 +116,61 @@ pub(crate) fn map_to_model_schema(rows: Vec<ModelRow>) -> Vec<ModelSchema> {
     result.into_iter().map(|s| s.into()).collect()
 }
 
-impl<'r> FromRow<'r, PgRow> for TagSchema {
+pub(crate) struct TagRow {
+    model_id: Uuid,
+    tag: i16,
+    name: String,
+    member: Option<i16>
+}
+
+impl<'r> FromRow<'r, PgRow> for TagRow {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
-        let mut tags: Vec<i16> = vec![row.try_get(1)?];
-        let bytes: Vec<u8> = row.try_get(3)?;
-        for chunk in bytes.chunks_exact(2) {
-            tags.push(i16::from_be_bytes([chunk[0], chunk[1]]));
-        }
         Ok(Self {
             model_id: row.try_get(0)?,
-            tag: tags[0],
+            tag: row.try_get(1)?,
             name: row.try_get(2)?,
-            members: tags
+            member: row.try_get(3)?
         })
     }
+}
+
+pub(crate) fn map_to_tag_schema(rows: Vec<TagRow>) -> Vec<TagSchema> {
+    if rows.is_empty() {
+        return Vec::new();
+    }
+    // TagRow is sorted by (tag) from query result
+
+    let mut result = Vec::new();
+    let mut last_tag: Option<i16> = None;
+    let mut last_tag_schema: Option<TagSchema> = None;
+
+    for row in rows {
+        // 1) Detect new tag member
+        if Some(row.tag) != last_tag {
+            // Push previous template
+            if let Some(template) = last_tag_schema.take() {
+                result.push(template);
+            }
+            last_tag = Some(row.tag);
+            last_tag_schema = Some(TagSchema {
+                model_id: row.model_id,
+                tag: row.tag,
+                name: row.name,
+                members: Vec::new()
+            });
+        }
+
+        // 2) Add new tag member if exists
+        if let (Some(tag_schema), Some(member)) = (last_tag_schema.as_mut(), row.member) {
+            tag_schema.members.push(member);
+        }
+    }
+
+    // Push last set template
+    if let Some(tag_schema) = last_tag_schema.take() {
+        result.push(tag_schema);
+    }
+    result
 }
 
 impl<'r> FromRow<'r, PgRow> for ModelConfigSchema {

@@ -167,20 +167,31 @@ impl Resource {
     pub async fn create_tag(&self, model_id: Uuid, tag: i16, name: &str, members: &[i16])
         -> Result<(), Error>
     {
-        let qs = model::insert_model_tag(model_id, tag, name, members);
+        let qs = model::insert_model_tag(model_id, tag, name);
+        qs.execute(&self.pool).await?;
+        let qs = model::insert_model_tag_members(model_id, tag, members);
         qs.execute(&self.pool).await
     }
 
     pub async fn update_tag(&self, model_id: Uuid, tag: i16, name: Option<&str>, members: Option<&[i16]>)
         -> Result<(), Error>
     {
-        let qs = model::update_model_tag(model_id, tag, name, members);
-        qs.execute(&self.pool).await
+        let qs = model::update_model_tag(model_id, tag, name);
+        qs.execute(&self.pool).await?;
+        if let Some(members) = members {
+            let qs = model::delete_model_tag_members(model_id, tag);
+            qs.execute(&self.pool).await?;
+            let qs = model::insert_model_tag_members(model_id, tag, members);
+            qs.execute(&self.pool).await?;
+        }
+        Ok(())
     }
 
     pub async fn delete_tag(&self, model_id: Uuid, tag: i16)
         -> Result<(), Error>
     {
+        let qs = model::delete_model_tag_members(model_id, tag);
+        qs.execute(&self.pool).await?;
         let qs = model::delete_model_tag(model_id, tag);
         qs.execute(&self.pool).await
     }

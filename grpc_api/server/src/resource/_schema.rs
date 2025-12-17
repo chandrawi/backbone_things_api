@@ -21,7 +21,7 @@ impl From<ModelSchema> for model::ModelSchema {
             name: value.name,
             description: value.description,
             data_type: value.data_type.into_iter().map(|e| e.into()).collect(),
-            tags: value.tags.into_iter().map(|t| t.into()).collect(),
+            tags: value.tags.into_iter().map(|t| t as i32).collect(),
             configs: value.configs.into_iter().map(|e| model::ConfigSchemaVec {
                     configs: e.into_iter().map(|e| e.into()).collect()
                 }).collect()
@@ -37,7 +37,7 @@ impl From<model::ModelSchema> for ModelSchema {
             name: value.name,
             description: value.description,
             data_type: value.data_type.into_iter().map(|e| DataType::from(e)).collect(),
-            tags: value.tags.into_iter().map(|t| t.into()).collect(),
+            tags: value.tags.into_iter().map(|t| t as i16).collect(),
             configs: value.configs.into_iter().map(|e| {
                     e.configs.into_iter().map(|e| e.into()).collect()
                 }).collect()

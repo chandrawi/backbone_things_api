@@ -17,8 +17,8 @@ use crate::resource::_schema::{
     DataSchema, DataSetSchema, BufferSchema, BufferSetSchema, SliceSchema, SliceSetSchema
 };
 use crate::resource::_row::{
-    ModelRow, DeviceRow, TypeRow, GroupRow, SetRow, SetTemplateRow, DataSetRow, BufferSetRow,
-    map_to_model_schema, map_to_device_schema, map_to_type_schema, map_to_group_schema,
+    ModelRow, TagRow, DeviceRow, TypeRow, GroupRow, SetRow, SetTemplateRow, DataSetRow, BufferSetRow,
+    map_to_model_schema, map_to_tag_schema, map_to_device_schema, map_to_type_schema, map_to_group_schema,
     map_to_set_schema, map_to_set_template_schema, map_to_dataset_schema, map_to_bufferset_schema
 };
 use crate::common::type_value::DataType;
@@ -175,9 +175,10 @@ impl QueryStatement {
     pub(crate) async fn fetch_tag_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<TagSchema>, Error>
     {
         let (sql, arguments) = self.build();
-        sqlx::query_as_with(&sql, arguments)
+        let rows: Vec<TagRow> = sqlx::query_as_with(&sql, arguments)
             .fetch_all(pool)
-            .await
+            .await?;
+        Ok(map_to_tag_schema(rows))
     }
 
     pub(crate) async fn fetch_device_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<DeviceSchema>, Error>

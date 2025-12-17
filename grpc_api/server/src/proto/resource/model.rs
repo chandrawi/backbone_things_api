@@ -11,8 +11,8 @@ pub struct ModelSchema {
     pub description: ::prost::alloc::string::String,
     #[prost(uint32, repeated, tag = "5")]
     pub data_type: ::prost::alloc::vec::Vec<u32>,
-    #[prost(message, repeated, tag = "6")]
-    pub tags: ::prost::alloc::vec::Vec<TagSchema>,
+    #[prost(int32, repeated, tag = "6")]
+    pub tags: ::prost::alloc::vec::Vec<i32>,
     #[prost(message, repeated, tag = "7")]
     pub configs: ::prost::alloc::vec::Vec<ConfigSchemaVec>,
 }

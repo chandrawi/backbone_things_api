@@ -637,8 +637,7 @@ category: jspb.Message.getFieldWithDefault(msg, 2, ""),
 name: jspb.Message.getFieldWithDefault(msg, 3, ""),
 description: jspb.Message.getFieldWithDefault(msg, 4, ""),
 dataTypeList: (f = jspb.Message.getRepeatedField(msg, 5)) == null ? undefined : f,
-tagsList: jspb.Message.toObjectList(msg.getTagsList(),
-    proto.model.TagSchema.toObject, includeInstance),
+tagsList: (f = jspb.Message.getRepeatedField(msg, 6)) == null ? undefined : f,
 configsList: jspb.Message.toObjectList(msg.getConfigsList(),
     proto.model.ConfigSchemaVec.toObject, includeInstance)
   };
@@ -700,9 +699,10 @@ proto.model.ModelSchema.deserializeBinaryFromReader = function(msg, reader) {
       }
       break;
     case 6:
-      var value = new proto.model.TagSchema;
-      reader.readMessage(value,proto.model.TagSchema.deserializeBinaryFromReader);
-      msg.addTags(value);
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedInt32() : [reader.readInt32()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addTags(values[i]);
+      }
       break;
     case 7:
       var value = new proto.model.ConfigSchemaVec;
@@ -775,10 +775,9 @@ proto.model.ModelSchema.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getTagsList();
   if (f.length > 0) {
-    writer.writeRepeatedMessage(
+    writer.writePackedInt32(
       6,
-      f,
-      proto.model.TagSchema.serializeBinaryToWriter
+      f
     );
   }
   f = message.getConfigsList();
@@ -926,31 +925,30 @@ proto.model.ModelSchema.prototype.clearDataTypeList = function() {
 
 
 /**
- * repeated TagSchema tags = 6;
- * @return {!Array<!proto.model.TagSchema>}
+ * repeated int32 tags = 6;
+ * @return {!Array<number>}
  */
 proto.model.ModelSchema.prototype.getTagsList = function() {
-  return /** @type{!Array<!proto.model.TagSchema>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.model.TagSchema, 6));
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 6));
 };
 
 
 /**
- * @param {!Array<!proto.model.TagSchema>} value
+ * @param {!Array<number>} value
  * @return {!proto.model.ModelSchema} returns this
-*/
+ */
 proto.model.ModelSchema.prototype.setTagsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 6, value);
+  return jspb.Message.setField(this, 6, value || []);
 };
 
 
 /**
- * @param {!proto.model.TagSchema=} opt_value
+ * @param {number} value
  * @param {number=} opt_index
- * @return {!proto.model.TagSchema}
+ * @return {!proto.model.ModelSchema} returns this
  */
-proto.model.ModelSchema.prototype.addTags = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 6, opt_value, proto.model.TagSchema, opt_index);
+proto.model.ModelSchema.prototype.addTags = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 6, value, opt_index);
 };
 
 

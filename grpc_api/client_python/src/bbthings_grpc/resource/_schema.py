@@ -44,6 +44,7 @@ class ModelSchema:
     name: str
     description: str
     data_type: List[DataType]
+    tags: List[int]
     configs: List[List[ModelConfigSchema]]
 
     def from_response(r):
@@ -55,7 +56,7 @@ class ModelSchema:
             confs = []
             for conf in conf_vec.configs: confs.append(ModelConfigSchema.from_response(conf))
             configs.append(confs)
-        return ModelSchema(UUID(bytes=r.id), r.category, r.name, r.description, types, configs)
+        return ModelSchema(UUID(bytes=r.id), r.category, r.name, r.description, types, r.tags, configs)
 
 
 @dataclass

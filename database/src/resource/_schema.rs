@@ -9,7 +9,7 @@ pub struct ModelSchema {
     pub name: String,
     pub description: String,
     pub data_type: Vec<DataType>,
-    pub tags: Vec<TagSchema>,
+    pub tags: Vec<i16>,
     pub configs: Vec<Vec<ModelConfigSchema>>
 }
 

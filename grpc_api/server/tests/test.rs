@@ -12,7 +12,7 @@ mod tests {
     use bbthings_grpc_server::proto::auth::auth::auth_service_client::AuthServiceClient;
     use bbthings_grpc_server::proto::auth::auth::{ApiKeyRequest, UserKeyRequest, UserLoginRequest, UserRefreshRequest, UserLogoutRequest};
     use bbthings_grpc_server::proto::resource::model::model_service_client::ModelServiceClient;
-    use bbthings_grpc_server::proto::resource::model::{ModelSchema, TagSchema, ModelId};
+    use bbthings_grpc_server::proto::resource::model::{ModelSchema, ModelId};
     use bbthings_grpc_server::common::utility::encrypt_message;
     use bbthings_grpc_server::common::config::{ROOT_NAME, ROOT_DATA};
     use bbthings_grpc_server::common::interceptor::TokenInterceptor;
@@ -226,19 +226,13 @@ mod tests {
             ModelServiceClient::with_interceptor(channel.clone(), interceptor_admin.clone());
 
         // try to create model using user service and admin service, user should failed and admin should success
-        let tag = TagSchema {
-            model_id: Uuid::new_v4().as_bytes().to_vec(),
-            tag: 0,
-            name: String::from("default_tag"),
-            members: vec![]
-        };
         let schema = ModelSchema {
             id: Uuid::new_v4().as_bytes().to_vec(),
             category: String::from("UPLINK"),
             name: String::from("name"),
             description: String::new(),
             data_type: vec![2, 6],
-            tags: vec![tag],
+            tags: vec![0],
             configs: Vec::new()
         };
         let request = Request::new(schema.clone());

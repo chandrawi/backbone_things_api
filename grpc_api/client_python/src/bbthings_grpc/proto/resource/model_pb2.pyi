@@ -20,9 +20,9 @@ class ModelSchema(_message.Message):
     name: str
     description: str
     data_type: _containers.RepeatedScalarFieldContainer[int]
-    tags: _containers.RepeatedCompositeFieldContainer[TagSchema]
+    tags: _containers.RepeatedScalarFieldContainer[int]
     configs: _containers.RepeatedCompositeFieldContainer[ConfigSchemaVec]
-    def __init__(self, id: _Optional[bytes] = ..., category: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., data_type: _Optional[_Iterable[int]] = ..., tags: _Optional[_Iterable[_Union[TagSchema, _Mapping]]] = ..., configs: _Optional[_Iterable[_Union[ConfigSchemaVec, _Mapping]]] = ...) -> None: ...
+    def __init__(self, id: _Optional[bytes] = ..., category: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., data_type: _Optional[_Iterable[int]] = ..., tags: _Optional[_Iterable[int]] = ..., configs: _Optional[_Iterable[_Union[ConfigSchemaVec, _Mapping]]] = ...) -> None: ...
 
 class ConfigSchemaVec(_message.Message):
     __slots__ = ("configs",)

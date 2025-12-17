@@ -24,8 +24,16 @@ CREATE TABLE IF NOT EXISTS "model_tag" (
   "model_id" uuid NOT NULL,
   "tag" smallint NOT NULL,
   "name" varchar(128) NOT NULL,
-  "members" bytea NOT NULL,
   PRIMARY KEY ("model_id", "tag"),
+  FOREIGN KEY ("model_id")
+    REFERENCES "model" ("model_id") ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "model_tag_member" (
+  "model_id" uuid NOT NULL,
+  "tag" smallint NOT NULL,
+  "member" smallint NOT NULL,
+  PRIMARY KEY ("model_id", "tag", "member"),
   FOREIGN KEY ("model_id")
     REFERENCES "model" ("model_id") ON UPDATE CASCADE ON DELETE CASCADE
 );

@@ -1,4 +1,4 @@
-use sea_query::{Iden, Query, Expr, Order};
+use sea_query::{Iden, Query, Expr, Order, Condition};
 use uuid::Uuid;
 use crate::common::query_statement::QueryStatement;
 use crate::common::type_value::{DataType, DataValue};
@@ -16,15 +16,6 @@ pub(crate) enum Model {
 }
 
 #[derive(Iden)]
-pub(crate) enum ModelTag {
-    Table,
-    ModelId,
-    Tag,
-    Name,
-    Members
-}
-
-#[derive(Iden)]
 pub(crate) enum ModelConfig {
     Table,
     Id,
@@ -34,6 +25,22 @@ pub(crate) enum ModelConfig {
     Category,
     Type,
     Value
+}
+
+#[derive(Iden)]
+pub(crate) enum ModelTag {
+    Table,
+    ModelId,
+    Tag,
+    Name
+}
+
+#[derive(Iden)]
+pub(crate) enum ModelTagMember {
+    Table,
+    ModelId,
+    Tag,
+    Member
 }
 
 pub fn select_model(
@@ -53,9 +60,7 @@ pub fn select_model(
             (Model::Table, Model::DataType)
         ])
         .columns([
-            (ModelTag::Table, ModelTag::Tag),
-            (ModelTag::Table, ModelTag::Name),
-            (ModelTag::Table, ModelTag::Members)
+            (ModelTag::Table, ModelTag::Tag)
         ])
         .columns([
             (ModelConfig::Table, ModelConfig::Id),
@@ -307,12 +312,18 @@ pub fn select_model_tag(
 {
     let mut stmt = Query::select()
         .columns([
-            ModelTag::ModelId,
-            ModelTag::Tag,
-            ModelTag::Name,
-            ModelTag::Members
+            (ModelTag::Table, ModelTag::ModelId),
+            (ModelTag::Table, ModelTag::Tag),
+            (ModelTag::Table, ModelTag::Name)
         ])
+        .column(
+            (ModelTagMember::Table, ModelTagMember::Member),
+        )
         .from(ModelTag::Table)
+        .inner_join(ModelTagMember::Table, Condition::all()
+            .add(Expr::col((ModelTag::Table, ModelTag::ModelId)).equals((ModelTagMember::Table, ModelTagMember::ModelId)))
+            .add(Expr::col((ModelTag::Table, ModelTag::Tag)).equals((ModelTagMember::Table, ModelTagMember::Tag)))
+        )
         .and_where(Expr::col(ModelTag::ModelId).eq(model_id))
         .to_owned();
 
@@ -332,10 +343,10 @@ pub fn select_tag_members(
 ) -> QueryStatement
 {
     let stmt = Query::select()
-        .column(ModelTag::Members)
-        .from(ModelTag::Table)
-        .and_where(Expr::col(ModelTag::ModelId).is_in(model_ids.to_vec()))
-        .and_where(Expr::col(ModelTag::Tag).eq(tag))
+        .column(ModelTagMember::Member)
+        .from(ModelTagMember::Table)
+        .and_where(Expr::col(ModelTagMember::ModelId).is_in(model_ids.to_vec()))
+        .and_where(Expr::col(ModelTagMember::Tag).eq(tag))
         .to_owned();
 
     QueryStatement::Select(stmt)
@@ -347,13 +358,13 @@ pub fn select_tag_members_set(
 ) -> QueryStatement
 {
     let stmt = Query::select()
-        .column(ModelTag::Members)
-        .from(ModelTag::Table)
+        .column(ModelTagMember::Member)
+        .from(ModelTagMember::Table)
         .inner_join(SetMap::Table, 
-            Expr::col((ModelTag::Table, ModelTag::ModelId))
+            Expr::col((ModelTagMember::Table, ModelTagMember::ModelId))
             .equals((SetMap::Table, SetMap::ModelId)))
         .and_where(Expr::col(SetMap::SetId).eq(set_id))
-        .and_where(Expr::col(ModelTag::Tag).eq(tag))
+        .and_where(Expr::col(ModelTagMember::Tag).eq(tag))
         .to_owned();
 
     QueryStatement::Select(stmt)
@@ -362,7 +373,30 @@ pub fn select_tag_members_set(
 pub fn insert_model_tag(
     model_id: Uuid,
     tag: i16,
-    name: &str,
+    name: &str
+) -> QueryStatement
+{
+    let stmt = Query::insert()
+        .into_table(ModelTag::Table)
+        .columns([
+            ModelTag::ModelId,
+            ModelTag::Tag,
+            ModelTag::Name
+        ])
+        .values([
+            model_id.into(),
+            tag.into(),
+            name.into()
+        ])
+        .unwrap_or(&mut sea_query::InsertStatement::default())
+        .to_owned();
+
+    QueryStatement::Insert(stmt)
+}
+
+pub fn insert_model_tag_members(
+    model_id: Uuid,
+    tag: i16,
     members: &[i16]
 ) -> QueryStatement
 {
@@ -372,27 +406,24 @@ pub fn insert_model_tag(
     }
     tags.sort();
     tags.dedup();
-    let mut bytes = Vec::new();
-    for tag in tags {
-        bytes.append(tag.to_be_bytes().to_vec().as_mut());
-    }
 
-    let stmt = Query::insert()
-        .into_table(ModelTag::Table)
+    let mut stmt = Query::insert()
+        .into_table(ModelTagMember::Table)
         .columns([
-            ModelTag::ModelId,
-            ModelTag::Tag,
-            ModelTag::Name,
-            ModelTag::Members
+            ModelTagMember::ModelId,
+            ModelTagMember::Tag,
+            ModelTagMember::Member
         ])
-        .values([
+        .to_owned();
+    for t in tags {
+        stmt = stmt.values([
             model_id.into(),
             tag.into(),
-            name.into(),
-            bytes.into()
+            t.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .to_owned();
+    }
 
     QueryStatement::Insert(stmt)
 }
@@ -400,8 +431,7 @@ pub fn insert_model_tag(
 pub fn update_model_tag(
     model_id: Uuid,
     tag: i16,
-    name: Option<&str>,
-    members: Option<&[i16]>
+    name: Option<&str>
 ) -> QueryStatement
 {
     let mut stmt = Query::update()
@@ -410,19 +440,6 @@ pub fn update_model_tag(
 
     if let Some(value) = name {
         stmt = stmt.value(ModelTag::Name, value).to_owned();
-    }
-    if let Some(value) = members {
-        let mut tags = [tag].to_vec();
-        for member in value {
-            tags.push(*member);
-        }
-        tags.sort();
-        tags.dedup();
-        let mut bytes = Vec::new();
-        for tag in tags {
-            bytes.append(tag.to_be_bytes().to_vec().as_mut());
-        }
-        stmt = stmt.value(ModelTag::Members, bytes).to_owned();
     }
 
     let stmt = stmt
@@ -442,6 +459,20 @@ pub fn delete_model_tag(
         .from_table(ModelTag::Table)
         .and_where(Expr::col(ModelTag::ModelId).eq(model_id))
         .and_where(Expr::col(ModelTag::Tag).eq(tag))
+        .to_owned();
+
+    QueryStatement::Delete(stmt)
+}
+
+pub fn delete_model_tag_members(
+    model_id: Uuid,
+    tag: i16
+) -> QueryStatement
+{
+    let stmt = Query::delete()
+        .from_table(ModelTagMember::Table)
+        .and_where(Expr::col(ModelTagMember::ModelId).eq(model_id))
+        .and_where(Expr::col(ModelTagMember::Tag).eq(tag))
         .to_owned();
 
     QueryStatement::Delete(stmt)
