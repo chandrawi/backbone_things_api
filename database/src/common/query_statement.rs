@@ -180,25 +180,6 @@ impl QueryStatement {
             .await
     }
 
-    pub(crate) async fn fetch_tag_members(&self, pool: &Pool<Postgres>, tag: i16) -> Vec<i16>
-    {
-        let mut tags: Vec<i16> = vec![tag];
-        let (sql, arguments) = self.build();
-        sqlx::query_with(&sql, arguments)
-            .map(|row: PgRow| {
-                let bytes: Vec<u8> = row.try_get(0).unwrap_or_default();
-                for chunk in bytes.chunks_exact(2) {
-                    tags.push(i16::from_be_bytes([chunk[0], chunk[1]]));
-                }
-            })
-            .fetch_all(pool)
-            .await
-            .unwrap_or_default();
-        tags.sort();
-        tags.dedup();
-        tags
-    }
-
     pub(crate) async fn fetch_device_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<DeviceSchema>, Error>
     {
         let (sql, arguments) = self.build();

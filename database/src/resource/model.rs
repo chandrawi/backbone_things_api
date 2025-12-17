@@ -366,10 +366,17 @@ pub fn insert_model_tag(
     members: &[i16]
 ) -> QueryStatement
 {
-    let mut bytes: Vec<u8> = Vec::new();
+    let mut tags = [tag].to_vec();
     for member in members {
-        bytes.append(member.to_be_bytes().to_vec().as_mut());
+        tags.push(*member);
     }
+    tags.sort();
+    tags.dedup();
+    let mut bytes = Vec::new();
+    for tag in tags {
+        bytes.append(tag.to_be_bytes().to_vec().as_mut());
+    }
+
     let stmt = Query::insert()
         .into_table(ModelTag::Table)
         .columns([
@@ -405,9 +412,15 @@ pub fn update_model_tag(
         stmt = stmt.value(ModelTag::Name, value).to_owned();
     }
     if let Some(value) = members {
-        let mut bytes: Vec<u8> = Vec::new();
+        let mut tags = [tag].to_vec();
         for member in value {
-            bytes.append(member.to_be_bytes().to_vec().as_mut());
+            tags.push(*member);
+        }
+        tags.sort();
+        tags.dedup();
+        let mut bytes = Vec::new();
+        for tag in tags {
+            bytes.append(tag.to_be_bytes().to_vec().as_mut());
         }
         stmt = stmt.value(ModelTag::Members, bytes).to_owned();
     }

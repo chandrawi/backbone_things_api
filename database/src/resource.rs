@@ -918,198 +918,147 @@ impl Resource {
         qs.execute(&self.pool).await
     }
 
-    async fn get_tags(&self, model_ids: &[Uuid], tag: Option<i16>) -> Option<Vec<i16>>
-    {
-        match tag {
-            Some(tag) => {
-                let qs = model::select_tag_members(model_ids, tag);
-                Some(qs.fetch_tag_members(&self.pool, tag).await)
-            },
-            None => None
-        }
-    }
-
-    async fn get_tags_set(&self, set_id: Uuid, tag: Option<i16>) -> Option<Vec<i16>>
-    {
-        match tag {
-            Some(tag) => {
-                let qs = model::select_tag_members_set(set_id, tag);
-                Some(qs.fetch_tag_members(&self.pool, tag).await)
-            },
-            None => None
-        }
-    }
-
-    async fn get_tags_option(&self, model_ids: Option<&[Uuid]>, tag: Option<i16>) -> Option<Vec<i16>>
-    {
-        match (model_ids, tag) {
-            (Some(model_ids), Some(tag)) => {
-                let qs = model::select_tag_members(model_ids, tag);
-                Some(qs.fetch_tag_members(&self.pool, tag).await)
-            },
-            _ => None
-        }
-    }
-
     pub async fn read_data(&self, device_id: Uuid, model_id: Uuid, timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<DataSchema, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = DataSelector::Time(timestamp);
-        let qs = data::select_data(selector, &[device_id], &[model_id], tags);
+        let qs = data::select_data(selector, &[device_id], &[model_id], tag);
         qs.fetch_data_schema(&self.pool).await?.into_iter().next().ok_or(Error::RowNotFound)
     }
 
     pub async fn list_data_by_time(&self, device_id: Uuid, model_id: Uuid, timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DataSchema>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = DataSelector::Time(timestamp);
-        let qs = data::select_data(selector, &[device_id], &[model_id], tags);
+        let qs = data::select_data(selector, &[device_id], &[model_id], tag);
         qs.fetch_data_schema(&self.pool).await
     }
 
     pub async fn list_data_by_earlier(&self, device_id: Uuid, model_id: Uuid, earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DataSchema>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = DataSelector::Earlier(earlier);
-        let qs = data::select_data(selector, &[device_id], &[model_id], tags);
+        let qs = data::select_data(selector, &[device_id], &[model_id], tag);
         qs.fetch_data_schema(&self.pool).await
     }
 
     pub async fn list_data_by_later(&self, device_id: Uuid, model_id: Uuid, later: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DataSchema>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = DataSelector::Later(later);
-        let qs = data::select_data(selector, &[device_id], &[model_id], tags);
+        let qs = data::select_data(selector, &[device_id], &[model_id], tag);
         qs.fetch_data_schema(&self.pool).await
     }
 
     pub async fn list_data_by_range(&self, device_id: Uuid, model_id: Uuid, begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DataSchema>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = DataSelector::Range(begin, end);
-        let qs = data::select_data(selector, &[device_id], &[model_id], tags);
+        let qs = data::select_data(selector, &[device_id], &[model_id], tag);
         qs.fetch_data_schema(&self.pool).await
     }
 
     pub async fn list_data_by_number_before(&self, device_id: Uuid, model_id: Uuid, before: DateTime<Utc>, number: usize, tag: Option<i16>)
         -> Result<Vec<DataSchema>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = DataSelector::NumberBefore(before, number);
-        let qs = data::select_data(selector, &[device_id], &[model_id], tags);
+        let qs = data::select_data(selector, &[device_id], &[model_id], tag);
         qs.fetch_data_schema(&self.pool).await
     }
 
     pub async fn list_data_by_number_after(&self, device_id: Uuid, model_id: Uuid, after: DateTime<Utc>, number: usize, tag: Option<i16>)
         -> Result<Vec<DataSchema>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = DataSelector::NumberAfter(after, number);
-        let qs = data::select_data(selector, &[device_id], &[model_id], tags);
+        let qs = data::select_data(selector, &[device_id], &[model_id], tag);
         qs.fetch_data_schema(&self.pool).await
     }
 
     pub async fn list_data_group_by_time(&self, device_ids: &[Uuid], model_ids: &[Uuid], timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DataSchema>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = DataSelector::Time(timestamp);
-        let qs = data::select_data(selector, device_ids, model_ids, tags);
+        let qs = data::select_data(selector, device_ids, model_ids, tag);
         qs.fetch_data_schema(&self.pool).await
     }
 
     pub async fn list_data_group_by_earlier(&self, device_ids: &[Uuid], model_ids: &[Uuid], earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DataSchema>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = DataSelector::Earlier(earlier);
-        let qs = data::select_data(selector, device_ids, model_ids, tags);
+        let qs = data::select_data(selector, device_ids, model_ids, tag);
         qs.fetch_data_schema(&self.pool).await
     }
 
     pub async fn list_data_group_by_later(&self, device_ids: &[Uuid], model_ids: &[Uuid], later: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DataSchema>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = DataSelector::Later(later);
-        let qs = data::select_data(selector, device_ids, model_ids, tags);
+        let qs = data::select_data(selector, device_ids, model_ids, tag);
         qs.fetch_data_schema(&self.pool).await
     }
 
     pub async fn list_data_group_by_range(&self, device_ids: &[Uuid], model_ids: &[Uuid], begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DataSchema>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = DataSelector::Range(begin, end);
-        let qs = data::select_data(selector, device_ids, model_ids, tags);
+        let qs = data::select_data(selector, device_ids, model_ids, tag);
         qs.fetch_data_schema(&self.pool).await
     }
 
     pub async fn list_data_group_by_number_before(&self, device_ids: &[Uuid], model_ids: &[Uuid], before: DateTime<Utc>, number: usize, tag: Option<i16>)
         -> Result<Vec<DataSchema>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = DataSelector::NumberBefore(before, number);
-        let qs = data::select_data(selector, device_ids, model_ids, tags);
+        let qs = data::select_data(selector, device_ids, model_ids, tag);
         qs.fetch_data_schema(&self.pool).await
     }
 
     pub async fn list_data_group_by_number_after(&self, device_ids: &[Uuid], model_ids: &[Uuid], after: DateTime<Utc>, number: usize, tag: Option<i16>)
         -> Result<Vec<DataSchema>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = DataSelector::NumberAfter(after, number);
-        let qs = data::select_data(selector, device_ids, model_ids, tags);
+        let qs = data::select_data(selector, device_ids, model_ids, tag);
         qs.fetch_data_schema(&self.pool).await
     }
 
     pub async fn read_data_set(&self, set_id: Uuid, timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<DataSetSchema, Error>
     {
-        let tags = self.get_tags_set(set_id, tag).await;
         let selector = DataSelector::Time(timestamp);
-        let qs = data::select_data_set(selector, set_id, tags);
+        let qs = data::select_data_set(selector, set_id, tag);
         qs.fetch_data_set_schema(&self.pool, set_id).await?.into_iter().next().ok_or(Error::RowNotFound)
     }
 
     pub async fn list_data_set_by_time(&self, set_id: Uuid, timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DataSetSchema>, Error>
     {
-        let tags = self.get_tags_set(set_id, tag).await;
         let selector = DataSelector::Time(timestamp);
-        let qs = data::select_data_set(selector, set_id, tags);
+        let qs = data::select_data_set(selector, set_id, tag);
         qs.fetch_data_set_schema(&self.pool, set_id).await
     }
 
     pub async fn list_data_set_by_earlier(&self, set_id: Uuid, earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DataSetSchema>, Error>
     {
-        let tags = self.get_tags_set(set_id, tag).await;
         let selector = DataSelector::Earlier(earlier);
-        let qs = data::select_data_set(selector, set_id, tags);
+        let qs = data::select_data_set(selector, set_id, tag);
         qs.fetch_data_set_schema(&self.pool, set_id).await
     }
 
     pub async fn list_data_set_by_later(&self, set_id: Uuid, later: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DataSetSchema>, Error>
     {
-        let tags = self.get_tags_set(set_id, tag).await;
         let selector = DataSelector::Later(later);
-        let qs = data::select_data_set(selector, set_id, tags);
+        let qs = data::select_data_set(selector, set_id, tag);
         qs.fetch_data_set_schema(&self.pool, set_id).await
     }
 
     pub async fn list_data_set_by_range(&self, set_id: Uuid, begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DataSetSchema>, Error>
     {
-        let tags = self.get_tags_set(set_id, tag).await;
         let selector = DataSelector::Range(begin, end);
-        let qs = data::select_data_set(selector, set_id, tags);
+        let qs = data::select_data_set(selector, set_id, tag);
         qs.fetch_data_set_schema(&self.pool, set_id).await
     }
 
@@ -1163,136 +1112,120 @@ impl Resource {
     pub async fn read_data_timestamp(&self, device_id: Uuid, model_id: Uuid, timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<DateTime<Utc>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = DataSelector::Time(timestamp);
-        let qs = data::select_data_timestamp(selector, &[device_id], &[model_id], tags);
+        let qs = data::select_data_timestamp(selector, &[device_id], &[model_id], tag);
         qs.fetch_timestamp(&self.pool).await?.into_iter().next().ok_or(Error::RowNotFound)
     }
 
     pub async fn list_data_timestamp_by_earlier(&self, device_id: Uuid, model_id: Uuid, earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = DataSelector::Earlier(earlier);
-        let qs = data::select_data_timestamp(selector, &[device_id], &[model_id], tags);
+        let qs = data::select_data_timestamp(selector, &[device_id], &[model_id], tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn list_data_timestamp_by_later(&self, device_id: Uuid, model_id: Uuid, later: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = DataSelector::Later(later);
-        let qs = data::select_data_timestamp(selector, &[device_id], &[model_id], tags);
+        let qs = data::select_data_timestamp(selector, &[device_id], &[model_id], tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn list_data_timestamp_by_range(&self, device_id: Uuid, model_id: Uuid, begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = DataSelector::Range(begin, end);
-        let qs = data::select_data_timestamp(selector, &[device_id], &[model_id], tags);
+        let qs = data::select_data_timestamp(selector, &[device_id], &[model_id], tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn read_data_group_timestamp(&self, device_ids: &[Uuid], model_ids: &[Uuid], timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<DateTime<Utc>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = DataSelector::Time(timestamp);
-        let qs = data::select_data_timestamp(selector, device_ids, model_ids, tags);
+        let qs = data::select_data_timestamp(selector, device_ids, model_ids, tag);
         qs.fetch_timestamp(&self.pool).await?.into_iter().next().ok_or(Error::RowNotFound)
     }
 
     pub async fn list_data_group_timestamp_by_earlier(&self, device_ids: &[Uuid], model_ids: &[Uuid], earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = DataSelector::Earlier(earlier);
-        let qs = data::select_data_timestamp(selector, device_ids, model_ids, tags);
+        let qs = data::select_data_timestamp(selector, device_ids, model_ids, tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn list_data_group_timestamp_by_later(&self, device_ids: &[Uuid], model_ids: &[Uuid], later: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = DataSelector::Later(later);
-        let qs = data::select_data_timestamp(selector, device_ids, model_ids, tags);
+        let qs = data::select_data_timestamp(selector, device_ids, model_ids, tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn list_data_group_timestamp_by_range(&self, device_ids: &[Uuid], model_ids: &[Uuid], begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = DataSelector::Range(begin, end);
-        let qs = data::select_data_timestamp(selector, device_ids, model_ids, tags);
+        let qs = data::select_data_timestamp(selector, device_ids, model_ids, tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn count_data(&self, device_id: Uuid, model_id: Uuid, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
-        let qs = data::count_data(DataSelector::Time(DateTime::default()), &[device_id], &[model_id], tags);
+        let qs = data::count_data(DataSelector::Time(DateTime::default()), &[device_id], &[model_id], tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_data_by_earlier(&self, device_id: Uuid, model_id: Uuid, earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
-        let qs = data::count_data(DataSelector::Earlier(earlier), &[device_id], &[model_id], tags);
+        let qs = data::count_data(DataSelector::Earlier(earlier), &[device_id], &[model_id], tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_data_by_later(&self, device_id: Uuid, model_id: Uuid, later: DateTime<Utc>, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
-        let qs = data::count_data(DataSelector::Later(later), &[device_id], &[model_id], tags);
+        let qs = data::count_data(DataSelector::Later(later), &[device_id], &[model_id], tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_data_by_range(&self, device_id: Uuid, model_id: Uuid, begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
-        let qs = data::count_data(DataSelector::Range(begin, end), &[device_id], &[model_id], tags);
+        let qs = data::count_data(DataSelector::Range(begin, end), &[device_id], &[model_id], tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_data_group(&self, device_ids: &[Uuid], model_ids: &[Uuid], tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
-        let qs = data::count_data(DataSelector::Time(DateTime::default()), device_ids, model_ids, tags);
+        let qs = data::count_data(DataSelector::Time(DateTime::default()), device_ids, model_ids, tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_data_group_by_earlier(&self, device_ids: &[Uuid], model_ids: &[Uuid], earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
-        let qs = data::count_data(DataSelector::Earlier(earlier), device_ids, model_ids, tags);
+        let qs = data::count_data(DataSelector::Earlier(earlier), device_ids, model_ids, tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_data_group_by_later(&self, device_ids: &[Uuid], model_ids: &[Uuid], later: DateTime<Utc>, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
-        let qs = data::count_data(DataSelector::Later(later), device_ids, model_ids, tags);
+        let qs = data::count_data(DataSelector::Later(later), device_ids, model_ids, tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_data_group_by_range(&self, device_ids: &[Uuid], model_ids: &[Uuid], begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
-        let qs = data::count_data(DataSelector::Range(begin, end), device_ids, model_ids, tags);
+        let qs = data::count_data(DataSelector::Range(begin, end), device_ids, model_ids, tag);
         qs.fetch_count(&self.pool).await
     }
 
@@ -1306,9 +1239,8 @@ impl Resource {
     pub async fn read_buffer_by_time(&self, device_id: Uuid, model_id: Uuid, timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<BufferSchema, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = BufferSelector::Time(timestamp);
-        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tags);
+        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tag);
         qs.fetch_buffer_schema(&self.pool).await?.into_iter().next().ok_or(Error::RowNotFound)
     }
 
@@ -1322,261 +1254,232 @@ impl Resource {
     pub async fn list_buffer_by_time(&self, device_id: Uuid, model_id: Uuid, timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = BufferSelector::Time(timestamp);
-        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tags);
+        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_by_earlier(&self, device_id: Uuid, model_id: Uuid, earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = BufferSelector::Earlier(earlier);
-        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tags);
+        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_by_later(&self, device_id: Uuid, model_id: Uuid, later: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = BufferSelector::Later(later);
-        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tags);
+        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_by_range(&self, device_id: Uuid, model_id: Uuid, begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = BufferSelector::Range(begin, end);
-        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tags);
+        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_by_number_before(&self, device_id: Uuid, model_id: Uuid, before: DateTime<Utc>, number: usize, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = BufferSelector::NumberBefore(before, number);
-        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tags);
+        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_by_number_after(&self, device_id: Uuid, model_id: Uuid, after: DateTime<Utc>, number: usize, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = BufferSelector::NumberAfter(after, number);
-        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tags);
+        let qs = buffer::select_buffer(selector, None, Some(&[device_id]), Some(&[model_id]), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn read_buffer_first(&self, device_id: Option<Uuid>, model_id: Option<Uuid>, tag: Option<i16>)
         -> Result<BufferSchema, Error>
     {
-        let tags = self.get_tags_option(model_id.as_ref().map(|id| from_ref(id)), tag).await;
         let selector = BufferSelector::First(1, 0);
-        let qs = buffer::select_buffer(selector, None, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tags);
+        let qs = buffer::select_buffer(selector, None, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tag);
         qs.fetch_buffer_schema(&self.pool).await?.into_iter().next().ok_or(Error::RowNotFound)
     }
 
     pub async fn read_buffer_last(&self, device_id: Option<Uuid>, model_id: Option<Uuid>, tag: Option<i16>)
         -> Result<BufferSchema, Error>
     {
-        let tags = self.get_tags_option(model_id.as_ref().map(|id| from_ref(id)), tag).await;
         let selector = BufferSelector::Last(1, 0);
-        let qs = buffer::select_buffer(selector, None, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tags);
+        let qs = buffer::select_buffer(selector, None, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tag);
         qs.fetch_buffer_schema(&self.pool).await?.into_iter().next().ok_or(Error::RowNotFound)
     }
 
     pub async fn list_buffer_first(&self, number: usize, device_id: Option<Uuid>, model_id: Option<Uuid>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags_option(model_id.as_ref().map(|id| from_ref(id)), tag).await;
         let selector = BufferSelector::First(number, 0);
-        let qs = buffer::select_buffer(selector, None, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tags);
+        let qs = buffer::select_buffer(selector, None, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_first_offset(&self, number: usize, offset: usize, device_id: Option<Uuid>, model_id: Option<Uuid>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags_option(model_id.as_ref().map(|id| from_ref(id)), tag).await;
         let selector = BufferSelector::First(number, offset);
-        let qs = buffer::select_buffer(selector, None, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tags);
+        let qs = buffer::select_buffer(selector, None, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_last(&self, number: usize, device_id: Option<Uuid>, model_id: Option<Uuid>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags_option(model_id.as_ref().map(|id| from_ref(id)), tag).await;
         let selector = BufferSelector::Last(number, 0);
-        let qs = buffer::select_buffer(selector, None, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tags);
+        let qs = buffer::select_buffer(selector, None, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_last_offset(&self, number: usize, offset: usize, device_id: Option<Uuid>, model_id: Option<Uuid>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags_option(model_id.as_ref().map(|id| from_ref(id)), tag).await;
         let selector = BufferSelector::Last(number, offset);
-        let qs = buffer::select_buffer(selector, None, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tags);
+        let qs = buffer::select_buffer(selector, None, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_group_by_time(&self, device_ids: &[Uuid], model_ids: &[Uuid], timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = BufferSelector::Time(timestamp);
-        let qs = buffer::select_buffer(selector, None, Some(device_ids), Some(model_ids), tags);
+        let qs = buffer::select_buffer(selector, None, Some(device_ids), Some(model_ids), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_group_by_earlier(&self, device_ids: &[Uuid], model_ids: &[Uuid], earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = BufferSelector::Earlier(earlier);
-        let qs = buffer::select_buffer(selector, None, Some(device_ids), Some(model_ids), tags);
+        let qs = buffer::select_buffer(selector, None, Some(device_ids), Some(model_ids), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_group_by_later(&self, device_ids: &[Uuid], model_ids: &[Uuid], later: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = BufferSelector::Later(later);
-        let qs = buffer::select_buffer(selector, None, Some(device_ids), Some(model_ids), tags);
+        let qs = buffer::select_buffer(selector, None, Some(device_ids), Some(model_ids), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_group_by_range(&self, device_ids: &[Uuid], model_ids: &[Uuid], begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = BufferSelector::Range(begin, end);
-        let qs = buffer::select_buffer(selector, None, Some(device_ids), Some(model_ids), tags);
+        let qs = buffer::select_buffer(selector, None, Some(device_ids), Some(model_ids), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_group_by_number_before(&self, device_ids: &[Uuid], model_ids: &[Uuid], before: DateTime<Utc>, number: usize, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = BufferSelector::NumberBefore(before, number);
-        let qs = buffer::select_buffer(selector, None, Some(device_ids), Some(model_ids), tags);
+        let qs = buffer::select_buffer(selector, None, Some(device_ids), Some(model_ids), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_group_by_number_after(&self, device_ids: &[Uuid], model_ids: &[Uuid], after: DateTime<Utc>, number: usize, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = BufferSelector::NumberAfter(after, number);
-        let qs = buffer::select_buffer(selector, None, Some(device_ids), Some(model_ids), tags);
+        let qs = buffer::select_buffer(selector, None, Some(device_ids), Some(model_ids), tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn read_buffer_group_first(&self, device_ids: Option<&[Uuid]>, model_ids: Option<&[Uuid]>, tag: Option<i16>)
         -> Result<BufferSchema, Error>
     {
-        let tags = self.get_tags_option(model_ids, tag).await;
         let selector = BufferSelector::First(1, 0);
-        let qs = buffer::select_buffer(selector, None, device_ids, model_ids, tags);
+        let qs = buffer::select_buffer(selector, None, device_ids, model_ids, tag);
         qs.fetch_buffer_schema(&self.pool).await?.into_iter().next().ok_or(Error::RowNotFound)
     }
 
     pub async fn read_buffer_group_last(&self, device_ids: Option<&[Uuid]>, model_ids: Option<&[Uuid]>, tag: Option<i16>)
         -> Result<BufferSchema, Error>
     {
-        let tags = self.get_tags_option(model_ids, tag).await;
         let selector = BufferSelector::Last(1, 0);
-        let qs = buffer::select_buffer(selector, None, device_ids, model_ids, tags);
+        let qs = buffer::select_buffer(selector, None, device_ids, model_ids, tag);
         qs.fetch_buffer_schema(&self.pool).await?.into_iter().next().ok_or(Error::RowNotFound)
     }
 
     pub async fn list_buffer_group_first(&self, number: usize, device_ids: Option<&[Uuid]>, model_ids: Option<&[Uuid]>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags_option(model_ids, tag).await;
         let selector = BufferSelector::First(number, 0);
-        let qs = buffer::select_buffer(selector, None, device_ids, model_ids, tags);
+        let qs = buffer::select_buffer(selector, None, device_ids, model_ids, tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_group_first_offset(&self, number: usize, offset: usize, device_ids: Option<&[Uuid]>, model_ids: Option<&[Uuid]>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags_option(model_ids, tag).await;
         let selector = BufferSelector::First(number, offset);
-        let qs = buffer::select_buffer(selector, None, device_ids, model_ids, tags);
+        let qs = buffer::select_buffer(selector, None, device_ids, model_ids, tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_group_last(&self, number: usize, device_ids: Option<&[Uuid]>, model_ids: Option<&[Uuid]>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags_option(model_ids, tag).await;
         let selector = BufferSelector::Last(number, 0);
-        let qs = buffer::select_buffer(selector, None, device_ids, model_ids, tags);
+        let qs = buffer::select_buffer(selector, None, device_ids, model_ids, tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn list_buffer_group_last_offset(&self, number: usize, offset: usize, device_ids: Option<&[Uuid]>, model_ids: Option<&[Uuid]>, tag: Option<i16>)
         -> Result<Vec<BufferSchema>, Error>
     {
-        let tags = self.get_tags_option(model_ids, tag).await;
         let selector = BufferSelector::Last(number, offset);
-        let qs = buffer::select_buffer(selector, None, device_ids, model_ids, tags);
+        let qs = buffer::select_buffer(selector, None, device_ids, model_ids, tag);
         qs.fetch_buffer_schema(&self.pool).await
     }
 
     pub async fn read_buffer_set(&self, set_id: Uuid, timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<BufferSetSchema, Error>
     {
-        let tags = self.get_tags_set(set_id, tag).await;
         let selector = BufferSelector::Time(timestamp);
-        let qs = buffer::select_buffer_set(selector, set_id, tags);
+        let qs = buffer::select_buffer_set(selector, set_id, tag);
         qs.fetch_buffer_set_schema(&self.pool, set_id).await?.into_iter().next().ok_or(Error::RowNotFound)
     }
 
     pub async fn list_buffer_set_by_time(&self, set_id: Uuid, timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<BufferSetSchema>, Error>
     {
-        let tags = self.get_tags_set(set_id, tag).await;
         let selector = BufferSelector::Time(timestamp);
-        let qs = buffer::select_buffer_set(selector, set_id, tags);
+        let qs = buffer::select_buffer_set(selector, set_id, tag);
         qs.fetch_buffer_set_schema(&self.pool, set_id).await
     }
 
     pub async fn list_buffer_set_by_earlier(&self, set_id: Uuid, earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<BufferSetSchema>, Error>
     {
-        let tags = self.get_tags_set(set_id, tag).await;
         let selector = BufferSelector::Earlier(earlier);
-        let qs = buffer::select_buffer_set(selector, set_id, tags);
+        let qs = buffer::select_buffer_set(selector, set_id, tag);
         qs.fetch_buffer_set_schema(&self.pool, set_id).await
     }
 
     pub async fn list_buffer_set_by_later(&self, set_id: Uuid, later: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<BufferSetSchema>, Error>
     {
-        let tags = self.get_tags_set(set_id, tag).await;
         let selector = BufferSelector::Later(later);
-        let qs = buffer::select_buffer_set(selector, set_id, tags);
+        let qs = buffer::select_buffer_set(selector, set_id, tag);
         qs.fetch_buffer_set_schema(&self.pool, set_id).await
     }
 
     pub async fn list_buffer_set_by_range(&self, set_id: Uuid, begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<BufferSetSchema>, Error>
     {
-        let tags = self.get_tags_set(set_id, tag).await;
         let selector = BufferSelector::Range(begin, end);
-        let qs = buffer::select_buffer_set(selector, set_id, tags);
+        let qs = buffer::select_buffer_set(selector, set_id, tag);
         qs.fetch_buffer_set_schema(&self.pool, set_id).await
     }
 
@@ -1670,172 +1573,152 @@ impl Resource {
     pub async fn read_buffer_timestamp(&self, device_id: Uuid, model_id: Uuid, timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<DateTime<Utc>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = BufferSelector::Time(timestamp);
-        let qs = buffer::select_buffer_timestamp(selector, Some(&[device_id]), Some(&[model_id]), tags);
+        let qs = buffer::select_buffer_timestamp(selector, Some(&[device_id]), Some(&[model_id]), tag);
         qs.fetch_timestamp(&self.pool).await?.into_iter().next().ok_or(Error::RowNotFound)
     }
 
     pub async fn list_buffer_timestamp_by_earlier(&self, device_id: Uuid, model_id: Uuid, earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = BufferSelector::Earlier(earlier);
-        let qs = buffer::select_buffer_timestamp(selector, Some(&[device_id]), Some(&[model_id]), tags);
+        let qs = buffer::select_buffer_timestamp(selector, Some(&[device_id]), Some(&[model_id]), tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn list_buffer_timestamp_by_later(&self, device_id: Uuid, model_id: Uuid, later: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = BufferSelector::Later(later);
-        let qs = buffer::select_buffer_timestamp(selector, Some(&[device_id]), Some(&[model_id]), tags);
+        let qs = buffer::select_buffer_timestamp(selector, Some(&[device_id]), Some(&[model_id]), tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn list_buffer_timestamp_by_range(&self, device_id: Uuid, model_id: Uuid, begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
         let selector = BufferSelector::Range(begin, end);
-        let qs = buffer::select_buffer_timestamp(selector, Some(&[device_id]), Some(&[model_id]), tags);
+        let qs = buffer::select_buffer_timestamp(selector, Some(&[device_id]), Some(&[model_id]), tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn list_buffer_timestamp_first(&self, number: usize, device_id: Option<Uuid>, model_id: Option<Uuid>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags_option(model_id.as_ref().map(|id| from_ref(id)), tag).await;
         let selector = BufferSelector::First(number, 0);
-        let qs = buffer::select_buffer_timestamp(selector, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tags);
+        let qs = buffer::select_buffer_timestamp(selector, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn list_buffer_timestamp_last(&self, number: usize, device_id: Option<Uuid>, model_id: Option<Uuid>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags_option(model_id.as_ref().map(|id| from_ref(id)), tag).await;
         let selector = BufferSelector::Last(number, 0);
-        let qs = buffer::select_buffer_timestamp(selector, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tags);
+        let qs = buffer::select_buffer_timestamp(selector, device_id.as_ref().map(|id| from_ref(id)), model_id.as_ref().map(|id| from_ref(id)), tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn read_buffer_group_timestamp(&self, device_ids: &[Uuid], model_ids: &[Uuid], timestamp: DateTime<Utc>, tag: Option<i16>)
         -> Result<DateTime<Utc>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = BufferSelector::Time(timestamp);
-        let qs = buffer::select_buffer_timestamp(selector, Some(device_ids), Some(model_ids), tags);
+        let qs = buffer::select_buffer_timestamp(selector, Some(device_ids), Some(model_ids), tag);
         qs.fetch_timestamp(&self.pool).await?.into_iter().next().ok_or(Error::RowNotFound)
     }
 
     pub async fn list_buffer_group_timestamp_by_earlier(&self, device_ids: &[Uuid], model_ids: &[Uuid], earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = BufferSelector::Earlier(earlier);
-        let qs = buffer::select_buffer_timestamp(selector, Some(device_ids), Some(model_ids), tags);
+        let qs = buffer::select_buffer_timestamp(selector, Some(device_ids), Some(model_ids), tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn list_buffer_group_timestamp_by_later(&self, device_ids: &[Uuid], model_ids: &[Uuid], later: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = BufferSelector::Later(later);
-        let qs = buffer::select_buffer_timestamp(selector, Some(device_ids), Some(model_ids), tags);
+        let qs = buffer::select_buffer_timestamp(selector, Some(device_ids), Some(model_ids), tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn list_buffer_group_timestamp_by_range(&self, device_ids: &[Uuid], model_ids: &[Uuid], begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
         let selector = BufferSelector::Range(begin, end);
-        let qs = buffer::select_buffer_timestamp(selector, Some(device_ids), Some(model_ids), tags);
+        let qs = buffer::select_buffer_timestamp(selector, Some(device_ids), Some(model_ids), tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn list_buffer_group_timestamp_first(&self, number: usize, device_ids: Option<&[Uuid]>, model_ids: Option<&[Uuid]>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags_option(model_ids, tag).await;
         let selector = BufferSelector::First(number, 0);
-        let qs = buffer::select_buffer_timestamp(selector, device_ids, model_ids, tags);
+        let qs = buffer::select_buffer_timestamp(selector, device_ids, model_ids, tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn list_buffer_group_timestamp_last(&self, number: usize, device_ids: Option<&[Uuid]>, model_ids: Option<&[Uuid]>, tag: Option<i16>)
         -> Result<Vec<DateTime<Utc>>, Error>
     {
-        let tags = self.get_tags_option(model_ids, tag).await;
         let selector = BufferSelector::Last(number, 0);
-        let qs = buffer::select_buffer_timestamp(selector, device_ids, model_ids, tags);
+        let qs = buffer::select_buffer_timestamp(selector, device_ids, model_ids, tag);
         qs.fetch_timestamp(&self.pool).await
     }
 
     pub async fn count_buffer(&self, device_id: Uuid, model_id: Uuid, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
-        let qs = buffer::count_buffer(BufferSelector::None, &[device_id], &[model_id], tags);
+        let qs = buffer::count_buffer(BufferSelector::None, &[device_id], &[model_id], tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_buffer_by_earlier(&self, device_id: Uuid, model_id: Uuid, earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
-        let qs = buffer::count_buffer(BufferSelector::Earlier(earlier), &[device_id], &[model_id], tags);
+        let qs = buffer::count_buffer(BufferSelector::Earlier(earlier), &[device_id], &[model_id], tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_buffer_by_later(&self, device_id: Uuid, model_id: Uuid, later: DateTime<Utc>, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
-        let qs = buffer::count_buffer(BufferSelector::Later(later), &[device_id], &[model_id], tags);
+        let qs = buffer::count_buffer(BufferSelector::Later(later), &[device_id], &[model_id], tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_buffer_by_range(&self, device_id: Uuid, model_id: Uuid, begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(&[model_id], tag).await;
-        let qs = buffer::count_buffer(BufferSelector::Range(begin, end), &[device_id], &[model_id], tags);
+        let qs = buffer::count_buffer(BufferSelector::Range(begin, end), &[device_id], &[model_id], tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_buffer_group(&self, device_ids: &[Uuid], model_ids: &[Uuid], tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
-        let qs = buffer::count_buffer(BufferSelector::None, device_ids, model_ids, tags);
+        let qs = buffer::count_buffer(BufferSelector::None, device_ids, model_ids, tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_buffer_group_by_earlier(&self, device_ids: &[Uuid], model_ids: &[Uuid], earlier: DateTime<Utc>, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
-        let qs = buffer::count_buffer(BufferSelector::Earlier(earlier), device_ids, model_ids, tags);
+        let qs = buffer::count_buffer(BufferSelector::Earlier(earlier), device_ids, model_ids, tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_buffer_group_by_later(&self, device_ids: &[Uuid], model_ids: &[Uuid], later: DateTime<Utc>, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
-        let qs = buffer::count_buffer(BufferSelector::Later(later), device_ids, model_ids, tags);
+        let qs = buffer::count_buffer(BufferSelector::Later(later), device_ids, model_ids, tag);
         qs.fetch_count(&self.pool).await
     }
 
     pub async fn count_buffer_group_by_range(&self, device_ids: &[Uuid], model_ids: &[Uuid], begin: DateTime<Utc>, end: DateTime<Utc>, tag: Option<i16>)
         -> Result<usize, Error>
     {
-        let tags = self.get_tags(model_ids, tag).await;
-        let qs = buffer::count_buffer(BufferSelector::Range(begin, end), device_ids, model_ids, tags);
+        let qs = buffer::count_buffer(BufferSelector::Range(begin, end), device_ids, model_ids, tag);
         qs.fetch_count(&self.pool).await
     }
 

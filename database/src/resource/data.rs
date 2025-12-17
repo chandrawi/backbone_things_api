@@ -4,7 +4,7 @@ use uuid::Uuid;
 use crate::common::query_statement::QueryStatement;
 use crate::common::tag as Tag;
 use crate::common::type_value::{DataValue, ArrayDataValue};
-use crate::resource::model::Model;
+use crate::resource::model::{self, Model};
 use crate::resource::set::SetMap;
 
 #[derive(Iden)]
@@ -30,7 +30,7 @@ pub fn select_data(
     selector: DataSelector,
     device_ids: &[Uuid],
     model_ids: &[Uuid],
-    tags: Option<Vec<i16>>
+    tag: Option<i16>
 ) -> QueryStatement
 {
     let mut stmt = Query::select()
@@ -98,8 +98,10 @@ pub fn select_data(
         }
     }
 
-    if let Some(tags) = tags {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).is_in(tags)).to_owned();
+    if let Some(tag) = tag {
+        if let QueryStatement::Select(query) = model::select_tag_members(model_ids, tag) {
+            stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).in_subquery(query)).to_owned();
+        }
     }
 
     QueryStatement::Select(stmt)
@@ -109,7 +111,7 @@ pub fn select_data_timestamp(
     selector: DataSelector,
     device_ids: &[Uuid],
     model_ids: &[Uuid],
-    tags: Option<Vec<i16>>
+    tag: Option<i16>
 ) -> QueryStatement
 {
     let mut stmt = Query::select()
@@ -154,8 +156,10 @@ pub fn select_data_timestamp(
         _ => {}
     }
 
-    if let Some(tags) = tags {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).is_in(tags)).to_owned();
+    if let Some(tag) = tag {
+        if let QueryStatement::Select(query) = model::select_tag_members(model_ids, tag) {
+            stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).in_subquery(query)).to_owned();
+        }
     }
 
     QueryStatement::Select(stmt)
@@ -271,7 +275,7 @@ pub fn delete_data(
 pub fn select_data_set(
     selector: DataSelector,
     set_id: Uuid,
-    tags: Option<Vec<i16>>
+    tag: Option<i16>
 ) -> QueryStatement
 {
     let mut stmt = Query::select()
@@ -326,8 +330,10 @@ pub fn select_data_set(
         _ => {}
     }
 
-    if let Some(tags) = tags {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).is_in(tags)).to_owned();
+    if let Some(tag) = tag {
+        if let QueryStatement::Select(query) = model::select_tag_members_set(set_id, tag) {
+            stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).in_subquery(query)).to_owned();
+        }
     }
     let stmt = stmt
         .order_by((Data::Table, Data::Tag), Order::Asc)
@@ -341,7 +347,7 @@ pub fn count_data(
     selector: DataSelector,
     device_ids: &[Uuid],
     model_ids: &[Uuid],
-    tags: Option<Vec<i16>>
+    tag: Option<i16>
 ) -> QueryStatement
 {
     let mut stmt = Query::select()
@@ -378,8 +384,10 @@ pub fn count_data(
         _ => {}
     }
 
-    if let Some(tags) = tags {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).is_in(tags)).to_owned();
+    if let Some(tag) = tag {
+        if let QueryStatement::Select(query) = model::select_tag_members(model_ids, tag) {
+            stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).in_subquery(query)).to_owned();
+        }
     }
 
     QueryStatement::Select(stmt)

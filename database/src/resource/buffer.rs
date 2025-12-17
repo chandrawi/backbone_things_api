@@ -4,7 +4,7 @@ use uuid::Uuid;
 use crate::common::query_statement::QueryStatement;
 use crate::common::tag as Tag;
 use crate::common::type_value::{DataValue, ArrayDataValue};
-use crate::resource::model::Model;
+use crate::resource::model::{self, Model};
 use crate::resource::set::SetMap;
 
 #[derive(Iden)]
@@ -35,7 +35,7 @@ pub fn select_buffer(
     ids: Option<&[i32]>,
     device_ids: Option<&[Uuid]>,
     model_ids: Option<&[Uuid]>,
-    tags: Option<Vec<i16>>
+    tag: Option<i16>
 ) -> QueryStatement
 {
     let mut stmt = Query::select()
@@ -130,8 +130,10 @@ pub fn select_buffer(
         BufferSelector::None => {}
     }
 
-    if let Some(tags) = tags {
-        stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).is_in(tags)).to_owned();
+    if let (Some(tag), Some(model_ids)) = (tag, model_ids) {
+        if let QueryStatement::Select(query) = model::select_tag_members(model_ids, tag) {
+            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).in_subquery(query)).to_owned();
+        }
     }
 
     QueryStatement::Select(stmt)
@@ -141,7 +143,7 @@ pub fn select_buffer_timestamp(
     selector: BufferSelector,
     device_ids: Option<&[Uuid]>,
     model_ids: Option<&[Uuid]>,
-    tags: Option<Vec<i16>>
+    tag: Option<i16>
 ) -> QueryStatement
 {
     let mut stmt = Query::select()
@@ -204,8 +206,10 @@ pub fn select_buffer_timestamp(
         _ => {}
     }
 
-    if let Some(tags) = tags {
-        stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).is_in(tags)).to_owned();
+    if let (Some(tag), Some(model_ids)) = (tag, model_ids) {
+        if let QueryStatement::Select(query) = model::select_tag_members(model_ids, tag) {
+            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).in_subquery(query)).to_owned();
+        }
     }
 
     QueryStatement::Select(stmt)
@@ -375,7 +379,7 @@ pub fn delete_buffer(
 pub fn select_buffer_set(
     selector: BufferSelector,
     set_id: Uuid,
-    tags: Option<Vec<i16>>
+    tag: Option<i16>
 ) -> QueryStatement
 {
     let mut stmt = Query::select()
@@ -429,8 +433,10 @@ pub fn select_buffer_set(
         _ => {}
     }
 
-    if let Some(tags) = tags {
-        stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).is_in(tags)).to_owned();
+    if let Some(tag) = tag {
+        if let QueryStatement::Select(query) = model::select_tag_members_set(set_id, tag) {
+            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).in_subquery(query)).to_owned();
+        }
     }
     let stmt = stmt
         .order_by((DataBuffer::Table, DataBuffer::Tag), Order::Asc)
@@ -444,7 +450,7 @@ pub fn count_buffer(
     selector: BufferSelector,
     device_ids: &[Uuid],
     model_ids: &[Uuid],
-    tags: Option<Vec<i16>>
+    tag: Option<i16>
 ) -> QueryStatement
 {
     let mut stmt = Query::select()
@@ -481,8 +487,10 @@ pub fn count_buffer(
         _ => {}
     }
 
-    if let Some(tags) = tags {
-        stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).is_in(tags)).to_owned();
+    if let Some(tag) = tag {
+        if let QueryStatement::Select(query) = model::select_tag_members(model_ids, tag) {
+            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).in_subquery(query)).to_owned();
+        }
     }
 
     QueryStatement::Select(stmt)
