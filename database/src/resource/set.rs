@@ -1,6 +1,7 @@
 use sea_query::{Iden, Query, Expr, Order};
 use uuid::Uuid;
 use crate::common::query_statement::QueryStatement;
+use crate::resource::_schema::{SetMember as SetMemberSchema, SetTemplateMember as SetTemplateMemberSchema};
 
 #[derive(Iden)]
 pub(crate) enum Set {
@@ -12,7 +13,7 @@ pub(crate) enum Set {
 }
 
 #[derive(Iden)]
-pub(crate) enum SetMap {
+pub(crate) enum SetMember {
     Table,
     SetId,
     DeviceId,
@@ -31,7 +32,7 @@ pub(crate) enum SetTemplate {
 }
 
 #[derive(Iden)]
-pub(crate) enum SetTemplateMap {
+pub(crate) enum SetTemplateMember {
     Table,
     TemplateId,
     TypeId,
@@ -55,14 +56,14 @@ pub fn select_set(
             (Set::Table, Set::Description)
         ])
         .columns([
-            (SetMap::Table, SetMap::DeviceId),
-            (SetMap::Table, SetMap::ModelId),
-            (SetMap::Table, SetMap::DataIndex)
+            (SetMember::Table, SetMember::DeviceId),
+            (SetMember::Table, SetMember::ModelId),
+            (SetMember::Table, SetMember::DataIndex)
         ])
         .from(Set::Table)
-        .left_join(SetMap::Table, 
+        .left_join(SetMember::Table, 
             Expr::col((Set::Table, Set::SetId))
-            .equals((SetMap::Table, SetMap::SetId))
+            .equals((SetMember::Table, SetMember::SetId))
         )
         .to_owned();
 
@@ -84,7 +85,7 @@ pub fn select_set(
 
     let stmt = stmt
         .order_by((Set::Table, Set::SetId), Order::Asc)
-        .order_by((SetMap::Table, SetMap::SetPosition), Order::Asc)
+        .order_by((SetMember::Table, SetMember::SetPosition), Order::Asc)
         .to_owned();
 
     QueryStatement::Select(stmt)
@@ -157,96 +158,55 @@ pub fn delete_set(
     QueryStatement::Delete(stmt)
 }
 
-pub fn read_set_members(
-    set_id: Uuid
-) -> QueryStatement
-{
-    let stmt = Query::select()
-        .columns([
-            (SetMap::Table, SetMap::DeviceId),
-            (SetMap::Table, SetMap::ModelId),
-            (SetMap::Table, SetMap::DataIndex),
-        ])
-        .from(SetMap::Table)
-        .and_where(Expr::col(SetMap::SetId).eq(set_id))
-        .order_by((SetMap::Table, SetMap::SetPosition), Order::Asc)
-        .to_owned();
-
-    QueryStatement::Select(stmt)
-}
-
-pub fn update_set_position_number(
+pub fn insert_set_members(
     set_id: Uuid,
-    device_id: Uuid,
-    model_id: Uuid,
-    position: Option<i16>,
-    number: Option<i16>
+    members: &[SetMemberSchema]
 ) -> QueryStatement
 {
-    let mut stmt = Query::update()
-        .table(SetMap::Table)
-        .to_owned();
-    if let Some(pos) = position {
-        stmt = stmt
-            .value(SetMap::SetPosition, pos)
-            .and_where(Expr::col(SetMap::DeviceId).eq(device_id))
-            .and_where(Expr::col(SetMap::ModelId).eq(model_id))
-            .to_owned();
-    }
-    if let Some(num) = number {
-        stmt = stmt.value(SetMap::SetNumber, num).to_owned();
-    }
-    let stmt = stmt
-        .and_where(Expr::col(SetMap::SetId).eq(set_id))
-        .to_owned();
-
-    QueryStatement::Update(stmt)
-}
-
-pub fn insert_set_member(
-    id: Uuid,
-    device_id: Uuid,
-    model_id: Uuid,
-    data_index: &[u8],
-    position: i16,
-    number: i16
-) -> QueryStatement
-{
-    let stmt = Query::insert()
-        .into_table(SetMap::Table)
+    let mut stmt = Query::insert()
+        .into_table(SetMember::Table)
         .columns([
-            SetMap::SetId,
-            SetMap::DeviceId,
-            SetMap::ModelId,
-            SetMap::DataIndex,
-            SetMap::SetPosition,
-            SetMap::SetNumber
+            SetMember::SetId,
+            SetMember::DeviceId,
+            SetMember::ModelId,
+            SetMember::DataIndex,
+            SetMember::SetPosition,
+            SetMember::SetNumber
         ])
-        .values([
-            id.into(),
-            device_id.into(),
-            model_id.into(),
-            data_index.to_owned().into(),
-            position.into(),
-            number.into()
+        .to_owned();
+
+    let number = members.iter().fold(0, |acc, e| acc + e.data_index.len());
+    let mut pos = 0;
+    for member in members.iter() {
+        stmt = stmt.values([
+            set_id.into(),
+            member.device_id.into(),
+            member.model_id.into(),
+            member.data_index.to_owned().into(),
+            (pos as i16).into(),
+            (number as i16).into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .to_owned();
+        pos += member.data_index.len();
+    }
 
     QueryStatement::Insert(stmt)
 }
 
-pub fn delete_set_member(
-    id: Uuid,
-    device_id: Uuid,
-    model_id: Uuid
+pub fn delete_set_members(
+    set_id: Uuid
 ) -> QueryStatement
 {
     let stmt = Query::delete()
-        .from_table(SetMap::Table)
-        .and_where(Expr::col(SetMap::SetId).eq(id))
-        .and_where(Expr::col(SetMap::DeviceId).eq(device_id))
-        .and_where(Expr::col(SetMap::ModelId).eq(model_id))
+        .from_table(SetMember::Table)
+        .and_where(Expr::col(SetMember::SetId).eq(set_id))
+        .returning(Query::returning().columns([
+            SetMember::DeviceId,
+            SetMember::ModelId,
+            SetMember::DataIndex,
+            SetMember::SetPosition
+        ]))
         .to_owned();
 
     QueryStatement::Delete(stmt)
@@ -265,14 +225,14 @@ pub fn select_set_template(
             (SetTemplate::Table, SetTemplate::Description)
         ])
         .columns([
-            (SetTemplateMap::Table, SetTemplateMap::TypeId),
-            (SetTemplateMap::Table, SetTemplateMap::ModelId),
-            (SetTemplateMap::Table, SetTemplateMap::DataIndex)
+            (SetTemplateMember::Table, SetTemplateMember::TypeId),
+            (SetTemplateMember::Table, SetTemplateMember::ModelId),
+            (SetTemplateMember::Table, SetTemplateMember::DataIndex)
         ])
         .from(SetTemplate::Table)
-        .left_join(SetTemplateMap::Table, 
+        .left_join(SetTemplateMember::Table, 
             Expr::col((SetTemplate::Table, SetTemplate::TemplateId))
-            .equals((SetTemplateMap::Table, SetTemplateMap::TemplateId))
+            .equals((SetTemplateMember::Table, SetTemplateMember::TemplateId))
         )
         .to_owned();
 
@@ -291,7 +251,7 @@ pub fn select_set_template(
 
     let stmt = stmt
         .order_by((SetTemplate::Table, SetTemplate::TemplateId), Order::Asc)
-        .order_by((SetTemplateMap::Table, SetTemplateMap::TemplateIndex), Order::Asc)
+        .order_by((SetTemplateMember::Table, SetTemplateMember::TemplateIndex), Order::Asc)
         .to_owned();
 
     QueryStatement::Select(stmt)
@@ -357,79 +317,50 @@ pub fn delete_set_template(
     QueryStatement::Delete(stmt)
 }
 
-pub fn read_set_template_members(
-    template_id: Uuid
+pub fn insert_set_template_members(
+    template_id: Uuid,
+    members: &[SetTemplateMemberSchema]
 ) -> QueryStatement
 {
-    let stmt = Query::select()
+    let mut stmt = Query::insert()
+        .into_table(SetTemplateMember::Table)
         .columns([
-            (SetTemplateMap::Table, SetTemplateMap::TypeId),
-            (SetTemplateMap::Table, SetTemplateMap::ModelId),
-            (SetTemplateMap::Table, SetTemplateMap::DataIndex)
+            SetTemplateMember::TemplateId,
+            SetTemplateMember::TypeId,
+            SetTemplateMember::ModelId,
+            SetTemplateMember::DataIndex,
+            SetTemplateMember::TemplateIndex
         ])
-        .from(SetTemplateMap::Table)
-        .and_where(Expr::col(SetTemplateMap::TemplateId).eq(template_id))
-        .order_by((SetTemplateMap::Table, SetTemplateMap::TemplateIndex), Order::Asc)
         .to_owned();
 
-    QueryStatement::Select(stmt)
-}
-
-pub fn update_set_template_index(
-    template_id: Uuid, 
-    index: i16, 
-    new_index: i16
-) -> QueryStatement
-{
-    let stmt = Query::update()
-        .table(SetTemplateMap::Table)
-        .value(SetTemplateMap::TemplateIndex, new_index)
-        .and_where(Expr::col(SetTemplateMap::TemplateId).eq(template_id))
-        .and_where(Expr::col(SetTemplateMap::TemplateIndex).eq(index))
-        .to_owned();
-
-    QueryStatement::Update(stmt)
-}
-
-pub fn insert_set_template_member(
-    id: Uuid,
-    type_id: Uuid,
-    model_id: Uuid,
-    data_index: &[u8],
-    template_index: i16
-) -> QueryStatement
-{
-    let stmt = Query::insert()
-        .into_table(SetTemplateMap::Table)
-        .columns([
-            SetTemplateMap::TemplateId,
-            SetTemplateMap::TypeId,
-            SetTemplateMap::ModelId,
-            SetTemplateMap::DataIndex,
-            SetTemplateMap::TemplateIndex
-        ])
-        .values([
-            id.into(),
-            type_id.into(),
-            model_id.into(),
-            data_index.to_owned().into(),
-            template_index.into()
+    for (i, member) in members.into_iter().enumerate() {
+        stmt = stmt.values([
+            template_id.into(),
+            member.type_id.into(),
+            member.model_id.into(),
+            member.data_index.clone().into(),
+            (i as i16).into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .to_owned();
+    }
 
     QueryStatement::Insert(stmt)
 }
 
-pub fn delete_set_template_member(
-    id: Uuid,
-    template_index: i16
+pub fn delete_set_template_members(
+    template_id: Uuid
 ) -> QueryStatement
 {
     let stmt = Query::delete()
-        .from_table(SetTemplateMap::Table)
-        .and_where(Expr::col(SetTemplateMap::TemplateId).eq(id))
-        .and_where(Expr::col(SetTemplateMap::TemplateIndex).eq(template_index))
+        .from_table(SetTemplateMember::Table)
+        .and_where(Expr::col(SetTemplateMember::TemplateId).eq(template_id))
+        .returning(Query::returning().columns([
+            SetTemplateMember::TypeId,
+            SetTemplateMember::ModelId,
+            SetTemplateMember::DataIndex,
+            SetTemplateMember::TemplateIndex
+        ]))
         .to_owned();
 
     QueryStatement::Delete(stmt)

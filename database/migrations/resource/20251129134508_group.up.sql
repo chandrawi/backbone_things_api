@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS "group_device" (
   PRIMARY KEY ("group_id")
 );
 
-CREATE TABLE IF NOT EXISTS "group_model_map" (
+CREATE TABLE IF NOT EXISTS "group_model_member" (
   "group_id" uuid NOT NULL,
   "model_id" uuid NOT NULL,
   PRIMARY KEY ("group_id","model_id"),
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS "group_model_map" (
     REFERENCES "model" ("model_id") ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "group_device_map" (
+CREATE TABLE IF NOT EXISTS "group_device_member" (
   "group_id" uuid NOT NULL,
   "device_id" uuid NOT NULL,
   PRIMARY KEY ("group_id","device_id"),

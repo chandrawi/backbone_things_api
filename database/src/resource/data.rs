@@ -5,7 +5,7 @@ use crate::common::query_statement::QueryStatement;
 use crate::common::tag as Tag;
 use crate::common::type_value::{DataValue, ArrayDataValue};
 use crate::resource::model::{self, Model};
-use crate::resource::set::SetMap;
+use crate::resource::set::SetMember;
 
 #[derive(Iden)]
 pub(crate) enum Data {
@@ -288,20 +288,20 @@ pub fn select_data_set(
         ])
         .column((Model::Table, Model::DataType))
         .columns([
-            (SetMap::Table, SetMap::DataIndex),
-            (SetMap::Table, SetMap::SetPosition),
-            (SetMap::Table, SetMap::SetNumber)
+            (SetMember::Table, SetMember::DataIndex),
+            (SetMember::Table, SetMember::SetPosition),
+            (SetMember::Table, SetMember::SetNumber)
         ])
         .from(Data::Table)
         .inner_join(Model::Table, 
             Expr::col((Data::Table, Data::ModelId))
             .equals((Model::Table, Model::ModelId)))
-        .inner_join(SetMap::Table, 
+        .inner_join(SetMember::Table, 
             Condition::all()
-            .add(Expr::col((Data::Table, Data::DeviceId)).equals((SetMap::Table, SetMap::DeviceId)))
-            .add(Expr::col((Data::Table, Data::ModelId)).equals((SetMap::Table, SetMap::ModelId)))
+            .add(Expr::col((Data::Table, Data::DeviceId)).equals((SetMember::Table, SetMember::DeviceId)))
+            .add(Expr::col((Data::Table, Data::ModelId)).equals((SetMember::Table, SetMember::ModelId)))
         )
-        .and_where(Expr::col((SetMap::Table, SetMap::SetId)).eq(set_id))
+        .and_where(Expr::col((SetMember::Table, SetMember::SetId)).eq(set_id))
         .to_owned();
 
     match selector {
@@ -337,7 +337,7 @@ pub fn select_data_set(
     }
     let stmt = stmt
         .order_by((Data::Table, Data::Tag), Order::Asc)
-        .order_by((SetMap::Table, SetMap::SetPosition), Order::Asc)
+        .order_by((SetMember::Table, SetMember::SetPosition), Order::Asc)
         .to_owned();
 
     QueryStatement::Select(stmt)

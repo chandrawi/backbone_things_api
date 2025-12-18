@@ -3,7 +3,7 @@ use uuid::Uuid;
 use crate::common::query_statement::QueryStatement;
 use crate::common::type_value::{DataType, DataValue};
 use crate::resource::device::DeviceTypeModel;
-use crate::resource::set::SetMap;
+use crate::resource::set::SetMember;
 
 #[derive(Iden)]
 pub(crate) enum Model {
@@ -360,10 +360,10 @@ pub fn select_tag_members_set(
     let stmt = Query::select()
         .column(ModelTagMember::Member)
         .from(ModelTagMember::Table)
-        .inner_join(SetMap::Table, 
+        .inner_join(SetMember::Table, 
             Expr::col((ModelTagMember::Table, ModelTagMember::ModelId))
-            .equals((SetMap::Table, SetMap::ModelId)))
-        .and_where(Expr::col(SetMap::SetId).eq(set_id))
+            .equals((SetMember::Table, SetMember::ModelId)))
+        .and_where(Expr::col(SetMember::SetId).eq(set_id))
         .and_where(Expr::col(ModelTagMember::Tag).eq(tag))
         .to_owned();
 

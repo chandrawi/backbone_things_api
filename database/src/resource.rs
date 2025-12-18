@@ -17,7 +17,8 @@ use crate::common::type_value::{DataType, DataValue, ArrayDataValue};
 use _schema::{
     ModelSchema, ModelConfigSchema, TagSchema, TypeConfigSchema,
     DeviceSchema, DeviceConfigSchema, GatewaySchema, GatewayConfigSchema, TypeSchema,
-    GroupModelSchema, GroupDeviceSchema, GroupGatewaySchema, SetSchema, SetTemplateSchema,
+    GroupModelSchema, GroupDeviceSchema, GroupGatewaySchema,
+    SetSchema, SetMember, SetTemplateSchema, SetTemplateMember,
     DataSchema, DataSetSchema, BufferSchema, BufferSetSchema, SliceSchema, SliceSetSchema
 };
 use device::DeviceKind;
@@ -775,67 +776,44 @@ impl Resource {
     pub async fn add_set_member(&self, id: Uuid, device_id: Uuid, model_id: Uuid, data_index: &[u8])
         -> Result<(), Error>
     {
-        // get members of the set then calculate new data position and data number
-        let qs = set::read_set_members(id);
-        let members = qs.fetch_set_members(&self.pool).await?;
-        let position = members.iter().fold(0, |acc, e| acc + e.data_index.len());
-        let number = position + data_index.len();
-        let qs = set::insert_set_member(id, device_id, model_id, data_index, position as i16, number as i16);
-        qs.execute(&self.pool).await?;
-        // update data number of all set members
-        let qs = set::update_set_position_number(id, device_id, model_id, None, Some(number as i16));
+        // delete all set members and get the deleted set members
+        let qs = set::delete_set_members(id);
+        let mut members = qs.fetch_set_members(&self.pool).await?;
+        // push new set member and insert back all members
+        members.push(SetMember { device_id, model_id, data_index: data_index.to_vec() });
+        let qs = set::insert_set_members(id, &members);
         qs.execute(&self.pool).await
     }
 
     pub async fn remove_set_member(&self, id: Uuid, device_id: Uuid, model_id: Uuid)
         -> Result<(), Error>
     {
-        // get members of the set then get index position of deleted set member
-        let qs = set::read_set_members(id);
-        let members = qs.fetch_set_members(&self.pool).await?;
-        let index = members.iter().position(|e| e.device_id == device_id && e.model_id == model_id);
-        let qs = set::delete_set_member(id, device_id, model_id);
-        qs.execute(&self.pool).await?;
-        if let Some(idx) = index {
-            // calculate data number then update data number of all set members
-            let number = members.iter().fold(0, |acc, e| acc + e.data_index.len()) - members[idx].data_index.len();
-            let qs = set::update_set_position_number(id, device_id, model_id, None, Some(number as i16));
-            qs.execute(&self.pool).await?;
-            // update data position of members with index position after deleted set member
-            let mut position = 0;
-            for (i, member) in members.iter().enumerate() {
-                if i > idx {
-                    let qs = set::update_set_position_number(id, member.device_id, member.model_id, Some(position), None);
-                    qs.execute(&self.pool).await?;
-                }
-                position += member.data_index.len() as i16;
-            }
+        // delete all set members and get the deleted set members
+        let qs = set::delete_set_members(id);
+        let mut members = qs.fetch_set_members(&self.pool).await?;
+        // remove selected set member and insert back remaining members
+        let removed_index = members.iter().position(|e| e.device_id == device_id && e.model_id == model_id);
+        if let Some(index) = removed_index {
+            members.remove(index);
         }
-        Ok(())
+        let qs = set::insert_set_members(id, &members);
+        qs.execute(&self.pool).await
     }
 
     pub async fn swap_set_member(&self, id: Uuid, device_id_1: Uuid, model_id_1: Uuid, device_id_2: Uuid, model_id_2: Uuid)
         -> Result<(), Error>
     {
-        // get members of the set then get index positions
-        let qs = set::read_set_members(id);
+        // delete all set members and get the deleted set members
+        let qs = set::delete_set_members(id);
         let mut members = qs.fetch_set_members(&self.pool).await?;
+        // swap position index and insert back swaped members
         let index_1 = members.iter().position(|e| e.device_id == device_id_1 && e.model_id == model_id_1);
         let index_2 = members.iter().position(|e| e.device_id == device_id_2 && e.model_id == model_id_2);
-        // swap position index
         if let (Some(i1), Some(i2)) = (index_1, index_2) {
             members.swap(i1, i2);
-            // update data position of members
-            let mut position = 0;
-            for (i, member) in members.iter().enumerate() {
-                if i >= i1 || i >= i2 {
-                    let qs = set::update_set_position_number(id, member.device_id, member.model_id, Some(position), None);
-                    qs.execute(&self.pool).await?;
-                }
-                position += member.data_index.len() as i16;
-            }
         }
-        Ok(())
+        let qs = set::insert_set_members(id, &members);
+        qs.execute(&self.pool).await
     }
 
     pub async fn read_set_template(&self, id: Uuid)
@@ -891,41 +869,40 @@ impl Resource {
     pub async fn add_set_template_member(&self, id: Uuid, type_id: Uuid, model_id: Uuid, data_index: &[u8])
         -> Result<(), Error>
     {
-        // get members of the set template then calculate new template index
-        let qs = set::read_set_template_members(id);
-        let members = qs.fetch_set_template_members(&self.pool).await?;
-        let new_index = members.len() as i16;
-        let qs = set::insert_set_template_member(id, type_id, model_id, data_index, new_index);
+        // delete all set template members and get the deleted set template members
+        let qs = set::delete_set_template_members(id);
+        let mut members = qs.fetch_set_template_members(&self.pool).await?;
+        // push new set template member and insert back all members
+        members.push(SetTemplateMember { type_id, model_id, data_index: data_index.to_vec() });
+        let qs = set::insert_set_template_members(id, &members);
         qs.execute(&self.pool).await
     }
 
     pub async fn remove_set_template_member(&self, id: Uuid, index: usize)
         -> Result<(), Error>
     {
-        // get members of the set template
-        let qs = set::read_set_template_members(id);
-        let members = qs.fetch_set_template_members(&self.pool).await?;
-        let qs = set::delete_set_template_member(id, index as i16);
-        qs.execute(&self.pool).await?;
-        // update template index after deleted member
-        for i in 0..members.len() {
-            if i > index {
-                let qs = set::update_set_template_index(id, i as i16, i as i16 - 1);
-                qs.execute(&self.pool).await?;
-            }
+        // delete all set template members and get the deleted set template members
+        let qs = set::delete_set_template_members(id);
+        let mut members = qs.fetch_set_template_members(&self.pool).await?;
+        // push new set template member and insert back all members
+        if index < members.len() {
+            members.remove(index);
         }
-        Ok(())
+        let qs = set::insert_set_template_members(id, &members);
+        qs.execute(&self.pool).await
     }
 
     pub async fn swap_set_template_member(&self, id: Uuid, index_1: usize, index_2: usize)
         -> Result<(), Error>
     {
-        // update data position and data number
-        let qs = set::update_set_template_index(id, index_1 as i16, i16::MAX);
-        qs.execute(&self.pool).await?;
-        let qs = set::update_set_template_index(id, index_2 as i16, index_1 as i16);
-        qs.execute(&self.pool).await?;
-        let qs = set::update_set_template_index(id, i16::MAX, index_2 as i16);
+        // delete all set template members and get the deleted set template members
+        let qs = set::delete_set_template_members(id);
+        let mut members = qs.fetch_set_template_members(&self.pool).await?;
+        // swap position index and insert back swaped members
+        if index_1 < members.len() && index_2 < members.len() {
+            members.swap(index_1, index_2);
+        }
+        let qs = set::insert_set_template_members(id, &members);
         qs.execute(&self.pool).await
     }
 

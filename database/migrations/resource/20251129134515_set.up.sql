@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS "set_template" (
   PRIMARY KEY ("template_id")
 );
 
-CREATE TABLE IF NOT EXISTS "set_template_map" (
+CREATE TABLE IF NOT EXISTS "set_template_member" (
   "template_id" uuid NOT NULL,
   "type_id" uuid NOT NULL,
   "model_id" uuid NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS "set" (
     REFERENCES "set_template" ("template_id") ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "set_map" (
+CREATE TABLE IF NOT EXISTS "set_member" (
   "set_id" uuid NOT NULL,
   "device_id" uuid NOT NULL,
   "model_id" uuid NOT NULL,

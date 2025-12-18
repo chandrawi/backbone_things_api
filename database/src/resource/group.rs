@@ -12,7 +12,7 @@ pub(crate) enum GroupModel {
 }
 
 #[derive(Iden)]
-pub(crate) enum GroupModelMap {
+pub(crate) enum GroupModelMember {
     Table,
     GroupId,
     ModelId
@@ -29,7 +29,7 @@ pub(crate) enum GroupDevice {
 }
 
 #[derive(Iden)]
-pub(crate) enum GroupDeviceMap {
+pub(crate) enum GroupDeviceMember {
     Table,
     GroupId,
     DeviceId
@@ -61,12 +61,12 @@ pub fn select_group(
                     (GroupModel::Table, GroupModel::Description)
                 ])
                 .columns([
-                    (GroupModelMap::Table, GroupModelMap::ModelId)
+                    (GroupModelMember::Table, GroupModelMember::ModelId)
                 ])
                 .from(GroupModel::Table)
-                .left_join(GroupModelMap::Table, 
+                .left_join(GroupModelMember::Table, 
                     Expr::col((GroupModel::Table, GroupModel::GroupId))
-                    .equals((GroupModelMap::Table, GroupModelMap::GroupId))
+                    .equals((GroupModelMember::Table, GroupModelMember::GroupId))
                 )
                 .to_owned();
             if let Some(id) = id {
@@ -87,7 +87,7 @@ pub fn select_group(
             }
             stmt = stmt
                 .order_by((GroupModel::Table, GroupModel::GroupId), Order::Asc)
-                .order_by((GroupModelMap::Table, GroupModelMap::ModelId), Order::Asc)
+                .order_by((GroupModelMember::Table, GroupModelMember::ModelId), Order::Asc)
                 .to_owned();
         },
         GroupKind::Device | GroupKind::Gateway => {
@@ -99,12 +99,12 @@ pub fn select_group(
                     (GroupDevice::Table, GroupDevice::Description)
                 ])
                 .columns([
-                    (GroupDeviceMap::Table, GroupDeviceMap::DeviceId)
+                    (GroupDeviceMember::Table, GroupDeviceMember::DeviceId)
                 ])
                 .from(GroupDevice::Table)
-                .left_join(GroupDeviceMap::Table, 
+                .left_join(GroupDeviceMember::Table, 
                     Expr::col((GroupDevice::Table, GroupDevice::GroupId))
-                    .equals((GroupDeviceMap::Table, GroupDeviceMap::GroupId))
+                    .equals((GroupDeviceMember::Table, GroupDeviceMember::GroupId))
                 )
                 .and_where(Expr::col((GroupDevice::Table, GroupDevice::Kind)).eq(kind == GroupKind::Gateway)).to_owned()
                 .to_owned();
@@ -126,7 +126,7 @@ pub fn select_group(
             }
             stmt = stmt
                 .order_by((GroupDevice::Table, GroupDevice::GroupId), Order::Asc)
-                .order_by((GroupDeviceMap::Table, GroupDeviceMap::DeviceId), Order::Asc)
+                .order_by((GroupDeviceMember::Table, GroupDeviceMember::DeviceId), Order::Asc)
                 .to_owned();
         }
     }
@@ -262,10 +262,10 @@ pub fn insert_group_map(
     match &kind {
         GroupKind::Model => {
             stmt = stmt
-                .into_table(GroupModelMap::Table)
+                .into_table(GroupModelMember::Table)
                 .columns([
-                    GroupModelMap::GroupId,
-                    GroupModelMap::ModelId
+                    GroupModelMember::GroupId,
+                    GroupModelMember::ModelId
                 ])
                 .values([
                     id.into(),
@@ -276,10 +276,10 @@ pub fn insert_group_map(
         },
         GroupKind::Device | GroupKind::Gateway => {
             stmt = stmt
-                .into_table(GroupDeviceMap::Table)
+                .into_table(GroupDeviceMember::Table)
                 .columns([
-                    GroupDeviceMap::GroupId,
-                    GroupDeviceMap::DeviceId
+                    GroupDeviceMember::GroupId,
+                    GroupDeviceMember::DeviceId
                 ])
                 .values([
                     id.into(),
@@ -303,16 +303,16 @@ pub fn delete_group_map(
     match &kind {
         GroupKind::Model => {
             stmt = stmt
-                .from_table(GroupModelMap::Table)
-                .and_where(Expr::col(GroupModelMap::GroupId).eq(id))
-                .and_where(Expr::col(GroupModelMap::ModelId).eq(member_id))
+                .from_table(GroupModelMember::Table)
+                .and_where(Expr::col(GroupModelMember::GroupId).eq(id))
+                .and_where(Expr::col(GroupModelMember::ModelId).eq(member_id))
                 .to_owned();
         },
         GroupKind::Device | GroupKind::Gateway => {
             stmt = stmt
-                .from_table(GroupDeviceMap::Table)
-                .and_where(Expr::col(GroupDeviceMap::GroupId).eq(id))
-                .and_where(Expr::col(GroupDeviceMap::DeviceId).eq(member_id))
+                .from_table(GroupDeviceMember::Table)
+                .and_where(Expr::col(GroupDeviceMember::GroupId).eq(id))
+                .and_where(Expr::col(GroupDeviceMember::DeviceId).eq(member_id))
                 .to_owned();
         }
     }

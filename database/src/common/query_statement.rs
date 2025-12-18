@@ -13,7 +13,7 @@ use crate::auth::_row::{
 };
 use crate::resource::_schema::{
     ModelSchema, TagSchema, ModelConfigSchema, DeviceSchema, TypeSchema, DeviceConfigSchema, TypeConfigSchema,
-    GroupSchema, SetSchema, SetMember, SetTemplateSchema, SetTemplateMember,
+    GroupSchema, SetSchema, SetMember, SetMemberSort, SetTemplateSchema, SetTemplateMember, SetTemplateMemberSort,
     DataSchema, DataSetSchema, BufferSchema, BufferSetSchema, SliceSchema, SliceSetSchema
 };
 use crate::resource::_row::{
@@ -236,9 +236,11 @@ impl QueryStatement {
     pub(crate) async fn fetch_set_members(&self, pool: &Pool<Postgres>) -> Result<Vec<SetMember>, Error>
     {
         let (sql, arguments) = self.build();
-        sqlx::query_as_with(&sql, arguments)
+        let mut members: Vec<SetMemberSort> = sqlx::query_as_with(&sql, arguments)
             .fetch_all(pool)
-            .await
+            .await?;
+        members.sort_by(|a, b| a.set_position.cmp(&b.set_position));
+        Ok(members.into_iter().map(|e| e.into()).collect())
     }
 
     pub(crate) async fn fetch_set_template_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<SetTemplateSchema>, Error>
@@ -253,9 +255,11 @@ impl QueryStatement {
     pub(crate) async fn fetch_set_template_members(&self, pool: &Pool<Postgres>) -> Result<Vec<SetTemplateMember>, Error>
     {
         let (sql, arguments) = self.build();
-        sqlx::query_as_with(&sql, arguments)
+        let mut members: Vec<SetTemplateMemberSort> = sqlx::query_as_with(&sql, arguments)
             .fetch_all(pool)
-            .await
+            .await?;
+        members.sort_by(|a, b| a.template_index.cmp(&b.template_index));
+        Ok(members.into_iter().map(|e| e.into()).collect())
     }
 
     pub(crate) async fn fetch_data_schema(&self, pool: &Pool<Postgres>) -> Result<Vec<DataSchema>, Error>

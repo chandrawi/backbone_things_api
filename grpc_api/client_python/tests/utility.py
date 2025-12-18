@@ -12,7 +12,7 @@ def truncate_tables_auth(db_url: str):
 def truncate_tables_resource(db_url: str):
     with psycopg.connect(db_url) as conn:
         with conn.cursor() as cur:
-            cur.execute("TRUNCATE TABLE \"slice_data_set\", \"slice_data\", \"data_buffer\", \"data\", \"set_map\", \"set_template_map\", \"set\", \"set_template\", \"group_model_map\", \"group_device_map\", \"group_model\", \"group_device\", \"device_config\", \"device\", \"device_type_config\", \"device_type_model\", \"device_type\", \"model_config\", \"model_tag\", \"model\";")
+            cur.execute("TRUNCATE TABLE \"slice_data_set\", \"slice_data\", \"data_buffer\", \"data\", \"set_member\", \"set_template_member\", \"set\", \"set_template\", \"group_model_member\", \"group_device_member\", \"group_model\", \"group_device\", \"device_config\", \"device\", \"device_type_config\", \"device_type_model\", \"device_type\", \"model_tag_member\", \"model_tag\", \"model_config\", \"model\";")
 
 def wait_server(server_name: str):
     name = server_name[0:15]

@@ -3,7 +3,7 @@ use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
 use crate::resource::_schema::{
     ModelSchema, TagSchema, ModelConfigSchema, DeviceSchema, TypeSchema, DeviceConfigSchema, TypeConfigSchema,
-    GroupSchema, SetSchema, SetMember, SetTemplateSchema, SetTemplateMember,
+    GroupSchema, SetSchema, SetMember, SetMemberSort, SetTemplateSchema, SetTemplateMember, SetTemplateMemberSort,
     DataSchema, DataSetSchema, BufferSchema, BufferSetSchema, SliceSchema, SliceSetSchema
 };
 use crate::common::type_value::{DataType, DataValue, ArrayDataValue};
@@ -543,12 +543,13 @@ pub(crate) fn map_to_set_schema(rows: Vec<SetRow>) -> Vec<SetSchema> {
     result
 }
 
-impl<'r> FromRow<'r, PgRow> for SetMember {
+impl<'r> FromRow<'r, PgRow> for SetMemberSort {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
         Ok(Self {
             device_id: row.try_get(0)?,
             model_id: row.try_get(1)?,
-            data_index: row.try_get(2)?
+            data_index: row.try_get(2)?,
+            set_position: row.try_get(3)?
         })
     }
 }
@@ -618,12 +619,13 @@ pub(crate) fn map_to_set_template_schema(rows: Vec<SetTemplateRow>) -> Vec<SetTe
     result
 }
 
-impl<'r> FromRow<'r, PgRow> for SetTemplateMember {
+impl<'r> FromRow<'r, PgRow> for SetTemplateMemberSort {
     fn from_row(row: &PgRow) -> Result<Self, Error> {
         Ok(Self {
             type_id: row.try_get(0)?,
             model_id: row.try_get(1)?,
-            data_index: row.try_get(2)?
+            data_index: row.try_get(2)?,
+            template_index: row.try_get(3)?
         })
     }
 }

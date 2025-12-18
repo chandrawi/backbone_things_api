@@ -120,7 +120,6 @@ impl From<DeviceConfigSchema> for GatewayConfigSchema {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
 pub(crate) struct GroupSchema {
     pub(crate) id: Uuid,
     pub(crate) name: String,
@@ -208,6 +207,23 @@ pub struct SetMember {
     pub data_index: Vec<u8>
 }
 
+pub(crate) struct SetMemberSort {
+    pub(crate) device_id: Uuid,
+    pub(crate) model_id: Uuid,
+    pub(crate) data_index: Vec<u8>,
+    pub(crate) set_position: i16
+}
+
+impl From<SetMemberSort> for SetMember {
+    fn from(value: SetMemberSort) -> Self {
+        Self {
+            device_id: value.device_id,
+            model_id: value.model_id,
+            data_index: value.data_index
+        }
+    }
+}
+
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct SetTemplateSchema {
     pub id: Uuid,
@@ -221,6 +237,23 @@ pub struct SetTemplateMember {
     pub type_id: Uuid,
     pub model_id: Uuid,
     pub data_index: Vec<u8>
+}
+
+pub(crate) struct SetTemplateMemberSort {
+    pub(crate) type_id: Uuid,
+    pub(crate) model_id: Uuid,
+    pub(crate) data_index: Vec<u8>,
+    pub(crate) template_index: i16
+}
+
+impl From<SetTemplateMemberSort> for SetTemplateMember {
+    fn from(value: SetTemplateMemberSort) -> Self {
+        Self {
+            type_id: value.type_id,
+            model_id: value.model_id,
+            data_index: value.data_index
+        }
+    }
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
