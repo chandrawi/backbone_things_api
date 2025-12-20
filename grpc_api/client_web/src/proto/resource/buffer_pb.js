@@ -5916,7 +5916,8 @@ proto.buffer.BufferGroupSelector.toObject = function(includeInstance, msg) {
   var f, obj = {
 deviceIdsList: msg.getDeviceIdsList_asB64(),
 modelIdsList: msg.getModelIdsList_asB64(),
-tag: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+tag: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+idFlag: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -5965,6 +5966,10 @@ proto.buffer.BufferGroupSelector.deserializeBinaryFromReader = function(msg, rea
       var value = /** @type {number} */ (reader.readInt32());
       msg.setTag(value);
       break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setIdFlag(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -6012,6 +6017,13 @@ proto.buffer.BufferGroupSelector.serializeBinaryToWriter = function(message, wri
   if (f != null) {
     writer.writeInt32(
       3,
+      f
+    );
+  }
+  f = message.getIdFlag();
+  if (f !== 0) {
+    writer.writeInt32(
+      4,
       f
     );
   }
@@ -6176,6 +6188,24 @@ proto.buffer.BufferGroupSelector.prototype.hasTag = function() {
 };
 
 
+/**
+ * optional int32 id_flag = 4;
+ * @return {number}
+ */
+proto.buffer.BufferGroupSelector.prototype.getIdFlag = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.buffer.BufferGroupSelector} returns this
+ */
+proto.buffer.BufferGroupSelector.prototype.setIdFlag = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
 
 /**
  * List of repeated fields within this message type.
@@ -6219,7 +6249,8 @@ number: jspb.Message.getFieldWithDefault(msg, 1, 0),
 offset: jspb.Message.getFieldWithDefault(msg, 2, 0),
 deviceIdsList: msg.getDeviceIdsList_asB64(),
 modelIdsList: msg.getModelIdsList_asB64(),
-tag: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
+tag: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
+idFlag: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -6275,6 +6306,10 @@ proto.buffer.BuffersGroupSelector.deserializeBinaryFromReader = function(msg, re
     case 5:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setTag(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setIdFlag(value);
       break;
     default:
       reader.skipField();
@@ -6337,6 +6372,13 @@ proto.buffer.BuffersGroupSelector.serializeBinaryToWriter = function(message, wr
   if (f != null) {
     writer.writeInt32(
       5,
+      f
+    );
+  }
+  f = message.getIdFlag();
+  if (f !== 0) {
+    writer.writeInt32(
+      6,
       f
     );
   }
@@ -6534,6 +6576,24 @@ proto.buffer.BuffersGroupSelector.prototype.clearTag = function() {
  */
 proto.buffer.BuffersGroupSelector.prototype.hasTag = function() {
   return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional int32 id_flag = 6;
+ * @return {number}
+ */
+proto.buffer.BuffersGroupSelector.prototype.getIdFlag = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.buffer.BuffersGroupSelector} returns this
+ */
+proto.buffer.BuffersGroupSelector.prototype.setIdFlag = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 

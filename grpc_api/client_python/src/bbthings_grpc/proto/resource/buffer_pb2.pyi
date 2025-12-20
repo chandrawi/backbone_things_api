@@ -211,28 +211,32 @@ class BufferGroupNumber(_message.Message):
     def __init__(self, device_ids: _Optional[_Iterable[bytes]] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., timestamp: _Optional[int] = ..., number: _Optional[int] = ..., tag: _Optional[int] = ...) -> None: ...
 
 class BufferGroupSelector(_message.Message):
-    __slots__ = ("device_ids", "model_ids", "tag")
+    __slots__ = ("device_ids", "model_ids", "tag", "id_flag")
     DEVICE_IDS_FIELD_NUMBER: _ClassVar[int]
     MODEL_IDS_FIELD_NUMBER: _ClassVar[int]
     TAG_FIELD_NUMBER: _ClassVar[int]
+    ID_FLAG_FIELD_NUMBER: _ClassVar[int]
     device_ids: _containers.RepeatedScalarFieldContainer[bytes]
     model_ids: _containers.RepeatedScalarFieldContainer[bytes]
     tag: int
-    def __init__(self, device_ids: _Optional[_Iterable[bytes]] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., tag: _Optional[int] = ...) -> None: ...
+    id_flag: int
+    def __init__(self, device_ids: _Optional[_Iterable[bytes]] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., tag: _Optional[int] = ..., id_flag: _Optional[int] = ...) -> None: ...
 
 class BuffersGroupSelector(_message.Message):
-    __slots__ = ("number", "offset", "device_ids", "model_ids", "tag")
+    __slots__ = ("number", "offset", "device_ids", "model_ids", "tag", "id_flag")
     NUMBER_FIELD_NUMBER: _ClassVar[int]
     OFFSET_FIELD_NUMBER: _ClassVar[int]
     DEVICE_IDS_FIELD_NUMBER: _ClassVar[int]
     MODEL_IDS_FIELD_NUMBER: _ClassVar[int]
     TAG_FIELD_NUMBER: _ClassVar[int]
+    ID_FLAG_FIELD_NUMBER: _ClassVar[int]
     number: int
     offset: int
     device_ids: _containers.RepeatedScalarFieldContainer[bytes]
     model_ids: _containers.RepeatedScalarFieldContainer[bytes]
     tag: int
-    def __init__(self, number: _Optional[int] = ..., offset: _Optional[int] = ..., device_ids: _Optional[_Iterable[bytes]] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., tag: _Optional[int] = ...) -> None: ...
+    id_flag: int
+    def __init__(self, number: _Optional[int] = ..., offset: _Optional[int] = ..., device_ids: _Optional[_Iterable[bytes]] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., tag: _Optional[int] = ..., id_flag: _Optional[int] = ...) -> None: ...
 
 class BufferSetTime(_message.Message):
     __slots__ = ("set_id", "timestamp", "tag")

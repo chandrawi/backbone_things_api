@@ -107,6 +107,8 @@ pub struct SliceGroupOption {
     pub begin: ::core::option::Option<i64>,
     #[prost(int64, optional, tag = "5")]
     pub end: ::core::option::Option<i64>,
+    #[prost(int32, tag = "6")]
+    pub id_flag: i32,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct SliceUpdate {

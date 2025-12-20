@@ -319,14 +319,20 @@ def list_buffer_group_by_number_after(resource, device_ids: List[UUID], model_id
 def read_buffer_group_first(resource, device_ids: Optional[List[UUID]], model_ids: Optional[List[UUID]], tag: Optional[int]=None):
     with grpc.insecure_channel(resource.address) as channel:
         stub = buffer_pb2_grpc.BufferServiceStub(channel)
+        id_flag = 0
         device_bytes_list = None
-        if device_ids != None: device_bytes_list = list(map((lambda x: x.bytes), device_ids))
+        if device_ids != None:
+            id_flag += 1
+            device_bytes_list = list(map((lambda x: x.bytes), device_ids))
         model_bytes_list = None
-        if model_ids != None: model_bytes_list = list(map((lambda x: x.bytes), model_ids))
+        if model_ids != None:
+            id_flag += 2
+            model_bytes_list = list(map((lambda x: x.bytes), model_ids))
         request = buffer_pb2.BufferGroupSelector(
             device_ids=device_bytes_list,
             model_ids=model_bytes_list,
-            tag=tag
+            tag=tag,
+            id_flag=id_flag
         )
         response = stub.ReadBufferGroupFirst(request=request, metadata=resource.metadata)
         return BufferSchema.from_response(response.result)
@@ -334,14 +340,20 @@ def read_buffer_group_first(resource, device_ids: Optional[List[UUID]], model_id
 def read_buffer_group_last(resource, device_ids: Optional[List[UUID]], model_ids: Optional[List[UUID]], tag: Optional[int]=None):
     with grpc.insecure_channel(resource.address) as channel:
         stub = buffer_pb2_grpc.BufferServiceStub(channel)
+        id_flag = 0
         device_bytes_list = None
-        if device_ids != None: device_bytes_list = list(map((lambda x: x.bytes), device_ids))
+        if device_ids != None:
+            id_flag += 1
+            device_bytes_list = list(map((lambda x: x.bytes), device_ids))
         model_bytes_list = None
-        if model_ids != None: model_bytes_list = list(map((lambda x: x.bytes), model_ids))
+        if model_ids != None:
+            id_flag += 2
+            model_bytes_list = list(map((lambda x: x.bytes), model_ids))
         request = buffer_pb2.BufferGroupSelector(
             device_ids=device_bytes_list,
             model_ids=model_bytes_list,
-            tag=tag
+            tag=tag,
+            id_flag=id_flag
         )
         response = stub.ReadBufferGroupLast(request=request, metadata=resource.metadata)
         return BufferSchema.from_response(response.result)
@@ -349,15 +361,21 @@ def read_buffer_group_last(resource, device_ids: Optional[List[UUID]], model_ids
 def list_buffer_group_first(resource, number: int, device_ids: Optional[List[UUID]], model_ids: Optional[List[UUID]], tag: Optional[int]=None):
     with grpc.insecure_channel(resource.address) as channel:
         stub = buffer_pb2_grpc.BufferServiceStub(channel)
+        id_flag = 0
         device_bytes_list = None
-        if device_ids != None: device_bytes_list = list(map((lambda x: x.bytes), device_ids))
+        if device_ids != None:
+            id_flag += 1
+            device_bytes_list = list(map((lambda x: x.bytes), device_ids))
         model_bytes_list = None
-        if model_ids != None: model_bytes_list = list(map((lambda x: x.bytes), model_ids))
+        if model_ids != None:
+            id_flag += 2
+            model_bytes_list = list(map((lambda x: x.bytes), model_ids))
         request = buffer_pb2.BuffersGroupSelector(
             device_ids=device_bytes_list,
             model_ids=model_bytes_list,
             tag=tag,
-            number=number
+            number=number,
+            id_flag=id_flag
         )
         response = stub.ListBufferGroupFirst(request=request, metadata=resource.metadata)
         ls = []
@@ -367,16 +385,22 @@ def list_buffer_group_first(resource, number: int, device_ids: Optional[List[UUI
 def list_buffer_group_first_offset(resource, number: int, offset: int, device_ids: Optional[List[UUID]], model_ids: Optional[List[UUID]], tag: Optional[int]=None):
     with grpc.insecure_channel(resource.address) as channel:
         stub = buffer_pb2_grpc.BufferServiceStub(channel)
+        id_flag = 0
         device_bytes_list = None
-        if device_ids != None: device_bytes_list = list(map((lambda x: x.bytes), device_ids))
+        if device_ids != None:
+            id_flag += 1
+            device_bytes_list = list(map((lambda x: x.bytes), device_ids))
         model_bytes_list = None
-        if model_ids != None: model_bytes_list = list(map((lambda x: x.bytes), model_ids))
+        if model_ids != None:
+            id_flag += 2
+            model_bytes_list = list(map((lambda x: x.bytes), model_ids))
         request = buffer_pb2.BuffersGroupSelector(
             device_ids=device_bytes_list,
             model_ids=model_bytes_list,
             tag=tag,
             number=number,
-            offset=offset
+            offset=offset,
+            id_flag=id_flag
         )
         response = stub.ListBufferGroupFirstOffset(request=request, metadata=resource.metadata)
         ls = []
@@ -386,15 +410,21 @@ def list_buffer_group_first_offset(resource, number: int, offset: int, device_id
 def list_buffer_group_last(resource, number: int, device_ids: Optional[List[UUID]], model_ids: Optional[List[UUID]], tag: Optional[int]=None):
     with grpc.insecure_channel(resource.address) as channel:
         stub = buffer_pb2_grpc.BufferServiceStub(channel)
+        id_flag = 0
         device_bytes_list = None
-        if device_ids != None: device_bytes_list = list(map((lambda x: x.bytes), device_ids))
+        if device_ids != None:
+            id_flag += 1
+            device_bytes_list = list(map((lambda x: x.bytes), device_ids))
         model_bytes_list = None
-        if model_ids != None: model_bytes_list = list(map((lambda x: x.bytes), model_ids))
+        if model_ids != None:
+            id_flag += 2
+            model_bytes_list = list(map((lambda x: x.bytes), model_ids))
         request = buffer_pb2.BuffersGroupSelector(
             device_ids=device_bytes_list,
             model_ids=model_bytes_list,
             tag=tag,
-            number=number
+            number=number,
+            id_flag=id_flag
         )
         response = stub.ListBufferGroupLast(request=request, metadata=resource.metadata)
         ls = []
@@ -404,16 +434,22 @@ def list_buffer_group_last(resource, number: int, device_ids: Optional[List[UUID
 def list_buffer_group_last_offset(resource, number: int, offset: int, device_ids: Optional[List[UUID]], model_ids: Optional[List[UUID]], tag: Optional[int]=None):
     with grpc.insecure_channel(resource.address) as channel:
         stub = buffer_pb2_grpc.BufferServiceStub(channel)
+        id_flag = 0
         device_bytes_list = None
-        if device_ids != None: device_bytes_list = list(map((lambda x: x.bytes), device_ids))
+        if device_ids != None:
+            id_flag += 1
+            device_bytes_list = list(map((lambda x: x.bytes), device_ids))
         model_bytes_list = None
-        if model_ids != None: model_bytes_list = list(map((lambda x: x.bytes), model_ids))
+        if model_ids != None:
+            id_flag += 2
+            model_bytes_list = list(map((lambda x: x.bytes), model_ids))
         request = buffer_pb2.BuffersGroupSelector(
             device_ids=device_bytes_list,
             model_ids=model_bytes_list,
             tag=tag,
             number=number,
-            offset=offset
+            offset=offset,
+            id_flag=id_flag
         )
         response = stub.ListBufferGroupLastOffset(request=request, metadata=resource.metadata)
         ls = []
@@ -727,15 +763,21 @@ def list_buffer_group_timestamp_by_range(resource, device_ids: List[UUID], model
 def list_buffer_group_timestamp_first(resource, number: int, device_ids: Optional[List[UUID]], model_ids: Optional[List[UUID]], tag: Optional[int]=None):
     with grpc.insecure_channel(resource.address) as channel:
         stub = buffer_pb2_grpc.BufferServiceStub(channel)
+        id_flag = 0
         device_bytes_list = None
-        if device_ids != None: device_bytes_list = list(map((lambda x: x.bytes), device_ids))
+        if device_ids != None:
+            id_flag += 1
+            device_bytes_list = list(map((lambda x: x.bytes), device_ids))
         model_bytes_list = None
-        if model_ids != None: model_bytes_list = list(map((lambda x: x.bytes), model_ids))
+        if model_ids != None:
+            id_flag += 2
+            model_bytes_list = list(map((lambda x: x.bytes), model_ids))
         request = buffer_pb2.BuffersGroupSelector(
             device_ids=device_bytes_list,
             model_ids=model_bytes_list,
             tag=tag,
-            number=number
+            number=number,
+            id_flag=id_flag
         )
         response = stub.ListBufferGroupTimestampFirst(request=request, metadata=resource.metadata)
         ls = []
@@ -745,15 +787,21 @@ def list_buffer_group_timestamp_first(resource, number: int, device_ids: Optiona
 def list_buffer_group_timestamp_last(resource, number: int, device_ids: Optional[List[UUID]], model_ids: Optional[List[UUID]], tag: Optional[int]=None):
     with grpc.insecure_channel(resource.address) as channel:
         stub = buffer_pb2_grpc.BufferServiceStub(channel)
+        id_flag = 0
         device_bytes_list = None
-        if device_ids != None: device_bytes_list = list(map((lambda x: x.bytes), device_ids))
+        if device_ids != None:
+            id_flag += 1
+            device_bytes_list = list(map((lambda x: x.bytes), device_ids))
         model_bytes_list = None
-        if model_ids != None: model_bytes_list = list(map((lambda x: x.bytes), model_ids))
+        if model_ids != None:
+            id_flag += 2
+            model_bytes_list = list(map((lambda x: x.bytes), model_ids))
         request = buffer_pb2.BuffersGroupSelector(
             device_ids=device_bytes_list,
             model_ids=model_bytes_list,
             tag=tag,
-            number=number
+            number=number,
+            id_flag=id_flag
         )
         response = stub.ListBufferGroupTimestampLast(request=request, metadata=resource.metadata)
         ls = []

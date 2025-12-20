@@ -170,12 +170,16 @@ pub(crate) async fn list_slice_group_option(resource: &Resource, device_ids: Opt
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         SliceServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let mut id_flag = 0;
+    if let Some(_) = device_ids { id_flag += 1; }
+    if let Some(_) = model_ids { id_flag += 2; }
     let request = Request::new(SliceGroupOption {
         device_ids: device_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         model_ids: model_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         name: name.map(|s| s.to_owned()),
         begin: begin_or_timestamp.map(|t| t.timestamp_micros()),
-        end: end.map(|t| t.timestamp_micros())
+        end: end.map(|t| t.timestamp_micros()),
+        id_flag
     });
     let response = client.list_slice_group_option(request)
         .await?

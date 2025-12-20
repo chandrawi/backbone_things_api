@@ -402,10 +402,14 @@ pub(crate) async fn read_buffer_group_first(resource: &Resource, device_ids: Opt
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         BufferServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let mut id_flag = 0;
+    if let Some(_) = device_ids { id_flag += 1; }
+    if let Some(_) = model_ids { id_flag += 2; }
     let request = Request::new(BufferGroupSelector {
         device_ids: device_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         model_ids: model_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
-        tag: tag.map(|i| i as i32)
+        tag: tag.map(|i| i as i32),
+        id_flag
     });
     let response = client.read_buffer_group_first(request)
         .await?
@@ -419,10 +423,14 @@ pub(crate) async fn read_buffer_group_last(resource: &Resource, device_ids: Opti
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         BufferServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let mut id_flag = 0;
+    if let Some(_) = device_ids { id_flag += 1; }
+    if let Some(_) = model_ids { id_flag += 2; }
     let request = Request::new(BufferGroupSelector {
         device_ids: device_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         model_ids: model_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
-        tag: tag.map(|i| i as i32)
+        tag: tag.map(|i| i as i32),
+        id_flag
     });
     let response = client.read_buffer_group_last(request)
         .await?
@@ -436,12 +444,16 @@ pub(crate) async fn list_buffer_group_first(resource: &Resource, number: usize, 
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         BufferServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let mut id_flag = 0;
+    if let Some(_) = device_ids { id_flag += 1; }
+    if let Some(_) = model_ids { id_flag += 2; }
     let request = Request::new(BuffersGroupSelector {
         device_ids: device_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         model_ids: model_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         tag: tag.map(|i| i as i32),
         number: number as u32,
-        offset: 0
+        offset: 0,
+        id_flag
     });
     let response = client.list_buffer_group_first(request)
         .await?
@@ -455,12 +467,16 @@ pub(crate) async fn list_buffer_group_first_offset(resource: &Resource, number: 
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         BufferServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let mut id_flag = 0;
+    if let Some(_) = device_ids { id_flag += 1; }
+    if let Some(_) = model_ids { id_flag += 2; }
     let request = Request::new(BuffersGroupSelector {
         device_ids: device_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         model_ids: model_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         tag: tag.map(|i| i as i32),
         number: number as u32,
-        offset: offset as u32
+        offset: offset as u32,
+        id_flag
     });
     let response = client.list_buffer_group_first_offset(request)
         .await?
@@ -474,12 +490,16 @@ pub(crate) async fn list_buffer_group_last(resource: &Resource, number: usize, d
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         BufferServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let mut id_flag = 0;
+    if let Some(_) = device_ids { id_flag += 1; }
+    if let Some(_) = model_ids { id_flag += 2; }
     let request = Request::new(BuffersGroupSelector {
         device_ids: device_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         model_ids: model_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         tag: tag.map(|i| i as i32),
         number: number as u32,
-        offset: 0
+        offset: 0,
+        id_flag
     });
     let response = client.list_buffer_group_last(request)
         .await?
@@ -493,12 +513,16 @@ pub(crate) async fn list_buffer_group_last_offset(resource: &Resource, number: u
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         BufferServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let mut id_flag = 0;
+    if let Some(_) = device_ids { id_flag += 1; }
+    if let Some(_) = model_ids { id_flag += 2; }
     let request = Request::new(BuffersGroupSelector {
         device_ids: device_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         model_ids: model_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         tag: tag.map(|i| i as i32),
         number: number as u32,
-        offset: offset as u32
+        offset: offset as u32,
+        id_flag
     });
     let response = client.list_buffer_group_last_offset(request)
         .await?
@@ -901,12 +925,16 @@ pub(crate) async fn list_buffer_group_timestamp_first(resource: &Resource, numbe
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         BufferServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let mut id_flag = 0;
+    if let Some(_) = device_ids { id_flag += 1; }
+    if let Some(_) = model_ids { id_flag += 2; }
     let request = Request::new(BuffersGroupSelector {
         device_ids: device_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         model_ids: model_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         tag: tag.map(|i| i as i32),
         number: number as u32,
-        offset: 0
+        offset: 0,
+        id_flag
     });
     let response = client.list_buffer_group_timestamp_first(request)
         .await?
@@ -920,12 +948,16 @@ pub(crate) async fn list_buffer_group_timestamp_last(resource: &Resource, number
     let interceptor = TokenInterceptor(resource.access_token.clone());
     let mut client = 
         BufferServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
+    let mut id_flag = 0;
+    if let Some(_) = device_ids { id_flag += 1; }
+    if let Some(_) = model_ids { id_flag += 2; }
     let request = Request::new(BuffersGroupSelector {
         device_ids: device_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         model_ids: model_ids.unwrap_or_default().into_iter().map(|id| id.as_bytes().to_vec()).collect(),
         tag: tag.map(|i| i as i32),
         number: number as u32,
-        offset: 0
+        offset: 0,
+        id_flag
     });
     let response = client.list_buffer_group_timestamp_last(request)
         .await?

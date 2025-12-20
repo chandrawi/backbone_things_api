@@ -201,9 +201,15 @@ impl SliceService for SliceServer {
     {
         self.validate(request.extensions(), READ_SLICE)?;
         let request = request.into_inner();
+        let device_ids: Option<Vec<Uuid>> = (request.id_flag & 1 != 0).then(|| {
+            request.device_ids.into_iter().map(|id| Uuid::from_slice(&id).unwrap_or_default()).collect()
+        });
+        let model_ids: Option<Vec<Uuid>> = (request.id_flag & 2 != 0).then(|| {
+            request.model_ids.into_iter().map(|id| Uuid::from_slice(&id).unwrap_or_default()).collect()
+        });
         let result = self.resource_db.list_slice_group_option(
-            Some(&request.device_ids.into_iter().map(|id| Uuid::from_slice(&id).unwrap_or_default()).collect::<Vec<Uuid>>()),
-            Some(&request.model_ids.into_iter().map(|id| Uuid::from_slice(&id).unwrap_or_default()).collect::<Vec<Uuid>>()),
+            device_ids.as_deref(),
+            model_ids.as_deref(),
             request.name.as_deref(),
             request.begin.map(|t| Utc.timestamp_nanos(t * 1000)),
             request.end.map(|t| Utc.timestamp_nanos(t * 1000))

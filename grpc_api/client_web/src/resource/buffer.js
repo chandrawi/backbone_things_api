@@ -647,13 +647,17 @@ export async function list_buffer_group_by_number_after(config, request) {
 export async function read_buffer_group_first(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupSelector = new pb_buffer.BufferGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         bufferGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         bufferGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     bufferGroupSelector.setTag(request.tag);
+    bufferGroupSelector.setIdFlag(id_flag);
     return client.readBufferGroupFirst(bufferGroupSelector, metadata(config.access_token))
         .then(response => get_buffer_schema(response.toObject().result));
 }
@@ -667,13 +671,17 @@ export async function read_buffer_group_first(config, request) {
 export async function read_buffer_group_last(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupSelector = new pb_buffer.BufferGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         bufferGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         bufferGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     bufferGroupSelector.setTag(request.tag);
+    bufferGroupSelector.setIdFlag(id_flag);
     return client.readBufferGroupLast(bufferGroupSelector, metadata(config.access_token))
         .then(response => get_buffer_schema(response.toObject().result));
 }
@@ -687,14 +695,18 @@ export async function read_buffer_group_last(config, request) {
 export async function list_buffer_group_first(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
+    buffersGroupSelector.setIdFlag(id_flag);
     return client.listBufferGroupFirst(buffersGroupSelector, metadata(config.access_token))
         .then(response => get_buffer_schema_vec(response.toObject().resultsList));
 }
@@ -708,15 +720,19 @@ export async function list_buffer_group_first(config, request) {
 export async function list_buffer_group_first_offset(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
     buffersGroupSelector.setOffset(request.offset);
+    buffersGroupSelector.setIdFlag(id_flag);
     return client.listBufferGroupFirstOffset(buffersGroupSelector, metadata(config.access_token))
         .then(response => get_buffer_schema_vec(response.toObject().resultsList));
 }
@@ -730,14 +746,18 @@ export async function list_buffer_group_first_offset(config, request) {
 export async function list_buffer_group_last(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
+    buffersGroupSelector.setIdFlag(id_flag);
     return client.listBufferGroupLast(buffersGroupSelector, metadata(config.access_token))
         .then(response => get_buffer_schema_vec(response.toObject().resultsList));
 }
@@ -751,15 +771,19 @@ export async function list_buffer_group_last(config, request) {
 export async function list_buffer_group_last_offset(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
     buffersGroupSelector.setOffset(request.offset);
+    buffersGroupSelector.setIdFlag(id_flag);
     return client.listBufferGroupLastOffset(buffersGroupSelector, metadata(config.access_token))
         .then(response => get_buffer_schema_vec(response.toObject().resultsList));
 }
@@ -1163,14 +1187,18 @@ export async function list_buffer_group_timestamp_by_range(config, request) {
 export async function list_buffer_group_timestamp_first(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
+    buffersGroupSelector.setIdFlag(id_flag);
     return client.listBufferGroupTimestampFirst(buffersGroupSelector, metadata(config.access_token))
         .then(response => response.toObject().timestampsList.map((v) => new Date(v / 1000)));
 }
@@ -1184,14 +1212,18 @@ export async function list_buffer_group_timestamp_first(config, request) {
 export async function list_buffer_group_timestamp_last(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
+    buffersGroupSelector.setIdFlag(id_flag);
     return client.listBufferGroupTimestampLast(buffersGroupSelector, metadata(config.access_token))
         .then(response => response.toObject().timestampsList.map((v) => new Date(v / 1000)));
 }

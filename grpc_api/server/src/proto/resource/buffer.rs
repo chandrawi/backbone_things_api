@@ -194,6 +194,8 @@ pub struct BufferGroupSelector {
     pub model_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
     #[prost(int32, optional, tag = "3")]
     pub tag: ::core::option::Option<i32>,
+    #[prost(int32, tag = "4")]
+    pub id_flag: i32,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct BuffersGroupSelector {
@@ -207,6 +209,8 @@ pub struct BuffersGroupSelector {
     pub model_ids: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
     #[prost(int32, optional, tag = "5")]
     pub tag: ::core::option::Option<i32>,
+    #[prost(int32, tag = "6")]
+    pub id_flag: i32,
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct BufferSetTime {

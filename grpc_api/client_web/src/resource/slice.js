@@ -346,11 +346,14 @@ export async function list_slice_group_by_range(config, request) {
 export async function list_slice_group_option(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceGroupOption = new pb_slice.SliceGroupOption();
+    let id_flag = 0;
     if (request.device_ids) {
         sliceGroupOption.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         sliceGroupOption.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     sliceGroupOption.setName(request.name);
     if (request.begin instanceof Date) {
@@ -359,6 +362,7 @@ export async function list_slice_group_option(config, request) {
     if (request.end instanceof Date) {
         sliceGroupOption.setEnd(request.timestamp_end.valueOf() * 1000);
     }
+    sliceGroupOption.setIdFlag(id_flag);
     return client.listSliceGroupOption(sliceGroupOption, metadata(config.access_token))
         .then(response => get_slice_schema_vec(response.toObject().resultsList));
 }

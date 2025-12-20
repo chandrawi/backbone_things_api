@@ -113,18 +113,20 @@ class SliceGroupRange(_message.Message):
     def __init__(self, device_ids: _Optional[_Iterable[bytes]] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., begin: _Optional[int] = ..., end: _Optional[int] = ...) -> None: ...
 
 class SliceGroupOption(_message.Message):
-    __slots__ = ("device_ids", "model_ids", "name", "begin", "end")
+    __slots__ = ("device_ids", "model_ids", "name", "begin", "end", "id_flag")
     DEVICE_IDS_FIELD_NUMBER: _ClassVar[int]
     MODEL_IDS_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     BEGIN_FIELD_NUMBER: _ClassVar[int]
     END_FIELD_NUMBER: _ClassVar[int]
+    ID_FLAG_FIELD_NUMBER: _ClassVar[int]
     device_ids: _containers.RepeatedScalarFieldContainer[bytes]
     model_ids: _containers.RepeatedScalarFieldContainer[bytes]
     name: str
     begin: int
     end: int
-    def __init__(self, device_ids: _Optional[_Iterable[bytes]] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., name: _Optional[str] = ..., begin: _Optional[int] = ..., end: _Optional[int] = ...) -> None: ...
+    id_flag: int
+    def __init__(self, device_ids: _Optional[_Iterable[bytes]] = ..., model_ids: _Optional[_Iterable[bytes]] = ..., name: _Optional[str] = ..., begin: _Optional[int] = ..., end: _Optional[int] = ..., id_flag: _Optional[int] = ...) -> None: ...
 
 class SliceUpdate(_message.Message):
     __slots__ = ("id", "timestamp_begin", "timestamp_end", "name", "description")

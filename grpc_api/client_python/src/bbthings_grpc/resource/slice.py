@@ -127,20 +127,26 @@ def list_slice_group_by_range(resource, device_ids: List[UUID], model_ids: List[
 def list_slice_group_option(resource, device_ids: Optional[List[UUID]], model_ids: Optional[List[UUID]], name: Optional[str], begin_or_timestamp: Optional[datetime], end: Optional[datetime]):
     with grpc.insecure_channel(resource.address) as channel:
         stub = slice_pb2_grpc.SliceServiceStub(channel)
-        id_devices = None
-        if device_ids != None: id_devices = list(map((lambda x: x.bytes), device_ids))
-        id_models = None
-        if model_ids != None: id_models = list(map((lambda x: x.bytes), model_ids))
+        id_flag = 0
+        device_bytes_list = None
+        if device_ids != None:
+            id_flag += 1
+            device_bytes_list = list(map((lambda x: x.bytes), device_ids))
+        model_bytes_list = None
+        if model_ids != None:
+            id_flag += 2
+            model_bytes_list = list(map((lambda x: x.bytes), model_ids))
         timestamp_begin = None
         if begin_or_timestamp != None: timestamp_begin = int(begin_or_timestamp.timestamp()*1000000)
         timestamp_end = None
         if end != None: timestamp_end = int(end.timestamp()*1000000)
         request = slice_pb2.SliceGroupOption(
-            device_ids=id_devices,
-            model_ids=id_models,
+            device_ids=device_bytes_list,
+            model_ids=model_bytes_list,
             name=name,
             begin=timestamp_begin,
-            end=timestamp_end
+            end=timestamp_end,
+            id_flag=id_flag
         )
         response = stub.ListSliceGroupOption(request=request, metadata=resource.metadata)
         ls = []

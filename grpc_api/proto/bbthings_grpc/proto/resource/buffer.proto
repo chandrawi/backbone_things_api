@@ -242,6 +242,7 @@ message BufferGroupSelector {
     repeated bytes device_ids = 1;
     repeated bytes model_ids = 2;
     optional int32 tag = 3;
+    int32 id_flag = 4;
 }
 
 message BuffersGroupSelector {
@@ -250,6 +251,7 @@ message BuffersGroupSelector {
     repeated bytes device_ids = 3;
     repeated bytes model_ids = 4;
     optional int32 tag = 5;
+    int32 id_flag = 6;
 }
 
 message BufferSetTime {

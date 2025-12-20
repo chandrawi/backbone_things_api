@@ -118,6 +118,7 @@ message SliceGroupOption {
     optional string name = 3;
     optional int64 begin = 4;
     optional int64 end = 5;
+    int32 id_flag = 6;
 }
 
 message SliceUpdate {

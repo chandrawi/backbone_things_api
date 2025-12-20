@@ -80234,7 +80234,8 @@ function requireBuffer_pb () {
 		  var f, obj = {
 		deviceIdsList: msg.getDeviceIdsList_asB64(),
 		modelIdsList: msg.getModelIdsList_asB64(),
-		tag: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+		tag: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+		idFlag: jspb.Message.getFieldWithDefault(msg, 4, 0)
 		  };
 
 		  if (includeInstance) {
@@ -80283,6 +80284,10 @@ function requireBuffer_pb () {
 		      var value = /** @type {number} */ (reader.readInt32());
 		      msg.setTag(value);
 		      break;
+		    case 4:
+		      var value = /** @type {number} */ (reader.readInt32());
+		      msg.setIdFlag(value);
+		      break;
 		    default:
 		      reader.skipField();
 		      break;
@@ -80330,6 +80335,13 @@ function requireBuffer_pb () {
 		  if (f != null) {
 		    writer.writeInt32(
 		      3,
+		      f
+		    );
+		  }
+		  f = message.getIdFlag();
+		  if (f !== 0) {
+		    writer.writeInt32(
+		      4,
 		      f
 		    );
 		  }
@@ -80494,6 +80506,24 @@ function requireBuffer_pb () {
 		};
 
 
+		/**
+		 * optional int32 id_flag = 4;
+		 * @return {number}
+		 */
+		proto.buffer.BufferGroupSelector.prototype.getIdFlag = function() {
+		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+		};
+
+
+		/**
+		 * @param {number} value
+		 * @return {!proto.buffer.BufferGroupSelector} returns this
+		 */
+		proto.buffer.BufferGroupSelector.prototype.setIdFlag = function(value) {
+		  return jspb.Message.setProto3IntField(this, 4, value);
+		};
+
+
 
 		/**
 		 * List of repeated fields within this message type.
@@ -80537,7 +80567,8 @@ function requireBuffer_pb () {
 		offset: jspb.Message.getFieldWithDefault(msg, 2, 0),
 		deviceIdsList: msg.getDeviceIdsList_asB64(),
 		modelIdsList: msg.getModelIdsList_asB64(),
-		tag: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
+		tag: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
+		idFlag: jspb.Message.getFieldWithDefault(msg, 6, 0)
 		  };
 
 		  if (includeInstance) {
@@ -80593,6 +80624,10 @@ function requireBuffer_pb () {
 		    case 5:
 		      var value = /** @type {number} */ (reader.readInt32());
 		      msg.setTag(value);
+		      break;
+		    case 6:
+		      var value = /** @type {number} */ (reader.readInt32());
+		      msg.setIdFlag(value);
 		      break;
 		    default:
 		      reader.skipField();
@@ -80655,6 +80690,13 @@ function requireBuffer_pb () {
 		  if (f != null) {
 		    writer.writeInt32(
 		      5,
+		      f
+		    );
+		  }
+		  f = message.getIdFlag();
+		  if (f !== 0) {
+		    writer.writeInt32(
+		      6,
 		      f
 		    );
 		  }
@@ -80852,6 +80894,24 @@ function requireBuffer_pb () {
 		 */
 		proto.buffer.BuffersGroupSelector.prototype.hasTag = function() {
 		  return jspb.Message.getField(this, 5) != null;
+		};
+
+
+		/**
+		 * optional int32 id_flag = 6;
+		 * @return {number}
+		 */
+		proto.buffer.BuffersGroupSelector.prototype.getIdFlag = function() {
+		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+		};
+
+
+		/**
+		 * @param {number} value
+		 * @return {!proto.buffer.BuffersGroupSelector} returns this
+		 */
+		proto.buffer.BuffersGroupSelector.prototype.setIdFlag = function(value) {
+		  return jspb.Message.setProto3IntField(this, 6, value);
 		};
 
 
@@ -88236,13 +88296,17 @@ async function list_buffer_group_by_number_after(config, request) {
 async function read_buffer_group_first(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupSelector = new pb_buffer.BufferGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         bufferGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         bufferGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     bufferGroupSelector.setTag(request.tag);
+    bufferGroupSelector.setIdFlag(id_flag);
     return client.readBufferGroupFirst(bufferGroupSelector, metadata(config.access_token))
         .then(response => get_buffer_schema(response.toObject().result));
 }
@@ -88256,13 +88320,17 @@ async function read_buffer_group_first(config, request) {
 async function read_buffer_group_last(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const bufferGroupSelector = new pb_buffer.BufferGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         bufferGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         bufferGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     bufferGroupSelector.setTag(request.tag);
+    bufferGroupSelector.setIdFlag(id_flag);
     return client.readBufferGroupLast(bufferGroupSelector, metadata(config.access_token))
         .then(response => get_buffer_schema(response.toObject().result));
 }
@@ -88276,14 +88344,18 @@ async function read_buffer_group_last(config, request) {
 async function list_buffer_group_first(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
+    buffersGroupSelector.setIdFlag(id_flag);
     return client.listBufferGroupFirst(buffersGroupSelector, metadata(config.access_token))
         .then(response => get_buffer_schema_vec(response.toObject().resultsList));
 }
@@ -88297,15 +88369,19 @@ async function list_buffer_group_first(config, request) {
 async function list_buffer_group_first_offset(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
     buffersGroupSelector.setOffset(request.offset);
+    buffersGroupSelector.setIdFlag(id_flag);
     return client.listBufferGroupFirstOffset(buffersGroupSelector, metadata(config.access_token))
         .then(response => get_buffer_schema_vec(response.toObject().resultsList));
 }
@@ -88319,14 +88395,18 @@ async function list_buffer_group_first_offset(config, request) {
 async function list_buffer_group_last(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
+    buffersGroupSelector.setIdFlag(id_flag);
     return client.listBufferGroupLast(buffersGroupSelector, metadata(config.access_token))
         .then(response => get_buffer_schema_vec(response.toObject().resultsList));
 }
@@ -88340,15 +88420,19 @@ async function list_buffer_group_last(config, request) {
 async function list_buffer_group_last_offset(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
     buffersGroupSelector.setOffset(request.offset);
+    buffersGroupSelector.setIdFlag(id_flag);
     return client.listBufferGroupLastOffset(buffersGroupSelector, metadata(config.access_token))
         .then(response => get_buffer_schema_vec(response.toObject().resultsList));
 }
@@ -88752,14 +88836,18 @@ async function list_buffer_group_timestamp_by_range(config, request) {
 async function list_buffer_group_timestamp_first(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
+    buffersGroupSelector.setIdFlag(id_flag);
     return client.listBufferGroupTimestampFirst(buffersGroupSelector, metadata(config.access_token))
         .then(response => response.toObject().timestampsList.map((v) => new Date(v / 1000)));
 }
@@ -88773,14 +88861,18 @@ async function list_buffer_group_timestamp_first(config, request) {
 async function list_buffer_group_timestamp_last(config, request) {
     const client = new pb_buffer.BufferServicePromiseClient(config.address, null, null);
     const buffersGroupSelector = new pb_buffer.BuffersGroupSelector();
+    let id_flag = 0;
     if (request.device_ids) {
         buffersGroupSelector.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         buffersGroupSelector.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     buffersGroupSelector.setTag(request.tag);
     buffersGroupSelector.setNumber(request.number);
+    buffersGroupSelector.setIdFlag(id_flag);
     return client.listBufferGroupTimestampLast(buffersGroupSelector, metadata(config.access_token))
         .then(response => response.toObject().timestampsList.map((v) => new Date(v / 1000)));
 }
@@ -91965,7 +92057,8 @@ function requireSlice_pb () {
 		modelIdsList: msg.getModelIdsList_asB64(),
 		name: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
 		begin: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-		end: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
+		end: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
+		idFlag: jspb.Message.getFieldWithDefault(msg, 6, 0)
 		  };
 
 		  if (includeInstance) {
@@ -92021,6 +92114,10 @@ function requireSlice_pb () {
 		    case 5:
 		      var value = /** @type {number} */ (reader.readInt64());
 		      msg.setEnd(value);
+		      break;
+		    case 6:
+		      var value = /** @type {number} */ (reader.readInt32());
+		      msg.setIdFlag(value);
 		      break;
 		    default:
 		      reader.skipField();
@@ -92083,6 +92180,13 @@ function requireSlice_pb () {
 		  if (f != null) {
 		    writer.writeInt64(
 		      5,
+		      f
+		    );
+		  }
+		  f = message.getIdFlag();
+		  if (f !== 0) {
+		    writer.writeInt32(
+		      6,
 		      f
 		    );
 		  }
@@ -92316,6 +92420,24 @@ function requireSlice_pb () {
 		 */
 		proto.slice.SliceGroupOption.prototype.hasEnd = function() {
 		  return jspb.Message.getField(this, 5) != null;
+		};
+
+
+		/**
+		 * optional int32 id_flag = 6;
+		 * @return {number}
+		 */
+		proto.slice.SliceGroupOption.prototype.getIdFlag = function() {
+		  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+		};
+
+
+		/**
+		 * @param {number} value
+		 * @return {!proto.slice.SliceGroupOption} returns this
+		 */
+		proto.slice.SliceGroupOption.prototype.setIdFlag = function(value) {
+		  return jspb.Message.setProto3IntField(this, 6, value);
 		};
 
 
@@ -96348,11 +96470,14 @@ async function list_slice_group_by_range(config, request) {
 async function list_slice_group_option(config, request) {
     const client = new pb_slice.SliceServicePromiseClient(config.address, null, null);
     const sliceGroupOption = new pb_slice.SliceGroupOption();
+    let id_flag = 0;
     if (request.device_ids) {
         sliceGroupOption.setDeviceIdsList(request.device_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 1;
     }
     if (request.model_ids) {
         sliceGroupOption.setModelIdsList(request.model_ids.map((id) => uuid_hex_to_base64(id)));
+        id_flag += 2;
     }
     sliceGroupOption.setName(request.name);
     if (request.begin instanceof Date) {
@@ -96361,6 +96486,7 @@ async function list_slice_group_option(config, request) {
     if (request.end instanceof Date) {
         sliceGroupOption.setEnd(request.timestamp_end.valueOf() * 1000);
     }
+    sliceGroupOption.setIdFlag(id_flag);
     return client.listSliceGroupOption(sliceGroupOption, metadata(config.access_token))
         .then(response => get_slice_schema_vec(response.toObject().resultsList));
 }
