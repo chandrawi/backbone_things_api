@@ -7,22 +7,22 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class ModelSchema(_message.Message):
-    __slots__ = ("id", "category", "name", "description", "data_type", "tags", "configs")
+    __slots__ = ("id", "name", "category", "description", "data_type", "tags", "configs")
     ID_FIELD_NUMBER: _ClassVar[int]
-    CATEGORY_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
+    CATEGORY_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     DATA_TYPE_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CONFIGS_FIELD_NUMBER: _ClassVar[int]
     id: bytes
-    category: str
     name: str
+    category: str
     description: str
     data_type: _containers.RepeatedScalarFieldContainer[int]
     tags: _containers.RepeatedScalarFieldContainer[int]
     configs: _containers.RepeatedCompositeFieldContainer[ConfigSchemaVec]
-    def __init__(self, id: _Optional[bytes] = ..., category: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., data_type: _Optional[_Iterable[int]] = ..., tags: _Optional[_Iterable[int]] = ..., configs: _Optional[_Iterable[_Union[ConfigSchemaVec, _Mapping]]] = ...) -> None: ...
+    def __init__(self, id: _Optional[bytes] = ..., name: _Optional[str] = ..., category: _Optional[str] = ..., description: _Optional[str] = ..., data_type: _Optional[_Iterable[int]] = ..., tags: _Optional[_Iterable[int]] = ..., configs: _Optional[_Iterable[_Union[ConfigSchemaVec, _Mapping]]] = ...) -> None: ...
 
 class ConfigSchemaVec(_message.Message):
     __slots__ = ("configs",)

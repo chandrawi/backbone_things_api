@@ -173,7 +173,7 @@ impl DeviceService for DeviceServer {
             Uuid::from_slice(&request.type_id).unwrap_or_default(),
             &request.serial_number,
             &request.name,
-            Some(&request.description)
+            &request.description
         ).await;
         match result {
             Ok(_) => (),
@@ -308,7 +308,7 @@ impl DeviceService for DeviceServer {
             Uuid::from_slice(&request.type_id).unwrap_or_default(),
             &request.serial_number,
             &request.name,
-            Some(&request.description)
+            &request.description
         ).await;
         match result {
             Ok(_) => (),
@@ -577,7 +577,7 @@ impl DeviceService for DeviceServer {
         let result = self.resource_db.create_type(
             Uuid::from_slice(&request.id).unwrap_or_default(),
             &request.name,
-            Some(&request.description)
+            &request.description
         ).await;
         let id = match result {
             Ok(value) => value,

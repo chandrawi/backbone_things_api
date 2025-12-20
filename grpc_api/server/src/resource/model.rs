@@ -147,10 +147,10 @@ impl ModelService for ModelServer {
         let data_type: Vec<DataType> = request.data_type.into_iter().map(|ty| DataType::from(ty)).collect();
         let result = self.resource_db.create_model(
             Uuid::from_slice(&request.id).unwrap_or_default(),
-            &data_type,
-            &request.category,
             &request.name,
-            Some(&request.description)
+            &request.category,
+            &request.description,
+            &data_type
         ).await;
         let id = match result {
             Ok(value) => value,
@@ -171,10 +171,10 @@ impl ModelService for ModelServer {
         };
         let result = self.resource_db.update_model(
             Uuid::from_slice(&request.id).unwrap_or_default(),
-            data_type.as_deref(),
-            request.category.as_deref(),
             request.name.as_deref(),
-            request.description.as_deref()
+            request.category.as_deref(),
+            request.description.as_deref(),
+            data_type.as_deref()
         ).await;
         match result {
             Ok(_) => (),

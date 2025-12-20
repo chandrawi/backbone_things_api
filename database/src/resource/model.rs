@@ -116,26 +116,26 @@ pub fn select_model(
 
 pub fn insert_model(
     id: Uuid,
-    data_type: &[DataType],
-    category: &str,
     name: &str,
-    description: Option<&str>,
+    category: &str,
+    description: &str,
+    data_type: &[DataType]
 ) -> QueryStatement
 {
     let stmt = Query::insert()
         .into_table(Model::Table)
         .columns([
             Model::ModelId,
-            Model::Category,
             Model::Name,
+            Model::Category,
             Model::Description,
             Model::DataType
         ])
         .values([
             id.into(),
-            category.into(),
             name.into(),
-            description.unwrap_or_default().into(),
+            category.into(),
+            description.into(),
             data_type.into_iter().map(|ty| {
                 ty.to_owned().into()
             }).collect::<Vec<u8>>().into()
@@ -148,10 +148,10 @@ pub fn insert_model(
 
 pub fn update_model(
     id: Uuid,
-    data_type: Option<&[DataType]>,
-    category: Option<&str>,
     name: Option<&str>,
-    description: Option<&str>
+    category: Option<&str>,
+    description: Option<&str>,
+    data_type: Option<&[DataType]>
 ) -> QueryStatement
 {
     let mut stmt = Query::update()

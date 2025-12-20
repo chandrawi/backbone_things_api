@@ -104,7 +104,7 @@ pub(crate) async fn list_model_option(resource: &Resource, type_id: Option<Uuid>
     Ok(response.results)
 }
 
-pub(crate) async fn create_model(resource: &Resource, id: Uuid, data_type: &[DataType], category: &str, name: &str, description: Option<&str>)
+pub(crate) async fn create_model(resource: &Resource, id: Uuid, name: &str, category: &str, description: &str, data_type: &[DataType])
     -> Result<Uuid, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -112,9 +112,9 @@ pub(crate) async fn create_model(resource: &Resource, id: Uuid, data_type: &[Dat
         ModelServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
     let request = Request::new(ModelSchema {
         id: id.as_bytes().to_vec(),
-        category: category.to_owned(),
         name: name.to_owned(),
-        description: description.unwrap_or("").to_owned(),
+        category: category.to_owned(),
+        description: description.to_owned(),
         data_type: data_type.into_iter().map(|ty| u32::from(ty.to_owned())).collect::<Vec<u32>>().to_owned(),
         tags: Vec::new(),
         configs: Vec::new()
@@ -125,7 +125,7 @@ pub(crate) async fn create_model(resource: &Resource, id: Uuid, data_type: &[Dat
     Ok(Uuid::from_slice(&response.id).unwrap_or_default())
 }
 
-pub(crate) async fn update_model(resource: &Resource, id: Uuid, data_type: Option<&[DataType]>, category: Option<&str>, name: Option<&str>, description: Option<&str>)
+pub(crate) async fn update_model(resource: &Resource, id: Uuid, name: Option<&str>, category: Option<&str>, description: Option<&str>, data_type: Option<&[DataType]>)
     -> Result<(), Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -133,8 +133,8 @@ pub(crate) async fn update_model(resource: &Resource, id: Uuid, data_type: Optio
         ModelServiceClient::with_interceptor(resource.channel.to_owned(), interceptor);
     let request = Request::new(ModelUpdate {
         id: id.as_bytes().to_vec(),
-        category: category.map(|s| s.to_owned()),
         name: name.map(|s| s.to_owned()),
+        category: category.map(|s| s.to_owned()),
         description: description.map(|s| s.to_owned()),
         data_type: data_type.map(|ty| {
             ty.into_iter()

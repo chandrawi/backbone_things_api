@@ -232,7 +232,7 @@ impl SliceService for SliceServer {
             Utc.timestamp_nanos(request.timestamp_begin * 1000),
             Utc.timestamp_nanos(request.timestamp_end * 1000),
             &request.name,
-            Some(&request.description)
+            &request.description
         ).await;
         let id = match result {
             Ok(value) => value,
@@ -393,7 +393,7 @@ impl SliceService for SliceServer {
             Utc.timestamp_nanos(request.timestamp_begin * 1000),
             Utc.timestamp_nanos(request.timestamp_end * 1000),
             &request.name,
-            Some(&request.description)
+            &request.description
         ).await;
         let id = match result {
             Ok(value) => value,

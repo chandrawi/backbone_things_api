@@ -187,7 +187,7 @@ pub(crate) async fn list_slice_group_option(resource: &Resource, device_ids: Opt
     Ok(response.results)
 }
 
-pub(crate) async fn create_slice(resource: &Resource, device_id: Uuid, model_id: Uuid, timestamp_begin: DateTime<Utc>, timestamp_end: DateTime<Utc>, name: &str, description: Option<&str>)
+pub(crate) async fn create_slice(resource: &Resource, device_id: Uuid, model_id: Uuid, timestamp_begin: DateTime<Utc>, timestamp_end: DateTime<Utc>, name: &str, description: &str)
     -> Result<i32, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -200,7 +200,7 @@ pub(crate) async fn create_slice(resource: &Resource, device_id: Uuid, model_id:
         timestamp_begin: timestamp_begin.timestamp_micros(),
         timestamp_end: timestamp_end.timestamp_micros(),
         name: name.to_owned(),
-        description: description.unwrap_or_default().to_owned()
+        description: description.to_owned()
     });
     let response = client.create_slice(request)
         .await?
@@ -354,7 +354,7 @@ pub(crate) async fn list_slice_set_option(resource: &Resource, set_id: Option<Uu
     Ok(response.results)
 }
 
-pub(crate) async fn create_slice_set(resource: &Resource, set_id: Uuid, timestamp_begin: DateTime<Utc>, timestamp_end: DateTime<Utc>, name: &str, description: Option<&str>)
+pub(crate) async fn create_slice_set(resource: &Resource, set_id: Uuid, timestamp_begin: DateTime<Utc>, timestamp_end: DateTime<Utc>, name: &str, description: &str)
     -> Result<i32, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -366,7 +366,7 @@ pub(crate) async fn create_slice_set(resource: &Resource, set_id: Uuid, timestam
         timestamp_begin: timestamp_begin.timestamp_micros(),
         timestamp_end: timestamp_end.timestamp_micros(),
         name: name.to_owned(),
-        description: description.unwrap_or_default().to_owned()
+        description: description.to_owned()
     });
     let response = client.create_slice_set(request)
         .await?

@@ -52,8 +52,8 @@ import {
 /**
  * @typedef {Object} ModelSchema
  * @property {Uuid} id
- * @property {string} category
  * @property {string} name
+ * @property {string} category
  * @property {string} description
  * @property {number[]|string[]} data_type
  * @property {number[]} tags
@@ -67,8 +67,8 @@ import {
 function get_model_schema(r) {
     return {
         id: base64_to_uuid_hex(r.id),
-        category: r.category,
         name: r.name,
+        category: r.category,
         description: r.description,
         data_type: r.dataTypeList.map((v) => { return get_data_type(v) }),
         tags: r.tagsList,
@@ -87,8 +87,8 @@ function get_model_schema_vec(r) {
 /**
  * @typedef {Object} ModelUpdate
  * @property {Uuid} id
- * @property {?string} category
  * @property {?string} name
+ * @property {?string} category
  * @property {?string} description
  * @property {?number[]|string[]} data_type
  */
@@ -179,7 +179,7 @@ function get_tag_schema(r) {
  * Read a model by uuid
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelId} request model uuid: id
- * @returns {Promise<ModelSchema>} model schema: id, category, name, description, data_type, configs
+ * @returns {Promise<ModelSchema>} model schema: id, name, category, description, data_type, tags, configs
  */
 export async function read_model(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -193,7 +193,7 @@ export async function read_model(config, request) {
  * Read models by uuid list
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelIds} request model uuid list: ids
- * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
+ * @returns {Promise<ModelSchema[]>} model schema: id, name, category, description, data_type, tags, configs
  */
 export async function list_model_by_ids(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -207,7 +207,7 @@ export async function list_model_by_ids(config, request) {
  * Read models by name
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelName} request model name: name
- * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
+ * @returns {Promise<ModelSchema[]>} model schema: id, name, category, description, data_type, tags, configs
  */
 export async function list_model_by_name(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -221,7 +221,7 @@ export async function list_model_by_name(config, request) {
  * Read models by category
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelCategory} request model category: category
- * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
+ * @returns {Promise<ModelSchema[]>} model schema: id, name, category, description, data_type, tags, configs
  */
 export async function list_model_by_category(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -235,7 +235,7 @@ export async function list_model_by_category(config, request) {
  * Read models with select options
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelOption} request model select option: type_id, name, category
- * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
+ * @returns {Promise<ModelSchema[]>} model schema: id, name, category, description, data_type, tags, configs
  */
 export async function list_model_option(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -253,7 +253,7 @@ export async function list_model_option(config, request) {
  * Read models by type
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeId} request type uuid: id
- * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
+ * @returns {Promise<ModelSchema[]>} model schema: id, name, category, description, data_type, tags, configs
  */
 export async function list_model_by_type(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -266,17 +266,17 @@ export async function list_model_by_type(config, request) {
 /**
  * Create a model
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {ModelSchema} request model schema: id, data_type, category, name, description
+ * @param {ModelSchema} request model schema: id, name, category, description, data_type
  * @returns {Promise<Uuid>} model uuid
  */
 export async function create_model(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelSchema = new pb_model.ModelSchema();
     modelSchema.setId(uuid_hex_to_base64(request.id));
-    modelSchema.setDataTypeList(request.data_type.map((v) => {return set_data_type(v)}));
-    modelSchema.setCategory(request.category);
     modelSchema.setName(request.name);
+    modelSchema.setCategory(request.category);
     modelSchema.setDescription(request.description);
+    modelSchema.setDataTypeList(request.data_type.map((v) => {return set_data_type(v)}));
     return client.createModel(modelSchema, metadata(config.access_token))
         .then(response => base64_to_uuid_hex(response.toObject().id));
 }
@@ -284,22 +284,22 @@ export async function create_model(config, request) {
 /**
  * Update a model
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {ModelUpdate} request model update: id, data_type, category, name, description
+ * @param {ModelUpdate} request model update: id, name, category, description, data_type
  * @returns {Promise<null>} update response
  */
 export async function update_model(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelUpdate = new pb_model.ModelUpdate();
     modelUpdate.setId(uuid_hex_to_base64(request.id));
+    modelUpdate.setName(request.name);
+    modelUpdate.setCategory(request.category);
+    modelUpdate.setDescription(request.description);
     if (request.data_type) {
         modelUpdate.setDataTypeList(request.data_type.map((v) => {return set_data_type(v)}));
         modelUpdate.setDataTypeFlag(true);
     } else {
         modelUpdate.setDataTypeFlag(false);
     }
-    modelUpdate.setCategory(request.category);
-    modelUpdate.setName(request.name);
-    modelUpdate.setDescription(request.description);
     return client.updateModel(modelUpdate, metadata(config.access_token))
         .then(response => null);
 }

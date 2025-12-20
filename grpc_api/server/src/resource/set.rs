@@ -126,7 +126,7 @@ impl SetService for SetServer {
             Uuid::from_slice(&request.id).unwrap_or_default(),
             Uuid::from_slice(&request.template_id).unwrap_or_default(),
             &request.name,
-            Some(&request.description)
+            &request.description
         ).await;
         let id = match result {
             Ok(value) => value,
@@ -284,7 +284,7 @@ impl SetService for SetServer {
         let result = self.resource_db.create_set_template(
             Uuid::from_slice(&request.id).unwrap_or_default(),
             &request.name,
-            Some(&request.description)
+            &request.description
         ).await;
         let id = match result {
             Ok(value) => value,

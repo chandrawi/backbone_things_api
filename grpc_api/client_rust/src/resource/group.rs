@@ -86,7 +86,7 @@ pub(crate) async fn list_group_model_option(resource: &Resource, name: Option<&s
     Ok(response.results)
 }
 
-pub(crate) async fn create_group_model(resource: &Resource, id: Uuid, name: &str, category: &str, description: Option<&str>)
+pub(crate) async fn create_group_model(resource: &Resource, id: Uuid, name: &str, category: &str, description: &str)
     -> Result<Uuid, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -96,7 +96,7 @@ pub(crate) async fn create_group_model(resource: &Resource, id: Uuid, name: &str
         id: id.as_bytes().to_vec(),
         name: name.to_owned(),
         category: category.to_owned(),
-        description: description.unwrap_or_default().to_owned(),
+        description: description.to_owned(),
         model_ids: Vec::new()
     });
     let response = client.create_group_model(request)
@@ -242,7 +242,7 @@ pub(crate) async fn list_group_device_option(resource: &Resource, name: Option<&
     Ok(response.results)
 }
 
-pub(crate) async fn create_group_device(resource: &Resource, id: Uuid, name: &str, category: &str, description: Option<&str>)
+pub(crate) async fn create_group_device(resource: &Resource, id: Uuid, name: &str, category: &str, description: &str)
     -> Result<Uuid, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -252,7 +252,7 @@ pub(crate) async fn create_group_device(resource: &Resource, id: Uuid, name: &st
         id: id.as_bytes().to_vec(),
         name: name.to_owned(),
         category: category.to_owned(),
-        description: description.unwrap_or_default().to_owned(),
+        description: description.to_owned(),
         device_ids: Vec::new()
     });
     let response = client.create_group_device(request)
@@ -398,7 +398,7 @@ pub(crate) async fn list_group_gateway_option(resource: &Resource, name: Option<
     Ok(response.results)
 }
 
-pub(crate) async fn create_group_gateway(resource: &Resource, id: Uuid, name: &str, category: &str, description: Option<&str>)
+pub(crate) async fn create_group_gateway(resource: &Resource, id: Uuid, name: &str, category: &str, description: &str)
     -> Result<Uuid, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -408,7 +408,7 @@ pub(crate) async fn create_group_gateway(resource: &Resource, id: Uuid, name: &s
         id: id.as_bytes().to_vec(),
         name: name.to_owned(),
         category: category.to_owned(),
-        description: description.unwrap_or_default().to_owned(),
+        description: description.to_owned(),
         device_ids: Vec::new()
     });
     let response = client.create_group_gateway(request)

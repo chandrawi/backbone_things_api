@@ -26,8 +26,8 @@ def test_resource():
     utility.start_resource_server()
 
     # create new data model and add data types
-    model_id = resource.create_model(uuid.uuid4(), [DataType.F64, DataType.F64], "UPLINK", "speed and direction", None)
-    model_buf_id = resource.create_model(uuid.uuid4(), [DataType.U8, DataType.U8, DataType.U8, DataType.U8], "UPLINK", "buffer 4", None)
+    model_id = resource.create_model(uuid.uuid4(), "speed and direction", "UPLINK", "", [DataType.F64, DataType.F64])
+    model_buf_id = resource.create_model(uuid.uuid4(), "buffer 4", "UPLINK", "", [DataType.U8, DataType.U8, DataType.U8, DataType.U8])
     # create scale, symbol, and threshold configurations for new created model
     resource.create_model_config(model_id, 0, "scale_0", "speed", "SCALE")
     resource.create_model_config(model_id, 1, "scale_1", "direction", "SCALE")
@@ -36,7 +36,7 @@ def test_resource():
     model_cfg_id = resource.create_model_config(model_id, 0, "upper_threshold", 250, "THRESHOLD")
 
     # Create new type and link it to newly created model
-    type_id = resource.create_type(uuid.uuid4(), "Speedometer Compass", None)
+    type_id = resource.create_type(uuid.uuid4(), "Speedometer Compass", "")
     resource.add_type_model(type_id, model_id)
     resource.add_type_model(type_id, model_buf_id)
 
@@ -44,8 +44,8 @@ def test_resource():
     gateway_id = UUID("bfc01f2c-8b2c-47cf-912a-f95f6f41a1e6")
     device_id1 = UUID("74768a42-bc29-40eb-8934-2effcbf34f8f")
     device_id2 = UUID("150a0a77-2d9b-4672-9253-3d42fd0f0940")
-    resource.create_device(device_id1, gateway_id, type_id, "TEST01", "Speedometer Compass 1", None)
-    resource.create_device(device_id2, gateway_id, type_id, "TEST02", "Speedometer Compass 2", None)
+    resource.create_device(device_id1, gateway_id, type_id, "TEST01", "Speedometer Compass 1", "")
+    resource.create_device(device_id2, gateway_id, type_id, "TEST02", "Speedometer Compass 2", "")
     # create device configurations
     resource.create_device_config(device_id1, "coef_0", -21, "CONVERSION")
     resource.create_device_config(device_id1, "coef_1", 0.1934, "CONVERSION")
@@ -55,16 +55,17 @@ def test_resource():
     device_cfg_id = resource.create_device_config(device_id2, "period", 120, "NETWORK")
 
     # create new group and register newly created models as its member
-    group_model_id = resource.create_group_model(uuid.uuid4(), "data", "APPLICATION", None)
+    group_model_id = resource.create_group_model(uuid.uuid4(), "data", "APPLICATION", "")
     resource.add_group_model_member(group_model_id, model_id)
     # create new group and register newly created devices as its member
-    group_device_id = resource.create_group_device(uuid.uuid4(), "sensor", "APPLICATION", None)
+    group_device_id = resource.create_group_device(uuid.uuid4(), "sensor", "APPLICATION", "")
     resource.add_group_device_member(group_device_id, device_id1)
     resource.add_group_device_member(group_device_id, device_id2)
 
     # read model
     model = resource.read_model(model_id)
     models = resource.list_model_by_name("speed")
+    print(models)
     model_ids = []
     for model in models: model_ids.append(model.id)
     assert model_id in model_ids
@@ -111,7 +112,7 @@ def test_resource():
     assert group_device.category == "APPLICATION"
 
     # update model
-    resource.update_model(model_buf_id, [DataType.I32, DataType.I32], None, "buffer 2 integer", "Model for store 2 i32 temporary data")
+    resource.update_model(model_buf_id, "buffer 2 integer", None, "Model for store 2 i32 temporary data", [DataType.I32, DataType.I32])
     model = resource.read_model(model_buf_id)
     assert model.name == "buffer 2 integer"
     assert model.data_type == [DataType.I32, DataType.I32]
@@ -144,8 +145,8 @@ def test_resource():
     assert group.description == "Sensor devices"
 
     # create set template and set
-    template_id = resource.create_set_template(uuid.uuid4(), "multiple compass", None)
-    set_id = resource.create_set(uuid.uuid4(), template_id, "multiple compass 1", None)
+    template_id = resource.create_set_template(uuid.uuid4(), "multiple compass", "")
+    set_id = resource.create_set(uuid.uuid4(), template_id, "multiple compass 1", "")
     # add devices value to the set template and set
     resource.add_set_template_member(template_id, type_id, model_id, [1,])
     resource.add_set_member(set_id, device_id2, model_id, [1,])
@@ -246,7 +247,7 @@ def test_resource():
         resource.read_buffer(buffers[0].id)
 
     # create data slice
-    slice_id = resource.create_slice(device_id1, model_id, timestamp_1, timestamp_2, "Speed and compass slice", None)
+    slice_id = resource.create_slice(device_id1, model_id, timestamp_1, timestamp_2, "Speed and compass slice", "")
     # read data slice
     slices = resource.list_slice_option(None, None, "slice", None, None)
     slice_filter = filter(lambda x: x.device_id == device_id1 and x.model_id == model_id, slices)

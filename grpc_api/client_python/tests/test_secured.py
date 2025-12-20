@@ -168,13 +168,13 @@ def test_secured():
 
     # try to create model by regular user and admin user, regular user should failed and admin user should success
     with pytest.raises(Exception):
-        res_user.create_model(uuid.uuid4(), "UPLINK", "name", "")
+        res_user.create_model(uuid.uuid4(), "name", "UPLINK", "", [DataType.F64])
     model_id = res_admin.create_model(
         id=uuid.uuid4(),
-        data_type=[DataType.F64],
-        category="UPLINK",
         name="name",
-        description=""
+        category="UPLINK",
+        description="",
+        data_type=[DataType.F64]
     )
 
     # read created model by regular user

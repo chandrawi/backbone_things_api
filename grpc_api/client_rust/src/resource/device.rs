@@ -124,7 +124,7 @@ pub(crate) async fn list_device_option(resource: &Resource, gateway_id: Option<U
     Ok(response.results)
 }
 
-pub(crate) async fn create_device(resource: &Resource, id: Uuid, gateway_id: Uuid, type_id: Uuid, serial_number: &str, name: &str, description: Option<&str>)
+pub(crate) async fn create_device(resource: &Resource, id: Uuid, gateway_id: Uuid, type_id: Uuid, serial_number: &str, name: &str, description: &str)
     -> Result<Uuid, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -135,7 +135,7 @@ pub(crate) async fn create_device(resource: &Resource, id: Uuid, gateway_id: Uui
         gateway_id: gateway_id.as_bytes().to_vec(),
         serial_number: serial_number.to_owned(),
         name: name.to_owned(),
-        description: description.unwrap_or_default().to_owned(),
+        description: description.to_owned(),
         type_id: type_id.as_bytes().to_vec(),
         type_name: String::new(),
         model_ids: Vec::new(),
@@ -270,7 +270,7 @@ pub(crate) async fn list_gateway_option(resource: &Resource, type_id: Option<Uui
     Ok(response.results)
 }
 
-pub(crate) async fn create_gateway(resource: &Resource, id: Uuid, type_id: Uuid, serial_number: &str, name: &str, description: Option<&str>)
+pub(crate) async fn create_gateway(resource: &Resource, id: Uuid, type_id: Uuid, serial_number: &str, name: &str, description: &str)
     -> Result<Uuid, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -280,7 +280,7 @@ pub(crate) async fn create_gateway(resource: &Resource, id: Uuid, type_id: Uuid,
         id: id.as_bytes().to_vec(),
         serial_number: serial_number.to_owned(),
         name: name.to_owned(),
-        description: description.unwrap_or_default().to_owned(),
+        description: description.to_owned(),
         type_id: type_id.as_bytes().to_vec(),
         type_name: String::new(),
         model_ids: Vec::new(),
@@ -547,7 +547,7 @@ pub(crate) async fn list_type_option(resource: &Resource, name: Option<&str>)
     Ok(response.results)
 }
 
-pub(crate) async fn create_type(resource: &Resource, id: Uuid, name: &str, description: Option<&str>)
+pub(crate) async fn create_type(resource: &Resource, id: Uuid, name: &str, description: &str)
     -> Result<Uuid, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -556,7 +556,7 @@ pub(crate) async fn create_type(resource: &Resource, id: Uuid, name: &str, descr
     let request = Request::new(TypeSchema {
         id: id.as_bytes().to_vec(),
         name: name.to_owned(),
-        description: description.unwrap_or_default().to_owned(),
+        description: description.to_owned(),
         model_ids: Vec::new(),
         configs: Vec::new()
     });

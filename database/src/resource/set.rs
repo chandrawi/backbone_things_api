@@ -95,7 +95,7 @@ pub fn insert_set(
     id: Uuid,
     template_id: Uuid,
     name: &str,
-    description: Option<&str>,
+    description: &str
 ) -> QueryStatement
 {
     let stmt = Query::insert()
@@ -110,7 +110,7 @@ pub fn insert_set(
             id.into(),
             template_id.into(),
             name.into(),
-            description.unwrap_or_default().into()
+            description.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .to_owned();
@@ -260,7 +260,7 @@ pub fn select_set_template(
 pub fn insert_set_template(
     id: Uuid,
     name: &str,
-    description: Option<&str>,
+    description: &str
 ) -> QueryStatement
 {
     let stmt = Query::insert()
@@ -273,7 +273,7 @@ pub fn insert_set_template(
         .values([
             id.into(),
             name.into(),
-            description.unwrap_or_default().into()
+            description.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .to_owned();

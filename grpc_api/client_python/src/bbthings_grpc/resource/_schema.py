@@ -40,8 +40,8 @@ class ModelConfigSchema:
 @dataclass
 class ModelSchema:
     id: UUID
-    category: str
     name: str
+    category: str
     description: str
     data_type: List[DataType]
     tags: List[int]
@@ -56,7 +56,7 @@ class ModelSchema:
             confs = []
             for conf in conf_vec.configs: confs.append(ModelConfigSchema.from_response(conf))
             configs.append(confs)
-        return ModelSchema(UUID(bytes=r.id), r.category, r.name, r.description, types, r.tags, configs)
+        return ModelSchema(UUID(bytes=r.id), r.name, r.category, r.description, types, r.tags, configs)
 
 
 @dataclass

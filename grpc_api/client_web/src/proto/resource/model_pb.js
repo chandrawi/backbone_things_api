@@ -633,8 +633,8 @@ proto.model.ModelSchema.prototype.toObject = function(opt_includeInstance) {
 proto.model.ModelSchema.toObject = function(includeInstance, msg) {
   var f, obj = {
 id: msg.getId_asB64(),
-category: jspb.Message.getFieldWithDefault(msg, 2, ""),
-name: jspb.Message.getFieldWithDefault(msg, 3, ""),
+name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+category: jspb.Message.getFieldWithDefault(msg, 3, ""),
 description: jspb.Message.getFieldWithDefault(msg, 4, ""),
 dataTypeList: (f = jspb.Message.getRepeatedField(msg, 5)) == null ? undefined : f,
 tagsList: (f = jspb.Message.getRepeatedField(msg, 6)) == null ? undefined : f,
@@ -682,11 +682,11 @@ proto.model.ModelSchema.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setCategory(value);
+      msg.setName(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setName(value);
+      msg.setCategory(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
@@ -745,14 +745,14 @@ proto.model.ModelSchema.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getCategory();
+  f = message.getName();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = message.getName();
+  f = message.getCategory();
   if (f.length > 0) {
     writer.writeString(
       3,
@@ -834,10 +834,10 @@ proto.model.ModelSchema.prototype.setId = function(value) {
 
 
 /**
- * optional string category = 2;
+ * optional string name = 2;
  * @return {string}
  */
-proto.model.ModelSchema.prototype.getCategory = function() {
+proto.model.ModelSchema.prototype.getName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -846,16 +846,16 @@ proto.model.ModelSchema.prototype.getCategory = function() {
  * @param {string} value
  * @return {!proto.model.ModelSchema} returns this
  */
-proto.model.ModelSchema.prototype.setCategory = function(value) {
+proto.model.ModelSchema.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * optional string name = 3;
+ * optional string category = 3;
  * @return {string}
  */
-proto.model.ModelSchema.prototype.getName = function() {
+proto.model.ModelSchema.prototype.getCategory = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -864,7 +864,7 @@ proto.model.ModelSchema.prototype.getName = function() {
  * @param {string} value
  * @return {!proto.model.ModelSchema} returns this
  */
-proto.model.ModelSchema.prototype.setName = function(value) {
+proto.model.ModelSchema.prototype.setCategory = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 

@@ -21,8 +21,8 @@ mod tests {
         let resource = Resource::new(&resource_server.address).await;
 
         // create new data model and add data types
-        let model_id = resource.create_model(Uuid::new_v4(), &[F32T,F32T], "UPLINK", "speed and direction", None).await.unwrap();
-        let model_buf_id = resource.create_model(Uuid::new_v4(), &[U8T,U8T,U8T,U8T], "UPLINK", "buffer 4", None).await.unwrap();
+        let model_id = resource.create_model(Uuid::new_v4(), "speed and direction", "UPLINK", "", &[F32T,F32T]).await.unwrap();
+        let model_buf_id = resource.create_model(Uuid::new_v4(), "buffer 4", "UPLINK", "", &[U8T,U8T,U8T,U8T]).await.unwrap();
         // create scale, symbol, and threshold configurations for new created model
         resource.create_model_config(model_id, 0, "scale_0", String("speed".to_owned()), "SCALE").await.unwrap();
         resource.create_model_config(model_id, 1, "scale_1", String("direction".to_owned()), "SCALE").await.unwrap();
@@ -31,7 +31,7 @@ mod tests {
         let model_cfg_id = resource.create_model_config(model_id, 0, "upper_threshold", I32(250), "THRESHOLD").await.unwrap();
 
         // Create new type and link it to newly created model
-        let type_id = resource.create_type(Uuid::new_v4(), "Speedometer Compass", None).await.unwrap();
+        let type_id = resource.create_type(Uuid::new_v4(), "Speedometer Compass", "").await.unwrap();
         resource.add_type_model(type_id, model_id).await.unwrap();
         resource.add_type_model(type_id, model_buf_id).await.unwrap();
 
@@ -39,8 +39,8 @@ mod tests {
         let gateway_id = Uuid::parse_str("bfc01f2c-8b2c-47cf-912a-f95f6f41a1e6").unwrap();
         let device_id1 = Uuid::parse_str("74768a42-bc29-40eb-8934-2effcbf34f8f").unwrap();
         let device_id2 = Uuid::parse_str("150a0a77-2d9b-4672-9253-3d42fd0f0940").unwrap();
-        resource.create_device(device_id1, gateway_id, type_id, "TEST01", "Speedometer Compass 1", None).await.unwrap();
-        resource.create_device(device_id2, gateway_id, type_id, "TEST02", "Speedometer Compass 2", None).await.unwrap();
+        resource.create_device(device_id1, gateway_id, type_id, "TEST01", "Speedometer Compass 1", "").await.unwrap();
+        resource.create_device(device_id2, gateway_id, type_id, "TEST02", "Speedometer Compass 2", "").await.unwrap();
         // create device configurations
         resource.create_device_config(device_id1, "coef_0", I32(-21), "CONVERSION").await.unwrap();
         resource.create_device_config(device_id1, "coef_1", F64(0.1934), "CONVERSION").await.unwrap();
@@ -50,10 +50,10 @@ mod tests {
         let device_cfg_id = resource.create_device_config(device_id2, "period", I32(120), "NETWORK").await.unwrap();
 
         // create new group and register newly created models as its member
-        let group_model_id = resource.create_group_model(Uuid::new_v4(), "data", "APPLICATION", None).await.unwrap();
+        let group_model_id = resource.create_group_model(Uuid::new_v4(), "data", "APPLICATION", "").await.unwrap();
         resource.add_group_model_member(group_model_id, model_id).await.unwrap();
         // create new group and register newly created devices as its member
-        let group_device_id = resource.create_group_device(Uuid::new_v4(), "sensor", "APPLICATION", None).await.unwrap();
+        let group_device_id = resource.create_group_device(Uuid::new_v4(), "sensor", "APPLICATION", "").await.unwrap();
         resource.add_group_device_member(group_device_id, device_id1).await.unwrap();
         resource.add_group_device_member(group_device_id, device_id2).await.unwrap();
 
@@ -103,7 +103,7 @@ mod tests {
         assert_eq!(group_device.category, "APPLICATION");
 
         // update model
-        resource.update_model(model_buf_id, Some(&[I32T,I32T]), None, Some("buffer 2 integer"), Some("Model for store 2 i32 temporary data")).await.unwrap();
+        resource.update_model(model_buf_id, Some("buffer 2 integer"), None, Some("Model for store 2 i32 temporary data"), Some(&[I32T,I32T])).await.unwrap();
         let model = resource.read_model(model_buf_id).await.unwrap();
         assert_eq!(model.name, "buffer 2 integer");
         assert_eq!(model.data_type, [I32T,I32T]);
@@ -136,8 +136,8 @@ mod tests {
         assert_eq!(group.description, "Sensor devices");
 
         // create set template and set
-        let template_id = resource.create_set_template(Uuid::new_v4(), "multiple compass", None).await.unwrap();
-        let set_id = resource.create_set(Uuid::new_v4(), template_id, "multiple compass 1", None).await.unwrap();
+        let template_id = resource.create_set_template(Uuid::new_v4(), "multiple compass", "").await.unwrap();
+        let set_id = resource.create_set(Uuid::new_v4(), template_id, "multiple compass 1", "").await.unwrap();
         // add devices value to the set template and set
         resource.add_set_template_member(template_id, type_id, model_id, &[1]).await.unwrap();
         resource.add_set_member(set_id, device_id2, model_id, &[1]).await.unwrap();
@@ -237,7 +237,7 @@ mod tests {
         assert!(result.is_err());
 
         // create data slice
-        let slice_id = resource.create_slice(device_id1, model_id, timestamp_1, timestamp_2, "Speed and compass slice", None).await.unwrap();
+        let slice_id = resource.create_slice(device_id1, model_id, timestamp_1, timestamp_2, "Speed and compass slice", "").await.unwrap();
         // read data slice
         let slices = resource.list_slice_option(None, None, Some("slice"), None, None).await.unwrap();
         let slice = slices.iter().filter(|x| x.device_id == device_id1 && x.model_id == model_id).next().unwrap();

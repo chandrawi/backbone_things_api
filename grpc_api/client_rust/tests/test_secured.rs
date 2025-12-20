@@ -122,10 +122,10 @@ mod tests {
         assert_eq!(resource_user.user_id, Some(user_id));
 
         // try to create model by regular user and admin user, regular user should failed and admin user should success
-        let try_create = resource_user.create_model(Uuid::new_v4(), &[DataType::F32T, DataType::F64T], "UPLINK", "name", None)
+        let try_create = resource_user.create_model(Uuid::new_v4(), "name", "UPLINK", "", &[DataType::F32T, DataType::F64T])
             .await;
         assert!(try_create.is_err());
-        let model_id = resource_admin.create_model(Uuid::new_v4(), &[DataType::F32T, DataType::F64T], "UPLINK", "name", None)
+        let model_id = resource_admin.create_model(Uuid::new_v4(), "name", "UPLINK", "", &[DataType::F32T, DataType::F64T])
             .await.unwrap();
 
         // read created model using user service

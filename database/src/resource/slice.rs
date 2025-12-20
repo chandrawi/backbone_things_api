@@ -108,7 +108,7 @@ pub fn insert_slice(
     timestamp_begin: DateTime<Utc>,
     timestamp_end: DateTime<Utc>,
     name: &str,
-    description: Option<&str>
+    description: &str
 ) -> QueryStatement
 {
     let stmt = Query::insert()
@@ -127,7 +127,7 @@ pub fn insert_slice(
             timestamp_begin.into(),
             timestamp_end.into(),
             name.into(),
-            description.unwrap_or_default().into()
+            description.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .returning(Query::returning().column(SliceData::Id))
@@ -239,7 +239,7 @@ pub fn insert_slice_set(
     timestamp_begin: DateTime<Utc>,
     timestamp_end: DateTime<Utc>,
     name: &str,
-    description: Option<&str>
+    description: &str
 ) -> QueryStatement
 {
     let stmt = Query::insert()
@@ -256,7 +256,7 @@ pub fn insert_slice_set(
             timestamp_begin.into(),
             timestamp_end.into(),
             name.into(),
-            description.unwrap_or_default().into()
+            description.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .returning(Query::returning().column(SliceDataSet::Id))

@@ -5,8 +5,8 @@ use crate::common::type_value::{DataType, DataValue};
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct ModelSchema {
     pub id: Uuid,
-    pub category: String,
     pub name: String,
+    pub category: String,
     pub description: String,
     pub data_type: Vec<DataType>,
     pub tags: Vec<i16>,

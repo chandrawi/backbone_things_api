@@ -87,7 +87,7 @@ pub(crate) async fn list_set_option(resource: &Resource, template_id: Option<Uui
     Ok(response.results)
 }
 
-pub(crate) async fn create_set(resource: &Resource, id: Uuid, template_id: Uuid, name: &str, description: Option<&str>)
+pub(crate) async fn create_set(resource: &Resource, id: Uuid, template_id: Uuid, name: &str, description: &str)
     -> Result<Uuid, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -97,7 +97,7 @@ pub(crate) async fn create_set(resource: &Resource, id: Uuid, template_id: Uuid,
         id: id.as_bytes().to_vec(),
         template_id: template_id.as_bytes().to_vec(),
         name: name.to_owned(),
-        description: description.unwrap_or_default().to_owned(),
+        description: description.to_owned(),
         members: Vec::new()
     });
     let response = client.create_set(request)
@@ -249,7 +249,7 @@ pub(crate) async fn list_set_template_option(resource: &Resource, name: Option<&
     Ok(response.results)
 }
 
-pub(crate) async fn create_set_template(resource: &Resource, id: Uuid, name: &str, description: Option<&str>)
+pub(crate) async fn create_set_template(resource: &Resource, id: Uuid, name: &str, description: &str)
     -> Result<Uuid, Status>
 {
     let interceptor = TokenInterceptor(resource.access_token.clone());
@@ -258,7 +258,7 @@ pub(crate) async fn create_set_template(resource: &Resource, id: Uuid, name: &st
     let request = Request::new(SetTemplateSchema {
         id: id.as_bytes().to_vec(),
         name: name.to_owned(),
-        description: description.unwrap_or_default().to_owned(),
+        description: description.to_owned(),
         members: Vec::new()
     });
     let response = client.create_set_template(request)

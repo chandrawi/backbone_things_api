@@ -125,7 +125,7 @@ impl GroupService for GroupServer {
             Uuid::from_slice(&request.id).unwrap_or_default(),
             &request.name,
             &request.category,
-            Some(&request.description)
+            &request.description
         ).await;
         let id = match result {
             Ok(value) => value,
@@ -276,7 +276,7 @@ impl GroupService for GroupServer {
             Uuid::from_slice(&request.id).unwrap_or_default(),
             &request.name,
             &request.category,
-            Some(&request.description)
+            &request.description
         ).await;
         let id = match result {
             Ok(value) => value,
@@ -427,7 +427,7 @@ impl GroupService for GroupServer {
             Uuid::from_slice(&request.id).unwrap_or_default(),
             &request.name,
             &request.category,
-            Some(&request.description)
+            &request.description
         ).await;
         let id = match result {
             Ok(value) => value,

@@ -30055,8 +30055,8 @@ function requireModel_pb () {
 		proto.model.ModelSchema.toObject = function(includeInstance, msg) {
 		  var f, obj = {
 		id: msg.getId_asB64(),
-		category: jspb.Message.getFieldWithDefault(msg, 2, ""),
-		name: jspb.Message.getFieldWithDefault(msg, 3, ""),
+		name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+		category: jspb.Message.getFieldWithDefault(msg, 3, ""),
 		description: jspb.Message.getFieldWithDefault(msg, 4, ""),
 		dataTypeList: (f = jspb.Message.getRepeatedField(msg, 5)) == null ? undefined : f,
 		tagsList: (f = jspb.Message.getRepeatedField(msg, 6)) == null ? undefined : f,
@@ -30104,11 +30104,11 @@ function requireModel_pb () {
 		      break;
 		    case 2:
 		      var value = /** @type {string} */ (reader.readString());
-		      msg.setCategory(value);
+		      msg.setName(value);
 		      break;
 		    case 3:
 		      var value = /** @type {string} */ (reader.readString());
-		      msg.setName(value);
+		      msg.setCategory(value);
 		      break;
 		    case 4:
 		      var value = /** @type {string} */ (reader.readString());
@@ -30167,14 +30167,14 @@ function requireModel_pb () {
 		      f
 		    );
 		  }
-		  f = message.getCategory();
+		  f = message.getName();
 		  if (f.length > 0) {
 		    writer.writeString(
 		      2,
 		      f
 		    );
 		  }
-		  f = message.getName();
+		  f = message.getCategory();
 		  if (f.length > 0) {
 		    writer.writeString(
 		      3,
@@ -30256,10 +30256,10 @@ function requireModel_pb () {
 
 
 		/**
-		 * optional string category = 2;
+		 * optional string name = 2;
 		 * @return {string}
 		 */
-		proto.model.ModelSchema.prototype.getCategory = function() {
+		proto.model.ModelSchema.prototype.getName = function() {
 		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 		};
 
@@ -30268,16 +30268,16 @@ function requireModel_pb () {
 		 * @param {string} value
 		 * @return {!proto.model.ModelSchema} returns this
 		 */
-		proto.model.ModelSchema.prototype.setCategory = function(value) {
+		proto.model.ModelSchema.prototype.setName = function(value) {
 		  return jspb.Message.setProto3StringField(this, 2, value);
 		};
 
 
 		/**
-		 * optional string name = 3;
+		 * optional string category = 3;
 		 * @return {string}
 		 */
-		proto.model.ModelSchema.prototype.getName = function() {
+		proto.model.ModelSchema.prototype.getCategory = function() {
 		  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 		};
 
@@ -30286,7 +30286,7 @@ function requireModel_pb () {
 		 * @param {string} value
 		 * @return {!proto.model.ModelSchema} returns this
 		 */
-		proto.model.ModelSchema.prototype.setName = function(value) {
+		proto.model.ModelSchema.prototype.setCategory = function(value) {
 		  return jspb.Message.setProto3StringField(this, 3, value);
 		};
 
@@ -36408,8 +36408,8 @@ var pb_model = /*@__PURE__*/getDefaultExportFromCjs(model_grpc_web_pbExports);
 /**
  * @typedef {Object} ModelSchema
  * @property {Uuid} id
- * @property {string} category
  * @property {string} name
+ * @property {string} category
  * @property {string} description
  * @property {number[]|string[]} data_type
  * @property {number[]} tags
@@ -36423,8 +36423,8 @@ var pb_model = /*@__PURE__*/getDefaultExportFromCjs(model_grpc_web_pbExports);
 function get_model_schema(r) {
     return {
         id: base64_to_uuid_hex(r.id),
-        category: r.category,
         name: r.name,
+        category: r.category,
         description: r.description,
         data_type: r.dataTypeList.map((v) => { return get_data_type(v) }),
         tags: r.tagsList,
@@ -36443,8 +36443,8 @@ function get_model_schema_vec(r) {
 /**
  * @typedef {Object} ModelUpdate
  * @property {Uuid} id
- * @property {?string} category
  * @property {?string} name
+ * @property {?string} category
  * @property {?string} description
  * @property {?number[]|string[]} data_type
  */
@@ -36535,7 +36535,7 @@ function get_tag_schema(r) {
  * Read a model by uuid
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelId} request model uuid: id
- * @returns {Promise<ModelSchema>} model schema: id, category, name, description, data_type, configs
+ * @returns {Promise<ModelSchema>} model schema: id, name, category, description, data_type, tags, configs
  */
 async function read_model(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -36549,7 +36549,7 @@ async function read_model(config, request) {
  * Read models by uuid list
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelIds} request model uuid list: ids
- * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
+ * @returns {Promise<ModelSchema[]>} model schema: id, name, category, description, data_type, tags, configs
  */
 async function list_model_by_ids(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -36563,7 +36563,7 @@ async function list_model_by_ids(config, request) {
  * Read models by name
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelName} request model name: name
- * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
+ * @returns {Promise<ModelSchema[]>} model schema: id, name, category, description, data_type, tags, configs
  */
 async function list_model_by_name(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -36577,7 +36577,7 @@ async function list_model_by_name(config, request) {
  * Read models by category
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelCategory} request model category: category
- * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
+ * @returns {Promise<ModelSchema[]>} model schema: id, name, category, description, data_type, tags, configs
  */
 async function list_model_by_category(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -36591,7 +36591,7 @@ async function list_model_by_category(config, request) {
  * Read models with select options
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {ModelOption} request model select option: type_id, name, category
- * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
+ * @returns {Promise<ModelSchema[]>} model schema: id, name, category, description, data_type, tags, configs
  */
 async function list_model_option(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -36609,7 +36609,7 @@ async function list_model_option(config, request) {
  * Read models by type
  * @param {ServerConfig} config Resource server config: address, access_token
  * @param {TypeId} request type uuid: id
- * @returns {Promise<ModelSchema[]>} model schema: id, category, name, description, data_type, configs
+ * @returns {Promise<ModelSchema[]>} model schema: id, name, category, description, data_type, tags, configs
  */
 async function list_model_by_type(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
@@ -36622,17 +36622,17 @@ async function list_model_by_type(config, request) {
 /**
  * Create a model
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {ModelSchema} request model schema: id, data_type, category, name, description
+ * @param {ModelSchema} request model schema: id, name, category, description, data_type
  * @returns {Promise<Uuid>} model uuid
  */
 async function create_model(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelSchema = new pb_model.ModelSchema();
     modelSchema.setId(uuid_hex_to_base64(request.id));
-    modelSchema.setDataTypeList(request.data_type.map((v) => {return set_data_type(v)}));
-    modelSchema.setCategory(request.category);
     modelSchema.setName(request.name);
+    modelSchema.setCategory(request.category);
     modelSchema.setDescription(request.description);
+    modelSchema.setDataTypeList(request.data_type.map((v) => {return set_data_type(v)}));
     return client.createModel(modelSchema, metadata(config.access_token))
         .then(response => base64_to_uuid_hex(response.toObject().id));
 }
@@ -36640,22 +36640,22 @@ async function create_model(config, request) {
 /**
  * Update a model
  * @param {ServerConfig} config Resource server config: address, access_token
- * @param {ModelUpdate} request model update: id, data_type, category, name, description
+ * @param {ModelUpdate} request model update: id, name, category, description, data_type
  * @returns {Promise<null>} update response
  */
 async function update_model(config, request) {
     const client = new pb_model.ModelServicePromiseClient(config.address, null, null);
     const modelUpdate = new pb_model.ModelUpdate();
     modelUpdate.setId(uuid_hex_to_base64(request.id));
+    modelUpdate.setName(request.name);
+    modelUpdate.setCategory(request.category);
+    modelUpdate.setDescription(request.description);
     if (request.data_type) {
         modelUpdate.setDataTypeList(request.data_type.map((v) => {return set_data_type(v)}));
         modelUpdate.setDataTypeFlag(true);
     } else {
         modelUpdate.setDataTypeFlag(false);
     }
-    modelUpdate.setCategory(request.category);
-    modelUpdate.setName(request.name);
-    modelUpdate.setDescription(request.description);
     return client.updateModel(modelUpdate, metadata(config.access_token))
         .then(response => null);
 }

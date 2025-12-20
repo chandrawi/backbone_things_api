@@ -64,22 +64,22 @@ def list_model_option(resource, type_id: Optional[UUID], name: Optional[str], ca
         for result in response.results: ls.append(ModelSchema.from_response(result))
         return ls
 
-def create_model(resource, id: UUID, data_type: List[DataType], category: str, name: str, description: str):
+def create_model(resource, id: UUID, name: str, category: str, description: str, data_type: List[DataType]):
     with grpc.insecure_channel(resource.address) as channel:
         stub = model_pb2_grpc.ModelServiceStub(channel)
         types = []
         for ty in data_type: types.append(ty.value)
         request = model_pb2.ModelSchema(
             id=id.bytes,
-            category=category,
             name=name,
+            category=category,
             description=description,
             data_type=types
         )
         response = stub.CreateModel(request=request, metadata=resource.metadata)
         return UUID(bytes=response.id)
 
-def update_model(resource, id: UUID, data_type: Optional[List[DataType]]=None, category: Optional[str]=None, name: Optional[str]=None, description: Optional[str]=None):
+def update_model(resource, id: UUID, name: Optional[str]=None, category: Optional[str]=None, description: Optional[str]=None, data_type: Optional[List[DataType]]=None):
     with grpc.insecure_channel(resource.address) as channel:
         stub = model_pb2_grpc.ModelServiceStub(channel)
         type_flag = False
@@ -89,8 +89,8 @@ def update_model(resource, id: UUID, data_type: Optional[List[DataType]]=None, c
             for ty in data_type: types.append(ty.value)
         request = model_pb2.ModelUpdate(
             id=id.bytes,
-            category=category,
             name=name,
+            category=category,
             description=description,
             data_type=types,
             data_type_flag=type_flag

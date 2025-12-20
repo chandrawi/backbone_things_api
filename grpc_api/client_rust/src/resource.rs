@@ -152,17 +152,17 @@ impl Resource {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_model(&self, id: Uuid, data_type: &[DataType], category: &str, name: &str, description: Option<&str>)
+    pub async fn create_model(&self, id: Uuid, name: &str, category: &str, description: &str, data_type: &[DataType])
         -> Result<Uuid, Status>
     {
-        model::create_model(&self, id, data_type, category, name, description)
+        model::create_model(&self, id, name, category, description, data_type)
             .await
     }
 
-    pub async fn update_model(&self, id: Uuid, data_type: Option<&[DataType]>, category: Option<&str>, name: Option<&str>, description: Option<&str>)
+    pub async fn update_model(&self, id: Uuid, name: Option<&str>, category: Option<&str>, description: Option<&str>, data_type: Option<&[DataType]>)
         -> Result<(), Status>
     {
-        model::update_model(&self, id, data_type, category, name, description)
+        model::update_model(&self, id, name, category, description, data_type)
             .await
     }
 
@@ -292,7 +292,7 @@ impl Resource {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_device(&self, id: Uuid, gateway_id: Uuid, type_id: Uuid, serial_number: &str, name: &str, description: Option<&str>)
+    pub async fn create_device(&self, id: Uuid, gateway_id: Uuid, type_id: Uuid, serial_number: &str, name: &str, description: &str)
         -> Result<Uuid, Status>
     {
         device::create_device(&self, id, gateway_id, type_id, serial_number, name, description)
@@ -355,7 +355,7 @@ impl Resource {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_gateway(&self, id: Uuid, type_id: Uuid, serial_number: &str, name: &str, description: Option<&str>)
+    pub async fn create_gateway(&self, id: Uuid, type_id: Uuid, serial_number: &str, name: &str, description: &str)
         -> Result<Uuid, Status>
     {
         device::create_gateway(&self, id, type_id, serial_number, name, description)
@@ -474,7 +474,7 @@ impl Resource {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_type(&self, id: Uuid, name: &str, description: Option<&str>)
+    pub async fn create_type(&self, id: Uuid, name: &str, description: &str)
         -> Result<Uuid, Status>
     {
         device::create_type(&self, id, name, description)
@@ -579,7 +579,7 @@ impl Resource {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_group_model(&self, id: Uuid, name: &str, category: &str, description: Option<&str>)
+    pub async fn create_group_model(&self, id: Uuid, name: &str, category: &str, description: &str)
         -> Result<Uuid, Status>
     {
         group::create_group_model(&self, id, name, category, description)
@@ -649,7 +649,7 @@ impl Resource {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_group_device(&self, id: Uuid, name: &str, category: &str, description: Option<&str>)
+    pub async fn create_group_device(&self, id: Uuid, name: &str, category: &str, description: &str)
         -> Result<Uuid, Status>
     {
         group::create_group_device(&self, id, name, category, description)
@@ -719,7 +719,7 @@ impl Resource {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_group_gateway(&self, id: Uuid, name: &str, category: &str, description: Option<&str>)
+    pub async fn create_group_gateway(&self, id: Uuid, name: &str, category: &str, description: &str)
         -> Result<Uuid, Status>
     {
         group::create_group_gateway(&self, id, name, category, description)
@@ -789,7 +789,7 @@ impl Resource {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_set(&self, id: Uuid, template_id: Uuid, name: &str, description: Option<&str>)
+    pub async fn create_set(&self, id: Uuid, template_id: Uuid, name: &str, description: &str)
         -> Result<Uuid, Status>
     {
         set::create_set(&self, id, template_id, name, description)
@@ -859,7 +859,7 @@ impl Resource {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_set_template(&self, id: Uuid, name: &str, description: Option<&str>)
+    pub async fn create_set_template(&self, id: Uuid, name: &str, description: &str)
         -> Result<Uuid, Status>
     {
         set::create_set_template(&self, id, name, description)
@@ -1637,7 +1637,7 @@ impl Resource {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_slice(&self, device_id: Uuid, model_id: Uuid, timestamp_begin: DateTime<Utc>, timestamp_end: DateTime<Utc>, name: &str, description: Option<&str>)
+    pub async fn create_slice(&self, device_id: Uuid, model_id: Uuid, timestamp_begin: DateTime<Utc>, timestamp_end: DateTime<Utc>, name: &str, description: &str)
         -> Result<i32, Status>
     {
         slice::create_slice(&self, device_id, model_id, timestamp_begin, timestamp_end, name, description)
@@ -1708,7 +1708,7 @@ impl Resource {
             .map(|v| v.into_iter().map(|s| s.into()).collect())
     }
 
-    pub async fn create_slice_set(&self, set_id: Uuid, timestamp_begin: DateTime<Utc>, timestamp_end: DateTime<Utc>, name: &str, description: Option<&str>)
+    pub async fn create_slice_set(&self, set_id: Uuid, timestamp_begin: DateTime<Utc>, timestamp_end: DateTime<Utc>, name: &str, description: &str)
         -> Result<i32, Status>
     {
         slice::create_slice_set(&self, set_id, timestamp_begin, timestamp_end, name, description)

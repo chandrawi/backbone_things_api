@@ -94,18 +94,18 @@ impl Resource {
         qs.fetch_model_schema(&self.pool).await
     }
 
-    pub async fn create_model(&self, id: Uuid, data_type: &[DataType], category: &str, name: &str, description: Option<&str>)
+    pub async fn create_model(&self, id: Uuid, name: &str, category: &str, description: &str, data_type: &[DataType])
         -> Result<Uuid, Error>
     {
-        let qs = model::insert_model(id, data_type, category, name, description);
+        let qs = model::insert_model(id, name, category, description, data_type);
         qs.execute(&self.pool).await?;
         Ok(id)
     }
 
-    pub async fn update_model(&self, id: Uuid, data_type: Option<&[DataType]>, category: Option<&str>, name: Option<&str>, description: Option<&str>)
+    pub async fn update_model(&self, id: Uuid, name: Option<&str>, category: Option<&str>, description: Option<&str>, data_type: Option<&[DataType]>)
         -> Result<(), Error>
     {
-        let qs = model::update_model(id, data_type, category, name, description);
+        let qs = model::update_model(id, name, category, description, data_type);
         qs.execute(&self.pool).await
     }
 
@@ -246,7 +246,7 @@ impl Resource {
         qs.fetch_device_schema(&self.pool).await
     }
 
-    pub async fn create_device(&self, id: Uuid, gateway_id: Uuid, type_id: Uuid, serial_number: &str, name: &str, description: Option<&str>)
+    pub async fn create_device(&self, id: Uuid, gateway_id: Uuid, type_id: Uuid, serial_number: &str, name: &str, description: &str)
         -> Result<Uuid, Error>
     {
         let qs = device::insert_device(id, gateway_id, type_id, serial_number, name, description);
@@ -310,7 +310,7 @@ impl Resource {
         qs.fetch_device_schema(&self.pool).await?.into_iter().map(|s| Ok(s.into())).collect()
     }
 
-    pub async fn create_gateway(&self, id: Uuid, type_id: Uuid, serial_number: &str, name: &str, description: Option<&str>)
+    pub async fn create_gateway(&self, id: Uuid, type_id: Uuid, serial_number: &str, name: &str, description: &str)
         -> Result<Uuid, Error>
     {
         let qs = device::insert_device(id, id, type_id, serial_number, name, description);
@@ -430,7 +430,7 @@ impl Resource {
         qs.fetch_type_schema(&self.pool).await
     }
 
-    pub async fn create_type(&self, id: Uuid, name: &str, description: Option<&str>)
+    pub async fn create_type(&self, id: Uuid, name: &str, description: &str)
         -> Result<Uuid, Error>
     {
         let qs = device::insert_device_type(id, name, description);
@@ -538,7 +538,7 @@ impl Resource {
         qs.fetch_group_schema(&self.pool).await?.into_iter().map(|s| Ok(s.into())).collect()
     }
 
-    pub async fn create_group_model(&self, id: Uuid, name: &str, category: &str, description: Option<&str>)
+    pub async fn create_group_model(&self, id: Uuid, name: &str, category: &str, description: &str)
         -> Result<Uuid, Error>
     {
         let qs = group::insert_group(GroupKind::Model, id, name, category, description);
@@ -609,7 +609,7 @@ impl Resource {
         qs.fetch_group_schema(&self.pool).await?.into_iter().map(|s| Ok(s.into())).collect()
     }
 
-    pub async fn create_group_device(&self, id: Uuid, name: &str, category: &str, description: Option<&str>)
+    pub async fn create_group_device(&self, id: Uuid, name: &str, category: &str, description: &str)
         -> Result<Uuid, Error>
     {
         let qs = group::insert_group(GroupKind::Device, id, name, category, description);
@@ -680,7 +680,7 @@ impl Resource {
         qs.fetch_group_schema(&self.pool).await?.into_iter().map(|s| Ok(s.into())).collect()
     }
 
-    pub async fn create_group_gateway(&self, id: Uuid, name: &str, category: &str, description: Option<&str>)
+    pub async fn create_group_gateway(&self, id: Uuid, name: &str, category: &str, description: &str)
         -> Result<Uuid, Error>
     {
         let qs = group::insert_group(GroupKind::Gateway, id, name, category, description);
@@ -751,7 +751,7 @@ impl Resource {
         qs.fetch_set_schema(&self.pool).await
     }
 
-    pub async fn create_set(&self, id: Uuid, template_id: Uuid, name: &str, description: Option<&str>)
+    pub async fn create_set(&self, id: Uuid, template_id: Uuid, name: &str, description: &str)
         -> Result<Uuid, Error>
     {
         let qs = set::insert_set(id, template_id, name, description);
@@ -844,7 +844,7 @@ impl Resource {
         qs.fetch_set_template_schema(&self.pool).await
     }
 
-    pub async fn create_set_template(&self, id: Uuid, name: &str, description: Option<&str>)
+    pub async fn create_set_template(&self, id: Uuid, name: &str, description: &str)
         -> Result<Uuid, Error>
     {
         let qs = set::insert_set_template(id, name, description);
@@ -1796,7 +1796,7 @@ impl Resource {
         qs.fetch_slice_schema(&self.pool).await
     }
 
-    pub async fn create_slice(&self, device_id: Uuid, model_id: Uuid, timestamp_begin: DateTime<Utc>, timestamp_end: DateTime<Utc>, name: &str, description: Option<&str>)
+    pub async fn create_slice(&self, device_id: Uuid, model_id: Uuid, timestamp_begin: DateTime<Utc>, timestamp_end: DateTime<Utc>, name: &str, description: &str)
         -> Result<i32, Error>
     {
         let qs = slice::insert_slice(device_id, model_id, timestamp_begin, timestamp_end, name, description);
@@ -1875,7 +1875,7 @@ impl Resource {
         qs.fetch_slice_set_schema(&self.pool).await
     }
 
-    pub async fn create_slice_set(&self, set_id: Uuid, timestamp_begin: DateTime<Utc>, timestamp_end: DateTime<Utc>, name: &str, description: Option<&str>)
+    pub async fn create_slice_set(&self, set_id: Uuid, timestamp_begin: DateTime<Utc>, timestamp_end: DateTime<Utc>, name: &str, description: &str)
         -> Result<i32, Error>
     {
         let qs = slice::insert_slice_set(set_id, timestamp_begin, timestamp_end, name, description);

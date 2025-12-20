@@ -145,7 +145,7 @@ pub fn insert_device(
     type_id: Uuid,
     serial_number: &str,
     name: &str,
-    description: Option<&str>
+    description: &str
 ) -> QueryStatement
 {
     let stmt = Query::insert()
@@ -164,7 +164,7 @@ pub fn insert_device(
             type_id.into(),
             serial_number.into(),
             name.into(),
-            description.unwrap_or_default().into()
+            description.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .to_owned();
@@ -409,7 +409,7 @@ pub fn select_device_type(
 pub fn insert_device_type(
     id: Uuid,
     name: &str,
-    description: Option<&str>
+    description: &str
 ) -> QueryStatement
 {
     let stmt = Query::insert()
@@ -422,7 +422,7 @@ pub fn insert_device_type(
         .values([
             id.into(),
             name.into(),
-            description.unwrap_or_default().into()
+            description.into()
         ])
         .unwrap_or(&mut sea_query::InsertStatement::default())
         .to_owned();

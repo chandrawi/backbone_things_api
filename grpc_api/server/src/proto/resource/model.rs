@@ -4,9 +4,9 @@ pub struct ModelSchema {
     #[prost(bytes = "vec", tag = "1")]
     pub id: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag = "2")]
-    pub category: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
     pub name: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub category: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
     pub description: ::prost::alloc::string::String,
     #[prost(uint32, repeated, tag = "5")]

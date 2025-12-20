@@ -43,8 +43,8 @@ service ModelService {
 
 message ModelSchema {
     bytes id = 1;
-    string category = 2;
-    string name = 3;
+    string name = 2;
+    string category = 3;
     string description = 4;
     repeated uint32 data_type = 5;
     repeated int32 tags = 6;

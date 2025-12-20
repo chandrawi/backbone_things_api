@@ -139,7 +139,7 @@ pub fn insert_group(
     id: Uuid,
     name: &str,
     category: &str,
-    description: Option<&str>
+    description: &str
 ) -> QueryStatement
 {
     let mut stmt = Query::insert().to_owned();
@@ -157,7 +157,7 @@ pub fn insert_group(
                     id.into(),
                     name.into(),
                     category.into(),
-                    description.unwrap_or_default().into()
+                    description.into()
                 ])
                 .unwrap_or(&mut sea_query::InsertStatement::default())
                 .to_owned();
@@ -177,7 +177,7 @@ pub fn insert_group(
                     name.into(),
                     (kind == GroupKind::Gateway).into(),
                     category.into(),
-                    description.unwrap_or_default().into()
+                    description.into()
                 ])
                 .unwrap_or(&mut sea_query::InsertStatement::default())
                 .to_owned();

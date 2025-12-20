@@ -91,11 +91,11 @@ class Resource:
     def list_model_option(self, type_id: Optional[UUID], name: Optional[str], category: Optional[str]) -> List[ModelSchema]:
         return _model.list_model_option(self, type_id, name, category)
 
-    def create_model(self, id: UUID, data_type: List[DataType], category: str, name: str, description: str) -> UUID:
-        return _model.create_model(self, id, data_type, category, name, description)
+    def create_model(self, id: UUID, name: str, category: str, description: str, data_type: List[DataType]) -> UUID:
+        return _model.create_model(self, id, name, category, description, data_type)
 
-    def update_model(self, id: UUID, data_type: Optional[List[DataType]], category: Optional[str], name: Optional[str], description: Optional[str]):
-        return _model.update_model(self, id, data_type, category, name, description)
+    def update_model(self, id: UUID, name: Optional[str], category: Optional[str], description: Optional[str], data_type: Optional[List[DataType]]):
+        return _model.update_model(self, id, name, category, description, data_type)
 
     def delete_model(self, id: UUID):
         return _model.delete_model(self, id)
