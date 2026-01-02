@@ -499,7 +499,7 @@ impl Resource {
     pub async fn delete_type_config(&self, id: i32)
         -> Result<(), Error>
     {
-        let qs = device::delete_device_config(id);
+        let qs = device::delete_device_type_config(id);
         qs.execute(&self.pool).await
     }
 
@@ -563,14 +563,14 @@ impl Resource {
     pub async fn add_group_model_member(&self, id: Uuid, model_id: Uuid)
         -> Result<(), Error>
     {
-        let qs = group::insert_group_map(GroupKind::Model, id, model_id);
+        let qs = group::insert_group_member(GroupKind::Model, id, model_id);
         qs.execute(&self.pool).await
     }
 
     pub async fn remove_group_model_member(&self, id: Uuid, model_id: Uuid)
         -> Result<(), Error>
     {
-        let qs = group::delete_group_map(GroupKind::Model, id, model_id);
+        let qs = group::delete_group_member(GroupKind::Model, id, model_id);
         qs.execute(&self.pool).await
     }
 
@@ -634,14 +634,14 @@ impl Resource {
     pub async fn add_group_device_member(&self, id: Uuid, device_id: Uuid)
         -> Result<(), Error>
     {
-        let qs = group::insert_group_map(GroupKind::Device, id, device_id);
+        let qs = group::insert_group_member(GroupKind::Device, id, device_id);
         qs.execute(&self.pool).await
     }
 
     pub async fn remove_group_device_member(&self, id: Uuid, device_id: Uuid)
         -> Result<(), Error>
     {
-        let qs = group::delete_group_map(GroupKind::Device, id, device_id);
+        let qs = group::delete_group_member(GroupKind::Device, id, device_id);
         qs.execute(&self.pool).await
     }
 
@@ -705,14 +705,14 @@ impl Resource {
     pub async fn add_group_gateway_member(&self, id: Uuid, gateway_id: Uuid)
         -> Result<(), Error>
     {
-        let qs = group::insert_group_map(GroupKind::Gateway, id, gateway_id);
+        let qs = group::insert_group_member(GroupKind::Gateway, id, gateway_id);
         qs.execute(&self.pool).await
     }
 
     pub async fn remove_group_gateway_member(&self, id: Uuid, gateway_id: Uuid)
         -> Result<(), Error>
     {
-        let qs = group::delete_group_map(GroupKind::Gateway, id, gateway_id);
+        let qs = group::delete_group_member(GroupKind::Gateway, id, gateway_id);
         qs.execute(&self.pool).await
     }
 
@@ -1067,7 +1067,7 @@ impl Resource {
     {
         // get the number of data and check if all the arrays has the same length
         let number = data.len();
-        let numbers = vec![device_ids.len(), model_ids.len(), timestamps.len()];
+        let numbers = [device_ids.len(), model_ids.len(), timestamps.len()];
         if number == 0 || numbers.into_iter().any(|n| n != number) {
             return Err(Error::InvalidArgument(EMPTY_LENGTH_UNMATCH.to_string()))
         }
@@ -1488,7 +1488,7 @@ impl Resource {
     {
         // get the number of data and check if all the arrays has the same length
         let number = data.len();
-        let numbers = vec![device_ids.len(), model_ids.len(), timestamps.len()];
+        let numbers = [device_ids.len(), model_ids.len(), timestamps.len()];
         if number == 0 || numbers.into_iter().any(|n| n != number) {
             return Err(Error::InvalidArgument(EMPTY_LENGTH_UNMATCH.to_string()))
         }

@@ -371,7 +371,7 @@ pub(crate) async fn create_data_multiple(resource: &Resource, device_ids: &[Uuid
         Some(value) => value.to_vec(),
         None => (0..number).map(|_| Tag::DEFAULT).collect()
     };
-    let numbers = vec![model_ids.len(), timestamps.len(), data.len(), tags.len()];
+    let numbers = [model_ids.len(), timestamps.len(), data.len(), tags.len()];
     if number == 0 || numbers.into_iter().any(|n| n != number) {
         return Err(Status::invalid_argument(EMPTY_LENGTH_UNMATCH.to_string()))
     } 

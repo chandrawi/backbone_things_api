@@ -497,7 +497,7 @@ impl Auth {
         -> Result<(i32, String, String), Error>
     {
         let refresh_token = utility::generate_token_string();
-        let qs = token::insert_token(user_id, vec![&refresh_token], auth_token, expired, ip);
+        let qs = token::insert_token(user_id, &[&refresh_token], auth_token, expired, ip);
         let access_id = qs.fetch_id(&self.pool).await?;
         Ok((access_id, refresh_token, String::from(auth_token)))
     }
@@ -507,8 +507,9 @@ impl Auth {
     {
         let number = if number < 1 { 1 } else { number };
         let refresh_tokens: Vec<String> = (0..number).map(|_| utility::generate_token_string()).collect();
+        let refresh_str: Vec<&str> = refresh_tokens.iter().map(|e| e.as_str()).collect();
         let auth_token = utility::generate_token_string();
-        let qs = token::insert_token(user_id, refresh_tokens.iter().map(|rt| rt.as_str()).collect(), &auth_token, expired, ip);
+        let qs = token::insert_token(user_id, &refresh_str, &auth_token, expired, ip);
         let access_id = qs.fetch_id(&self.pool).await?;
         Ok((0..number).map(|i| (access_id + i as i32, refresh_tokens[i].clone(), auth_token.clone())).collect())
     }

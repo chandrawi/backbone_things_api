@@ -147,58 +147,58 @@ pub fn select_buffer_timestamp(
 ) -> QueryStatement
 {
     let mut stmt = Query::select()
-        .column((DataBuffer::Table, DataBuffer::Timestamp))
+        .column(DataBuffer::Timestamp)
         .from(DataBuffer::Table)
         .to_owned();
 
     if let Some(ids) = device_ids {
         if ids.len() == 1 {
-            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::DeviceId)).eq(ids[0])).to_owned();
+            stmt = stmt.and_where(Expr::col(DataBuffer::DeviceId).eq(ids[0])).to_owned();
         }
         else if ids.len() > 1 {
-            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::DeviceId)).is_in(ids.to_vec())).to_owned();
+            stmt = stmt.and_where(Expr::col(DataBuffer::DeviceId).is_in(ids.to_vec())).to_owned();
         }
     }
     if let Some(ids) = model_ids {
         if ids.len() == 1 {
-            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::ModelId)).eq(ids[0])).to_owned();
+            stmt = stmt.and_where(Expr::col(DataBuffer::ModelId).eq(ids[0])).to_owned();
         }
         else if ids.len() > 1 {
-            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::ModelId)).is_in(ids.to_vec())).to_owned();
+            stmt = stmt.and_where(Expr::col(DataBuffer::ModelId).is_in(ids.to_vec())).to_owned();
         }
     }
 
     match selector {
         BufferSelector::Time(timestamp) => {
-            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).eq(timestamp)).to_owned();
+            stmt = stmt.and_where(Expr::col(DataBuffer::Timestamp).eq(timestamp)).to_owned();
         },
         BufferSelector::Earlier(earlier) => {
-            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).lt(earlier))
-                .order_by((DataBuffer::Table, DataBuffer::Timestamp), Order::Asc)
+            stmt = stmt.and_where(Expr::col(DataBuffer::Timestamp).lt(earlier))
+                .order_by(DataBuffer::Timestamp, Order::Asc)
                 .to_owned();
         },
         BufferSelector::Later(later) => {
-            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).gt(later))
-                .order_by((DataBuffer::Table, DataBuffer::Timestamp), Order::Asc)
+            stmt = stmt.and_where(Expr::col(DataBuffer::Timestamp).gt(later))
+                .order_by(DataBuffer::Timestamp, Order::Asc)
                 .to_owned();
         },
         BufferSelector::Range(begin, end) => {
             stmt = stmt
-                .and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).gte(begin))
-                .and_where(Expr::col((DataBuffer::Table, DataBuffer::Timestamp)).lte(end))
-                .order_by((DataBuffer::Table, DataBuffer::Timestamp), Order::Asc)
+                .and_where(Expr::col(DataBuffer::Timestamp).gte(begin))
+                .and_where(Expr::col(DataBuffer::Timestamp).lte(end))
+                .order_by(DataBuffer::Timestamp, Order::Asc)
                 .to_owned();
         },
         BufferSelector::First(number, offset) => {
             stmt = stmt
-                .order_by((DataBuffer::Table, DataBuffer::Id), Order::Asc)
+                .order_by(DataBuffer::Id, Order::Asc)
                 .limit(number as u64)
                 .offset(offset as u64)
                 .to_owned();
         },
         BufferSelector::Last(number, offset) => {
             stmt = stmt
-                .order_by((DataBuffer::Table, DataBuffer::Id), Order::Desc)
+                .order_by(DataBuffer::Id, Order::Desc)
                 .limit(number as u64)
                 .offset(offset as u64)
                 .to_owned();
@@ -208,7 +208,7 @@ pub fn select_buffer_timestamp(
 
     if let (Some(tag), Some(model_ids)) = (tag, model_ids) {
         if let QueryStatement::Select(query) = model::select_tag_members(model_ids, tag) {
-            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).in_subquery(query)).to_owned();
+            stmt = stmt.and_where(Expr::col(DataBuffer::Tag).in_subquery(query)).to_owned();
         }
     }
 
@@ -274,7 +274,7 @@ pub fn insert_buffer_multiple(
     tags: Option<&[i16]>
 ) -> QueryStatement
 {
-    let numbers = vec![device_ids.len(), model_ids.len(), timestamps.len(), data.len()];
+    let numbers = [device_ids.len(), model_ids.len(), timestamps.len(), data.len()];
     let number = numbers.into_iter().min().unwrap_or(0);
     let tags: Vec<i16> = match tags {
         Some(values) => (0..number).into_iter().map(|i| values.get(i).unwrap_or(&Tag::DEFAULT).to_owned()).collect(),
@@ -454,21 +454,21 @@ pub fn count_buffer(
 ) -> QueryStatement
 {
     let mut stmt = Query::select()
-        .expr(Expr::col((DataBuffer::Table, DataBuffer::Id)).count())
+        .expr(Expr::col(DataBuffer::Id).count())
         .from(DataBuffer::Table)
         .to_owned();
 
     if device_ids.len() == 1 {
-        stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::DeviceId)).eq(device_ids[0])).to_owned();
+        stmt = stmt.and_where(Expr::col(DataBuffer::DeviceId).eq(device_ids[0])).to_owned();
     }
     else {
-        stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::DeviceId)).is_in(device_ids.to_vec())).to_owned();
+        stmt = stmt.and_where(Expr::col(DataBuffer::DeviceId).is_in(device_ids.to_vec())).to_owned();
     }
     if model_ids.len() == 1 {
-        stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::ModelId)).eq(model_ids[0])).to_owned();
+        stmt = stmt.and_where(Expr::col(DataBuffer::ModelId).eq(model_ids[0])).to_owned();
     }
     else {
-        stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::ModelId)).is_in(model_ids.to_vec())).to_owned();
+        stmt = stmt.and_where(Expr::col(DataBuffer::ModelId).is_in(model_ids.to_vec())).to_owned();
     }
 
     match selector {
@@ -489,7 +489,7 @@ pub fn count_buffer(
 
     if let Some(tag) = tag {
         if let QueryStatement::Select(query) = model::select_tag_members(model_ids, tag) {
-            stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).in_subquery(query)).to_owned();
+            stmt = stmt.and_where(Expr::col(DataBuffer::Tag).in_subquery(query)).to_owned();
         }
     }
 

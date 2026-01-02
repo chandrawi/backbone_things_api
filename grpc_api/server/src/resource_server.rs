@@ -63,7 +63,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         None => std::env::var("SERVER_ADDRESS_AUTH").unwrap()
     };
     let scheme = auth_address.split(":").next().unwrap();
-    if !(vec!["http", "https"].contains(&scheme)) {
+    if !(["http", "https"].contains(&scheme)) {
         auth_address = String::from("http://") + auth_address.as_str();
     }
     let api_id = match args.api_id {

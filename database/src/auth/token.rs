@@ -99,7 +99,7 @@ pub fn select_token(
 
 pub fn insert_token(
     user_id: Uuid, 
-    refresh_tokens: Vec<&str>,
+    refresh_tokens: &[&str],
     auth_token: &str,
     expired: DateTime<Utc>, 
     ip: &[u8]

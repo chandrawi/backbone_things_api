@@ -252,7 +252,7 @@ pub fn delete_group(
     QueryStatement::Delete(stmt)
 }
 
-pub fn insert_group_map(
+pub fn insert_group_member(
     kind: GroupKind,
     id: Uuid,
     member_id: Uuid
@@ -293,7 +293,7 @@ pub fn insert_group_map(
     QueryStatement::Insert(stmt)
 }
 
-pub fn delete_group_map(
+pub fn delete_group_member(
     kind: GroupKind,
     id: Uuid,
     member_id: Uuid

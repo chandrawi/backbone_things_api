@@ -115,42 +115,42 @@ pub fn select_data_timestamp(
 ) -> QueryStatement
 {
     let mut stmt = Query::select()
-        .column((Data::Table, Data::Timestamp))
+        .column(Data::Timestamp)
         .from(Data::Table)
         .to_owned();
 
     if device_ids.len() == 1 {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::DeviceId)).eq(device_ids[0])).to_owned();
+        stmt = stmt.and_where(Expr::col(Data::DeviceId).eq(device_ids[0])).to_owned();
     }
     else if device_ids.len() > 1 {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::DeviceId)).is_in(device_ids.to_vec())).to_owned();
+        stmt = stmt.and_where(Expr::col(Data::DeviceId).is_in(device_ids.to_vec())).to_owned();
     }
     if model_ids.len() == 1 {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::ModelId)).eq(model_ids[0])).to_owned();
+        stmt = stmt.and_where(Expr::col(Data::ModelId).eq(model_ids[0])).to_owned();
     }
     else if model_ids.len() > 1 {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::ModelId)).is_in(model_ids.to_vec())).to_owned();
+        stmt = stmt.and_where(Expr::col(Data::ModelId).is_in(model_ids.to_vec())).to_owned();
     }
 
     match selector {
         DataSelector::Time(time) => {
-            stmt = stmt.and_where(Expr::col((Data::Table, Data::Timestamp)).eq(time)).to_owned();
+            stmt = stmt.and_where(Expr::col(Data::Timestamp).eq(time)).to_owned();
         },
         DataSelector::Earlier(earlier) => {
-            stmt = stmt.and_where(Expr::col((Data::Table, Data::Timestamp)).lt(earlier))
-            .order_by((Data::Table, Data::Timestamp), Order::Asc)
+            stmt = stmt.and_where(Expr::col(Data::Timestamp).lt(earlier))
+            .order_by(Data::Timestamp, Order::Asc)
             .to_owned();
         },
         DataSelector::Later(later) => {
-            stmt = stmt.and_where(Expr::col((Data::Table, Data::Timestamp)).gt(later))
-            .order_by((Data::Table, Data::Timestamp), Order::Asc)
+            stmt = stmt.and_where(Expr::col(Data::Timestamp).gt(later))
+            .order_by(Data::Timestamp, Order::Asc)
             .to_owned();
         },
         DataSelector::Range(begin, end) => {
             stmt = stmt
-                .and_where(Expr::col((Data::Table, Data::Timestamp)).gte(begin))
-                .and_where(Expr::col((Data::Table, Data::Timestamp)).lte(end))
-                .order_by((Data::Table, Data::Timestamp), Order::Asc)
+                .and_where(Expr::col(Data::Timestamp).gte(begin))
+                .and_where(Expr::col(Data::Timestamp).lte(end))
+                .order_by(Data::Timestamp, Order::Asc)
                 .to_owned();
         }
         _ => {}
@@ -158,7 +158,7 @@ pub fn select_data_timestamp(
 
     if let Some(tag) = tag {
         if let QueryStatement::Select(query) = model::select_tag_members(model_ids, tag) {
-            stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).in_subquery(query)).to_owned();
+            stmt = stmt.and_where(Expr::col(Data::Tag).in_subquery(query)).to_owned();
         }
     }
 
@@ -170,10 +170,10 @@ pub fn select_data_types(
 ) -> QueryStatement
 {
     let stmt = Query::select()
-        .column((Model::Table, Model::DataType))
+        .column(Model::DataType)
         .from(Model::Table)
-        .and_where(Expr::col((Model::Table, Model::ModelId)).is_in(model_ids.to_vec()))
-        .order_by((Model::Table, Model::ModelId), Order::Asc)
+        .and_where(Expr::col(Model::ModelId).is_in(model_ids.to_vec()))
+        .order_by(Model::ModelId, Order::Asc)
         .to_owned();
 
     QueryStatement::Select(stmt)
@@ -219,7 +219,7 @@ pub fn insert_data_multiple(
     tags: Option<&[i16]>
 ) -> QueryStatement
 {
-    let numbers = vec![device_ids.len(), model_ids.len(), timestamps.len(), data.len()];
+    let numbers = [device_ids.len(), model_ids.len(), timestamps.len(), data.len()];
     let number = numbers.into_iter().min().unwrap_or(0);
     let tags: Vec<i16> = match tags {
         Some(values) => (0..number).into_iter().map(|i| values.get(i).unwrap_or(&Tag::DEFAULT).to_owned()).collect(),
@@ -266,7 +266,7 @@ pub fn delete_data(
         .and_where(Expr::col(Data::Timestamp).eq(timestamp))
         .to_owned();
     if let Some(t) = tag {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).eq(t)).to_owned();
+        stmt = stmt.and_where(Expr::col(Data::Tag).eq(t)).to_owned();
     }
 
     QueryStatement::Delete(stmt)
@@ -351,21 +351,21 @@ pub fn count_data(
 ) -> QueryStatement
 {
     let mut stmt = Query::select()
-        .expr(Expr::col((Data::Table, Data::Timestamp)).count())
+        .expr(Expr::col(Data::Timestamp).count())
         .from(Data::Table)
         .to_owned();
 
     if device_ids.len() == 1 {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::DeviceId)).eq(device_ids[0])).to_owned();
+        stmt = stmt.and_where(Expr::col(Data::DeviceId).eq(device_ids[0])).to_owned();
     }
     else {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::DeviceId)).is_in(device_ids.to_vec())).to_owned();
+        stmt = stmt.and_where(Expr::col(Data::DeviceId).is_in(device_ids.to_vec())).to_owned();
     }
     if model_ids.len() == 1 {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::ModelId)).eq(model_ids[0])).to_owned();
+        stmt = stmt.and_where(Expr::col(Data::ModelId).eq(model_ids[0])).to_owned();
     }
     else {
-        stmt = stmt.and_where(Expr::col((Data::Table, Data::ModelId)).is_in(model_ids.to_vec())).to_owned();
+        stmt = stmt.and_where(Expr::col(Data::ModelId).is_in(model_ids.to_vec())).to_owned();
     }
 
     match selector {
@@ -386,7 +386,7 @@ pub fn count_data(
 
     if let Some(tag) = tag {
         if let QueryStatement::Select(query) = model::select_tag_members(model_ids, tag) {
-            stmt = stmt.and_where(Expr::col((Data::Table, Data::Tag)).in_subquery(query)).to_owned();
+            stmt = stmt.and_where(Expr::col(Data::Tag).in_subquery(query)).to_owned();
         }
     }
 

@@ -580,10 +580,10 @@ pub fn update_device_type_config(
         stmt = stmt.value(DeviceTypeConfig::Name, value).to_owned();
     }
     if let Some(value) = value_type {
-        stmt = stmt.value(DeviceTypeConfig::Name, i16::from(value)).to_owned();
+        stmt = stmt.value(DeviceTypeConfig::Type, i16::from(value)).to_owned();
     }
     if let Some(value) = value_default {
-        stmt = stmt.value(DeviceTypeConfig::Name, value.to_bytes()).to_owned();
+        stmt = stmt.value(DeviceTypeConfig::Value, value.to_bytes()).to_owned();
     }
     if let Some(value) = category {
         stmt = stmt.value(DeviceTypeConfig::Category, value).to_owned();
@@ -597,7 +597,7 @@ pub fn update_device_type_config(
 }
 
 pub fn delete_device_type_config(
-    id: Uuid
+    id: i32
 ) -> QueryStatement
 {
     let stmt = Query::delete()
