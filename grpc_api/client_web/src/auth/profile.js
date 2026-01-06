@@ -1,4 +1,4 @@
-import { get_data_value, set_data_value, get_data_type, set_data_type } from '../common/type_value.js';
+import { unpack_data, pack_data, pack_type, get_data_type, set_data_type } from '../common/type_value.js';
 import pb_profile from "../proto/auth/profile_grpc_web_pb.js";
 import {
     metadata,
@@ -52,7 +52,7 @@ function get_role_profile_schema(r) {
         role_id: base64_to_uuid_hex(r.roleId),
         name: r.name,
         value_type: get_data_type(r.valueType),
-        value_default: get_data_value(r.valueBytes, r.valueType),
+        value_default: unpack_data(r.valueBytes, r.valueType),
         category: r.category
     };
 }
@@ -83,7 +83,7 @@ function get_user_profile_schema(r) {
         id: r.id,
         user_id: base64_to_uuid_hex(r.userId),
         name: r.name,
-        value: get_data_value(r.valueBytes, r.valueType),
+        value: unpack_data(r.valueBytes, r.valueType),
         category: r.category
     };
 }
@@ -154,8 +154,7 @@ export async function create_role_profile(config, request) {
     roleProfileSchema.setRoleId(uuid_hex_to_base64(request.role_id));
     roleProfileSchema.setName(request.name);
     roleProfileSchema.setValueType(set_data_type(request.value_type));
-    const value = set_data_value(request.value_default);
-    roleProfileSchema.setValueBytes(value.bytes);
+    roleProfileSchema.setValueBytes(pack_data(request.value_default));
     roleProfileSchema.setCategory(request.category);
     return client.createRoleProfile(roleProfileSchema, metadata(config.auth_token))
         .then(response => response.toObject().id);
@@ -173,8 +172,7 @@ export async function update_role_profile(config, request) {
     roleProfileUpdate.setId(request.id);
     roleProfileUpdate.setName(request.name);
     roleProfileUpdate.setValueType(set_data_type(request.value_type));
-    const value = set_data_value(request.value_default);
-    roleProfileUpdate.setValueBytes(value.bytes);
+    roleProfileUpdate.setValueBytes(pack_data(request.value_default));
     roleProfileUpdate.setCategory(request.category);
     return client.updateRoleProfile(roleProfileUpdate, metadata(config.auth_token))
         .then(response => null);
@@ -233,9 +231,8 @@ export async function create_user_profile(config, request) {
     const userProfileSchema = new pb_profile.UserProfileSchema();
     userProfileSchema.setUserId(uuid_hex_to_base64(request.user_id));
     userProfileSchema.setName(request.name);
-    const value = set_data_value(request.value);
-    userProfileSchema.setValueBytes(value.bytes);
-    userProfileSchema.setValueType(value.type);
+    userProfileSchema.setValueBytes(pack_data(request.value));
+    userProfileSchema.setValueType(pack_type(request.value));
     userProfileSchema.setCategory(request.category);
     return client.createUserProfile(userProfileSchema, metadata(config.auth_token))
         .then(response => response.toObject().id);
@@ -252,9 +249,8 @@ export async function update_user_profile(config, request) {
     const userProfileUpdate = new pb_profile.UserProfileUpdate();
     userProfileUpdate.setId(request.id);
     userProfileUpdate.setName(request.name);
-    const value = set_data_value(request.value);
-    userProfileUpdate.setValueBytes(value.bytes);
-    userProfileUpdate.setValueType(value.type);
+    userProfileUpdate.setValueBytes(pack_data(request.value));
+    userProfileUpdate.setValueType(pack_type(request.value));
     userProfileUpdate.setCategory(request.category);
     return client.updateUserProfile(userProfileUpdate, metadata(config.auth_token))
         .then(response => null);

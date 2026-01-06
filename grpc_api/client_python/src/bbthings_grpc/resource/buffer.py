@@ -3,7 +3,7 @@ from typing import Optional, Union, List
 from datetime import datetime
 from uuid import UUID
 import grpc
-from ..common.type_value import DataType, pack_data_array
+from ..common.type_value import DataType, pack_type, pack_data_array
 from ..common.tag import Tag
 from ._schema import BufferSchema, BufferSetSchema
 
@@ -524,7 +524,7 @@ def create_buffer(resource, device_id: UUID, model_id: UUID, timestamp: datetime
     with grpc.insecure_channel(resource.address) as channel:
         stub = buffer_pb2_grpc.BufferServiceStub(channel)
         data_type = []
-        for d in data: data_type.append(DataType.from_value(d).value)
+        for d in data: data_type.append(pack_type(d))
         request = buffer_pb2.BufferSchema(
             device_id=device_id.bytes,
             model_id=model_id.bytes,
@@ -546,7 +546,7 @@ def create_buffer_multiple(resource, device_ids: list[UUID], model_ids: list[UUI
         schemas = []
         for i in range(number):
             data_type = []
-            for d in data[i]: data_type.append(DataType.from_value(d).value)
+            for d in data[i]: data_type.append(pack_type(d))
             schemas.append(buffer_pb2.BufferSchema(
                 device_id=device_ids[i].bytes,
                 model_id=model_ids[i].bytes,
@@ -568,7 +568,7 @@ def update_buffer(resource, id: int, data: Optional[List[Union[int, float, str, 
             data_bytes = pack_data_array(data)
             data_list = data
         data_type = []
-        for d in data_list: data_type.append(DataType.from_value(d).value)
+        for d in data_list: data_type.append(pack_type(d))
         request = buffer_pb2.BufferUpdate(
             id=id,
             data_bytes=data_bytes,
@@ -586,7 +586,7 @@ def update_buffer_by_time(resource, device_id: UUID, model_id: UUID, timestamp: 
             data_bytes = pack_data_array(data)
             data_list = data
         data_type = []
-        for d in data_list: data_type.append(DataType.from_value(d).value)
+        for d in data_list: data_type.append(pack_type(d))
         request = buffer_pb2.BufferUpdateTime(
             device_id=device_id.bytes,
             model_id=model_id.bytes,

@@ -65,7 +65,6 @@ def test_resource():
     # read model
     model = resource.read_model(model_id)
     models = resource.list_model_by_name("speed")
-    print(models)
     model_ids = []
     for model in models: model_ids.append(model.id)
     assert model_id in model_ids

@@ -1,7 +1,7 @@
 export * as auth from './auth/index.js';
 export * as resource from './resource/index.js';
 export * as utility from './common/utility.js';
-export {DataType} from './common/type_value.js';
+export * from './common/type_value.js';
 export {Tag} from './common/tag.js';
 export {AuthConfig} from './auth';
 export {ResourceConfig} from './resource';

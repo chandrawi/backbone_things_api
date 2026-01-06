@@ -2,7 +2,7 @@ from ..proto.resource import device_pb2, device_pb2_grpc
 from typing import Optional, Union, List
 from uuid import UUID
 import grpc
-from ..common.type_value import DataType, pack_data, pack_data_model
+from ..common.type_value import DataType, pack_type, pack_data, pack_data_type
 from ._schema import DeviceSchema, DeviceConfigSchema, GatewaySchema, GatewayConfigSchema, TypeSchema, TypeConfigSchema
 
 
@@ -221,7 +221,7 @@ def create_device_config(resource, device_id: UUID, name: str, value: Union[int,
             device_id=device_id.bytes,
             name=name,
             config_bytes=pack_data(value),
-            config_type=DataType.from_value(value).value,
+            config_type=pack_type(value),
             category=category
         )
         response = stub.CreateDeviceConfig(request=request, metadata=resource.metadata)
@@ -234,7 +234,7 @@ def update_device_config(resource, id: int, name: Optional[str]=None, value: Uni
             id=id,
             name=name,
             config_bytes=pack_data(value),
-            config_type=DataType.from_value(value).value,
+            config_type=pack_type(value),
             category=category
         )
         stub.UpdateDeviceConfig(request=request, metadata=resource.metadata)
@@ -268,7 +268,7 @@ def create_gateway_config(resource, gateway_id: UUID, name: str, value: Union[in
             device_id=gateway_id.bytes,
             name=name,
             config_bytes=pack_data(value),
-            config_type=DataType.from_value(value).value,
+            config_type=pack_type(value),
             category=category
         )
         response = stub.CreateGatewayConfig(request=request, metadata=resource.metadata)
@@ -281,7 +281,7 @@ def update_gateway_config(resource, id: int, name: Optional[str]=None, value: Un
             id=id,
             name=name,
             config_bytes=pack_data(value),
-            config_type=DataType.from_value(value).value,
+            config_type=pack_type(value),
             category=category
         )
         stub.UpdateGatewayConfig(request=request, metadata=resource.metadata)
@@ -388,7 +388,7 @@ def create_type_config(resource, type_id: UUID, name: str, value_type: DataType,
             type_id=type_id.bytes,
             name=name,
             config_type=value_type.value,
-            config_bytes=pack_data_model(value_default, value_type),
+            config_bytes=pack_data_type(value_default, value_type),
             category=category
         )
         response = stub.CreateTypeConfig(request=request, metadata=resource.metadata)
@@ -400,7 +400,7 @@ def update_type_config(resource, id: int, name: Optional[str]=None, value_type: 
         ty = None
         if value_type != None: ty = value_type.value
         byt = None
-        if value_type != None and value_default != None: byt = pack_data_model(value_default, value_type)
+        if value_type != None and value_default != None: byt = pack_data_type(value_default, value_type)
         elif value_default != None: byt = pack_data(value_default)
         request = device_pb2.TypeConfigUpdate(
             id=id,

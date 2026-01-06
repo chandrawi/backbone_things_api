@@ -3,7 +3,7 @@ from typing import Optional, Union, List
 from datetime import datetime
 from uuid import UUID
 import grpc
-from ..common.type_value import DataType, pack_data_array
+from ..common.type_value import DataType, pack_type, pack_data_array
 from ..common.tag import Tag
 from ._schema import DataSchema, DataSetSchema
 
@@ -262,7 +262,7 @@ def create_data(resource, device_id: UUID, model_id: UUID, timestamp: datetime, 
     with grpc.insecure_channel(resource.address) as channel:
         stub = data_pb2_grpc.DataServiceStub(channel)
         data_type = []
-        for d in data: data_type.append(DataType.from_value(d).value)
+        for d in data: data_type.append(pack_type(d))
         request = data_pb2.DataSchema(
             device_id=device_id.bytes,
             model_id=model_id.bytes,
@@ -283,7 +283,7 @@ def create_data_multiple(resource, device_ids: List[UUID], model_ids: List[UUID]
         schemas = []
         for i in range(number):
             data_type = []
-            for d in data[i]: data_type.append(DataType.from_value(d).value)
+            for d in data[i]: data_type.append(pack_type(d))
             schemas.append(data_pb2.DataSchema(
                 device_id=device_ids[i].bytes,
                 model_id=model_ids[i].bytes,

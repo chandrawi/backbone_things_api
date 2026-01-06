@@ -1,7 +1,7 @@
 /**
  * @enum {number}
  */
-export const DataType = {
+export const DataType = Object.freeze({
     NULL: 0,
     I8: 1,
     I16: 2,
@@ -19,7 +19,7 @@ export const DataType = {
     CHAR: 16,
     STRING: 17,
     BYTES: 18
-};
+});
 
 /**
  * @param {number|string} type
@@ -55,16 +55,6 @@ export function set_data_type(type) {
 }
 
 /**
- * @param {number[]|string[]} types
- * @returns {string}
- */
-export function set_data_type_bytes(types) {
-    const type_code = types.map((value) => { return set_data_type(value); });
-    const type_str = type_code.map((value) => { return String.fromCharCode(value); }).join("");
-    return btoa(type_str)
-}
-
-/**
  * @param {number} type 
  * @returns {string}
  */
@@ -88,16 +78,6 @@ export function get_data_type(type) {
         case DataType.BYTES: return "BYTES";
     }
     return "NULL";
-}
-
-/**
- * @param {string} types
- * @returns {string[]}
- */
-export function get_data_type_bytes(types) {
-    const type_str = atob(types);
-    const type_code = type_str.split("").map((value) => { return value.charCodeAt(); });
-    return type_code.map((value) => { return get_data_type(value) });
 }
 
 /**
@@ -128,39 +108,40 @@ function array_buffer_to_base64(buffer) {
  * @param {number} type 
  * @returns {number|bigint|string|Uint8Array|boolean|null}
  */
-export function get_data_value(base64, type) {
+export function unpack_data(base64, type) {
     const buffer = base64_to_array_buffer(base64);
     const array = new Uint8Array(buffer);
     const view = new DataView(buffer);
     switch (type) {
         case DataType.I8: 
-            if (view.byteLength >= 1) return view.getInt8();
+            if (view.byteLength >= 1) return view.getInt8(view.byteLength - 1);
         case DataType.I16: 
-            if (view.byteLength >= 2) return view.getInt16();
+            if (view.byteLength >= 2) return view.getInt16(view.byteLength - 2);
         case DataType.I32: 
-            if (view.byteLength >= 4) return view.getInt32();
+            if (view.byteLength >= 4) return view.getInt32(view.byteLength - 4);
         case DataType.I64: 
-            if (view.byteLength >= 8) return view.getBigInt64();
+            if (view.byteLength >= 8) return view.getBigInt64(view.byteLength - 8);
         case DataType.I128: 
-            if (view.byteLength >= 8) return view.getBigInt64();
+            if (view.byteLength >= 8) return view.getBigInt64(view.byteLength - 8);
         case DataType.U8: 
-            if (view.byteLength >= 1) return view.getUint8();
+            if (view.byteLength >= 1) return view.getUint8(view.byteLength - 1);
         case DataType.U16: 
-            if (view.byteLength >= 2) return view.getUint16();
+            if (view.byteLength >= 2) return view.getUint16(view.byteLength - 2);
         case DataType.U32: 
-            if (view.byteLength >= 4) return view.getUint32();
+            if (view.byteLength >= 4) return view.getUint32(view.byteLength - 4);
         case DataType.U64: 
-            if (view.byteLength >= 8) return view.getBigUint64();
+            if (view.byteLength >= 8) return view.getBigUint64(view.byteLength - 8);
         case DataType.U128: 
-            if (view.byteLength >= 8) return view.getBigUint64();
+            if (view.byteLength >= 8) return view.getBigUint64(view.byteLength - 8);
         case DataType.F32:
-            if (view.byteLength >= 4) return view.getFloat32();
+            if (view.byteLength >= 4) return view.getFloat32(view.byteLength - 4);
         case DataType.F64:
-            if (view.byteLength >= 8) return view.getFloat64();
+            if (view.byteLength >= 8) return view.getFloat64(view.byteLength - 8);
         case DataType.BOOL:
-            if (view.byteLength >= 1) return Boolean(view.getUint8(offset));
+            for (const byte of array) if (byte) return true;
+            return false;
         case DataType.CHAR:
-            if (view.byteLength >= 1) return String.fromCharCode(view.getUint8(offset));
+            if (view.byteLength >= 1) return String.fromCharCode(view.getUint8());
         case DataType.STRING:
             return new TextDecoder("utf-8").decode(array);
         case DataType.BYTES:
@@ -174,7 +155,7 @@ export function get_data_value(base64, type) {
  * @param {number[]} types 
  * @returns {(number|bigint|string|Uint8Array|boolean|null)[]}
  */
-export function get_data_values(base64, types) {
+export function unpack_data_array(base64, types) {
     const buffer = base64_to_array_buffer(base64);
     let index = 0;
     let values = [];
@@ -204,7 +185,7 @@ export function get_data_values(base64, types) {
             }
         }
         if (index + length > buffer.byteLength) break;
-        const value = get_data_value(array_buffer_to_base64(buffer.slice(index, index + length)), type);
+        const value = unpack_data(array_buffer_to_base64(buffer.slice(index, index + length)), type);
         values.push(value);
         index += length;
     }
@@ -214,87 +195,103 @@ export function get_data_values(base64, types) {
 /**
  * @param {number|bigint|string|Uint8Array|boolean} value
  */
-export function set_data_value(value) {
-    let base64 = "";
-    let type = DataType.NULL;
+export function pack_type(value) {
+    if (typeof value == "number") {
+        if (Number.isInteger(value)) {
+            return DataType.I32;
+        }
+        else {
+            return DataType.F64;
+        }
+    }
+    else if (typeof value == "bigint") {
+        return DataType.I64;
+    }
+    else if (typeof value == "string") {
+        if (value.length == 1) {
+            return DataType.CHAR;
+        }
+        else {
+            return DataType.STRING;
+        }
+    }
+    else if (value instanceof Uint8Array) {
+        return DataType.BYTES;
+    }
+    else if (typeof value == "boolean") {
+        return DataType.BOOL;
+    }
+    return DataType.NULL;
+}
+
+/**
+ * @param {number|bigint|string|Uint8Array|boolean} value
+ */
+function pack(value) {
     if (typeof value == "number") {
         if (Number.isInteger(value)) {
             const buffer = new ArrayBuffer(4);
             const view = new DataView(buffer);
             view.setInt32(0, value);
-            type = DataType.I32;
-            base64 += array_buffer_to_base64(view.buffer);
+            return view.buffer;
         } else {
             const buffer = new ArrayBuffer(8);
             const view = new DataView(buffer);
             view.setFloat64(0, value);
-            type = DataType.F64;
-            base64 += array_buffer_to_base64(view.buffer);
+            return view.buffer;
         }
     }
-    if (typeof value == "bigint") {
+    else if (typeof value == "bigint") {
         const buffer = new ArrayBuffer(8);
         const view = new DataView(buffer);
         view.setBigInt64(0, value);
-        type = DataType.I64;
-        base64 += array_buffer_to_base64(view.buffer);
+        return view.buffer;
     }
     else if (typeof value == "string") {
-        if (value.length == 1) {
-            type = DataType.CHAR;
-            base64 += btoa(value);
-        }
-        else {
-            type = DataType.STRING;
-            let array = new Uint8Array(value.length);
-            array.set(new TextEncoder("utf-8").encode(value));
-            base64 += array_buffer_to_base64(array.buffer);
-        }
+        const array = new Uint8Array(value.length);
+        array.set(new TextEncoder("utf-8").encode(value));
+        return array.buffer;
     }
     else if (value instanceof Uint8Array) {
-        type = DataType.BYTES;
-        base64 += array_buffer_to_base64(value.buffer);
+        return value.buffer;
     }
     else if (typeof value == "boolean") {
-        type = DataType.BOOL;
-        base64 += btoa(String.fromCharCode(value));
+        let array = new Uint8Array([0]);
+        if (value) array = new Uint8Array([1]);
+        return array.buffer;
     }
-    return {
-        bytes: base64,
-        type: type
-    }
+    return new ArrayBuffer(0);
+}
+
+/**
+ * @param {number|bigint|string|Uint8Array|boolean} value
+ */
+export function pack_data(value) {
+    return array_buffer_to_base64(pack(value));
 }
 
 /**
  * @param {(number|bigint|string|Uint8Array|boolean)[]} values
  */
-export function set_data_values(values) {
+export function pack_data_array(values) {
     if (values === undefined) {
-        return {
-            bytes: "",
-            types: []
-        };
+        return "";
     }
     let arrays = new Uint8Array();
-    let types = [];
     for (const value of values) {
-        let data_value = set_data_value(value);
+        let data_buffer = pack(value);
         if ((typeof value == "string" && value.length != 1) || value instanceof Uint8Array) {
-            let len = new Uint8Array([value.length % 256]);
-            let combine = new Uint8Array(arrays.byteLength + 1);
+            const len = new Uint8Array([value.length % 256]);
+            const combine = new Uint8Array(arrays.byteLength + 1);
             combine.set(arrays);
             combine.set(len, arrays.byteLength);
             arrays = combine;
         }
-        let array = new Uint8Array(base64_to_array_buffer(data_value.bytes));
+        let array = new Uint8Array(data_buffer);
         let combine = new Uint8Array(arrays.byteLength + array.byteLength);
         combine.set(arrays);
         combine.set(array, arrays.byteLength);
         arrays = combine;
-        types.push(data_value.type);
     }
-    return {
-        bytes: array_buffer_to_base64(arrays.buffer),
-        types: types
-    };
+    return array_buffer_to_base64(arrays.buffer);
 }

@@ -1,4 +1,4 @@
-import { get_data_values, set_data_values } from '../common/type_value.js';
+import { unpack_data_array, pack_data_array, pack_type } from '../common/type_value.js';
 import { Tag } from '../common/tag.js';
 import pb_buffer from '../proto/resource/buffer_grpc_web_pb.js';
 import {
@@ -116,7 +116,7 @@ function get_buffer_schema(r) {
         device_id: base64_to_uuid_hex(r.deviceId),
         model_id: base64_to_uuid_hex(r.modelId),
         timestamp: new Date(r.timestamp / 1000),
-        data: get_data_values(r.dataBytes, r.dataTypeList),
+        data: unpack_data_array(r.dataBytes, r.dataTypeList),
         tag: r.tag ?? Tag.DEFAULT
     };
 }
@@ -243,7 +243,7 @@ function get_buffer_set_schema(r) {
         ids: r.idsList,
         set_id: base64_to_uuid_hex(r.setId),
         timestamp: new Date(r.timestamp / 1000),
-        data: get_data_values(r.dataBytes, r.dataTypeList),
+        data: unpack_data_array(r.dataBytes, r.dataTypeList),
         tag: r.tag ?? Tag.DEFAULT
     };
 }
@@ -881,10 +881,9 @@ export async function create_buffer(config, request) {
     bufferSchema.setDeviceId(uuid_hex_to_base64(request.device_id));
     bufferSchema.setModelId(uuid_hex_to_base64(request.model_id));
     bufferSchema.setTimestamp(request.timestamp.valueOf() * 1000);
-    const value = set_data_values(request.data);
-    bufferSchema.setDataBytes(value.bytes);
-    for (const type of value.types) {
-        bufferSchema.addDataType(type);
+    bufferSchema.setDataBytes(pack_data_array(request.data));
+    for (const value of request.data) {
+        bufferSchema.addDataType(pack_type(value));
     }
     bufferSchema.setTag(request.tag ?? Tag.DEFAULT);
     return client.createBuffer(bufferSchema, metadata(config.access_token))
@@ -911,10 +910,9 @@ export async function create_buffer_multiple(config, request) {
         bufferSchema.setDeviceId(uuid_hex_to_base64(request.device_ids[i]));
         bufferSchema.setModelId(uuid_hex_to_base64(request.model_ids[i]));
         bufferSchema.setTimestamp(request.timestamps[i].valueOf() * 1000);
-        const value = set_data_values(request.data[i]);
-        bufferSchema.setDataBytes(value.bytes);
-        for (const type of value.types) {
-            bufferSchema.addDataType(type);
+        bufferSchema.setDataBytes(pack_data_array(request.data[i]));
+        for (const value of request.data[i]) {
+            bufferSchema.addDataType(pack_type(value));
         }
         bufferSchema.setTag(tags[i] ?? Tag.DEFAULT);
         bufferMultiSchema.addSchemas(bufferSchema);
@@ -934,10 +932,9 @@ export async function update_buffer(config, request) {
     const bufferUpdate = new pb_buffer.BufferUpdate();
     bufferUpdate.setId(request.id);
     if (typeof request.data == "object" && 'length' in request.data) {
-        const value = set_data_values(request.data);
-        bufferUpdate.setDataBytes(value.bytes);
-        for (const type of value.types) {
-            bufferUpdate.addDataType(type);
+        bufferUpdate.setDataBytes(pack_data_array(request.data));
+        for (const value of request.data) {
+            bufferUpdate.addDataType(pack_type(value));
         }
     }
     bufferUpdate.setTag(request.tag);
@@ -958,14 +955,13 @@ export async function update_buffer_by_time(config, request) {
     bufferUpdateTime.setModelId(uuid_hex_to_base64(request.model_id));
     bufferUpdateTime.setTimestamp(request.timestamp.valueOf() * 1000);
     if (typeof request.data == "object" && 'length' in request.data) {
-        const value = set_data_values(request.data);
-        BufferUpdateTime.setDataBytes(value.bytes);
-        for (const type of value.types) {
-            BufferUpdateTime.addDataType(type);
+        bufferUpdateTime.setDataBytes(pack_data_array(request.data));
+        for (const value of request.data) {
+            bufferUpdateTime.addDataType(pack_type(value));
         }
     }
-    BufferUpdateTime.setTag(request.tag);
-    return client.updateBufferByTime(BufferUpdateTime, metadata(config.access_token))
+    bufferUpdateTime.setTag(request.tag);
+    return client.updateBufferByTime(bufferUpdateTime, metadata(config.access_token))
         .then(response => null);
 }
 

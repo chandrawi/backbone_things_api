@@ -1,4 +1,4 @@
-import { get_data_value, set_data_value, get_data_type, set_data_type } from '../common/type_value.js';
+import { unpack_data, pack_data, pack_type, get_data_type, set_data_type } from '../common/type_value.js';
 import pb_model from '../proto/resource/model_grpc_web_pb.js';
 import {
     metadata,
@@ -118,7 +118,7 @@ function get_model_config_schema(r) {
         model_id: base64_to_uuid_hex(r.modelId),
         index: r.index,
         name: r.name,
-        value: get_data_value(r.configBytes, r.configType),
+        value: unpack_data(r.configBytes, r.configType),
         category: r.category
     };
 }
@@ -358,9 +358,8 @@ export async function create_model_config(config, request) {
     configSchema.setModelId(uuid_hex_to_base64(request.model_id));
     configSchema.setIndex(request.index);
     configSchema.setName(request.name);
-    const value = set_data_value(request.value);
-    configSchema.setConfigBytes(value.bytes);
-    configSchema.setConfigType(value.type);
+    configSchema.setConfigBytes(pack_data(request.value));
+    configSchema.setConfigType(pack_type(request.value));
     configSchema.setCategory(request.category);
     return client.createModelConfig(configSchema, metadata(config.access_token))
         .then(response => response.toObject().id);
@@ -377,9 +376,8 @@ export async function update_model_config(config, request) {
     const configUpdate = new pb_model.ConfigUpdate();
     configUpdate.setId(request.id);
     configUpdate.setName(request.name);
-    const value = set_data_value(request.value);
-    configUpdate.setConfigBytes(value.bytes);
-    configUpdate.setConfigType(value.type);
+    configUpdate.setConfigBytes(pack_data(request.value));
+    configUpdate.setConfigType(pack_type(request.value));
     configUpdate.setCategory(request.category);
     return client.updateModelConfig(configUpdate, metadata(config.access_token))
         .then(response => null);

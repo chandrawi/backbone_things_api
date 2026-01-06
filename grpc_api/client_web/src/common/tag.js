@@ -1,7 +1,7 @@
 /**
  * @enum {number}
  */
-export const Tag = {
+export const Tag = Object.freeze({
     DEFAULT: 0,
     MINUTELY: 1,
     MINUTELY_AVG: 2,
@@ -68,4 +68,4 @@ export const Tag = {
     FAIL_DELETE: -10,
     INVALID_TOKEN: -11,
     INVALID_REQUEST: -12
-};
+});

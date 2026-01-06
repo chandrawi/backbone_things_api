@@ -18364,7 +18364,7 @@ async function remove_user_role(config, request) {
 /**
  * @enum {number}
  */
-const DataType = {
+const DataType = Object.freeze({
     NULL: 0,
     I8: 1,
     I16: 2,
@@ -18382,7 +18382,7 @@ const DataType = {
     CHAR: 16,
     STRING: 17,
     BYTES: 18
-};
+});
 
 /**
  * @param {number|string} type
@@ -18471,39 +18471,40 @@ function array_buffer_to_base64(buffer) {
  * @param {number} type 
  * @returns {number|bigint|string|Uint8Array|boolean|null}
  */
-function get_data_value(base64, type) {
+function unpack_data(base64, type) {
     const buffer = base64_to_array_buffer(base64);
     const array = new Uint8Array(buffer);
     const view = new DataView(buffer);
     switch (type) {
         case DataType.I8: 
-            if (view.byteLength >= 1) return view.getInt8();
+            if (view.byteLength >= 1) return view.getInt8(view.byteLength - 1);
         case DataType.I16: 
-            if (view.byteLength >= 2) return view.getInt16();
+            if (view.byteLength >= 2) return view.getInt16(view.byteLength - 2);
         case DataType.I32: 
-            if (view.byteLength >= 4) return view.getInt32();
+            if (view.byteLength >= 4) return view.getInt32(view.byteLength - 4);
         case DataType.I64: 
-            if (view.byteLength >= 8) return view.getBigInt64();
+            if (view.byteLength >= 8) return view.getBigInt64(view.byteLength - 8);
         case DataType.I128: 
-            if (view.byteLength >= 8) return view.getBigInt64();
+            if (view.byteLength >= 8) return view.getBigInt64(view.byteLength - 8);
         case DataType.U8: 
-            if (view.byteLength >= 1) return view.getUint8();
+            if (view.byteLength >= 1) return view.getUint8(view.byteLength - 1);
         case DataType.U16: 
-            if (view.byteLength >= 2) return view.getUint16();
+            if (view.byteLength >= 2) return view.getUint16(view.byteLength - 2);
         case DataType.U32: 
-            if (view.byteLength >= 4) return view.getUint32();
+            if (view.byteLength >= 4) return view.getUint32(view.byteLength - 4);
         case DataType.U64: 
-            if (view.byteLength >= 8) return view.getBigUint64();
+            if (view.byteLength >= 8) return view.getBigUint64(view.byteLength - 8);
         case DataType.U128: 
-            if (view.byteLength >= 8) return view.getBigUint64();
+            if (view.byteLength >= 8) return view.getBigUint64(view.byteLength - 8);
         case DataType.F32:
-            if (view.byteLength >= 4) return view.getFloat32();
+            if (view.byteLength >= 4) return view.getFloat32(view.byteLength - 4);
         case DataType.F64:
-            if (view.byteLength >= 8) return view.getFloat64();
+            if (view.byteLength >= 8) return view.getFloat64(view.byteLength - 8);
         case DataType.BOOL:
-            if (view.byteLength >= 1) return Boolean(view.getUint8(offset));
+            for (const byte of array) if (byte) return true;
+            return false;
         case DataType.CHAR:
-            if (view.byteLength >= 1) return String.fromCharCode(view.getUint8(offset));
+            if (view.byteLength >= 1) return String.fromCharCode(view.getUint8());
         case DataType.STRING:
             return new TextDecoder("utf-8").decode(array);
         case DataType.BYTES:
@@ -18517,7 +18518,7 @@ function get_data_value(base64, type) {
  * @param {number[]} types 
  * @returns {(number|bigint|string|Uint8Array|boolean|null)[]}
  */
-function get_data_values(base64, types) {
+function unpack_data_array(base64, types) {
     const buffer = base64_to_array_buffer(base64);
     let index = 0;
     let values = [];
@@ -18547,7 +18548,7 @@ function get_data_values(base64, types) {
             }
         }
         if (index + length > buffer.byteLength) break;
-        const value = get_data_value(array_buffer_to_base64(buffer.slice(index, index + length)), type);
+        const value = unpack_data(array_buffer_to_base64(buffer.slice(index, index + length)), type);
         values.push(value);
         index += length;
     }
@@ -18557,89 +18558,105 @@ function get_data_values(base64, types) {
 /**
  * @param {number|bigint|string|Uint8Array|boolean} value
  */
-function set_data_value(value) {
-    let base64 = "";
-    let type = DataType.NULL;
+function pack_type(value) {
+    if (typeof value == "number") {
+        if (Number.isInteger(value)) {
+            return DataType.I32;
+        }
+        else {
+            return DataType.F64;
+        }
+    }
+    else if (typeof value == "bigint") {
+        return DataType.I64;
+    }
+    else if (typeof value == "string") {
+        if (value.length == 1) {
+            return DataType.CHAR;
+        }
+        else {
+            return DataType.STRING;
+        }
+    }
+    else if (value instanceof Uint8Array) {
+        return DataType.BYTES;
+    }
+    else if (typeof value == "boolean") {
+        return DataType.BOOL;
+    }
+    return DataType.NULL;
+}
+
+/**
+ * @param {number|bigint|string|Uint8Array|boolean} value
+ */
+function pack(value) {
     if (typeof value == "number") {
         if (Number.isInteger(value)) {
             const buffer = new ArrayBuffer(4);
             const view = new DataView(buffer);
             view.setInt32(0, value);
-            type = DataType.I32;
-            base64 += array_buffer_to_base64(view.buffer);
+            return view.buffer;
         } else {
             const buffer = new ArrayBuffer(8);
             const view = new DataView(buffer);
             view.setFloat64(0, value);
-            type = DataType.F64;
-            base64 += array_buffer_to_base64(view.buffer);
+            return view.buffer;
         }
     }
-    if (typeof value == "bigint") {
+    else if (typeof value == "bigint") {
         const buffer = new ArrayBuffer(8);
         const view = new DataView(buffer);
         view.setBigInt64(0, value);
-        type = DataType.I64;
-        base64 += array_buffer_to_base64(view.buffer);
+        return view.buffer;
     }
     else if (typeof value == "string") {
-        if (value.length == 1) {
-            type = DataType.CHAR;
-            base64 += btoa(value);
-        }
-        else {
-            type = DataType.STRING;
-            let array = new Uint8Array(value.length);
-            array.set(new TextEncoder("utf-8").encode(value));
-            base64 += array_buffer_to_base64(array.buffer);
-        }
+        const array = new Uint8Array(value.length);
+        array.set(new TextEncoder("utf-8").encode(value));
+        return array.buffer;
     }
     else if (value instanceof Uint8Array) {
-        type = DataType.BYTES;
-        base64 += array_buffer_to_base64(value.buffer);
+        return value.buffer;
     }
     else if (typeof value == "boolean") {
-        type = DataType.BOOL;
-        base64 += btoa(String.fromCharCode(value));
+        let array = new Uint8Array([0]);
+        if (value) array = new Uint8Array([1]);
+        return array.buffer;
     }
-    return {
-        bytes: base64,
-        type: type
-    }
+    return new ArrayBuffer(0);
+}
+
+/**
+ * @param {number|bigint|string|Uint8Array|boolean} value
+ */
+function pack_data(value) {
+    return array_buffer_to_base64(pack(value));
 }
 
 /**
  * @param {(number|bigint|string|Uint8Array|boolean)[]} values
  */
-function set_data_values(values) {
+function pack_data_array(values) {
     if (values === undefined) {
-        return {
-            bytes: "",
-            types: []
-        };
+        return "";
     }
     let arrays = new Uint8Array();
-    let types = [];
     for (const value of values) {
-        let data_value = set_data_value(value);
+        let data_buffer = pack(value);
         if ((typeof value == "string" && value.length != 1) || value instanceof Uint8Array) {
-            let len = new Uint8Array([value.length % 256]);
-            let combine = new Uint8Array(arrays.byteLength + 1);
+            const len = new Uint8Array([value.length % 256]);
+            const combine = new Uint8Array(arrays.byteLength + 1);
             combine.set(arrays);
             combine.set(len, arrays.byteLength);
             arrays = combine;
         }
-        let array = new Uint8Array(base64_to_array_buffer(data_value.bytes));
+        let array = new Uint8Array(data_buffer);
         let combine = new Uint8Array(arrays.byteLength + array.byteLength);
         combine.set(arrays);
         combine.set(array, arrays.byteLength);
         arrays = combine;
-        types.push(data_value.type);
     }
-    return {
-        bytes: array_buffer_to_base64(arrays.buffer),
-        types: types
-    };
+    return array_buffer_to_base64(arrays.buffer);
 }
 
 var profile_pb = {};
@@ -22346,7 +22363,7 @@ function get_role_profile_schema(r) {
         role_id: base64_to_uuid_hex(r.roleId),
         name: r.name,
         value_type: get_data_type(r.valueType),
-        value_default: get_data_value(r.valueBytes, r.valueType),
+        value_default: unpack_data(r.valueBytes, r.valueType),
         category: r.category
     };
 }
@@ -22377,7 +22394,7 @@ function get_user_profile_schema(r) {
         id: r.id,
         user_id: base64_to_uuid_hex(r.userId),
         name: r.name,
-        value: get_data_value(r.valueBytes, r.valueType),
+        value: unpack_data(r.valueBytes, r.valueType),
         category: r.category
     };
 }
@@ -22448,8 +22465,7 @@ async function create_role_profile(config, request) {
     roleProfileSchema.setRoleId(uuid_hex_to_base64(request.role_id));
     roleProfileSchema.setName(request.name);
     roleProfileSchema.setValueType(set_data_type(request.value_type));
-    const value = set_data_value(request.value_default);
-    roleProfileSchema.setValueBytes(value.bytes);
+    roleProfileSchema.setValueBytes(pack_data(request.value_default));
     roleProfileSchema.setCategory(request.category);
     return client.createRoleProfile(roleProfileSchema, metadata(config.auth_token))
         .then(response => response.toObject().id);
@@ -22467,8 +22483,7 @@ async function update_role_profile(config, request) {
     roleProfileUpdate.setId(request.id);
     roleProfileUpdate.setName(request.name);
     roleProfileUpdate.setValueType(set_data_type(request.value_type));
-    const value = set_data_value(request.value_default);
-    roleProfileUpdate.setValueBytes(value.bytes);
+    roleProfileUpdate.setValueBytes(pack_data(request.value_default));
     roleProfileUpdate.setCategory(request.category);
     return client.updateRoleProfile(roleProfileUpdate, metadata(config.auth_token))
         .then(response => null);
@@ -22527,9 +22542,8 @@ async function create_user_profile(config, request) {
     const userProfileSchema = new pb_profile.UserProfileSchema();
     userProfileSchema.setUserId(uuid_hex_to_base64(request.user_id));
     userProfileSchema.setName(request.name);
-    const value = set_data_value(request.value);
-    userProfileSchema.setValueBytes(value.bytes);
-    userProfileSchema.setValueType(value.type);
+    userProfileSchema.setValueBytes(pack_data(request.value));
+    userProfileSchema.setValueType(pack_type(request.value));
     userProfileSchema.setCategory(request.category);
     return client.createUserProfile(userProfileSchema, metadata(config.auth_token))
         .then(response => response.toObject().id);
@@ -22546,9 +22560,8 @@ async function update_user_profile(config, request) {
     const userProfileUpdate = new pb_profile.UserProfileUpdate();
     userProfileUpdate.setId(request.id);
     userProfileUpdate.setName(request.name);
-    const value = set_data_value(request.value);
-    userProfileUpdate.setValueBytes(value.bytes);
-    userProfileUpdate.setValueType(value.type);
+    userProfileUpdate.setValueBytes(pack_data(request.value));
+    userProfileUpdate.setValueType(pack_type(request.value));
     userProfileUpdate.setCategory(request.category);
     return client.updateUserProfile(userProfileUpdate, metadata(config.auth_token))
         .then(response => null);
@@ -36474,7 +36487,7 @@ function get_model_config_schema(r) {
         model_id: base64_to_uuid_hex(r.modelId),
         index: r.index,
         name: r.name,
-        value: get_data_value(r.configBytes, r.configType),
+        value: unpack_data(r.configBytes, r.configType),
         category: r.category
     };
 }
@@ -36714,9 +36727,8 @@ async function create_model_config(config, request) {
     configSchema.setModelId(uuid_hex_to_base64(request.model_id));
     configSchema.setIndex(request.index);
     configSchema.setName(request.name);
-    const value = set_data_value(request.value);
-    configSchema.setConfigBytes(value.bytes);
-    configSchema.setConfigType(value.type);
+    configSchema.setConfigBytes(pack_data(request.value));
+    configSchema.setConfigType(pack_type(request.value));
     configSchema.setCategory(request.category);
     return client.createModelConfig(configSchema, metadata(config.access_token))
         .then(response => response.toObject().id);
@@ -36733,9 +36745,8 @@ async function update_model_config(config, request) {
     const configUpdate = new pb_model.ConfigUpdate();
     configUpdate.setId(request.id);
     configUpdate.setName(request.name);
-    const value = set_data_value(request.value);
-    configUpdate.setConfigBytes(value.bytes);
-    configUpdate.setConfigType(value.type);
+    configUpdate.setConfigBytes(pack_data(request.value));
+    configUpdate.setConfigType(pack_type(request.value));
     configUpdate.setCategory(request.category);
     return client.updateModelConfig(configUpdate, metadata(config.access_token))
         .then(response => null);
@@ -49728,7 +49739,7 @@ function get_device_config_schema(r) {
         id: r.id,
         device_id: base64_to_uuid_hex(r.deviceId),
         name: r.name,
-        value: get_data_value(r.configBytes, r.configType),
+        value: unpack_data(r.configBytes, r.configType),
         category: r.category
     };
 }
@@ -49750,7 +49761,7 @@ function get_gateway_config_schema(r) {
         id: r.id,
         gateway_id: base64_to_uuid_hex(r.deviceId),
         name: r.name,
-        value: get_data_value(r.configBytes, r.configType),
+        value: unpack_data(r.configBytes, r.configType),
         category: r.category
     };
 }
@@ -49800,7 +49811,7 @@ function get_type_config_schema(r) {
         type_id: base64_to_uuid_hex(r.typeId),
         name: r.name,
         value_type: get_data_type(r.configType),
-        value_default: get_data_value(r.configBytes, r.configType),
+        value_default: unpack_data(r.configBytes, r.configType),
         category: r.category
     };
 }
@@ -50148,9 +50159,8 @@ async function create_device_config(config, request) {
     const configSchema = new pb_device.ConfigSchema();
     configSchema.setDeviceId(uuid_hex_to_base64(request.device_id));
     configSchema.setName(request.name);
-    const value = set_data_value(request.value);
-    configSchema.setConfigBytes(value.bytes);
-    configSchema.setConfigType(value.type);
+    configSchema.setConfigBytes(pack_data(request.value));
+    configSchema.setConfigType(pack_type(request.value));
     configSchema.setCategory(request.category);
     return client.createDeviceConfig(configSchema, metadata(config.access_token))
         .then(response => response.toObject().id);
@@ -50167,9 +50177,8 @@ async function update_device_config(config, request) {
     const configUpdate = new pb_device.ConfigUpdate();
     configUpdate.setId(request.id);
     configUpdate.setName(request.name);
-    const value = set_data_value(request.value);
-    configUpdate.setConfigBytes(value.bytes);
-    configUpdate.setConfigType(value.type);
+    configUpdate.setConfigBytes(pack_data(request.value));
+    configUpdate.setConfigType(pack_type(request.value));
     configUpdate.setCategory(request.category);
     return client.updateDeviceConfig(configUpdate, metadata(config.access_token))
         .then(response => null);
@@ -50228,9 +50237,8 @@ async function create_gateway_config(config, request) {
     const configSchema = new pb_device.ConfigSchema();
     configSchema.setDeviceId(uuid_hex_to_base64(request.gateway_id));
     configSchema.setName(request.name);
-    const value = set_data_value(request.value);
-    configSchema.setConfigBytes(value.bytes);
-    configSchema.setConfigType(value.type);
+    configSchema.setConfigBytes(pack_data(request.value));
+    configSchema.setConfigType(pack_type(request.value));
     configSchema.setCategory(request.category);
     return client.createGatewayConfig(configSchema, metadata(config.access_token))
         .then(response => response.toObject().id);
@@ -50247,9 +50255,8 @@ async function update_gateway_config(config, request) {
     const configUpdate = new pb_device.ConfigUpdate();
     configUpdate.setId(request.id);
     configUpdate.setName(request.name);
-    const value = set_data_value(request.value);
-    configUpdate.setConfigBytes(value.bytes);
-    configUpdate.setConfigType(value.type);
+    configUpdate.setConfigBytes(pack_data(request.value));
+    configUpdate.setConfigType(pack_type(request.value));
     configUpdate.setCategory(request.category);
     return client.updateGatewayConfig(configUpdate, metadata(config.access_token))
         .then(response => null);
@@ -50441,8 +50448,7 @@ async function create_type_config(config, request) {
     configSchema.setTypeId(uuid_hex_to_base64(request.type_id));
     configSchema.setName(request.name);
     configSchema.setConfigType(set_data_type(request.value_type));
-    const value = set_data_value(request.value_default);
-    configSchema.setValueBytes(value.bytes);
+    configSchema.setValueBytes(pack_data(request.value_default));
     configSchema.setCategory(request.category);
     return client.createTypeConfig(configSchema, metadata(config.access_token))
         .then(response => response.toObject().id);
@@ -50460,8 +50466,7 @@ async function update_type_config(config, request) {
     configUpdate.setId(request.id);
     configUpdate.setName(request.name);
     configUpdate.setConfigType(set_data_type(request.value_type));
-    const value = set_data_value(request.value_default);
-    configUpdate.setConfigBytes(value.bytes);
+    configUpdate.setValueBytes(pack_data(request.value_default));
     configUpdate.setCategory(request.category);
     return client.updateTypeConfig(configUpdate, metadata(config.access_token))
         .then(response => null);
@@ -64300,7 +64305,7 @@ async function swap_set_template_member(config, request) {
 /**
  * @enum {number}
  */
-const Tag = {
+const Tag = Object.freeze({
     DEFAULT: 0,
     MINUTELY: 1,
     MINUTELY_AVG: 2,
@@ -64367,7 +64372,7 @@ const Tag = {
     FAIL_DELETE: -10,
     INVALID_TOKEN: -11,
     INVALID_REQUEST: -12
-};
+});
 
 var data_pb = {};
 
@@ -73549,7 +73554,7 @@ function get_data_schema(r) {
         device_id: base64_to_uuid_hex(r.deviceId),
         model_id: base64_to_uuid_hex(r.modelId),
         timestamp: new Date(r.timestamp / 1000),
-        data: get_data_values(r.dataBytes, r.dataTypeList),
+        data: unpack_data_array(r.dataBytes, r.dataTypeList),
         tag: r.tag ?? Tag.DEFAULT
     };
 }
@@ -73642,7 +73647,7 @@ function get_data_set_schema(r) {
     return {
         set_id: base64_to_uuid_hex(r.setId),
         timestamp: new Date(r.timestamp / 1000),
-        data: get_data_values(r.dataBytes, r.dataTypeList),
+        data: unpack_data_array(r.dataBytes, r.dataTypeList),
         tag: r.tag ?? Tag.DEFAULT
     };
 }
@@ -73976,12 +73981,11 @@ async function create_data(config, request) {
     dataSchema.setDeviceId(uuid_hex_to_base64(request.device_id));
     dataSchema.setModelId(uuid_hex_to_base64(request.model_id));
     dataSchema.setTimestamp(request.timestamp.valueOf() * 1000);
-    const value = set_data_values(request.data);
-    dataSchema.setDataBytes(value.bytes);
-    dataSchema.setTag(request.tag ?? Tag.DEFAULT);
-    for (const type of value.types) {
-        dataSchema.addDataType(type);
+    dataSchema.setDataBytes(pack_data_array(request.data));
+    for (const value of request.data) {
+        dataSchema.addDataType(pack_type(value));
     }
+    dataSchema.setTag(request.tag ?? Tag.DEFAULT);
     return client.createData(dataSchema, metadata(config.access_token))
         .then(response => null);
 }
@@ -74006,10 +74010,9 @@ async function create_data_multiple(config, request) {
         dataSchema.setDeviceId(uuid_hex_to_base64(request.device_ids[i]));
         dataSchema.setModelId(uuid_hex_to_base64(request.model_ids[i]));
         dataSchema.setTimestamp(request.timestamps[i].valueOf() * 1000);
-        const value = set_data_values(request.data[i]);
-        dataSchema.setDataBytes(value.bytes);
-        for (const type of value.types) {
-            dataSchema.addDataType(type);
+        dataSchema.setDataBytes(pack_data_array(request.data[i]));
+        for (const value of request.data[i]) {
+            dataSchema.addDataType(pack_type(value));
         }
         dataSchema.setTag(tags[i] ?? Tag.DEFAULT);
         dataMultiSchema.addSchemas(dataSchema);
@@ -87765,7 +87768,7 @@ function get_buffer_schema(r) {
         device_id: base64_to_uuid_hex(r.deviceId),
         model_id: base64_to_uuid_hex(r.modelId),
         timestamp: new Date(r.timestamp / 1000),
-        data: get_data_values(r.dataBytes, r.dataTypeList),
+        data: unpack_data_array(r.dataBytes, r.dataTypeList),
         tag: r.tag ?? Tag.DEFAULT
     };
 }
@@ -87892,7 +87895,7 @@ function get_buffer_set_schema(r) {
         ids: r.idsList,
         set_id: base64_to_uuid_hex(r.setId),
         timestamp: new Date(r.timestamp / 1000),
-        data: get_data_values(r.dataBytes, r.dataTypeList),
+        data: unpack_data_array(r.dataBytes, r.dataTypeList),
         tag: r.tag ?? Tag.DEFAULT
     };
 }
@@ -88530,10 +88533,9 @@ async function create_buffer(config, request) {
     bufferSchema.setDeviceId(uuid_hex_to_base64(request.device_id));
     bufferSchema.setModelId(uuid_hex_to_base64(request.model_id));
     bufferSchema.setTimestamp(request.timestamp.valueOf() * 1000);
-    const value = set_data_values(request.data);
-    bufferSchema.setDataBytes(value.bytes);
-    for (const type of value.types) {
-        bufferSchema.addDataType(type);
+    bufferSchema.setDataBytes(pack_data_array(request.data));
+    for (const value of request.data) {
+        bufferSchema.addDataType(pack_type(value));
     }
     bufferSchema.setTag(request.tag ?? Tag.DEFAULT);
     return client.createBuffer(bufferSchema, metadata(config.access_token))
@@ -88560,10 +88562,9 @@ async function create_buffer_multiple(config, request) {
         bufferSchema.setDeviceId(uuid_hex_to_base64(request.device_ids[i]));
         bufferSchema.setModelId(uuid_hex_to_base64(request.model_ids[i]));
         bufferSchema.setTimestamp(request.timestamps[i].valueOf() * 1000);
-        const value = set_data_values(request.data[i]);
-        bufferSchema.setDataBytes(value.bytes);
-        for (const type of value.types) {
-            bufferSchema.addDataType(type);
+        bufferSchema.setDataBytes(pack_data_array(request.data[i]));
+        for (const value of request.data[i]) {
+            bufferSchema.addDataType(pack_type(value));
         }
         bufferSchema.setTag(tags[i] ?? Tag.DEFAULT);
         bufferMultiSchema.addSchemas(bufferSchema);
@@ -88583,10 +88584,9 @@ async function update_buffer(config, request) {
     const bufferUpdate = new pb_buffer.BufferUpdate();
     bufferUpdate.setId(request.id);
     if (typeof request.data == "object" && 'length' in request.data) {
-        const value = set_data_values(request.data);
-        bufferUpdate.setDataBytes(value.bytes);
-        for (const type of value.types) {
-            bufferUpdate.addDataType(type);
+        bufferUpdate.setDataBytes(pack_data_array(request.data));
+        for (const value of request.data) {
+            bufferUpdate.addDataType(pack_type(value));
         }
     }
     bufferUpdate.setTag(request.tag);
@@ -88607,14 +88607,13 @@ async function update_buffer_by_time(config, request) {
     bufferUpdateTime.setModelId(uuid_hex_to_base64(request.model_id));
     bufferUpdateTime.setTimestamp(request.timestamp.valueOf() * 1000);
     if (typeof request.data == "object" && 'length' in request.data) {
-        const value = set_data_values(request.data);
-        BufferUpdateTime.setDataBytes(value.bytes);
-        for (const type of value.types) {
-            BufferUpdateTime.addDataType(type);
+        bufferUpdateTime.setDataBytes(pack_data_array(request.data));
+        for (const value of request.data) {
+            bufferUpdateTime.addDataType(pack_type(value));
         }
     }
-    BufferUpdateTime.setTag(request.tag);
-    return client.updateBufferByTime(BufferUpdateTime, metadata(config.access_token))
+    bufferUpdateTime.setTag(request.tag);
+    return client.updateBufferByTime(bufferUpdateTime, metadata(config.access_token))
         .then(response => null);
 }
 
@@ -97049,4 +97048,4 @@ var index = /*#__PURE__*/Object.freeze({
 	update_type_config: update_type_config
 });
 
-export { AuthConfig, DataType, ResourceConfig, Tag, add_group_device_member, add_group_gateway_member, add_group_model_member, add_role_access, add_set_member, add_set_template_member, add_type_model, add_user_role, api_id, index$1 as auth, count_buffer, count_buffer_by_earlier, count_buffer_by_later, count_buffer_by_range, count_buffer_group, count_buffer_group_by_earlier, count_buffer_group_by_later, count_buffer_group_by_range, count_data, count_data_by_earlier, count_data_by_later, count_data_by_range, count_data_group, count_data_group_by_earlier, count_data_group_by_later, count_data_group_by_range, create_access_token, create_api, create_auth_token, create_buffer, create_buffer_multiple, create_data, create_data_multiple, create_device, create_device_config, create_gateway, create_gateway_config, create_group_device, create_group_gateway, create_group_model, create_model, create_model_config, create_procedure, create_role, create_role_profile, create_set, create_set_template, create_slice, create_slice_set, create_tag, create_type, create_type_config, create_user, create_user_profile, delete_access_token, delete_api, delete_auth_token, delete_buffer, delete_buffer_by_time, delete_data, delete_device, delete_device_config, delete_gateway, delete_gateway_config, delete_group_device, delete_group_gateway, delete_group_model, delete_model, delete_model_config, delete_procedure, delete_role, delete_role_profile, delete_set, delete_set_template, delete_slice, delete_slice_set, delete_tag, delete_token_by_user, delete_type, delete_type_config, delete_user, delete_user_profile, list_api_by_category, list_api_by_ids, list_api_by_name, list_api_option, list_auth_token, list_buffer_by_earlier, list_buffer_by_ids, list_buffer_by_later, list_buffer_by_number_after, list_buffer_by_number_before, list_buffer_by_range, list_buffer_by_time, list_buffer_first, list_buffer_first_offset, list_buffer_group_by_earlier, list_buffer_group_by_later, list_buffer_group_by_number_after, list_buffer_group_by_number_before, list_buffer_group_by_range, list_buffer_group_by_time, list_buffer_group_first, list_buffer_group_first_offset, list_buffer_group_last, list_buffer_group_last_offset, list_buffer_group_timestamp_by_earlier, list_buffer_group_timestamp_by_later, list_buffer_group_timestamp_by_range, list_buffer_group_timestamp_first, list_buffer_group_timestamp_last, list_buffer_last, list_buffer_last_offset, list_buffer_set_by_earlier, list_buffer_set_by_later, list_buffer_set_by_range, list_buffer_set_by_time, list_buffer_timestamp_by_earlier, list_buffer_timestamp_by_later, list_buffer_timestamp_by_range, list_buffer_timestamp_first, list_buffer_timestamp_last, list_data_by_earlier, list_data_by_later, list_data_by_number_after, list_data_by_number_before, list_data_by_range, list_data_by_time, list_data_group_by_earlier, list_data_group_by_later, list_data_group_by_number_after, list_data_group_by_number_before, list_data_group_by_range, list_data_group_by_time, list_data_group_timestamp_by_earlier, list_data_group_timestamp_by_later, list_data_group_timestamp_by_range, list_data_set_by_earlier, list_data_set_by_later, list_data_set_by_range, list_data_set_by_time, list_data_timestamp_by_earlier, list_data_timestamp_by_later, list_data_timestamp_by_range, list_device_by_gateway, list_device_by_ids, list_device_by_name, list_device_by_type, list_device_config_by_device, list_device_option, list_gateway_by_ids, list_gateway_by_name, list_gateway_by_type, list_gateway_config_by_gateway, list_gateway_option, list_group_device_by_category, list_group_device_by_ids, list_group_device_by_name, list_group_device_option, list_group_gateway_by_category, list_group_gateway_by_ids, list_group_gateway_by_name, list_group_gateway_option, list_group_model_by_category, list_group_model_by_ids, list_group_model_by_name, list_group_model_option, list_model_by_category, list_model_by_ids, list_model_by_name, list_model_by_type, list_model_config_by_model, list_model_option, list_procedure_by_api, list_procedure_by_ids, list_procedure_by_name, list_procedure_option, list_role_by_api, list_role_by_ids, list_role_by_name, list_role_by_user, list_role_option, list_role_profile_by_role, list_set_by_ids, list_set_by_name, list_set_by_template, list_set_option, list_set_template_by_ids, list_set_template_by_name, list_set_template_option, list_slice_by_ids, list_slice_by_name_range, list_slice_by_name_time, list_slice_by_range, list_slice_by_time, list_slice_group_by_range, list_slice_group_by_time, list_slice_group_option, list_slice_option, list_slice_set_by_ids, list_slice_set_by_name_range, list_slice_set_by_name_time, list_slice_set_by_range, list_slice_set_by_time, list_slice_set_option, list_tag_by_model, list_token_by_created_earlier, list_token_by_created_later, list_token_by_created_range, list_token_by_expired_earlier, list_token_by_expired_later, list_token_by_expired_range, list_token_by_range, list_token_by_user, list_type_by_ids, list_type_by_name, list_type_config_by_type, list_type_option, list_user_by_api, list_user_by_ids, list_user_by_name, list_user_by_role, list_user_option, list_user_profile_by_user, procedure_access, read_access_token, read_api, read_api_by_name, read_buffer, read_buffer_by_time, read_buffer_first, read_buffer_group_first, read_buffer_group_last, read_buffer_group_timestamp, read_buffer_last, read_buffer_set, read_buffer_timestamp, read_data, read_data_group_timestamp, read_data_set, read_data_timestamp, read_device, read_device_by_sn, read_device_config, read_gateway, read_gateway_by_sn, read_gateway_config, read_group_device, read_group_gateway, read_group_model, read_model, read_model_config, read_procedure, read_procedure_by_name, read_role, read_role_by_name, read_role_profile, read_set, read_set_template, read_slice, read_slice_set, read_tag, read_type, read_type_config, read_user, read_user_by_name, read_user_profile, remove_group_device_member, remove_group_gateway_member, remove_group_model_member, remove_role_access, remove_set_member, remove_set_template_member, remove_type_model, remove_user_role, index as resource, role_access, swap_set_member, swap_set_template_member, update_access_token, update_api, update_auth_token, update_buffer, update_buffer_by_time, update_device, update_device_config, update_gateway, update_gateway_config, update_group_device, update_group_gateway, update_group_model, update_model, update_model_config, update_procedure, update_role, update_role_profile, update_set, update_set_template, update_slice, update_slice_set, update_tag, update_type, update_type_config, update_user, update_user_profile, user_login, user_login_key, user_logout, user_refresh, utility };
+export { AuthConfig, DataType, ResourceConfig, Tag, add_group_device_member, add_group_gateway_member, add_group_model_member, add_role_access, add_set_member, add_set_template_member, add_type_model, add_user_role, api_id, index$1 as auth, count_buffer, count_buffer_by_earlier, count_buffer_by_later, count_buffer_by_range, count_buffer_group, count_buffer_group_by_earlier, count_buffer_group_by_later, count_buffer_group_by_range, count_data, count_data_by_earlier, count_data_by_later, count_data_by_range, count_data_group, count_data_group_by_earlier, count_data_group_by_later, count_data_group_by_range, create_access_token, create_api, create_auth_token, create_buffer, create_buffer_multiple, create_data, create_data_multiple, create_device, create_device_config, create_gateway, create_gateway_config, create_group_device, create_group_gateway, create_group_model, create_model, create_model_config, create_procedure, create_role, create_role_profile, create_set, create_set_template, create_slice, create_slice_set, create_tag, create_type, create_type_config, create_user, create_user_profile, delete_access_token, delete_api, delete_auth_token, delete_buffer, delete_buffer_by_time, delete_data, delete_device, delete_device_config, delete_gateway, delete_gateway_config, delete_group_device, delete_group_gateway, delete_group_model, delete_model, delete_model_config, delete_procedure, delete_role, delete_role_profile, delete_set, delete_set_template, delete_slice, delete_slice_set, delete_tag, delete_token_by_user, delete_type, delete_type_config, delete_user, delete_user_profile, get_data_type, list_api_by_category, list_api_by_ids, list_api_by_name, list_api_option, list_auth_token, list_buffer_by_earlier, list_buffer_by_ids, list_buffer_by_later, list_buffer_by_number_after, list_buffer_by_number_before, list_buffer_by_range, list_buffer_by_time, list_buffer_first, list_buffer_first_offset, list_buffer_group_by_earlier, list_buffer_group_by_later, list_buffer_group_by_number_after, list_buffer_group_by_number_before, list_buffer_group_by_range, list_buffer_group_by_time, list_buffer_group_first, list_buffer_group_first_offset, list_buffer_group_last, list_buffer_group_last_offset, list_buffer_group_timestamp_by_earlier, list_buffer_group_timestamp_by_later, list_buffer_group_timestamp_by_range, list_buffer_group_timestamp_first, list_buffer_group_timestamp_last, list_buffer_last, list_buffer_last_offset, list_buffer_set_by_earlier, list_buffer_set_by_later, list_buffer_set_by_range, list_buffer_set_by_time, list_buffer_timestamp_by_earlier, list_buffer_timestamp_by_later, list_buffer_timestamp_by_range, list_buffer_timestamp_first, list_buffer_timestamp_last, list_data_by_earlier, list_data_by_later, list_data_by_number_after, list_data_by_number_before, list_data_by_range, list_data_by_time, list_data_group_by_earlier, list_data_group_by_later, list_data_group_by_number_after, list_data_group_by_number_before, list_data_group_by_range, list_data_group_by_time, list_data_group_timestamp_by_earlier, list_data_group_timestamp_by_later, list_data_group_timestamp_by_range, list_data_set_by_earlier, list_data_set_by_later, list_data_set_by_range, list_data_set_by_time, list_data_timestamp_by_earlier, list_data_timestamp_by_later, list_data_timestamp_by_range, list_device_by_gateway, list_device_by_ids, list_device_by_name, list_device_by_type, list_device_config_by_device, list_device_option, list_gateway_by_ids, list_gateway_by_name, list_gateway_by_type, list_gateway_config_by_gateway, list_gateway_option, list_group_device_by_category, list_group_device_by_ids, list_group_device_by_name, list_group_device_option, list_group_gateway_by_category, list_group_gateway_by_ids, list_group_gateway_by_name, list_group_gateway_option, list_group_model_by_category, list_group_model_by_ids, list_group_model_by_name, list_group_model_option, list_model_by_category, list_model_by_ids, list_model_by_name, list_model_by_type, list_model_config_by_model, list_model_option, list_procedure_by_api, list_procedure_by_ids, list_procedure_by_name, list_procedure_option, list_role_by_api, list_role_by_ids, list_role_by_name, list_role_by_user, list_role_option, list_role_profile_by_role, list_set_by_ids, list_set_by_name, list_set_by_template, list_set_option, list_set_template_by_ids, list_set_template_by_name, list_set_template_option, list_slice_by_ids, list_slice_by_name_range, list_slice_by_name_time, list_slice_by_range, list_slice_by_time, list_slice_group_by_range, list_slice_group_by_time, list_slice_group_option, list_slice_option, list_slice_set_by_ids, list_slice_set_by_name_range, list_slice_set_by_name_time, list_slice_set_by_range, list_slice_set_by_time, list_slice_set_option, list_tag_by_model, list_token_by_created_earlier, list_token_by_created_later, list_token_by_created_range, list_token_by_expired_earlier, list_token_by_expired_later, list_token_by_expired_range, list_token_by_range, list_token_by_user, list_type_by_ids, list_type_by_name, list_type_config_by_type, list_type_option, list_user_by_api, list_user_by_ids, list_user_by_name, list_user_by_role, list_user_option, list_user_profile_by_user, pack_data, pack_data_array, pack_type, procedure_access, read_access_token, read_api, read_api_by_name, read_buffer, read_buffer_by_time, read_buffer_first, read_buffer_group_first, read_buffer_group_last, read_buffer_group_timestamp, read_buffer_last, read_buffer_set, read_buffer_timestamp, read_data, read_data_group_timestamp, read_data_set, read_data_timestamp, read_device, read_device_by_sn, read_device_config, read_gateway, read_gateway_by_sn, read_gateway_config, read_group_device, read_group_gateway, read_group_model, read_model, read_model_config, read_procedure, read_procedure_by_name, read_role, read_role_by_name, read_role_profile, read_set, read_set_template, read_slice, read_slice_set, read_tag, read_type, read_type_config, read_user, read_user_by_name, read_user_profile, remove_group_device_member, remove_group_gateway_member, remove_group_model_member, remove_role_access, remove_set_member, remove_set_template_member, remove_type_model, remove_user_role, index as resource, role_access, set_data_type, swap_set_member, swap_set_template_member, unpack_data, unpack_data_array, update_access_token, update_api, update_auth_token, update_buffer, update_buffer_by_time, update_device, update_device_config, update_gateway, update_gateway_config, update_group_device, update_group_gateway, update_group_model, update_model, update_model_config, update_procedure, update_role, update_role_profile, update_set, update_set_template, update_slice, update_slice_set, update_tag, update_type, update_type_config, update_user, update_user_profile, user_login, user_login_key, user_logout, user_refresh, utility };

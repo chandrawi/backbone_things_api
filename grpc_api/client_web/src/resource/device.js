@@ -1,4 +1,4 @@
-import { get_data_value, set_data_value, get_data_type, set_data_type } from '../common/type_value.js';
+import { unpack_data, pack_data, pack_type, get_data_type, set_data_type } from '../common/type_value.js';
 import pb_device from '../proto/resource/device_grpc_web_pb.js';
 import {
     metadata,
@@ -256,7 +256,7 @@ function get_device_config_schema(r) {
         id: r.id,
         device_id: base64_to_uuid_hex(r.deviceId),
         name: r.name,
-        value: get_data_value(r.configBytes, r.configType),
+        value: unpack_data(r.configBytes, r.configType),
         category: r.category
     };
 }
@@ -278,7 +278,7 @@ function get_gateway_config_schema(r) {
         id: r.id,
         gateway_id: base64_to_uuid_hex(r.deviceId),
         name: r.name,
-        value: get_data_value(r.configBytes, r.configType),
+        value: unpack_data(r.configBytes, r.configType),
         category: r.category
     };
 }
@@ -328,7 +328,7 @@ function get_type_config_schema(r) {
         type_id: base64_to_uuid_hex(r.typeId),
         name: r.name,
         value_type: get_data_type(r.configType),
-        value_default: get_data_value(r.configBytes, r.configType),
+        value_default: unpack_data(r.configBytes, r.configType),
         category: r.category
     };
 }
@@ -676,9 +676,8 @@ export async function create_device_config(config, request) {
     const configSchema = new pb_device.ConfigSchema();
     configSchema.setDeviceId(uuid_hex_to_base64(request.device_id));
     configSchema.setName(request.name);
-    const value = set_data_value(request.value);
-    configSchema.setConfigBytes(value.bytes);
-    configSchema.setConfigType(value.type);
+    configSchema.setConfigBytes(pack_data(request.value));
+    configSchema.setConfigType(pack_type(request.value));
     configSchema.setCategory(request.category);
     return client.createDeviceConfig(configSchema, metadata(config.access_token))
         .then(response => response.toObject().id);
@@ -695,9 +694,8 @@ export async function update_device_config(config, request) {
     const configUpdate = new pb_device.ConfigUpdate();
     configUpdate.setId(request.id);
     configUpdate.setName(request.name);
-    const value = set_data_value(request.value);
-    configUpdate.setConfigBytes(value.bytes);
-    configUpdate.setConfigType(value.type);
+    configUpdate.setConfigBytes(pack_data(request.value));
+    configUpdate.setConfigType(pack_type(request.value));
     configUpdate.setCategory(request.category);
     return client.updateDeviceConfig(configUpdate, metadata(config.access_token))
         .then(response => null);
@@ -756,9 +754,8 @@ export async function create_gateway_config(config, request) {
     const configSchema = new pb_device.ConfigSchema();
     configSchema.setDeviceId(uuid_hex_to_base64(request.gateway_id));
     configSchema.setName(request.name);
-    const value = set_data_value(request.value);
-    configSchema.setConfigBytes(value.bytes);
-    configSchema.setConfigType(value.type);
+    configSchema.setConfigBytes(pack_data(request.value));
+    configSchema.setConfigType(pack_type(request.value));
     configSchema.setCategory(request.category);
     return client.createGatewayConfig(configSchema, metadata(config.access_token))
         .then(response => response.toObject().id);
@@ -775,9 +772,8 @@ export async function update_gateway_config(config, request) {
     const configUpdate = new pb_device.ConfigUpdate();
     configUpdate.setId(request.id);
     configUpdate.setName(request.name);
-    const value = set_data_value(request.value);
-    configUpdate.setConfigBytes(value.bytes);
-    configUpdate.setConfigType(value.type);
+    configUpdate.setConfigBytes(pack_data(request.value));
+    configUpdate.setConfigType(pack_type(request.value));
     configUpdate.setCategory(request.category);
     return client.updateGatewayConfig(configUpdate, metadata(config.access_token))
         .then(response => null);
@@ -969,8 +965,7 @@ export async function create_type_config(config, request) {
     configSchema.setTypeId(uuid_hex_to_base64(request.type_id));
     configSchema.setName(request.name);
     configSchema.setConfigType(set_data_type(request.value_type));
-    const value = set_data_value(request.value_default);
-    configSchema.setValueBytes(value.bytes);
+    configSchema.setValueBytes(pack_data(request.value_default));
     configSchema.setCategory(request.category);
     return client.createTypeConfig(configSchema, metadata(config.access_token))
         .then(response => response.toObject().id);
@@ -988,8 +983,7 @@ export async function update_type_config(config, request) {
     configUpdate.setId(request.id);
     configUpdate.setName(request.name);
     configUpdate.setConfigType(set_data_type(request.value_type));
-    const value = set_data_value(request.value_default);
-    configUpdate.setConfigBytes(value.bytes);
+    configUpdate.setValueBytes(pack_data(request.value_default));
     configUpdate.setCategory(request.category);
     return client.updateTypeConfig(configUpdate, metadata(config.access_token))
         .then(response => null);

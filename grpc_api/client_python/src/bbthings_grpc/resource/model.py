@@ -2,7 +2,7 @@ from ..proto.resource import model_pb2, model_pb2_grpc
 from typing import Optional, Union, List
 from uuid import UUID
 import grpc
-from ..common.type_value import DataType, pack_data
+from ..common.type_value import DataType, pack_type, pack_data
 from ._schema import ModelSchema, ModelConfigSchema, TagSchema
 
 
@@ -127,7 +127,7 @@ def create_model_config(resource, model_id: UUID, index: int, name: str, value: 
             index=index,
             name=name,
             config_bytes=pack_data(value),
-            config_type=DataType.from_value(value).value,
+            config_type=pack_type(value),
             category=category
         )
         response = stub.CreateModelConfig(request=request, metadata=resource.metadata)
@@ -140,7 +140,7 @@ def update_model_config(resource, id: int, name: Optional[str]=None, value: Unio
             id=id,
             name=name,
             config_bytes=pack_data(value),
-            config_type=DataType.from_value(value).value,
+            config_type=pack_type(value),
             category=category
         )
         stub.UpdateModelConfig(request=request, metadata=resource.metadata)

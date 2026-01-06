@@ -3,7 +3,7 @@ from typing import Optional, Union
 from uuid import UUID
 import grpc
 from ._schema import RoleProfileSchema, UserProfileSchema
-from ..common.type_value import DataType, pack_data, pack_data_model
+from ..common.type_value import DataType, pack_type, pack_data, pack_data_type
 
 
 def read_role_profile(auth, id: int):
@@ -29,7 +29,7 @@ def create_role_profile(auth, role_id: UUID, name: str, value_type: DataType, va
             role_id=role_id.bytes,
             name=name,
             value_type=value_type.value,
-            value_bytes=pack_data_model(value_default, value_type),
+            value_bytes=pack_data_type(value_default, value_type),
             category=category
         )
         response = stub.CreateRoleProfile(request=request, metadata=auth.metadata)
@@ -41,7 +41,7 @@ def update_role_profile(auth, id: int, name: Optional[str], value_type: Optional
         ty = None
         if value_type != None: ty = value_type.value
         byt = None
-        if value_type != None and value_default != None: byt = pack_data_model(value_default, value_type)
+        if value_type != None and value_default != None: byt = pack_data_type(value_default, value_type)
         elif value_default != None: byt = pack_data(value_default)
         request = profile_pb2.RoleProfileUpdate(
             id=id,
@@ -81,7 +81,7 @@ def create_user_profile(auth, user_id: UUID, name: str, value: Union[int, float,
             user_id=user_id.bytes,
             name=name,
             value_bytes=pack_data(value),
-            value_type=DataType.from_value(value).value,
+            value_type=pack_type(value),
             category=category
         )
         response = stub.CreateUserProfile(request=request, metadata=auth.metadata)
@@ -94,7 +94,7 @@ def update_user_profile(auth, id: int, name: Optional[str], value: Union[int, fl
         value_type=None
         if value != None: 
             value_bytes = pack_data(value)
-            value_type = DataType.from_value(value).value
+            value_type = pack_type(value)
         request = profile_pb2.UserProfileUpdate(
             id=id,
             name=name,

@@ -1,4 +1,4 @@
-import { get_data_values, set_data_values } from '../common/type_value.js';
+import { unpack_data_array, pack_data_array, pack_type } from '../common/type_value.js';
 import { Tag } from '../common/tag.js';
 import pb_data from '../proto/resource/data_grpc_web_pb.js';
 import {
@@ -87,7 +87,7 @@ function get_data_schema(r) {
         device_id: base64_to_uuid_hex(r.deviceId),
         model_id: base64_to_uuid_hex(r.modelId),
         timestamp: new Date(r.timestamp / 1000),
-        data: get_data_values(r.dataBytes, r.dataTypeList),
+        data: unpack_data_array(r.dataBytes, r.dataTypeList),
         tag: r.tag ?? Tag.DEFAULT
     };
 }
@@ -180,7 +180,7 @@ function get_data_set_schema(r) {
     return {
         set_id: base64_to_uuid_hex(r.setId),
         timestamp: new Date(r.timestamp / 1000),
-        data: get_data_values(r.dataBytes, r.dataTypeList),
+        data: unpack_data_array(r.dataBytes, r.dataTypeList),
         tag: r.tag ?? Tag.DEFAULT
     };
 }
@@ -514,12 +514,11 @@ export async function create_data(config, request) {
     dataSchema.setDeviceId(uuid_hex_to_base64(request.device_id));
     dataSchema.setModelId(uuid_hex_to_base64(request.model_id));
     dataSchema.setTimestamp(request.timestamp.valueOf() * 1000);
-    const value = set_data_values(request.data);
-    dataSchema.setDataBytes(value.bytes);
-    dataSchema.setTag(request.tag ?? Tag.DEFAULT);
-    for (const type of value.types) {
-        dataSchema.addDataType(type);
+    dataSchema.setDataBytes(pack_data_array(request.data));
+    for (const value of request.data) {
+        dataSchema.addDataType(pack_type(value));
     }
+    dataSchema.setTag(request.tag ?? Tag.DEFAULT);
     return client.createData(dataSchema, metadata(config.access_token))
         .then(response => null);
 }
@@ -544,10 +543,9 @@ export async function create_data_multiple(config, request) {
         dataSchema.setDeviceId(uuid_hex_to_base64(request.device_ids[i]));
         dataSchema.setModelId(uuid_hex_to_base64(request.model_ids[i]));
         dataSchema.setTimestamp(request.timestamps[i].valueOf() * 1000);
-        const value = set_data_values(request.data[i]);
-        dataSchema.setDataBytes(value.bytes);
-        for (const type of value.types) {
-            dataSchema.addDataType(type);
+        dataSchema.setDataBytes(pack_data_array(request.data[i]));
+        for (const value of request.data[i]) {
+            dataSchema.addDataType(pack_type(value));
         }
         dataSchema.setTag(tags[i] ?? Tag.DEFAULT);
         dataMultiSchema.addSchemas(dataSchema);
