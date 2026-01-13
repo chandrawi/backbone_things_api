@@ -342,12 +342,22 @@ pub fn select_tag_members(
     tag: i16
 ) -> QueryStatement
 {
-    let stmt = Query::select()
-        .column(ModelTagMember::Member)
-        .from(ModelTagMember::Table)
-        .and_where(Expr::col(ModelTagMember::ModelId).is_in(model_ids.to_vec()))
-        .and_where(Expr::col(ModelTagMember::Tag).eq(tag))
-        .to_owned();
+    let mut stmt = Query::select();
+    if model_ids.len() == 0 {
+        stmt = stmt
+            .expr_as(tag, "member")
+            .from(ModelTagMember::Table)
+            .limit(1)
+            .to_owned();
+    }
+    else {
+        stmt = stmt
+            .column(ModelTagMember::Member)
+            .from(ModelTagMember::Table)
+            .and_where(Expr::col(ModelTagMember::ModelId).is_in(model_ids.to_vec()))
+            .and_where(Expr::col(ModelTagMember::Tag).eq(tag))
+            .to_owned();
+    }
 
     QueryStatement::Select(stmt)
 }

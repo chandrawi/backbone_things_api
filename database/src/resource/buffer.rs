@@ -130,7 +130,11 @@ pub fn select_buffer(
         BufferSelector::None => {}
     }
 
-    if let (Some(tag), Some(model_ids)) = (tag, model_ids) {
+    if let Some(tag) = tag {
+        let model_ids = match model_ids {
+            Some(ids) => ids,
+            None => &[]
+        };
         if let QueryStatement::Select(query) = model::select_tag_members(model_ids, tag) {
             stmt = stmt.and_where(Expr::col((DataBuffer::Table, DataBuffer::Tag)).in_subquery(query)).to_owned();
         }
@@ -206,7 +210,11 @@ pub fn select_buffer_timestamp(
         _ => {}
     }
 
-    if let (Some(tag), Some(model_ids)) = (tag, model_ids) {
+    if let Some(tag) = tag {
+        let model_ids = match model_ids {
+            Some(ids) => ids,
+            None => &[]
+        };
         if let QueryStatement::Select(query) = model::select_tag_members(model_ids, tag) {
             stmt = stmt.and_where(Expr::col(DataBuffer::Tag).in_subquery(query)).to_owned();
         }

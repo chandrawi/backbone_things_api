@@ -405,6 +405,7 @@ mod tests {
 
         // Tag query test
         let tag = Tag::DEFAULT;
+        let set_id = Uuid::try_parse("185a67ef-c49c-47fe-bdc1-57671a023657").unwrap();
         let name = "default";
         let members = [-1, 0, 1];
         let qs = model::select_model_tag(model_id, Some(tag));
@@ -412,6 +413,21 @@ mod tests {
             SELECT "model_tag"."model_id", "model_tag"."tag", "model_tag"."name", "model_tag_member"."member" 
             FROM "model_tag" INNER JOIN "model_tag_member" ON "model_tag"."model_id" = "model_tag_member"."model_id" AND "model_tag"."tag" = "model_tag_member"."tag" WHERE "model_id" = 'd9239c8b-e008-48dd-bc58-18334cdda697' AND "tag" = 0 
             ORDER BY "tag" ASC
+        "#;
+        assert_eq!(qs.to_string(), clean_string(s));
+        let qs = model::select_tag_members(&[], tag);
+        let s = r#"
+            SELECT 0 AS "member" 
+            FROM "model_tag_member" 
+            LIMIT 1
+        "#;
+        assert_eq!(qs.to_string(), clean_string(s));
+        let qs = model::select_tag_members_set(set_id, tag);
+        let s = r#"
+            SELECT "member" 
+            FROM "model_tag_member" 
+            INNER JOIN "set_member" ON "model_tag_member"."model_id" = "set_member"."model_id" 
+            WHERE "set_id" = '185a67ef-c49c-47fe-bdc1-57671a023657' AND "tag" = 0
         "#;
         assert_eq!(qs.to_string(), clean_string(s));
         let qs = model::insert_model_tag(model_id, tag, name);
@@ -902,6 +918,7 @@ mod tests {
             INNER JOIN "model" ON "data_buffer"."model_id" = "model"."model_id" 
             WHERE "id" IN (1, 2, 3) 
             AND "data_buffer"."timestamp" = '2023-05-07 07:08:48.123456 +00:00'
+            AND "data_buffer"."tag" IN (SELECT -1 AS "member" FROM "model_tag_member" LIMIT 1)
         "#;
         assert_eq!(qs.to_string(), clean_string(s));
         let selector = buffer::BufferSelector::First(number, offset);

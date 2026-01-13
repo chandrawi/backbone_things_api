@@ -137,7 +137,7 @@ async fn resource_server(db_url: String, address: String) -> Result<(), Box<dyn 
         .register_encoded_file_descriptor_set(descriptor::data::DESCRIPTOR_SET)
         .register_encoded_file_descriptor_set(descriptor::buffer::DESCRIPTOR_SET)
         .register_encoded_file_descriptor_set(descriptor::slice::DESCRIPTOR_SET)
-        .build_v1();
+        .build_v1alpha();
 
     Server::builder()
         .accept_http1(true)

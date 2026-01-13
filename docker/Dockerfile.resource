@@ -22,4 +22,4 @@ RUN cargo build --release --bin resource_server
 FROM alpine:latest AS runtime
 WORKDIR /app
 COPY --from=builder /app/target/release/resource_server /usr/local/bin
-ENTRYPOINT ["/usr/local/bin/resource_server"]
+ENTRYPOINT ["/usr/local/bin/resource_server", "--secured"]

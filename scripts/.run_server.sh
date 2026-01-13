@@ -5,8 +5,8 @@ ENV_FILE="${BASE_DIR}/.env"
 if [ $# -gt 0 ]; then
 	ENV_FILE="${BASE_DIR}$1"
 fi
-SERVER_AUTH="${BASE_DIR}/target/release/auth_server &"
-SERVER_RESOURCE="${BASE_DIR}/target/release/resource_server &"
+SERVER_AUTH="${BASE_DIR}/target/release/auth_server --secured &"
+SERVER_RESOURCE="${BASE_DIR}/target/release/resource_server --secured &"
 
 set -o allexport
 source <(sed -e "s/\r//" -e '/^#/d;/^\s*$/d' -e "s/'/'\\\''/g" -e "s/=\(.*\)/=\"\1\"/g" "${ENV_FILE}")

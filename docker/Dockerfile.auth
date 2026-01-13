@@ -22,4 +22,4 @@ RUN cargo build --release --bin auth_server
 FROM alpine:latest AS runtime
 WORKDIR /app
 COPY --from=builder /app/target/release/auth_server /usr/local/bin
-ENTRYPOINT ["/usr/local/bin/auth_server"]
+ENTRYPOINT ["/usr/local/bin/auth_server", "--secured"]

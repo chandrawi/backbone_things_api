@@ -99,7 +99,7 @@ async fn auth_server(db_url: String, address: String) -> Result<(), Box<dyn std:
         .register_encoded_file_descriptor_set(descriptor::profile::DESCRIPTOR_SET)
         .register_encoded_file_descriptor_set(descriptor::token::DESCRIPTOR_SET)
         .register_encoded_file_descriptor_set(descriptor::auth::DESCRIPTOR_SET)
-        .build_v1();
+        .build_v1alpha();
 
     Server::builder()
         .accept_http1(true)
